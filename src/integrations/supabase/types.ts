@@ -390,6 +390,63 @@ export type Database = {
           },
         ]
       }
+      financial_aids: {
+        Row: {
+          active: boolean
+          age_max: number
+          age_min: number
+          amount_type: string
+          amount_value: number
+          categories: string[]
+          created_at: string
+          cumulative: boolean
+          id: string
+          name: string
+          official_link: string | null
+          qf_max: number | null
+          slug: string
+          territory_codes: string[]
+          territory_level: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          age_max: number
+          age_min: number
+          amount_type: string
+          amount_value: number
+          categories?: string[]
+          created_at?: string
+          cumulative?: boolean
+          id?: string
+          name: string
+          official_link?: string | null
+          qf_max?: number | null
+          slug: string
+          territory_codes?: string[]
+          territory_level: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          age_max?: number
+          age_min?: number
+          amount_type?: string
+          amount_value?: number
+          categories?: string[]
+          created_at?: string
+          cumulative?: boolean
+          id?: string
+          name?: string
+          official_link?: string | null
+          qf_max?: number | null
+          slug?: string
+          territory_codes?: string[]
+          territory_level?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mfa_settings: {
         Row: {
           backup_codes: Json | null
