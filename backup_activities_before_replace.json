@@ -1,0 +1,87 @@
+{
+  "backup_date": "2025-10-13T10:46:20.165117+00:00",
+  "total_activities": 1,
+  "activities": [
+    {
+      "id": "9945b0c6-6aaf-4042-b92e-33fc9b466597",
+      "title": "Tennis - TC Villeurbannais",
+      "category": "Sport",
+      "description": "Cours de tennis pour enfants et adolescents au Tennis Club de Villeurbanne. Apprentissage technique et jeu en groupe.",
+      "images": [
+        "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800",
+        "https://images.unsplash.com/photo-1622163642998-1ea32b0bbc67?w=800"
+      ],
+      "video_url": "https://www.youtube.com/watch?v=example",
+      "age_min": 6,
+      "age_max": 16,
+      "tags": ["tennis", "sport", "plein air", "initiation"],
+      "price_base": 180.00,
+      "price_note": "Tarif annuel, matériel fourni",
+      "accepts_aid_types": ["CAF", "PassSport", "Coupon Sport"],
+      "payment_echelonned": true,
+      "payment_plans": [
+        {
+          "name": "Paiement en 3 fois",
+          "installments": 3,
+          "description": "3 mensualités de 60€"
+        },
+        {
+          "name": "Paiement en 10 fois",
+          "installments": 10,
+          "description": "10 mensualités de 18€"
+        }
+      ],
+      "covoiturage_enabled": true,
+      "transport_options": [
+        {
+          "type": "Covoiturage parents",
+          "details": "Groupe WhatsApp disponible"
+        },
+        {
+          "type": "Bus ligne C3",
+          "details": "Arrêt Charpennes à 5min"
+        }
+      ],
+      "accessibility_checklist": {
+        "pmr_access": true,
+        "adapted_equipment": false,
+        "specialized_staff": false,
+        "sensory_friendly": true
+      },
+      "documents_required": [
+        {
+          "key": "certificat_medical",
+          "mandatory": true,
+          "label": "Certificat médical"
+        },
+        {
+          "key": "autorisation_parentale",
+          "mandatory": true,
+          "label": "Autorisation parentale"
+        },
+        {
+          "key": "photo_identite",
+          "mandatory": false,
+          "label": "Photo d'identité"
+        }
+      ],
+      "capacity_policy": {
+        "seats_total": 20,
+        "seats_remaining": 8,
+        "waitlist_enabled": true,
+        "overbooking_allowed": false
+      },
+      "rules_acceptance_json": {
+        "rules_text": "Les participants doivent respecter le règlement intérieur du club.",
+        "acceptance_required": true
+      },
+      "external_portal_url": "https://www.tcvilleurbannais.fr/inscriptions",
+      "published": true,
+      "structure": {
+        "id": "58f94045-6ed9-48c1-b717-d3045c8a358f",
+        "name": "Tennis Club de Villeurbanne",
+        "address": "23 Rue Racine, 69100 Villeurbanne"
+      }
+    }
+  ]
+}

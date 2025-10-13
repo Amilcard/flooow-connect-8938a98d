@@ -1,0 +1,24 @@
+{
+  "import_date": "2025-10-13T11:03:00Z",
+  "territory": "Saint-Étienne",
+  "total_activities_imported": 40,
+  "period": "2025-11-01 to 2026-06-30",
+  "universes": {
+    "Sport": 10,
+    "Culture": 8,
+    "Loisirs": 8,
+    "Scolarité": 8,
+    "Vacances": 6
+  },
+  "all_published": true,
+  "errors": [],
+  "sample_activities": [
+    {"id": "auto", "title": "Tennis - TC Saint-Étienne", "category": "Sport", "published": true},
+    {"id": "auto", "title": "École de Football ASSE", "category": "Sport", "published": true},
+    {"id": "auto", "title": "Cours de Piano", "category": "Culture", "published": true},
+    {"id": "auto", "title": "Centre de Loisirs Mercredis", "category": "Loisirs", "published": true},
+    {"id": "auto", "title": "Colonie Montagne Hiver", "category": "Vacances", "published": true}
+  ],
+  "status": "SUCCESS",
+  "backup_file": "backup_activities_before_replace.json"
+}
