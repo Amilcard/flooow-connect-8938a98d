@@ -11,7 +11,8 @@ import {
   HelpCircle, 
   LogOut,
   ChevronRight,
-  Settings
+  Settings,
+  Shield
 } from "lucide-react";
 
 const MonCompte = () => {
@@ -29,6 +30,12 @@ const MonCompte = () => {
       title: "Mes enfants",
       subtitle: "Gérer les profils de vos enfants",
       onClick: () => navigate("/mes-enfants")
+    },
+    {
+      icon: <Shield size={20} />,
+      title: "Mes sessions",
+      subtitle: "Gérer vos connexions actives",
+      onClick: () => navigate("/mes-sessions")
     },
     {
       icon: <FileText size={20} />,

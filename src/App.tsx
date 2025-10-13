@@ -17,6 +17,8 @@ import Support from "./pages/Support";
 import ChildSignup from "./pages/ChildSignup";
 import Alternatives from "./pages/Alternatives";
 import Covoiturage from "./pages/Covoiturage";
+import MesSessions from "./pages/MesSessions";
+import AdminSessions from "./pages/AdminSessions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
           <Route path="/child-signup" element={<ChildSignup />} />
           <Route path="/alternatives" element={<Alternatives />} />
           <Route path="/covoiturage" element={<Covoiturage />} />
+          <Route path="/mes-sessions" element={<MesSessions />} />
+          <Route path="/admin/sessions" element={<AdminSessions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

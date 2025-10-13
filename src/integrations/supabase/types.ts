@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      active_sessions: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          last_seen: string
+          revoke_reason: string | null
+          revoked: boolean | null
+          revoked_at: string | null
+          revoked_by: string | null
+          session_id: string
+          tenant_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          last_seen?: string
+          revoke_reason?: string | null
+          revoked?: boolean | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          session_id: string
+          tenant_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          last_seen?: string
+          revoke_reason?: string | null
+          revoked?: boolean | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          session_id?: string
+          tenant_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "active_sessions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "territories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activities: {
         Row: {
           accepts_aid_types: Json | null
@@ -133,6 +192,42 @@ export type Database = {
           name?: string
           rules?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -294,6 +389,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mfa_settings: {
+        Row: {
+          backup_codes: Json | null
+          created_at: string
+          enforced: boolean | null
+          id: string
+          mfa_enabled: boolean | null
+          mfa_method: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          backup_codes?: Json | null
+          created_at?: string
+          enforced?: boolean | null
+          id?: string
+          mfa_enabled?: boolean | null
+          mfa_method?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          backup_codes?: Json | null
+          created_at?: string
+          enforced?: boolean | null
+          id?: string
+          mfa_enabled?: boolean | null
+          mfa_method?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -566,6 +694,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       decrement_seat_atomic: {
         Args: { _booking_id: string; _slot_id: string }
         Returns: Json
@@ -580,6 +712,22 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_audit_event: {
+        Args: {
+          _action: string
+          _ip_address?: unknown
+          _metadata?: Json
+          _resource_id?: string
+          _resource_type: string
+          _user_agent?: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      update_session_last_seen: {
+        Args: { _session_id: string }
+        Returns: undefined
       }
     }
     Enums: {
