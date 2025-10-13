@@ -895,6 +895,22 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_eligible_aids: {
+        Args: {
+          p_activity_price: number
+          p_age: number
+          p_categories: string[]
+          p_city_code: string
+          p_duration_days: number
+          p_qf: number
+        }
+        Returns: {
+          aid_name: string
+          amount: number
+          official_link: string
+          territory_level: string
+        }[]
+      }
       cleanup_expired_sessions: {
         Args: Record<PropertyKey, never>
         Returns: number
