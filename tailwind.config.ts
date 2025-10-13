@@ -23,7 +23,6 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
           light: "hsl(var(--primary-light))",
-          dark: "hsl(var(--primary-dark))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -42,6 +41,12 @@ export default {
           foreground: "hsl(var(--accent-foreground))",
           light: "hsl(var(--accent-light))",
         },
+        badge: {
+          sport: "hsl(var(--badge-sport))",
+          loisir: "hsl(var(--badge-loisir))",
+          distance: "hsl(var(--badge-distance))",
+          age: "hsl(var(--badge-age))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -52,15 +57,12 @@ export default {
         },
       },
       boxShadow: {
-        'elegant-sm': 'var(--shadow-sm)',
-        'elegant-md': 'var(--shadow-md)',
-        'elegant-lg': 'var(--shadow-lg)',
-        'elegant-xl': 'var(--shadow-xl)',
+        'card': 'var(--shadow-md)',
+        'card-hover': 'var(--shadow-lg)',
       },
       backgroundImage: {
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-accent': 'var(--gradient-accent)',
-        'gradient-subtle': 'var(--gradient-subtle)',
       },
       transitionTimingFunction: {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',

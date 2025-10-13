@@ -8,54 +8,58 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Core colors - InKlusif palette */
-    --background: 0 0% 98%;
-    --foreground: 215 25% 20%;
+    /* Core colors - InKlusif mobile app palette */
+    --background: 0 0% 97%;
+    --foreground: 220 15% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 20%;
+    --card-foreground: 220 15% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 20%;
+    --popover-foreground: 220 15% 25%;
 
-    /* Primary - Deep trust blue */
-    --primary: 210 80% 40%;
+    /* Primary - Purple/Violet from buttons */
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 210 70% 50%;
-    --primary-dark: 210 85% 30%;
+    --primary-light: 262 83% 68%;
 
-    /* Accent - Warm inclusion orange */
-    --accent: 25 85% 55%;
+    /* Accent - Orange/Coral from navigation */
+    --accent: 16 100% 65%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 25 80% 65%;
+    --accent-light: 16 100% 75%;
     
-    /* Secondary - Soft neutral */
-    --secondary: 210 15% 96%;
-    --secondary-foreground: 215 25% 25%;
+    /* Secondary */
+    --secondary: 220 15% 95%;
+    --secondary-foreground: 220 15% 25%;
 
-    /* Muted - Sophisticated grays */
-    --muted: 210 12% 94%;
-    --muted-foreground: 215 15% 50%;
+    /* Muted */
+    --muted: 220 13% 90%;
+    --muted-foreground: 220 10% 50%;
 
-    --destructive: 0 72% 51%;
+    /* Badge colors from the app */
+    --badge-sport: 350 80% 65%;
+    --badge-loisir: 275 70% 65%;
+    --badge-distance: 230 70% 60%;
+    --badge-age: 345 75% 65%;
+
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 12% 88%;
-    --input: 210 12% 92%;
-    --ring: 210 80% 40%;
+    --border: 220 13% 88%;
+    --input: 220 13% 90%;
+    --ring: 262 83% 58%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Elevation shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(210 15% 20% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(210 15% 20% / 0.08), 0 2px 4px -1px hsl(210 15% 20% / 0.04);
-    --shadow-lg: 0 10px 15px -3px hsl(210 15% 20% / 0.08), 0 4px 6px -2px hsl(210 15% 20% / 0.04);
-    --shadow-xl: 0 20px 25px -5px hsl(210 15% 20% / 0.08), 0 10px 10px -5px hsl(210 15% 20% / 0.03);
+    /* Elevation shadows - softer like in the app */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 8px 20px 0 rgba(0, 0, 0, 0.12);
 
     /* Gradient overlays */
-    --gradient-hero: linear-gradient(135deg, hsl(210 80% 40%) 0%, hsl(210 85% 30%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(25 85% 55%) 0%, hsl(25 90% 45%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 15% 98%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-light)) 100%);
 
     /* Animation */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -63,41 +67,35 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 215 30% 12%;
-    --foreground: 210 20% 95%;
-
-    --card: 215 28% 15%;
-    --card-foreground: 210 20% 95%;
-
-    --popover: 215 28% 15%;
-    --popover-foreground: 210 20% 95%;
-
-    --primary: 210 75% 55%;
+    --background: 220 15% 8%;
+    --foreground: 220 10% 95%;
+    --card: 220 13% 12%;
+    --card-foreground: 220 10% 95%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 220 10% 95%;
+    --primary: 262 83% 68%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 210 70% 65%;
-    --primary-dark: 210 80% 45%;
-
-    --accent: 25 80% 60%;
-    --accent-foreground: 215 30% 12%;
-    --accent-light: 25 75% 70%;
-
-    --secondary: 215 25% 20%;
-    --secondary-foreground: 210 20% 90%;
-
-    --muted: 215 22% 18%;
-    --muted-foreground: 215 12% 60%;
-
-    --destructive: 0 65% 55%;
+    --primary-light: 262 83% 78%;
+    --accent: 16 100% 65%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 16 100% 75%;
+    --secondary: 220 13% 18%;
+    --secondary-foreground: 220 10% 95%;
+    --badge-sport: 350 80% 65%;
+    --badge-loisir: 275 70% 65%;
+    --badge-distance: 230 70% 60%;
+    --badge-age: 345 75% 65%;
+    --muted: 220 13% 15%;
+    --muted-foreground: 220 8% 65%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 215 22% 22%;
-    --input: 215 22% 20%;
-    --ring: 210 75% 55%;
-
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.25), 0 2px 4px -1px hsl(0 0% 0% / 0.15);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -2px hsl(0 0% 0% / 0.2);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.35), 0 10px 10px -5px hsl(0 0% 0% / 0.25);
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: 262 83% 68%;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 8px 20px 0 rgba(0, 0, 0, 0.6);
   }
 }
 

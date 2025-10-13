@@ -27,11 +27,11 @@ const Hero = () => {
 
           {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button variant="hero" size="lg" className="min-w-[200px]">
+            <Button variant="default" size="lg" className="min-w-[200px]">
               <Search className="w-5 h-5 mr-2" />
               Trouver une activité
             </Button>
-            <Button variant="heroSecondary" size="lg" className="min-w-[200px]">
+            <Button variant="secondary" size="lg" className="min-w-[200px]">
               <Users className="w-5 h-5 mr-2" />
               Je suis un organisme
             </Button>
