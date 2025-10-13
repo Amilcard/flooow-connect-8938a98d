@@ -17,7 +17,7 @@ export type Database = {
       activities: {
         Row: {
           accepts_aid_types: Json | null
-          accessibility: Json | null
+          accessibility_checklist: Json | null
           age_max: number | null
           age_min: number | null
           capacity_policy: Json | null
@@ -25,18 +25,27 @@ export type Database = {
           covoiturage_enabled: boolean | null
           created_at: string
           description: string | null
+          documents_required: Json | null
+          external_portal_url: string | null
           id: string
+          images: string[] | null
           payment_echelonned: boolean | null
           payment_plans: Json | null
-          price: number | null
+          price_base: number | null
+          price_note: string | null
+          published: boolean | null
+          rules_acceptance_json: Json | null
           structure_id: string
           tags: string[] | null
           title: string
+          transport_options: Json | null
           updated_at: string
+          video_url: string | null
+          webhook_url_for_docs: string | null
         }
         Insert: {
           accepts_aid_types?: Json | null
-          accessibility?: Json | null
+          accessibility_checklist?: Json | null
           age_max?: number | null
           age_min?: number | null
           capacity_policy?: Json | null
@@ -44,18 +53,27 @@ export type Database = {
           covoiturage_enabled?: boolean | null
           created_at?: string
           description?: string | null
+          documents_required?: Json | null
+          external_portal_url?: string | null
           id?: string
+          images?: string[] | null
           payment_echelonned?: boolean | null
           payment_plans?: Json | null
-          price?: number | null
+          price_base?: number | null
+          price_note?: string | null
+          published?: boolean | null
+          rules_acceptance_json?: Json | null
           structure_id: string
           tags?: string[] | null
           title: string
+          transport_options?: Json | null
           updated_at?: string
+          video_url?: string | null
+          webhook_url_for_docs?: string | null
         }
         Update: {
           accepts_aid_types?: Json | null
-          accessibility?: Json | null
+          accessibility_checklist?: Json | null
           age_max?: number | null
           age_min?: number | null
           capacity_policy?: Json | null
@@ -63,14 +81,23 @@ export type Database = {
           covoiturage_enabled?: boolean | null
           created_at?: string
           description?: string | null
+          documents_required?: Json | null
+          external_portal_url?: string | null
           id?: string
+          images?: string[] | null
           payment_echelonned?: boolean | null
           payment_plans?: Json | null
-          price?: number | null
+          price_base?: number | null
+          price_note?: string | null
+          published?: boolean | null
+          rules_acceptance_json?: Json | null
           structure_id?: string
           tags?: string[] | null
           title?: string
+          transport_options?: Json | null
           updated_at?: string
+          video_url?: string | null
+          webhook_url_for_docs?: string | null
         }
         Relationships: [
           {
@@ -158,8 +185,10 @@ export type Database = {
           activity_id: string
           child_id: string
           created_at: string
+          express_flag: boolean | null
           history: Json | null
           id: string
+          idempotency_key: string | null
           reason_code: string | null
           slot_id: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -170,8 +199,10 @@ export type Database = {
           activity_id: string
           child_id: string
           created_at?: string
+          express_flag?: boolean | null
           history?: Json | null
           id?: string
+          idempotency_key?: string | null
           reason_code?: string | null
           slot_id: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -182,8 +213,10 @@ export type Database = {
           activity_id?: string
           child_id?: string
           created_at?: string
+          express_flag?: boolean | null
           history?: Json | null
           id?: string
+          idempotency_key?: string | null
           reason_code?: string | null
           slot_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -432,6 +465,7 @@ export type Database = {
           contact_json: Json | null
           created_at: string
           id: string
+          location: unknown | null
           name: string
           territory_id: string
           updated_at: string
@@ -442,6 +476,7 @@ export type Database = {
           contact_json?: Json | null
           created_at?: string
           id?: string
+          location?: unknown | null
           name: string
           territory_id: string
           updated_at?: string
@@ -452,6 +487,7 @@ export type Database = {
           contact_json?: Json | null
           created_at?: string
           id?: string
+          location?: unknown | null
           name?: string
           territory_id?: string
           updated_at?: string
