@@ -895,6 +895,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_age: {
+        Args: { birth_date: string }
+        Returns: number
+      }
       calculate_eligible_aids: {
         Args: {
           p_activity_price: number

@@ -6,10 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SlotPicker } from "@/components/SlotPicker";
 import { SimulateAidModal } from "@/components/SimulateAidModal";
+import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -44,6 +47,7 @@ const ActivityDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
+  const [selectedChildId, setSelectedChildId] = useState<string>();
   const [showAidModal, setShowAidModal] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -85,6 +89,41 @@ const ActivityDetail = () => {
     enabled: !!id
   });
 
+  // Fetch user profile
+  const { data: userProfile } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Fetch user's children
+  const { data: children = [] } = useQuery({
+    queryKey: ["user-children"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from("children")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
   if (isLoading) return <LoadingState />;
   if (error || !activity) {
     return (
@@ -102,8 +141,38 @@ const ActivityDetail = () => {
       alert("Veuillez sélectionner un créneau");
       return;
     }
+    if (!selectedChildId) {
+      alert("Veuillez sélectionner un enfant");
+      return;
+    }
     navigate(`/booking/${id}?slotId=${selectedSlotId}`);
   };
+
+  // Calculate age from date of birth
+  const calculateAge = (dob: string): number => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  // Calculate duration in days from slot
+  const calculateDurationDays = (slot: any): number => {
+    if (!slot) return 1;
+    const start = new Date(slot.start);
+    const end = new Date(slot.end);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(1, diffDays);
+  };
+
+  // Get selected child details
+  const selectedChild = children.find(c => c.id === selectedChildId);
+  const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
   const displayImage = activity.images?.[0] || fallbackImage;
@@ -208,6 +277,72 @@ const ActivityDetail = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Child Selection */}
+        {children.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Users size={18} />
+                Sélectionner un enfant
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
+                <div className="space-y-3">
+                  {children.map((child) => {
+                    const age = calculateAge(child.dob);
+                    const isEligible = age >= activity.age_min && age <= activity.age_max;
+                    
+                    return (
+                      <div
+                        key={child.id}
+                        className={`flex items-center space-x-3 p-3 rounded-lg border ${
+                          isEligible ? 'border-border' : 'border-destructive/30 bg-destructive/5'
+                        }`}
+                      >
+                        <RadioGroupItem value={child.id} id={child.id} disabled={!isEligible} />
+                        <Label
+                          htmlFor={child.id}
+                          className={`flex-1 cursor-pointer ${!isEligible && 'text-muted-foreground'}`}
+                        >
+                          <div className="font-medium">{child.first_name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {age} ans {!isEligible && `(requis: ${activity.age_min}-${activity.age_max} ans)`}
+                          </div>
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </RadioGroup>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Financial Aids Calculator */}
+        {userProfile && selectedChild && selectedSlot && activity.price_base > 0 && (
+          <FinancialAidsCalculator
+            activityPrice={activity.price_base}
+            activityCategories={[activity.category]}
+            childAge={calculateAge(selectedChild.dob)}
+            quotientFamilial={
+              typeof userProfile.profile_json === 'object' && 
+              userProfile.profile_json !== null && 
+              'quotient_familial' in userProfile.profile_json
+                ? Number(userProfile.profile_json.quotient_familial) || 0
+                : 0
+            }
+            cityCode={
+              typeof userProfile.profile_json === 'object' && 
+              userProfile.profile_json !== null && 
+              'city_code' in userProfile.profile_json
+                ? String(userProfile.profile_json.city_code) || ''
+                : ''
+            }
+            durationDays={calculateDurationDays(selectedSlot)}
+          />
+        )}
 
         {/* Quick Info */}
         <Card>
@@ -353,11 +488,15 @@ const ActivityDetail = () => {
         {/* Booking button */}
         <Button
           onClick={handleBooking}
-          disabled={!selectedSlotId || slots.length === 0}
+          disabled={!selectedSlotId || !selectedChildId || slots.length === 0}
           className="w-full h-14 text-lg shadow-lg"
           size="lg"
         >
-          Réserver cette activité
+          {!selectedChildId 
+            ? "Sélectionnez un enfant"
+            : !selectedSlotId 
+            ? "Sélectionnez un créneau"
+            : "Réserver cette activité"}
         </Button>
       </div>
 
