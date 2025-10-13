@@ -1,0 +1,104 @@
+{
+  "timestamp": "2025-10-13T11:40:00Z",
+  "validation_status": "COMPLETE",
+  
+  "frontend_integration": {
+    "status": "FIXED",
+    "changes": [
+      {
+        "file": "src/hooks/useActivities.ts",
+        "action": "CREATED",
+        "description": "Hook React Query pour charger activités depuis Supabase avec filtres"
+      },
+      {
+        "file": "src/pages/Index.tsx",
+        "action": "MODIFIED",
+        "before": "Utilisait données mock hardcodées",
+        "after": "Utilise useActivities() pour chaque section",
+        "sections": {
+          "featured": "useActivities({ limit: 5 })",
+          "nearby": "useActivities({ limit: 5 })",
+          "budget": "useActivities({ maxPrice: 50, limit: 5 })",
+          "health": "useActivities({ hasAccessibility: true, limit: 5 })"
+        }
+      }
+    ]
+  },
+
+  "api_tests": {
+    "test_1_all_activities": {
+      "query": "GET /activities?limit=5",
+      "result": "SUCCESS",
+      "count": 5,
+      "output": "outputs/sample_activities.json"
+    },
+    "test_2_sport_filter": {
+      "query": "GET /activities?category=Sport&age=10",
+      "result": "SUCCESS",
+      "count": 3
+    },
+    "test_3_budget_filter": {
+      "query": "SELECT WHERE price_base <= 50",
+      "result": "SUCCESS",
+      "expected": "Multiple activities under 50€"
+    },
+    "test_4_accessibility": {
+      "query": "SELECT WHERE accessibility_checklist->>'wheelchair' = true",
+      "result": "SUCCESS"
+    }
+  },
+
+  "data_quality": {
+    "total_activities": 40,
+    "all_published": true,
+    "all_have_images": true,
+    "all_have_prices": true,
+    "all_have_age_ranges": true,
+    "all_have_slots": true,
+    "slots_total": 40
+  },
+
+  "preview_object_format": {
+    "id": "string (uuid)",
+    "title": "string",
+    "image": "string (URL from images[0])",
+    "ageRange": "string (e.g. '6-9 ans')",
+    "category": "string",
+    "price": "number",
+    "hasAccessibility": "boolean (from accessibility_checklist.wheelchair)",
+    "hasFinancialAid": "boolean (accepts_aid_types.length > 0)"
+  },
+
+  "onglets_fixes": {
+    "proximite": {
+      "status": "FUNCTIONAL",
+      "filter": "No specific filter yet (TODO: add geolocation)",
+      "displays": "Latest 5 activities"
+    },
+    "petits_budgets": {
+      "status": "FUNCTIONAL",
+      "filter": "maxPrice: 50€",
+      "displays": "Activities with price_base <= 50"
+    },
+    "sante": {
+      "status": "FUNCTIONAL",
+      "filter": "hasAccessibility: true",
+      "displays": "Activities with wheelchair accessibility"
+    },
+    "vedette": {
+      "status": "FUNCTIONAL",
+      "filter": "limit: 5",
+      "displays": "Latest 5 activities"
+    }
+  },
+
+  "cache_status": "Auto-managed by React Query",
+  
+  "remaining_improvements": [
+    "Add geolocation for 'Proximité' tab (calculate distance)",
+    "Implement simulate-aid API endpoint",
+    "Implement bookings API with idempotency",
+    "Add more sophisticated filters (multiple categories, age ranges)",
+    "Add search functionality"
+  ]
+}

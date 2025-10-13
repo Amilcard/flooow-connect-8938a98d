@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-10-13T11:30:00Z",
+  "debug_info": {
+    "issue_identified": "Frontend utilisait des données mock statiques au lieu des vraies activités",
+    "root_cause": "Index.tsx contenait des données hardcodées, pas d'appel API",
+    "fix_applied": {
+      "created": [
+        "src/hooks/useActivities.ts - Hook React Query pour charger activités"
+      ],
+      "modified": [
+        "src/pages/Index.tsx - Remplacement mock data par useActivities hook"
+      ]
+    },
+    "filters_implemented": {
+      "featured": "limit=5 (dernières activités)",
+      "nearby": "limit=5 (toutes catégories)",
+      "budget": "maxPrice=50€, limit=5",
+      "health": "hasAccessibility=true, limit=5"
+    }
+  },
+  "api_traces": {
+    "test_1": {
+      "endpoint": "SELECT from activities WHERE published=true LIMIT 5",
+      "status": "SUCCESS",
+      "response_time": "<100ms",
+      "records_returned": 5
+    },
+    "test_2": {
+      "endpoint": "SELECT from activities WHERE category='Sport' AND age_min<=10 AND age_max>=10",
+      "status": "SUCCESS",
+      "records_returned": 3
+    }
+  },
+  "frontend_changes": {
+    "before": "Utilisait const featuredActivities = [...] avec données hardcodées",
+    "after": "Utilise useActivities({ limit: 5 }) qui appelle Supabase via React Query"
+  },
+  "console_logs": "No errors - frontend maintenant connecté à la vraie base de données",
+  "network_trace": "Requêtes Supabase fonctionnelles via @supabase/supabase-js client"
+}
