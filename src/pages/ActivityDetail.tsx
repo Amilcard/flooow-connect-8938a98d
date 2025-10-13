@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SlotPicker } from "@/components/SlotPicker";
 import { SimulateAidModal } from "@/components/SimulateAidModal";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { Separator } from "@/components/ui/separator";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -16,7 +17,11 @@ import {
   Accessibility, 
   Euro,
   Car,
-  CreditCard
+  CreditCard,
+  Calendar,
+  Info,
+  FileText,
+  Building2
 } from "lucide-react";
 import { useState } from "react";
 
@@ -104,13 +109,23 @@ const ActivityDetail = () => {
         </div>
       </div>
 
-      {/* Image */}
-      <div className="relative aspect-[16/9] overflow-hidden">
+      {/* Image Gallery */}
+      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
         <img
           src={displayImage}
           alt={activity.title}
           className="w-full h-full object-cover"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        
+        {/* Category badge */}
+        <div className="absolute top-4 left-4">
+          <Badge className="bg-primary text-primary-foreground">
+            {activity.category}
+          </Badge>
+        </div>
+
+        {/* Accessibility badge */}
         <div className="absolute top-4 right-4 flex gap-2">
           {typeof activity.accessibility_checklist === 'object' && 
            activity.accessibility_checklist !== null && 
@@ -118,106 +133,210 @@ const ActivityDetail = () => {
            activity.accessibility_checklist.wheelchair && (
             <Badge className="bg-white/90 text-foreground">
               <Accessibility size={14} className="mr-1" />
-              Accessible
+              PMR
             </Badge>
           )}
         </div>
-      </div>
 
-      <div className="container px-4 py-6 space-y-6">
-        {/* Title and category */}
-        <div>
-          <Badge className="mb-2">{activity.category}</Badge>
-          <h2 className="text-2xl font-bold mb-2">{activity.title}</h2>
-          
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+        {/* Title overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+          <h2 className="text-2xl font-bold mb-1">{activity.title}</h2>
+          <div className="flex items-center gap-3 text-sm">
             <span className="flex items-center gap-1">
               <Users size={16} />
               {ageRange}
             </span>
-            {activity.structures?.address && (
+            {activity.structures?.name && (
               <span className="flex items-center gap-1">
-                <MapPin size={16} />
-                {activity.structures.address}
+                <Building2 size={16} />
+                {activity.structures.name}
               </span>
             )}
           </div>
         </div>
+      </div>
 
-        {/* Price and aids */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-3xl font-bold text-primary">
-                {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
-              </p>
-              <p className="text-sm text-muted-foreground">par enfant</p>
+      <div className="container px-4 py-6 space-y-4">
+        {/* Price Card - Prominent */}
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Tarif</p>
+                <p className="text-4xl font-bold text-primary">
+                  {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">par enfant</p>
+              </div>
+              
+              {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={() => setShowAidModal(true)}
+                  className="min-h-[56px]"
+                >
+                  <Euro size={20} className="mr-2" />
+                  Simuler les aides
+                </Button>
+              )}
             </div>
-            
-            {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAidModal(true)}
-              >
-                <Euro size={16} className="mr-1" />
-                Aides disponibles
-              </Button>
-            )}
-          </div>
 
-          {activity.payment_echelonned && (
-            <Badge variant="secondary" className="bg-accent/10 text-accent">
-              <CreditCard size={14} className="mr-1" />
-              Paiement échelonné possible
-            </Badge>
-          )}
+            {activity.payment_echelonned && (
+              <Badge variant="secondary" className="mt-4 bg-accent/10 text-accent border-accent/20">
+                <CreditCard size={14} className="mr-1" />
+                Paiement en plusieurs fois possible
+              </Badge>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Quick Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Info size={18} />
+              Informations pratiques
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {activity.structures?.address && (
+              <div className="flex items-start gap-3">
+                <MapPin size={18} className="text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-sm">Lieu</p>
+                  <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
+                </div>
+              </div>
+            )}
+            
+            <Separator />
+            
+            <div className="flex items-start gap-3">
+              <Users size={18} className="text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Âge requis</p>
+                <p className="text-sm text-muted-foreground">{ageRange}</p>
+              </div>
+            </div>
+
+            {activity.covoiturage_enabled && (
+              <>
+                <Separator />
+                <div className="flex items-start gap-3">
+                  <Car size={18} className="text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm">Covoiturage</p>
+                    <p className="text-sm text-muted-foreground">Proposez ou rejoignez un covoiturage</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
         </Card>
 
         {/* Description */}
         {activity.description && (
-          <div>
-            <h3 className="font-semibold text-lg mb-2">Description</h3>
-            <p className="text-muted-foreground whitespace-pre-line">
-              {activity.description}
-            </p>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileText size={18} />
+                Description
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
+                {activity.description}
+              </p>
+            </CardContent>
+          </Card>
         )}
 
-        {/* Features */}
-        <div className="space-y-2">
-          <h3 className="font-semibold text-lg">Services inclus</h3>
-          <div className="space-y-2">
-            {activity.covoiturage_enabled && (
-              <div className="flex items-center gap-2 text-sm">
-                <Car size={16} className="text-primary" />
-                <span>Covoiturage disponible</span>
-              </div>
-            )}
-            {typeof activity.accessibility_checklist === 'object' && 
-             activity.accessibility_checklist !== null && 
-             'sensory_support' in activity.accessibility_checklist &&
-             activity.accessibility_checklist.sensory_support && (
-              <div className="flex items-center gap-2 text-sm">
-                <Accessibility size={16} className="text-primary" />
-                <span>Accompagnement sensoriel adapté</span>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Accessibility Features */}
+        {typeof activity.accessibility_checklist === 'object' && 
+         activity.accessibility_checklist !== null && 
+         Object.keys(activity.accessibility_checklist).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Accessibility size={18} />
+                Accessibilité
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {typeof activity.accessibility_checklist === 'object' && 
+               activity.accessibility_checklist !== null &&
+               !Array.isArray(activity.accessibility_checklist) &&
+               'wheelchair' in activity.accessibility_checklist &&
+               activity.accessibility_checklist.wheelchair && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span>Accessible en fauteuil roulant</span>
+                </div>
+              )}
+              {typeof activity.accessibility_checklist === 'object' && 
+               activity.accessibility_checklist !== null &&
+               !Array.isArray(activity.accessibility_checklist) &&
+               'sensory_support' in activity.accessibility_checklist &&
+               activity.accessibility_checklist.sensory_support && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span>Accompagnement sensoriel adapté</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Slot picker */}
-        <SlotPicker
-          slots={slots}
-          onSelectSlot={setSelectedSlotId}
-          selectedSlotId={selectedSlotId}
-        />
+        {/* Available Aids */}
+        {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Euro size={18} />
+                Aides financières acceptées
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {activity.accepts_aid_types.map((aid: string) => (
+                  <Badge key={aid} variant="outline">
+                    {aid}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Slot Picker */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Calendar size={18} />
+              Créneaux disponibles
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {slots.length > 0 ? (
+              <SlotPicker
+                slots={slots}
+                onSelectSlot={setSelectedSlotId}
+                selectedSlotId={selectedSlotId}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Aucun créneau disponible pour le moment
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Booking button */}
         <Button
           onClick={handleBooking}
           disabled={!selectedSlotId || slots.length === 0}
-          className="w-full h-14 text-lg"
+          className="w-full h-14 text-lg shadow-lg"
           size="lg"
         >
           Réserver cette activité

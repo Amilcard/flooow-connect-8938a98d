@@ -14,6 +14,9 @@ import BookingStatus from "./pages/BookingStatus";
 import MonCompte from "./pages/MonCompte";
 import Aides from "./pages/Aides";
 import Support from "./pages/Support";
+import ChildSignup from "./pages/ChildSignup";
+import Alternatives from "./pages/Alternatives";
+import Covoiturage from "./pages/Covoiturage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/child-signup" element={<ChildSignup />} />
+          <Route path="/alternatives" element={<Alternatives />} />
+          <Route path="/covoiturage" element={<Covoiturage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
