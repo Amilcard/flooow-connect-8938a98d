@@ -1,0 +1,44 @@
+import { Search, SlidersHorizontal } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+interface SearchBarProps {
+  onFilterClick?: () => void;
+  placeholder?: string;
+}
+
+export const SearchBar = ({ 
+  onFilterClick, 
+  placeholder = "Rechercher une activité..." 
+}: SearchBarProps) => {
+  return (
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <div className="container px-4 py-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search 
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" 
+              size={20}
+              aria-hidden="true"
+            />
+            <Input
+              type="search"
+              placeholder={placeholder}
+              className="pl-12 pr-4 h-14 rounded-full text-base bg-secondary/50 border-0 focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label="Rechercher des activités"
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-14 w-14 rounded-full border-0 bg-secondary/50"
+            onClick={onFilterClick}
+            aria-label="Filtrer les résultats"
+          >
+            <SlidersHorizontal size={20} />
+          </Button>
+        </div>
+      </div>
+    </header>
+  );
+};
