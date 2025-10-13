@@ -773,6 +773,50 @@ export type Database = {
           },
         ]
       }
+      validations_parentales: {
+        Row: {
+          booking_id: string
+          created_at: string
+          id: string
+          parent_id: string
+          reason_refus: string | null
+          reminders_sent: number | null
+          status: string
+          updated_at: string
+          validated_at: string | null
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          id?: string
+          parent_id: string
+          reason_refus?: string | null
+          reminders_sent?: number | null
+          status: string
+          updated_at?: string
+          validated_at?: string | null
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          id?: string
+          parent_id?: string
+          reason_refus?: string | null
+          reminders_sent?: number | null
+          status?: string
+          updated_at?: string
+          validated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validations_parentales_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       sessions_report: {

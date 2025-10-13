@@ -20,6 +20,10 @@ import Covoiturage from "./pages/Covoiturage";
 import MesSessions from "./pages/MesSessions";
 import AdminSessions from "./pages/AdminSessions";
 import NotFound from "./pages/NotFound";
+import ParentSignup from "./pages/ParentSignup";
+import ValidationParentale from "./pages/ValidationParentale";
+import ActivitiesMap from "./pages/ActivitiesMap";
+import ChildDashboard from "./pages/ChildDashboard";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +50,10 @@ const App = () => (
           <Route path="/covoiturage" element={<Covoiturage />} />
           <Route path="/mes-sessions" element={<MesSessions />} />
           <Route path="/admin/sessions" element={<AdminSessions />} />
+          <Route path="/inscription/parent" element={<ParentSignup />} />
+          <Route path="/validations/:bookingId" element={<ValidationParentale />} />
+          <Route path="/activites/carte" element={<ActivitiesMap />} />
+          <Route path="/dashboard/enfant" element={<ChildDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

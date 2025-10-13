@@ -86,21 +86,31 @@ const Booking = () => {
     setIsSubmitting(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Non authentifié",
+          description: "Veuillez vous connecter",
+          variant: "destructive"
+        });
+        navigate("/");
+        return;
+      }
+
       // Generate idempotency key
       const idempotencyKey = `booking_${id}_${slotId}_${selectedChildId}_${Date.now()}`;
 
-      const { data, error } = await supabase
-        .from("bookings")
-        .insert({
+      // Call edge function instead of direct insert
+      const { data, error } = await supabase.functions.invoke("bookings", {
+        body: {
           activity_id: id,
           slot_id: slotId,
           child_id: selectedChildId,
-          user_id: "00000000-0000-0000-0000-000000000000", // TODO: Get from auth
-          status: "en_attente",
-          idempotency_key: idempotencyKey
-        })
-        .select()
-        .single();
+          idempotency_key: idempotencyKey,
+          express_flag: false
+        }
+      });
 
       if (error) throw error;
 
@@ -110,7 +120,7 @@ const Booking = () => {
       });
 
       navigate(`/booking-status/${data.id}`);
-      clearDraft(); // Clear draft after successful booking
+      clearDraft();
     } catch (error: any) {
       toast({
         title: "Erreur",
