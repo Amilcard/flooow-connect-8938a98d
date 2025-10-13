@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.bookings]
 verify_jwt = false
+
+[functions.reports]
+verify_jwt = false
