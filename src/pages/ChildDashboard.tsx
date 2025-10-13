@@ -6,17 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Calendar, CheckCircle, Clock, Trophy } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, Trophy, Sparkles } from "lucide-react";
 import { LoadingState } from "@/components/LoadingState";
-import confetti from "canvas-confetti";
-
-declare module "canvas-confetti" {
-  export default function confetti(options?: any): void;
-}
 
 const ChildDashboard = () => {
   const navigate = useNavigate();
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Fetch child's bookings
   const { data: bookings = [], isLoading } = useQuery({
@@ -41,22 +36,18 @@ const ChildDashboard = () => {
     }
   });
 
-  // Check for newly validated bookings to trigger confetti
+  // Check for newly validated bookings to show celebration
   useEffect(() => {
     const recentlyValidated = bookings.find(
       (b) => b.status === "validee" && 
       new Date(b.updated_at).getTime() > Date.now() - 30000 // Last 30 seconds
     );
 
-    if (recentlyValidated && !showConfetti) {
-      setShowConfetti(true);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+    if (recentlyValidated && !showCelebration) {
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 3000);
     }
-  }, [bookings, showConfetti]);
+  }, [bookings, showCelebration]);
 
   const pendingBookings = bookings.filter((b) => b.status === "en_attente");
   const validatedBookings = bookings.filter((b) => b.status === "validee");
@@ -122,7 +113,16 @@ const ChildDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Celebration overlay */}
+      {showCelebration && (
+        <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center animate-fade-in">
+          <div className="bg-primary/10 rounded-full p-8 animate-scale-in">
+            <Sparkles className="w-16 h-16 text-primary animate-pulse" />
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
