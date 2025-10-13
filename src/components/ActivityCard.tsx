@@ -82,7 +82,9 @@ export const ActivityCard = ({
               {price === 0 ? "Gratuit" : `${price}€`}
             </p>
             {hasFinancialAid && (
-              <p className="text-xs text-accent font-medium">Aides disponibles</p>
+              <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 mt-1">
+                Aides disponibles
+              </Badge>
             )}
           </div>
           
