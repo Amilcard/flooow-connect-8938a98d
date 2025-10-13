@@ -1,6 +1,6 @@
 import { SearchBar } from "@/components/SearchBar";
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { ActivityCarousel } from "@/components/ActivityCarousel";
+import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";
@@ -11,15 +11,14 @@ import { useNavigate } from "react-router-dom";
 const Index = () => {
   const navigate = useNavigate();
   
-  // Charger les différentes catégories d'activités (limité à 4 par section)
-  const { data: featuredActivities = [], isLoading: loadingFeatured, error: errorFeatured } = useActivities({ limit: 4 });
-  const { data: nearbyActivities = [], isLoading: loadingNearby } = useActivities({ limit: 4 });
-  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ maxPrice: 50, limit: 4 });
-  const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ hasAccessibility: true, limit: 4 });
+  // Charger les différentes catégories d'activités (limité à 3 par section)
+  const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ limit: 3 });
+  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ maxPrice: 50, limit: 3 });
+  const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ hasAccessibility: true, limit: 3 });
 
-  const isLoading = loadingFeatured || loadingNearby || loadingBudget || loadingHealth;
+  const isLoading = loadingNearby || loadingBudget || loadingHealth;
 
-  if (errorFeatured) {
+  if (errorNearby) {
     return (
       <div className="min-h-screen bg-background pb-20">
         <SearchBar onFilterClick={() => console.log("Filter clicked")} />
@@ -38,13 +37,7 @@ const Index = () => {
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
       <main className="container px-4 py-6 space-y-8">
-        <section aria-label="Activités en vedette">
-          <h1 className="text-2xl font-bold mb-4">Découvrez nos activités</h1>
-          <ActivityCarousel 
-            activities={featuredActivities}
-            onActivityClick={(id) => console.log("Activity clicked:", id)}
-          />
-        </section>
+        <InfoBlocks />
 
         <ActivitySection
           title="Activités à proximité"
