@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export const SearchBar = ({
   onSearch,
   placeholder = "Rechercher une activité..." 
 }: SearchBarProps) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
@@ -32,6 +34,23 @@ export const SearchBar = ({
 
   const handleApplyFilters = (newFilters: SearchFilters) => {
     setFilters(newFilters);
+    
+    // Build search params
+    const params = new URLSearchParams();
+    if (newFilters.categories.length > 0) {
+      params.append("category", newFilters.categories[0]);
+    }
+    if (newFilters.ageMin) params.append("minAge", newFilters.ageMin.toString());
+    if (newFilters.ageMax) params.append("maxAge", newFilters.ageMax.toString());
+    if (newFilters.maxPrice) params.append("maxPrice", newFilters.maxPrice.toString());
+    if (newFilters.hasFinancialAid) params.append("hasAid", "true");
+    if (newFilters.freeOnly) params.append("isFree", "true");
+    if (newFilters.hasAccessibility) params.append("isPMR", "true");
+    if (newFilters.hasCovoiturage) params.append("hasCovoiturage", "true");
+    
+    // Navigate to search page with filters
+    navigate(`/search?${params.toString()}`);
+    setShowFilters(false);
   };
 
   const handleResetFilters = () => {
