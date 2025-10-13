@@ -2,6 +2,10 @@ import { MapPin, Users, Accessibility } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import activitySportImg from "@/assets/activity-sport.jpg";
+import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
+import activityVacancesImg from "@/assets/activity-vacances.jpg";
+import activityCultureImg from "@/assets/activity-culture.jpg";
 
 interface ActivityCardProps {
   id: string;
@@ -16,6 +20,17 @@ interface ActivityCardProps {
   onRequestClick?: () => void;
 }
 
+const getCategoryImage = (category: string): string => {
+  const categoryMap: Record<string, string> = {
+    Sport: activitySportImg,
+    Loisirs: activityLoisirsImg,
+    Vacances: activityVacancesImg,
+    Scolarité: activityCultureImg,
+    Culture: activityCultureImg,
+  };
+  return categoryMap[category] || activityLoisirsImg;
+};
+
 export const ActivityCard = ({
   title,
   image,
@@ -27,7 +42,8 @@ export const ActivityCard = ({
   hasFinancialAid = false,
   onRequestClick,
 }: ActivityCardProps) => {
-  const displayImage = image || "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop";
+  const fallbackImage = getCategoryImage(category);
+  const displayImage = image || fallbackImage;
   
   return (
     <Card className="overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-all">
@@ -38,7 +54,7 @@ export const ActivityCard = ({
           loading="lazy"
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.currentTarget.src = "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop";
+            e.currentTarget.src = fallbackImage;
           }}
         />
         <div className="absolute top-3 left-3 flex flex-wrap gap-2">
