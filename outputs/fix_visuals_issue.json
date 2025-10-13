@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-10-13T11:40:00Z",
+  "issue": "Page d'accueil ne montre plus les visuels des activités",
+  "root_cause": "La syntaxe du JOIN Supabase 'structures:structure_id(name,address)' ne fonctionnait pas correctement et retournait des tableaux vides []",
+  
+  "fix_applied": {
+    "file": "src/hooks/useActivities.ts",
+    "change": "Suppression du JOIN avec structures dans le SELECT",
+    "before": "select(`structures:structure_id (name, address)`)",
+    "after": "select(`id, title, category, ..., structure_id`) - sans JOIN"
+  },
+  
+  "network_traces_analysis": {
+    "all_requests_returning": "[] (empty arrays)",
+    "reason": "Le JOIN syntax causait une erreur silencieuse côté Supabase",
+    "requests_tested": [
+      "GET /activities?limit=5",
+      "GET /activities?price_base=lte.50",
+      "GET /activities?accessibility_checklist->>wheelchair=eq.true"
+    ]
+  },
+  
+  "data_verification": {
+    "activities_in_db": 40,
+    "published_activities": 40,
+    "structures_in_db": 8,
+    "rls_policies": "Correctes (public SELECT access)",
+    "problem": "Query syntax, pas les données"
+  },
+  
+  "resolution": "Suppression du JOIN - les activités devraient maintenant s'afficher correctement",
+  
+  "note": "Les données structures ne sont plus récupérées dans ce query simplifié. Si nécessaire plus tard, utiliser une deuxième requête séparée ou corriger la syntaxe du foreign key relationship."
+}

@@ -44,8 +44,7 @@ export const useActivities = (filters?: ActivityFilters) => {
         .select(`
           id, title, category, age_min, age_max, price_base,
           images, accessibility_checklist, accepts_aid_types,
-          capacity_policy, covoiturage_enabled,
-          structures:structure_id (name, address)
+          capacity_policy, covoiturage_enabled, structure_id
         `)
         .eq("published", true);
 
