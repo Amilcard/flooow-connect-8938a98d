@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-10-13T11:45:00Z",
+  "endpoint": "POST /simulate-aid",
+  "status": "NOT_IMPLEMENTED_YET",
+  "note": "API endpoint needs to be created as Supabase Edge Function",
+  
+  "expected_implementation": {
+    "endpoint": "POST /functions/v1/simulate-aid",
+    "request_body": {
+      "activity_id": "uuid",
+      "household_income": "number (annual)",
+      "num_children": "number",
+      "aid_types": ["CAF", "PassSport", "ANCV"]
+    },
+    "expected_response": {
+      "activity_id": "uuid",
+      "price_base": 150,
+      "estimated_aid": 50,
+      "net_cost": 100,
+      "applicable_aids": [
+        {
+          "type": "CAF",
+          "amount": 30,
+          "eligible": true
+        },
+        {
+          "type": "PassSport",
+          "amount": 20,
+          "eligible": true
+        }
+      ]
+    }
+  },
+  
+  "sample_simulations": [
+    {
+      "activity_id": "d0aa990f-1db2-4307-94ba-9615ff949095",
+      "activity_title": "Stage Cirque - Vacances",
+      "price_base": 150,
+      "accepts_aid_types": ["PassSport"],
+      "household_income": 25000,
+      "estimated_aid": 30,
+      "net_cost": 120,
+      "note": "Simulation - PassSport eligible"
+    },
+    {
+      "activity_id": "78d0fd46-8af0-4a64-8acc-3f04cea27f82",
+      "activity_title": "Séjour Linguistique Court - Vacances",
+      "price_base": 0,
+      "accepts_aid_types": ["ANCV", "CAF"],
+      "estimated_aid": 0,
+      "net_cost": 0,
+      "note": "Already free - no aid calculation needed"
+    },
+    {
+      "activity_id": "4aa08b39-72e4-4e0c-b908-539027b0a8ba",
+      "activity_title": "Atelier Basket Jeunes",
+      "price_base": 40,
+      "accepts_aid_types": ["PassSport", "CAF"],
+      "household_income": 25000,
+      "estimated_aid": 30,
+      "net_cost": 10,
+      "note": "Simulation - CAF + PassSport eligible"
+    }
+  ],
+  
+  "todo": "Create Supabase Edge Function: supabase/functions/simulate-aid/index.ts"
+}

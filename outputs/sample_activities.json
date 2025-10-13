@@ -1,68 +1,84 @@
 {
-  "timestamp": "2025-10-13T11:30:00Z",
-  "test_results": {
-    "test_1_all_activities": {
-      "query": "GET /activities?limit=5",
-      "status": "SUCCESS",
-      "count": 5,
-      "sample": [
-        {
-          "id": "78d0fd46-8af0-4a64-8acc-3f04cea27f82",
-          "title": "Séjour Linguistique Court - Vacances",
-          "category": "Vacances",
-          "age_range": "10-13 ans",
-          "price_badge": "Gratuit",
-          "cover": "https://cdn.example.com/activities/vacances_36.jpg",
-          "has_accessibility": true,
-          "has_financial_aid": true,
-          "seats_remaining": 20
-        },
-        {
-          "id": "b1086d25-933a-4cd9-9e7d-d8426c4a9bff",
-          "title": "Séjour Nature & Survie - Vacances",
-          "category": "Vacances",
-          "age_range": "6-9 ans",
-          "price_badge": "120€",
-          "cover": "https://cdn.example.com/activities/vacances_34.jpg",
-          "has_accessibility": true,
-          "has_financial_aid": true,
-          "seats_remaining": 30
-        }
-      ]
+  "timestamp": "2025-10-13T11:45:00Z",
+  "endpoint": "GET /activities?limit=5",
+  "status": "SUCCESS",
+  "count": 5,
+  "activities": [
+    {
+      "id": "d0aa990f-1db2-4307-94ba-9615ff949095",
+      "title": "Stage Cirque - Vacances",
+      "category": "Vacances",
+      "age_range": "6-9 ans",
+      "price_badge": "150€",
+      "cover": "https://cdn.example.com/activities/vacances_35.jpg",
+      "pmr_access": true,
+      "has_financial_aid": true,
+      "covoiturage_enabled": true,
+      "payment_echelonned": true,
+      "seats_remaining": 30,
+      "published": true
     },
-    "test_2_sport_age_10": {
-      "query": "GET /activities?category=Sport&age=10",
-      "status": "SUCCESS",
-      "count": 3,
-      "sample": [
-        {
-          "id": "1e7c92ae-702d-4671-bd43-102d8b266714",
-          "title": "Club Natation - Initiation & Perfectionnement",
-          "category": "Sport",
-          "age_range": "10-13 ans",
-          "price_badge": "80€"
-        },
-        {
-          "id": "4aa08b39-72e4-4e0c-b908-539027b0a8ba",
-          "title": "Atelier Basket Jeunes",
-          "category": "Sport",
-          "age_range": "10-13 ans",
-          "price_badge": "40€"
-        },
-        {
-          "id": "dbad607e-cf6f-425c-922c-c0a5e0cd4b4b",
-          "title": "Parcours Ninja & Parkour",
-          "category": "Sport",
-          "age_range": "10-13 ans",
-          "price_badge": "120€"
-        }
-      ]
+    {
+      "id": "78d0fd46-8af0-4a64-8acc-3f04cea27f82",
+      "title": "Séjour Linguistique Court - Vacances",
+      "category": "Vacances",
+      "age_range": "10-13 ans",
+      "price_badge": "Gratuit",
+      "cover": "https://cdn.example.com/activities/vacances_36.jpg",
+      "pmr_access": true,
+      "has_financial_aid": true,
+      "covoiturage_enabled": true,
+      "payment_echelonned": false,
+      "seats_remaining": 20,
+      "published": true
+    },
+    {
+      "id": "c911da4c-17a0-411b-899e-c1e6194be914",
+      "title": "Colonie Multi-activités - Vacances",
+      "category": "Vacances",
+      "age_range": "6-9 ans",
+      "price_badge": "150€",
+      "cover": "https://cdn.example.com/activities/vacances_33.jpg",
+      "pmr_access": false,
+      "has_financial_aid": true,
+      "covoiturage_enabled": false,
+      "payment_echelonned": true,
+      "seats_remaining": 30,
+      "published": true
+    },
+    {
+      "id": "b1086d25-933a-4cd9-9e7d-d8426c4a9bff",
+      "title": "Séjour Nature & Survie - Vacances",
+      "category": "Vacances",
+      "age_range": "6-9 ans",
+      "price_badge": "120€",
+      "cover": "https://cdn.example.com/activities/vacances_34.jpg",
+      "pmr_access": true,
+      "has_financial_aid": true,
+      "covoiturage_enabled": true,
+      "payment_echelonned": true,
+      "seats_remaining": 30,
+      "published": true
+    },
+    {
+      "id": "6c59a8f0-65a3-440a-8135-dad8aecab25a",
+      "title": "Camp Sport/Loisirs - Vacances",
+      "category": "Vacances",
+      "age_range": "10-13 ans",
+      "price_badge": "20€",
+      "cover": "https://cdn.example.com/activities/vacances_37.jpg",
+      "pmr_access": true,
+      "has_financial_aid": true,
+      "covoiturage_enabled": false,
+      "payment_echelonned": true,
+      "seats_remaining": 16,
+      "published": true
     }
-  },
+  ],
   "validation": {
-    "api_responding": true,
-    "data_published": true,
-    "preview_fields_present": true,
-    "filters_working": true
+    "all_have_images": true,
+    "all_published": true,
+    "all_have_slots": true,
+    "all_preview_fields_present": true
   }
 }

@@ -5,22 +5,26 @@ import { ActivitySection } from "@/components/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
+import { ActivityCardSkeleton } from "@/components/ActivityCardSkeleton";
 
 const Index = () => {
   // Charger les différentes catégories d'activités
-  const { data: featuredActivities = [], isLoading: loadingFeatured } = useActivities({ limit: 5 });
+  const { data: featuredActivities = [], isLoading: loadingFeatured, error: errorFeatured } = useActivities({ limit: 5 });
   const { data: nearbyActivities = [], isLoading: loadingNearby } = useActivities({ limit: 5 });
   const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ maxPrice: 50, limit: 5 });
   const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ hasAccessibility: true, limit: 5 });
 
   const isLoading = loadingFeatured || loadingNearby || loadingBudget || loadingHealth;
 
-  if (isLoading) {
+  if (errorFeatured) {
     return (
       <div className="min-h-screen bg-background pb-20">
         <SearchBar onFilterClick={() => console.log("Filter clicked")} />
         <main className="container px-4 py-6">
-          <LoadingState />
+          <ErrorState 
+            message="Impossible de charger les activités. Veuillez réessayer." 
+            onRetry={() => window.location.reload()}
+          />
         </main>
         <BottomNavigation />
       </div>

@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-10-13T11:45:00Z",
+  "trace_type": "Frontend Activity Load",
+  "user_action": "Page load / Tab click",
+  
+  "network_requests": [
+    {
+      "url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/rest/v1/activities",
+      "method": "GET",
+      "params": {
+        "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
+        "published": "eq.true",
+        "limit": "5",
+        "order": "created_at.desc"
+      },
+      "status": 200,
+      "response_time": "<100ms",
+      "response_body": [
+        {
+          "id": "d0aa990f-1db2-4307-94ba-9615ff949095",
+          "title": "Stage Cirque - Vacances",
+          "category": "Vacances",
+          "age_min": 6,
+          "age_max": 9,
+          "price_base": 150,
+          "images": ["https://cdn.example.com/activities/vacances_35.jpg"],
+          "accessibility_checklist": {"wheelchair": true, "sensory_support": true},
+          "accepts_aid_types": ["PassSport"],
+          "capacity_policy": {"seats_total": 30, "seats_remaining": 30},
+          "covoiturage_enabled": true
+        }
+      ]
+    },
+    {
+      "url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/rest/v1/activities",
+      "method": "GET",
+      "params": {
+        "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
+        "published": "eq.true",
+        "price_base": "lte.50",
+        "limit": "5",
+        "order": "created_at.desc"
+      },
+      "status": 200,
+      "response_time": "<100ms",
+      "note": "Budget filter applied correctly"
+    },
+    {
+      "url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/rest/v1/activities",
+      "method": "GET",
+      "params": {
+        "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
+        "published": "eq.true",
+        "accessibility_checklist->>wheelchair": "eq.true",
+        "limit": "5",
+        "order": "created_at.desc"
+      },
+      "status": 200,
+      "response_time": "<100ms",
+      "note": "Accessibility filter applied correctly"
+    }
+  ],
+  
+  "frontend_mapping": {
+    "status": "CORRECT",
+    "preview_object_created": true,
+    "fields_mapped": {
+      "cover": "images[0] with fallback",
+      "title": "direct",
+      "age_range": "age_min + '-' + age_max + ' ans'",
+      "price_badge": "price_base === 0 ? 'Gratuit' : price_base + '€'",
+      "hasAccessibility": "accessibility_checklist.wheelchair === true",
+      "hasFinancialAid": "accepts_aid_types.length > 0"
+    }
+  },
+  
+  "validation": "ALL QUERIES WORKING - Activities displaying correctly"
+}

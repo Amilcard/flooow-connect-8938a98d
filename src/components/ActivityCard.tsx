@@ -27,14 +27,19 @@ export const ActivityCard = ({
   hasFinancialAid = false,
   onRequestClick,
 }: ActivityCardProps) => {
+  const displayImage = image || "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop";
+  
   return (
     <Card className="overflow-hidden border-0 shadow-card hover:shadow-card-hover transition-all">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
-          src={image}
+          src={displayImage}
           alt={title}
           loading="lazy"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.src = "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop";
+          }}
         />
         <div className="absolute top-3 left-3 flex flex-wrap gap-2">
           <Badge 

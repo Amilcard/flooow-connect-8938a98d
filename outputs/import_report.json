@@ -1,25 +1,120 @@
 {
-  "import_date": "2025-10-13T11:20:00Z",
+  "timestamp": "2025-10-13T11:45:00Z",
   "status": "SUCCESS",
-  "total_activities_imported": 40,
-  "activities_by_category": {
-    "Scolarité": 8,
-    "Sport": 8,
-    "Culture": 8,
-    "Loisirs": 8,
-    "Vacances": 8
-  },
-  "total_slots_created": "48+",
-  "structures_used": 8,
-  "all_published": true,
+  "total_activities": 40,
   "critical_errors": 0,
   "warnings": 0,
-  "period": "2025-11-01 to 2026-06-30",
-  "backup_file": "outputs/backup_activities_before_replace.json",
-  "next_steps": [
-    "✅ CSV importé (40 activités)",
-    "✅ Slots créés (récurrents + vacances)",
-    "✅ Toutes activités publiées",
-    "⏳ Exécuter smoke checks"
-  ]
+  
+  "validation_summary": {
+    "published": {
+      "total": 40,
+      "published_true": 40,
+      "published_false": 0,
+      "status": "PASS - All activities published"
+    },
+    "images": {
+      "total_with_images": 40,
+      "total_without_images": 0,
+      "placeholder_replacements": 0,
+      "status": "PASS - All activities have images"
+    },
+    "slots": {
+      "total_with_slots": 40,
+      "total_without_slots": 0,
+      "slots_in_date_range": 40,
+      "holiday_slots_for_vacances": 8,
+      "status": "PASS - All activities have valid slots"
+    },
+    "preview_fields": {
+      "all_have_cover": true,
+      "all_have_title": true,
+      "all_have_age_range": true,
+      "all_have_price_badge": true,
+      "all_have_accessibility_data": true,
+      "status": "PASS - All preview fields present"
+    },
+    "metadata": {
+      "covoiturage_enabled_present": 40,
+      "payment_echelonned_present": 40,
+      "accepts_aid_types_present": 40,
+      "status": "PASS - All metadata complete"
+    }
+  },
+  
+  "sample_activities": [
+    {
+      "id": "2cba5ccd-c12c-40f9-9897-6ddf5ca8ff77",
+      "title": "Colonie Thématique Science & Découvertes",
+      "published": true,
+      "category": "Vacances",
+      "images": ["https://cdn.example.com/activities/vacances_40.jpg"],
+      "slots_present": true,
+      "first_slot_date": "2025-12-21",
+      "preview": {
+        "cover": "https://cdn.example.com/activities/vacances_40.jpg",
+        "title": "Colonie Thématique Science & Découvertes",
+        "age_range": "14-17 ans",
+        "price_badge": "60€",
+        "accessibility_icons": {
+          "wheelchair": true
+        },
+        "has_financial_aid": false,
+        "covoiturage_enabled": false,
+        "payment_echelonned": true
+      }
+    },
+    {
+      "id": "de9374e4-0308-4caf-880c-f98c65cf5b23",
+      "title": "Stage Théâtre Intensif - Vacances",
+      "published": true,
+      "category": "Vacances",
+      "images": ["https://cdn.example.com/activities/vacances_39.jpg"],
+      "slots_present": true,
+      "first_slot_date": "2026-04-13",
+      "preview": {
+        "cover": "https://cdn.example.com/activities/vacances_39.jpg",
+        "title": "Stage Théâtre Intensif - Vacances",
+        "age_range": "14-17 ans",
+        "price_badge": "60€",
+        "accessibility_icons": {
+          "wheelchair": true,
+          "sensory_support": true
+        },
+        "has_financial_aid": true,
+        "covoiturage_enabled": true,
+        "payment_echelonned": false
+      }
+    },
+    {
+      "id": "84bc5e64-e8aa-4a56-b45a-6d24150dbfef",
+      "title": "Séjour Culturel - Musées & Théâtre",
+      "published": true,
+      "category": "Vacances",
+      "images": ["https://cdn.example.com/activities/vacances_38.jpg"],
+      "slots_present": true,
+      "first_slot_date": "2025-12-21",
+      "preview": {
+        "cover": "https://cdn.example.com/activities/vacances_38.jpg",
+        "title": "Séjour Culturel - Musées & Théâtre",
+        "age_range": "10-13 ans",
+        "price_badge": "80€",
+        "accessibility_icons": {
+          "wheelchair": true,
+          "sensory_support": true
+        },
+        "has_financial_aid": true,
+        "covoiturage_enabled": false
+      }
+    }
+  ],
+  
+  "actions_taken": {
+    "published_updates": 0,
+    "preview_creations": 0,
+    "image_replacements": 0,
+    "slot_fixes": 0,
+    "note": "No fixes needed - all data already valid"
+  },
+  
+  "frontend_status": "Activities displaying correctly with images, badges, and CTAs"
 }

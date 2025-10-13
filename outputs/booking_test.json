@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-10-13T11:45:00Z",
+  "endpoint": "POST /bookings (with idempotency)",
+  "status": "NOT_IMPLEMENTED_YET",
+  "note": "API endpoint needs to be created as Supabase Edge Function",
+  
+  "expected_implementation": {
+    "endpoint": "POST /functions/v1/bookings",
+    "request_body": {
+      "activity_id": "uuid",
+      "slot_id": "uuid",
+      "child_id": "uuid",
+      "user_id": "uuid (from auth)",
+      "idempotency_key": "string (unique per request)",
+      "express_flag": "boolean"
+    },
+    "expected_response": {
+      "booking_id": "uuid",
+      "status": "en_attente",
+      "activity_id": "uuid",
+      "slot_id": "uuid",
+      "child_id": "uuid",
+      "user_id": "uuid",
+      "seats_remaining_after": 29,
+      "created_at": "timestamp"
+    }
+  },
+  
+  "test_scenarios": {
+    "scenario_1_standard_booking": {
+      "description": "Standard booking with idempotency key",
+      "test_data": {
+        "activity_id": "d0aa990f-1db2-4307-94ba-9615ff949095",
+        "activity_title": "Stage Cirque - Vacances",
+        "seats_before": 30,
+        "idempotency_key": "test-booking-001"
+      },
+      "expected_result": {
+        "booking_status": "en_attente",
+        "seats_remaining": 29,
+        "decrement_atomic": true
+      }
+    },
+    "scenario_2_duplicate_idempotency": {
+      "description": "Duplicate request with same idempotency key",
+      "test_data": {
+        "idempotency_key": "test-booking-001"
+      },
+      "expected_result": {
+        "returns_existing_booking": true,
+        "no_new_booking_created": true,
+        "seats_remaining_unchanged": true
+      }
+    },
+    "scenario_3_concurrent_bookings": {
+      "description": "Multiple concurrent requests for same slot",
+      "test_data": {
+        "concurrent_requests": 5,
+        "seats_available": 3
+      },
+      "expected_result": {
+        "successful_bookings": 3,
+        "failed_bookings": 2,
+        "no_overbooking": true,
+        "seats_remaining": 0
+      }
+    }
+  },
+  
+  "todo": "Create Supabase Edge Function: supabase/functions/bookings/index.ts with atomic seat decrement and idempotency"
+}

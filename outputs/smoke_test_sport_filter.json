@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-10-13T11:45:00Z",
+  "endpoint": "GET /activities?category=Sport&age=10",
+  "status": "SUCCESS",
+  "count": 3,
+  "test": "PASS - At least 1 Sport activity for age 10",
+  "activities": [
+    {
+      "id": "1e7c92ae-702d-4671-bd43-102d8b266714",
+      "title": "Club Natation - Initiation & Perfectionnement",
+      "category": "Sport",
+      "age_min": 10,
+      "age_max": 13,
+      "price": "80€"
+    },
+    {
+      "id": "4aa08b39-72e4-4e0c-b908-539027b0a8ba",
+      "title": "Atelier Basket Jeunes",
+      "category": "Sport",
+      "age_min": 10,
+      "age_max": 13,
+      "price": "40€"
+    },
+    {
+      "id": "dbad607e-cf6f-425c-922c-c0a5e0cd4b4b",
+      "title": "Parcours Ninja & Parkour",
+      "category": "Sport",
+      "age_min": 10,
+      "age_max": 13,
+      "price": "120€"
+    }
+  ]
+}
