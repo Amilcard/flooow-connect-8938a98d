@@ -176,45 +176,27 @@ export type Database = {
           activity_id: string
           booking_id: string | null
           child_id: string | null
-          converted_to_booking: boolean | null
           created_at: string
-          final_price_after_aids: number | null
           id: string
-          ip_address: unknown | null
           simulated_aids: Json
-          simulation_params: Json
-          total_aid_amount: number | null
-          user_agent: string | null
           user_id: string
         }
         Insert: {
           activity_id: string
           booking_id?: string | null
           child_id?: string | null
-          converted_to_booking?: boolean | null
           created_at?: string
-          final_price_after_aids?: number | null
           id?: string
-          ip_address?: unknown | null
           simulated_aids?: Json
-          simulation_params?: Json
-          total_aid_amount?: number | null
-          user_agent?: string | null
           user_id: string
         }
         Update: {
           activity_id?: string
           booking_id?: string | null
           child_id?: string | null
-          converted_to_booking?: boolean | null
           created_at?: string
-          final_price_after_aids?: number | null
           id?: string
-          ip_address?: unknown | null
           simulated_aids?: Json
-          simulation_params?: Json
-          total_aid_amount?: number | null
-          user_agent?: string | null
           user_id?: string
         }
         Relationships: [
@@ -237,6 +219,13 @@ export type Database = {
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aid_simulations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -952,17 +941,6 @@ export type Database = {
       }
     }
     Views: {
-      aid_simulation_analytics: {
-        Row: {
-          avg_aid_amount: number | null
-          conversion_rate_pct: number | null
-          converted_simulations: number | null
-          simulation_date: string | null
-          total_aid_requested: number | null
-          total_simulations: number | null
-        }
-        Relationships: []
-      }
       sessions_report: {
         Row: {
           created_at: string | null
