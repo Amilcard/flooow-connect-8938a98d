@@ -493,6 +493,48 @@ export type Database = {
           },
         ]
       }
+      refresh_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          revoked: boolean
+          session_id: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          revoked?: boolean
+          session_id: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          revoked?: boolean
+          session_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refresh_tokens_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refresh_tokens_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions_report"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports_metrics: {
         Row: {
           created_at: string
@@ -585,6 +627,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sessions: {
+        Row: {
+          access_jti: string | null
+          created_at: string
+          device: string | null
+          id: string
+          ip: unknown | null
+          last_seen_at: string
+          mfa_verified: boolean
+          revoked: boolean
+          roles: string[]
+          tenant_id: string | null
+          user_id: string
+        }
+        Insert: {
+          access_jti?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          ip?: unknown | null
+          last_seen_at?: string
+          mfa_verified?: boolean
+          revoked?: boolean
+          roles?: string[]
+          tenant_id?: string | null
+          user_id: string
+        }
+        Update: {
+          access_jti?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          ip?: unknown | null
+          last_seen_at?: string
+          mfa_verified?: boolean
+          revoked?: boolean
+          roles?: string[]
+          tenant_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       structures: {
         Row: {
@@ -691,10 +775,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      sessions_report: {
+        Row: {
+          created_at: string | null
+          device: string | null
+          id: string | null
+          ip: unknown | null
+          last_seen_at: string | null
+          mfa_verified: boolean | null
+          refresh_token_expires_at: string | null
+          refresh_token_revoked: boolean | null
+          revoked: boolean | null
+          roles: string[] | null
+          tenant_id: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      cleanup_expired_sessions_and_tokens: {
         Args: Record<PropertyKey, never>
         Returns: number
       }
@@ -724,6 +828,14 @@ export type Database = {
           _user_id: string
         }
         Returns: string
+      }
+      revoke_session: {
+        Args: { p_reason?: string; p_session_id: string }
+        Returns: undefined
+      }
+      touch_session_lastseen: {
+        Args: { p_session_id: string }
+        Returns: undefined
       }
       update_session_last_seen: {
         Args: { _session_id: string }
