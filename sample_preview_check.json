@@ -1,0 +1,135 @@
+{
+  "timestamp": "2025-10-13T11:10:43Z",
+  "endpoint": "GET /activities?limit=5",
+  "total_activities_in_db": 40,
+  "total_slots_created": "62+ (2 per regular activity + specific vacation slots)",
+  "sample_activities": [
+    {
+      "id": "06575755-bb60-4d4a-ae03-d3a261d5d642",
+      "title": "Arts du Cirque",
+      "category": "Culture",
+      "age_range": "7-14 ans",
+      "price_badge": "150€",
+      "cover": "https://images.unsplash.com/photo-1518732159384-7863f4d0c990?w=800",
+      "accessibility_icons": {
+        "pmr_access": false,
+        "adapted_equipment": false,
+        "sensory_friendly": false,
+        "specialized_staff": false
+      },
+      "has_financial_aid": true,
+      "seats_remaining": "8",
+      "structure_name": "MJC de Montreynaud",
+      "address": "2 Rue Edmond Rostand, 42100 Saint-Étienne",
+      "slots_count": 2,
+      "next_slot": "06/11/2025 15:00",
+      "covoiturage_enabled": false,
+      "published": true
+    },
+    {
+      "id": "61cdab63-6229-41e9-b983-62b266e96ee8",
+      "title": "Atelier Arts Plastiques Enfants",
+      "category": "Culture",
+      "age_range": "6-14 ans",
+      "price_badge": "120€",
+      "cover": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800",
+      "accessibility_icons": {
+        "pmr_access": true,
+        "adapted_equipment": true,
+        "sensory_friendly": true,
+        "specialized_staff": false
+      },
+      "has_financial_aid": true,
+      "seats_remaining": "7",
+      "structure_name": "École des Beaux-Arts",
+      "address": "15 Rue Buisson, 42000 Saint-Étienne",
+      "slots_count": 2,
+      "next_slot": "06/11/2025 15:00",
+      "covoiturage_enabled": false,
+      "published": true
+    },
+    {
+      "id": "66c44c3c-6add-4935-b1ba-19fe52c0d508",
+      "title": "Atelier Photo Ados",
+      "category": "Culture",
+      "age_range": "12-17 ans",
+      "price_badge": "100€",
+      "cover": "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800",
+      "accessibility_icons": {
+        "pmr_access": true,
+        "adapted_equipment": false,
+        "sensory_friendly": true,
+        "specialized_staff": false
+      },
+      "has_financial_aid": true,
+      "seats_remaining": "5",
+      "structure_name": "École des Beaux-Arts",
+      "address": "15 Rue Buisson, 42000 Saint-Étienne",
+      "slots_count": 2,
+      "next_slot": "06/11/2025 15:00",
+      "covoiturage_enabled": false,
+      "published": true
+    },
+    {
+      "id": "445de44b-733f-4e22-945f-e88063f42931",
+      "title": "Atelier Théâtre Adolescents",
+      "category": "Culture",
+      "age_range": "12-17 ans",
+      "price_badge": "180€",
+      "cover": "https://images.unsplash.com/photo-1503095396549-807759245b35?w=800",
+      "accessibility_icons": {
+        "pmr_access": true,
+        "adapted_equipment": false,
+        "sensory_friendly": true,
+        "specialized_staff": false
+      },
+      "has_financial_aid": true,
+      "seats_remaining": "6",
+      "structure_name": "Comédie de Saint-Étienne",
+      "address": "7 Avenue Émile Loubet, 42000 Saint-Étienne",
+      "slots_count": 2,
+      "next_slot": "06/11/2025 15:00",
+      "covoiturage_enabled": true,
+      "published": true
+    },
+    {
+      "id": "de89e910-a2b3-40c6-aa28-6669d88efdb9",
+      "title": "Chorale Jeunes Voix",
+      "category": "Culture",
+      "age_range": "8-16 ans",
+      "price_badge": "80€",
+      "cover": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
+      "accessibility_icons": {
+        "pmr_access": true,
+        "adapted_equipment": false,
+        "sensory_friendly": true,
+        "specialized_staff": false
+      },
+      "has_financial_aid": true,
+      "seats_remaining": "18",
+      "structure_name": "Conservatoire Massenet",
+      "address": "5 Rue Buisson, 42000 Saint-Étienne",
+      "slots_count": 2,
+      "next_slot": "06/11/2025 15:00",
+      "covoiturage_enabled": false,
+      "published": true
+    }
+  ],
+  "slots_schedule_summary": {
+    "Sport": "Mercredis 14h-16h + Samedis 10h-12h (récurrent)",
+    "Culture": "Mercredis 16h-18h + Samedis 14h-16h (récurrent)",
+    "Loisirs": "Mercredis 14h30-16h30 (récurrent)",
+    "Scolarité": "Mardis + Jeudis 17h-18h30 (récurrent)",
+    "Vacances": "Créneaux spécifiques (séjours 5-7 jours)"
+  },
+  "validation": {
+    "all_fields_present": true,
+    "all_activities_published": true,
+    "slots_created": true,
+    "structures_linked": true,
+    "images_present": true,
+    "accessibility_data": true,
+    "financial_aid_info": true,
+    "locations_geocoded": true
+  }
+}
