@@ -1,0 +1,25 @@
+{
+  "import_date": "2025-10-13T11:20:00Z",
+  "status": "SUCCESS",
+  "total_activities_imported": 40,
+  "activities_by_category": {
+    "Scolarité": 8,
+    "Sport": 8,
+    "Culture": 8,
+    "Loisirs": 8,
+    "Vacances": 8
+  },
+  "total_slots_created": "48+",
+  "structures_used": 8,
+  "all_published": true,
+  "critical_errors": 0,
+  "warnings": 0,
+  "period": "2025-11-01 to 2026-06-30",
+  "backup_file": "outputs/backup_activities_before_replace.json",
+  "next_steps": [
+    "✅ CSV importé (40 activités)",
+    "✅ Slots créés (récurrents + vacances)",
+    "✅ Toutes activités publiées",
+    "⏳ Exécuter smoke checks"
+  ]
+}

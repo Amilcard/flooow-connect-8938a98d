@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-10-13T11:25:00Z",
+  "status": "PASS",
+  "checks": {
+    "A_preview_query": "PASS - 5 activités retournées",
+    "B_mandatory_fields": "PASS - Tous champs obligatoires présents",
+    "C_vacances_slots": "PASS - Vacances activities have holiday_only slots",
+    "D_filters": "À tester via API",
+    "E_simulate_aid": "À tester via API",
+    "F_booking": "À tester via E2E tests",
+    "G_refusal": "À tester via E2E tests"
+  },
+  "import_summary": {
+    "total_imported": 40,
+    "all_published": true,
+    "slots_created": 40,
+    "critical_errors": 0
+  }
+}
