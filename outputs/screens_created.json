@@ -1,0 +1,128 @@
+{
+  "project": "flooow-connect",
+  "date": "2025-10-13",
+  "screens_created": [
+    {
+      "name": "Splash",
+      "path": "/splash",
+      "component": "src/pages/Splash.tsx",
+      "description": "Écran de démarrage avec logo et navigation automatique",
+      "api_endpoints": [],
+      "status": "completed"
+    },
+    {
+      "name": "Onboarding",
+      "path": "/onboarding",
+      "component": "src/pages/Onboarding.tsx",
+      "description": "3 étapes d'onboarding (proximité, aides, accessibilité)",
+      "api_endpoints": [],
+      "status": "completed"
+    },
+    {
+      "name": "Home",
+      "path": "/",
+      "component": "src/pages/Index.tsx",
+      "description": "Page d'accueil avec 3 blocs info + 3 sections d'activités (3 par section)",
+      "api_endpoints": [
+        "GET /activities?limit=3",
+        "GET /activities?price_base=lte.50&limit=3",
+        "GET /activities?accessibility_checklist->>wheelchair=eq.true&limit=3"
+      ],
+      "status": "completed"
+    },
+    {
+      "name": "Activities",
+      "path": "/activities",
+      "component": "src/pages/Activities.tsx",
+      "description": "Liste complète des activités avec onglets par catégorie",
+      "api_endpoints": [
+        "GET /activities",
+        "GET /activities?category=eq.{category}"
+      ],
+      "status": "completed"
+    },
+    {
+      "name": "ActivityDetail",
+      "path": "/activity/:id",
+      "component": "src/pages/ActivityDetail.tsx",
+      "description": "Détail complet d'une activité avec SlotPicker et simulation aides",
+      "api_endpoints": [
+        "GET /activities/{id}",
+        "GET /availability_slots?activity_id=eq.{id}"
+      ],
+      "status": "completed"
+    },
+    {
+      "name": "Booking",
+      "path": "/booking/:id",
+      "component": "src/pages/Booking.tsx",
+      "description": "Réservation avec sélection enfant et récapitulatif",
+      "api_endpoints": [
+        "GET /activities/{id}",
+        "GET /availability_slots/{slotId}",
+        "GET /children",
+        "POST /bookings (avec idempotency_key)"
+      ],
+      "status": "completed"
+    },
+    {
+      "name": "BookingStatus",
+      "path": "/booking-status/:id",
+      "component": "src/pages/BookingStatus.tsx",
+      "description": "Statut de réservation (en_attente, validee, refusee, annulee)",
+      "api_endpoints": [
+        "GET /bookings/{id}"
+      ],
+      "status": "completed"
+    },
+    {
+      "name": "MonCompte",
+      "path": "/mon-compte",
+      "component": "src/pages/MonCompte.tsx",
+      "description": "Page de compte utilisateur avec menu navigation",
+      "api_endpoints": [],
+      "status": "completed"
+    }
+  ],
+  "components_created": [
+    {
+      "name": "InfoBlocks",
+      "path": "src/components/InfoBlocks.tsx",
+      "description": "3 blocs cliquables (Aides, Éco-Mobilité, Handicap)",
+      "props": []
+    },
+    {
+      "name": "SlotPicker",
+      "path": "src/components/SlotPicker.tsx",
+      "description": "Sélecteur de créneaux horaires",
+      "props": ["slots", "onSelectSlot", "selectedSlotId"]
+    },
+    {
+      "name": "SimulateAidModal",
+      "path": "src/components/SimulateAidModal.tsx",
+      "description": "Modal de simulation des aides financières",
+      "props": ["open", "onOpenChange", "activityPrice", "acceptedAids"]
+    },
+    {
+      "name": "BottomNavigation",
+      "path": "src/components/BottomNavigation.tsx",
+      "description": "Navigation bottom fixe (Accueil, Recherche, Aides, Chat, Compte)",
+      "props": []
+    }
+  ],
+  "design_system": {
+    "colors": "Bleu primary (217,91%,60%) + Orange accent (25,95%,53%)",
+    "bottom_nav": "5 items avec icônes lucide-react ≥48px",
+    "accessibility": "ARIA labels, min-height 48px sur boutons",
+    "mobile_first": true
+  },
+  "api_mapping": {
+    "GET /activities": "Liste activités avec filtres (category, price, accessibility, limit)",
+    "GET /activities/{id}": "Détail activité complète",
+    "GET /availability_slots": "Créneaux disponibles par activity_id",
+    "POST /bookings": "Création réservation avec idempotency_key",
+    "GET /bookings/{id}": "Statut réservation",
+    "GET /children": "Liste enfants du parent"
+  },
+  "status": "Écrans principaux créés. Reste à implémenter: Auth, Search modal, ChildSignup, Waitlist, Covoiturage, Aides page."
+}

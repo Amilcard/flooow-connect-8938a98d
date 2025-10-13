@@ -43,7 +43,13 @@ const infoBlocks: InfoBlock[] = [
 export const InfoBlocks = () => {
   const handleBlockClick = (id: string) => {
     console.log(`Info block clicked: ${id}`);
-    // TODO: Navigate to info page or open modal
+    if (id === "aides") {
+      window.location.href = "/aides";
+    } else if (id === "mobilite") {
+      console.log("Mobilité - TODO");
+    } else if (id === "handicap") {
+      console.log("Handicap - TODO");
+    }
   };
 
   return (

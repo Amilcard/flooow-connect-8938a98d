@@ -1,6 +1,7 @@
 import { ActivityCard } from "./ActivityCard";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface Activity {
   id: string;
@@ -12,6 +13,8 @@ interface Activity {
   price: number;
   hasAccessibility?: boolean;
   hasFinancialAid?: boolean;
+  age_min?: number;
+  age_max?: number;
 }
 
 interface ActivitySectionProps {
@@ -27,6 +30,8 @@ export const ActivitySection = ({
   onSeeAll,
   onActivityClick 
 }: ActivitySectionProps) => {
+  const navigate = useNavigate();
+  
   return (
     <section className="space-y-4" aria-labelledby={`section-${title.replace(/\s/g, '-')}`}>
       <div className="flex items-center justify-between">
@@ -53,7 +58,8 @@ export const ActivitySection = ({
           <ActivityCard
             key={activity.id}
             {...activity}
-            onRequestClick={() => onActivityClick?.(activity.id)}
+            ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
+            onRequestClick={() => navigate(`/activity/${activity.id}`)}
           />
         ))}
       </div>
