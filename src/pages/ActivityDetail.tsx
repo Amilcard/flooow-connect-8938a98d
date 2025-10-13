@@ -45,6 +45,7 @@ const ActivityDetail = () => {
   const navigate = useNavigate();
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [showAidModal, setShowAidModal] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   // Fetch activity details
   const { data: activity, isLoading, error } = useQuery({
@@ -107,7 +108,6 @@ const ActivityDetail = () => {
   const fallbackImage = getCategoryImage(activity.category);
   const displayImage = activity.images?.[0] || fallbackImage;
   const ageRange = `${activity.age_min}-${activity.age_max} ans`;
-  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="min-h-screen bg-background pb-24">
