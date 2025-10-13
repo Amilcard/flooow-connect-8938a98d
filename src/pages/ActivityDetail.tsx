@@ -24,6 +24,21 @@ import {
   Building2
 } from "lucide-react";
 import { useState } from "react";
+import activitySportImg from "@/assets/activity-sport.jpg";
+import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
+import activityVacancesImg from "@/assets/activity-vacances.jpg";
+import activityCultureImg from "@/assets/activity-culture.jpg";
+
+const getCategoryImage = (category: string): string => {
+  const categoryMap: Record<string, string> = {
+    Sport: activitySportImg,
+    Loisirs: activityLoisirsImg,
+    Vacances: activityVacancesImg,
+    Scolarité: activityCultureImg,
+    Culture: activityCultureImg,
+  };
+  return categoryMap[category] || activityLoisirsImg;
+};
 
 const ActivityDetail = () => {
   const { id } = useParams();
@@ -89,8 +104,10 @@ const ActivityDetail = () => {
     navigate(`/booking/${id}?slotId=${selectedSlotId}`);
   };
 
-  const displayImage = activity.images?.[0] || "/placeholder.svg";
+  const fallbackImage = getCategoryImage(activity.category);
+  const displayImage = activity.images?.[0] || fallbackImage;
   const ageRange = `${activity.age_min}-${activity.age_max} ans`;
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -112,9 +129,10 @@ const ActivityDetail = () => {
       {/* Image Gallery */}
       <div className="relative aspect-[16/9] overflow-hidden bg-muted">
         <img
-          src={displayImage}
+          src={imgError ? fallbackImage : displayImage}
           alt={activity.title}
           className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         
