@@ -566,6 +566,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_seat_atomic: {
+        Args: { _booking_id: string; _slot_id: string }
+        Returns: Json
+      }
       get_user_territory: {
         Args: { _user_id: string }
         Returns: string

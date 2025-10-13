@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,8 +8,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { ArrowLeft, User, Calendar, MapPin } from "lucide-react";
+import { ArrowLeft, User, Calendar, MapPin, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useBookingDraft } from "@/hooks/useBookingDraft";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Booking = () => {
   const { id } = useParams();
@@ -18,8 +20,16 @@ const Booking = () => {
   const { toast } = useToast();
   const slotId = searchParams.get("slotId");
 
-  const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const { draft, saveDraft, clearDraft, hasDraft } = useBookingDraft(id!, slotId!);
+  const [selectedChildId, setSelectedChildId] = useState<string>(draft?.childId || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Auto-save draft when child selection changes
+  useEffect(() => {
+    if (selectedChildId && id && slotId) {
+      saveDraft(selectedChildId);
+    }
+  }, [selectedChildId, id, slotId]);
 
   // Fetch activity
   const { data: activity, isLoading: loadingActivity } = useQuery({
@@ -100,6 +110,7 @@ const Booking = () => {
       });
 
       navigate(`/booking-status/${data.id}`);
+      clearDraft(); // Clear draft after successful booking
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -160,6 +171,16 @@ const Booking = () => {
       </div>
 
       <div className="container px-4 py-6 space-y-6">
+        {/* Draft recovery alert */}
+        {hasDraft && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Réservation en cours récupérée. Vous pouvez continuer là où vous vous êtes arrêté.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Activity summary */}
         <Card className="p-4">
           <h2 className="font-semibold text-lg mb-3">Récapitulatif</h2>
