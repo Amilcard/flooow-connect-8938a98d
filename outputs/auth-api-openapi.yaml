@@ -1,0 +1,377 @@
+openapi: 3.0.3
+info:
+  title: Flooow Connect - Auth & Session Management API
+  description: |
+    API d'authentification et gestion de sessions sécurisées avec refresh token rotation.
+    - Access token JWT (15 minutes)
+    - Refresh token opaque hashé SHA-256 (14 jours, single-use rotation)
+    - Cookies HttpOnly, Secure, SameSite
+  version: 1.0.0
+  contact:
+    name: Flooow Connect
+    email: tech@flooow.fr
+
+servers:
+  - url: https://{project_id}.supabase.co/functions/v1
+    description: Supabase Edge Functions
+    variables:
+      project_id:
+        default: lddlzlthtwuwxxrrbxuc
+
+tags:
+  - name: Authentication
+    description: Login, refresh, logout
+  - name: Sessions
+    description: Gestion des sessions utilisateur et admin
+
+paths:
+  /auth-sessions/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login utilisateur
+      description: |
+        Authentifie l'utilisateur et crée une session.
+        - Crée une row dans `public.sessions`
+        - Génère JWT access_token (15min) + refresh_token opaque
+        - Stocke hash SHA-256 du refresh_token dans `public.refresh_tokens`
+        - Set cookies HttpOnly Secure
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: parent@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecureP@ss123
+                device:
+                  type: string
+                  example: web
+                  default: web
+      responses:
+        '200':
+          description: Login réussi
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: access_token=eyJhbG...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=900
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  session_id:
+                    type: string
+                    format: uuid
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      email:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: string
+        '401':
+          description: Credentials invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth-sessions/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: |
+        Rotation single-use du refresh token.
+        - Vérifie le hash du refresh token
+        - Révoque l'ancien token (revoked=true)
+        - Crée nouveau refresh token + hash
+        - Génère nouveau JWT access token
+        - Set nouveaux cookies
+      operationId: refresh
+      parameters:
+        - in: cookie
+          name: refresh_token
+          required: true
+          schema:
+            type: string
+          description: Refresh token opaque (HttpOnly cookie)
+      responses:
+        '200':
+          description: Refresh réussi
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  session_id:
+                    type: string
+                    format: uuid
+        '401':
+          description: Refresh token invalide ou expiré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth-sessions/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout utilisateur
+      description: |
+        Révoque la session et tous ses refresh tokens.
+        - sessions.revoked = true
+        - refresh_tokens.revoked = true pour tous les tokens de la session
+        - Clear cookies
+        - Audit log
+      operationId: logout
+      parameters:
+        - in: cookie
+          name: session_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Logout réussi
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: access_token=; Max-Age=0
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /auth-sessions/session-info:
+    get:
+      tags:
+        - Sessions
+      summary: Info session courante
+      description: Retourne les informations de la session depuis le cookie session_id
+      operationId: getSessionInfo
+      parameters:
+        - in: cookie
+          name: session_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Session info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    $ref: '#/components/schemas/SessionInfo'
+        '401':
+          description: Session non trouvée ou expirée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /sessions-admin:
+    get:
+      tags:
+        - Sessions
+      summary: Liste sessions (admin)
+      description: |
+        Liste toutes les sessions (superadmin) ou par tenant (territory_admin).
+        Requiert role admin.
+      operationId: listSessions
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Recherche par device, IP, user_id
+      responses:
+        '200':
+          description: Liste des sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SessionReport'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permissions insuffisantes
+
+  /sessions-admin/{sessionId}:
+    delete:
+      tags:
+        - Sessions
+      summary: Révoquer session (admin)
+      description: |
+        Révoque une session spécifique (avec vérification des permissions).
+        - Superadmin: peut révoquer toutes les sessions
+        - Territory admin: peut révoquer les sessions de son territoire
+      operationId: revokeSession
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revoke_reason:
+                  type: string
+                  example: Admin revocation - suspicious activity
+      responses:
+        '200':
+          description: Session révoquée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permissions insuffisantes
+        '404':
+          description: Session non trouvée
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+    SessionInfo:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+        roles:
+          type: array
+          items:
+            type: string
+        device:
+          type: string
+        ip:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        last_seen_at:
+          type: string
+          format: date-time
+        mfa_verified:
+          type: boolean
+
+    SessionReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+        roles:
+          type: array
+          items:
+            type: string
+        device:
+          type: string
+        ip:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        last_seen_at:
+          type: string
+          format: date-time
+        revoked:
+          type: boolean
+        mfa_verified:
+          type: boolean
+        refresh_token_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        refresh_token_revoked:
+          type: boolean
+          nullable: true
