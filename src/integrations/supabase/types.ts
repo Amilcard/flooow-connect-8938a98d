@@ -349,6 +349,7 @@ export type Database = {
           reason_code: string | null
           slot_id: string
           status: Database["public"]["Enums"]["booking_status"]
+          transport_mode: string | null
           updated_at: string
           user_id: string
         }
@@ -363,6 +364,7 @@ export type Database = {
           reason_code?: string | null
           slot_id: string
           status?: Database["public"]["Enums"]["booking_status"]
+          transport_mode?: string | null
           updated_at?: string
           user_id: string
         }
@@ -377,6 +379,7 @@ export type Database = {
           reason_code?: string | null
           slot_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
+          transport_mode?: string | null
           updated_at?: string
           user_id?: string
         }

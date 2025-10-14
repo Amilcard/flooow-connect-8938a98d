@@ -6,5 +6,14 @@ verify_jwt = false
 [functions.bookings]
 verify_jwt = false
 
+[functions.bookings-parent-validate]
+verify_jwt = false
+
+[functions.simulate-aid]
+verify_jwt = false
+
+[functions.modal-split]
+verify_jwt = false
+
 [functions.reports]
 verify_jwt = false
