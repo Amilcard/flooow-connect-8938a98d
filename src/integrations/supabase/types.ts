@@ -222,10 +222,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "aid_simulations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "v_children_with_age"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "aid_simulations_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aid_simulations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
             referencedColumns: ["id"]
           },
         ]
@@ -399,6 +413,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "v_children_with_age"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_slot_id_fkey"
             columns: ["slot_id"]
             isOneToOne: false
@@ -412,6 +433,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
+            referencedColumns: ["id"]
+          },
         ]
       }
       children: {
@@ -419,9 +447,12 @@ export type Database = {
           accessibility_flags: Json | null
           created_at: string
           dob: string
+          education_level: string | null
           first_name: string
           id: string
+          is_student: boolean | null
           needs_json: Json | null
+          school_postal_code: string | null
           updated_at: string
           user_id: string
         }
@@ -429,9 +460,12 @@ export type Database = {
           accessibility_flags?: Json | null
           created_at?: string
           dob: string
+          education_level?: string | null
           first_name: string
           id?: string
+          is_student?: boolean | null
           needs_json?: Json | null
+          school_postal_code?: string | null
           updated_at?: string
           user_id: string
         }
@@ -439,9 +473,12 @@ export type Database = {
           accessibility_flags?: Json | null
           created_at?: string
           dob?: string
+          education_level?: string | null
           first_name?: string
           id?: string
+          is_student?: boolean | null
           needs_json?: Json | null
+          school_postal_code?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -451,6 +488,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "children_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
             referencedColumns: ["id"]
           },
         ]
@@ -465,6 +509,7 @@ export type Database = {
           categories: string[]
           created_at: string
           cumulative: boolean
+          eligibility_summary: string | null
           id: string
           name: string
           official_link: string | null
@@ -473,6 +518,7 @@ export type Database = {
           territory_codes: string[]
           territory_level: string
           updated_at: string
+          verification_notes: string | null
         }
         Insert: {
           active?: boolean
@@ -483,6 +529,7 @@ export type Database = {
           categories?: string[]
           created_at?: string
           cumulative?: boolean
+          eligibility_summary?: string | null
           id?: string
           name: string
           official_link?: string | null
@@ -491,6 +538,7 @@ export type Database = {
           territory_codes?: string[]
           territory_level: string
           updated_at?: string
+          verification_notes?: string | null
         }
         Update: {
           active?: boolean
@@ -501,6 +549,7 @@ export type Database = {
           categories?: string[]
           created_at?: string
           cumulative?: boolean
+          eligibility_summary?: string | null
           id?: string
           name?: string
           official_link?: string | null
@@ -509,6 +558,7 @@ export type Database = {
           territory_codes?: string[]
           territory_level?: string
           updated_at?: string
+          verification_notes?: string | null
         }
         Relationships: []
       }
@@ -578,6 +628,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -586,7 +643,10 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          marital_status: string | null
+          postal_code: string | null
           profile_json: Json | null
+          quotient_familial: number | null
           territory_id: string | null
           updated_at: string
         }
@@ -595,7 +655,10 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          marital_status?: string | null
+          postal_code?: string | null
           profile_json?: Json | null
+          quotient_familial?: number | null
           territory_id?: string | null
           updated_at?: string
         }
@@ -604,7 +667,10 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          marital_status?: string | null
+          postal_code?: string | null
           profile_json?: Json | null
+          quotient_familial?: number | null
           territory_id?: string | null
           updated_at?: string
         }
@@ -738,10 +804,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reviews_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "v_children_with_age"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reviews_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
             referencedColumns: ["id"]
           },
         ]
@@ -966,7 +1046,83 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_children_with_age: {
+        Row: {
+          accessibility_flags: Json | null
+          age: number | null
+          created_at: string | null
+          dob: string | null
+          education_level: string | null
+          first_name: string | null
+          id: string | null
+          is_student: boolean | null
+          needs_json: Json | null
+          school_postal_code: string | null
+          student_status_hint: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          accessibility_flags?: Json | null
+          age?: never
+          created_at?: string | null
+          dob?: string | null
+          education_level?: string | null
+          first_name?: string | null
+          id?: string | null
+          is_student?: boolean | null
+          needs_json?: Json | null
+          school_postal_code?: string | null
+          student_status_hint?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          accessibility_flags?: Json | null
+          age?: never
+          created_at?: string | null
+          dob?: string | null
+          education_level?: string | null
+          first_name?: string | null
+          id?: string | null
+          is_student?: boolean | null
+          needs_json?: Json | null
+          school_postal_code?: string | null
+          student_status_hint?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "children_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "children_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_profile_completion: {
+        Row: {
+          completion_message: string | null
+          completion_status: string | null
+          email: string | null
+          has_children: boolean | null
+          has_marital_status: boolean | null
+          has_postal_code: boolean | null
+          has_qf: boolean | null
+          has_territory: boolean | null
+          id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_age: {
@@ -1004,6 +1160,10 @@ export type Database = {
       decrement_seat_atomic: {
         Args: { _booking_id: string; _slot_id: string }
         Returns: Json
+      }
+      get_child_age: {
+        Args: { birth_date: string }
+        Returns: number
       }
       get_territory_from_postal: {
         Args: { postal_code: string }
