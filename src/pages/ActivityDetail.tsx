@@ -325,6 +325,13 @@ const ActivityDetail = () => {
         {userProfile && selectedChild && (
           <FinancialAidBadges
             activityCategories={[activity.category]}
+            activityAcceptedAidSlugs={
+              Array.isArray(activity.accepts_aid_types) 
+                ? activity.accepts_aid_types 
+                : typeof activity.accepts_aid_types === 'string'
+                  ? JSON.parse(activity.accepts_aid_types || '[]')
+                  : []
+            }
             childAge={calculateAge(selectedChild.dob)}
             quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
             cityCode={userProfile.postal_code || ''}

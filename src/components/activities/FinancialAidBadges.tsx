@@ -8,6 +8,7 @@ import { Loader2, Euro, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 
 interface Props {
   activityCategories: string[];
+  activityAcceptedAidSlugs: string[]; // NEW: slugs of aids accepted by the activity
   childAge: number;
   quotientFamilial: number;
   cityCode: string;
@@ -35,25 +36,33 @@ const TERRITORY_ICONS = {
 
 export const FinancialAidBadges = ({
   activityCategories,
+  activityAcceptedAidSlugs,
   childAge,
   quotientFamilial,
   cityCode
 }: Props) => {
   const navigate = useNavigate();
-  // Fetch all relevant financial aids
+  
+  // Fetch all relevant financial aids (only those accepted by the activity)
   const { data: aids = [], isLoading } = useQuery({
-    queryKey: ["financial-aids-eligibility", activityCategories, childAge, quotientFamilial, cityCode],
+    queryKey: ["financial-aids-eligibility", activityCategories, activityAcceptedAidSlugs, childAge, quotientFamilial, cityCode],
     queryFn: async () => {
+      // If activity doesn't accept any aids, return empty
+      if (!activityAcceptedAidSlugs || activityAcceptedAidSlugs.length === 0) {
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("financial_aids")
         .select("*")
         .eq("active", true)
+        .in("slug", activityAcceptedAidSlugs)
         .overlaps("categories", activityCategories);
 
       if (error) throw error;
       return data as FinancialAid[];
     },
-    enabled: !!cityCode && childAge > 0
+    enabled: !!cityCode && childAge > 0 && !!activityAcceptedAidSlugs && activityAcceptedAidSlugs.length > 0
   });
 
   // Calculate eligibility for each aid

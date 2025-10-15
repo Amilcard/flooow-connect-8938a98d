@@ -9,6 +9,9 @@ import Onboarding from "./pages/Onboarding";
 import Auth from "./pages/Auth";
 import ProfileCompletion from "./pages/ProfileCompletion";
 import ProfileEdit from "./pages/ProfileEdit";
+import StructureAuth from "./pages/StructureAuth";
+import StructureDashboard from "./pages/StructureDashboard";
+import StructureActivityForm from "./pages/StructureActivityForm";
 import Activities from "./pages/Activities";
 import Search from "./pages/Search";
 import ActivityDetail from "./pages/ActivityDetail";
@@ -42,6 +45,10 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile-completion" element={<ProfileCompletion />} />
           <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/structure-auth" element={<StructureAuth />} />
+          <Route path="/structure-dashboard" element={<StructureDashboard />} />
+          <Route path="/structure/activity/new" element={<StructureActivityForm />} />
+          <Route path="/structure/activity/:id" element={<StructureActivityForm />} />
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
