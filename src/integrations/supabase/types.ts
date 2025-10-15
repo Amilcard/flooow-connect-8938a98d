@@ -834,30 +834,59 @@ export type Database = {
       }
       territories: {
         Row: {
+          active: boolean | null
           config_json: Json | null
           covered: boolean | null
           created_at: string
+          department_code: string | null
+          geojson: Json | null
           id: string
           name: string
+          parent_id: string | null
+          postal_codes: string[] | null
+          region_code: string | null
+          type: string | null
           updated_at: string
         }
         Insert: {
+          active?: boolean | null
           config_json?: Json | null
           covered?: boolean | null
           created_at?: string
+          department_code?: string | null
+          geojson?: Json | null
           id?: string
           name: string
+          parent_id?: string | null
+          postal_codes?: string[] | null
+          region_code?: string | null
+          type?: string | null
           updated_at?: string
         }
         Update: {
+          active?: boolean | null
           config_json?: Json | null
           covered?: boolean | null
           created_at?: string
+          department_code?: string | null
+          geojson?: Json | null
           id?: string
           name?: string
+          parent_id?: string | null
+          postal_codes?: string[] | null
+          region_code?: string | null
+          type?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "territories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "territories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -975,6 +1004,14 @@ export type Database = {
       decrement_seat_atomic: {
         Args: { _booking_id: string; _slot_id: string }
         Returns: Json
+      }
+      get_territory_from_postal: {
+        Args: { postal_code: string }
+        Returns: {
+          territory_id: string
+          territory_name: string
+          territory_type: string
+        }[]
       }
       get_user_territory: {
         Args: { _user_id: string }
