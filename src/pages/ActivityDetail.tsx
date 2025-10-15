@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SlotPicker } from "@/components/SlotPicker";
 import { SimulateAidModal } from "@/components/SimulateAidModal";
 import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
+import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -320,26 +321,24 @@ const ActivityDetail = () => {
           </Card>
         )}
 
-        {/* Financial Aids Calculator */}
+        {/* Financial Aid Eligibility Badges */}
+        {userProfile && selectedChild && (
+          <FinancialAidBadges
+            activityCategories={[activity.category]}
+            childAge={calculateAge(selectedChild.dob)}
+            quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
+            cityCode={userProfile.postal_code || ''}
+          />
+        )}
+
+        {/* Financial Aids Calculator - Detailed calculation when slot selected */}
         {userProfile && selectedChild && selectedSlot && activity.price_base > 0 && (
           <FinancialAidsCalculator
             activityPrice={activity.price_base}
             activityCategories={[activity.category]}
             childAge={calculateAge(selectedChild.dob)}
-            quotientFamilial={
-              typeof userProfile.profile_json === 'object' && 
-              userProfile.profile_json !== null && 
-              'quotient_familial' in userProfile.profile_json
-                ? Number(userProfile.profile_json.quotient_familial) || 0
-                : 0
-            }
-            cityCode={
-              typeof userProfile.profile_json === 'object' && 
-              userProfile.profile_json !== null && 
-              'city_code' in userProfile.profile_json
-                ? String(userProfile.profile_json.city_code) || ''
-                : ''
-            }
+            quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
+            cityCode={userProfile.postal_code || ''}
             durationDays={calculateDurationDays(selectedSlot)}
           />
         )}

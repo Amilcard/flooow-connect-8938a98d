@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { InfoBlocks } from "@/components/InfoBlocks";
@@ -7,9 +8,26 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { ActivityCardSkeleton } from "@/components/ActivityCardSkeleton";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
   
   // Charger les différentes catégories d'activités (limité à 3 par section)
   const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ limit: 3 });
@@ -35,6 +53,24 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+      
+      {/* Auth CTA for non-logged users */}
+      {!isLoggedIn && (
+        <div className="container px-4 pt-4">
+          <div className="bg-gradient-to-r from-primary to-primary-light text-white p-4 rounded-lg flex items-center justify-between">
+            <div className="flex-1">
+              <p className="font-semibold">Accédez aux aides financières</p>
+              <p className="text-sm text-white/90">Créez un compte pour calculer vos aides</p>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/auth")}
+            >
+              Se connecter
+            </Button>
+          </div>
+        </div>
+      )}
       
       <main className="container px-4 py-6 space-y-8">
         <InfoBlocks />

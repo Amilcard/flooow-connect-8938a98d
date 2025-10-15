@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -17,6 +19,24 @@ import {
 
 const MonCompte = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !"
+      });
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
 
   const menuItems = [
     {
@@ -96,7 +116,7 @@ const MonCompte = () => {
         <Button
           variant="outline"
           className="w-full h-12 text-red-600 hover:text-red-700 hover:bg-red-50"
-          onClick={() => console.log("Déconnexion")}
+          onClick={handleLogout}
         >
           <LogOut className="mr-2" size={20} />
           Se déconnecter

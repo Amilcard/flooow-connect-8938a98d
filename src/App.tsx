@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Splash from "./pages/Splash";
 import Onboarding from "./pages/Onboarding";
+import Auth from "./pages/Auth";
+import ProfileCompletion from "./pages/ProfileCompletion";
 import Activities from "./pages/Activities";
 import Search from "./pages/Search";
 import ActivityDetail from "./pages/ActivityDetail";
@@ -36,6 +38,8 @@ const App = () => (
         <Routes>
           <Route path="/splash" element={<Splash />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/profile-completion" element={<ProfileCompletion />} />
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
