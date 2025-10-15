@@ -1,0 +1,21 @@
+export type SettingsType = {
+  language: string;
+  region: string;
+  theme: 'light' | 'dark' | 'system';
+  fontSize: 'small' | 'medium' | 'large' | 'xlarge';
+  highContrast: boolean;
+  reducedMotion: boolean;
+  profileVisibility: 'public' | 'friends' | 'private';
+  dataSharing: boolean;
+  analytics: boolean;
+  cookies: boolean;
+  pushNotifications: boolean;
+  emailNotifications: boolean;
+  soundEnabled: boolean;
+  twoFactorAuth: boolean;
+  sessionTimeout: string;
+  screenReader: boolean;
+  voiceOver: boolean;
+  largeText: boolean;
+  colorBlindMode: boolean;
+};
