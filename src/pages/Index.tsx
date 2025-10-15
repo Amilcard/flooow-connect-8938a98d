@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { BottomNavigation } from "@/components/BottomNavigation";
 import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
@@ -9,10 +8,13 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { ActivityCardSkeleton } from "@/components/ActivityCardSkeleton";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
+=======
+>>>>>>> 42bf34d ( sauvegarde)
 
 const Index = () => {
   const navigate = useNavigate();
@@ -63,7 +65,7 @@ const Index = () => {
 
   if (errorNearby) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <PageLayout>
         <SearchBar onFilterClick={() => console.log("Filter clicked")} />
         <main className="container px-4 py-6">
           <ErrorState 
@@ -71,12 +73,11 @@ const Index = () => {
             onRetry={() => window.location.reload()}
           />
         </main>
-        <BottomNavigation />
-      </div>
+      </PageLayout>
     );
   }
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
       {/* Auth CTA for non-logged users */}
@@ -133,9 +134,9 @@ const Index = () => {
           </>
         )}
       </main>
-
-      <BottomNavigation />
-    </div>
+  <FAQSection limit={4} />
+      <Footer />
+    </PageLayout>
   );
 };
 

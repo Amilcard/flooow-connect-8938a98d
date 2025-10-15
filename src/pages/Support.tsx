@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Mail, Phone, HelpCircle } from "lucide-react";
 
+import Footer from "@/components/Footer";
+
 const Support = () => {
   const faqItems = [
     {
@@ -109,6 +111,7 @@ const Support = () => {
       </div>
 
       <BottomNavigation />
+      <Footer />
     </div>
   );
 };

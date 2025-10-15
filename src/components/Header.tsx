@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Heart, Menu } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import AuthNavigation from "@/components/authentification/AuthNavigation";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/80 backdrop-blur-lg">
@@ -33,12 +37,18 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden md:inline-flex">
-              Se connecter
-            </Button>
-            <Button variant="default">
-              S'inscrire
-            </Button>
+            {!isAuthenticated ? (
+              <>
+                <Button variant="ghost" className="hidden md:inline-flex" asChild>
+                  <Link to="/login">Se connecter</Link>
+                </Button>
+                <Button variant="default" asChild>
+                  <Link to="/signup">S'inscrire</Link>
+                </Button>
+              </>
+            ) : (
+              <AuthNavigation />
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -66,6 +76,16 @@ const Header = () => {
               <a href="#a-propos" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 À propos
               </a>
+              {!isAuthenticated && (
+                <div className="flex flex-col gap-2 pt-4 border-t border-border/40">
+                  <Button variant="ghost" asChild className="justify-start">
+                    <Link to="/login">Se connecter</Link>
+                  </Button>
+                  <Button variant="default" asChild>
+                    <Link to="/signup">S'inscrire</Link>
+                  </Button>
+                </div>
+              )}
             </nav>
           </div>
         )}

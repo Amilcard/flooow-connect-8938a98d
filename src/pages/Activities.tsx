@@ -1,10 +1,10 @@
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
-import { BottomNavigation } from "@/components/BottomNavigation";
 import { ActivitySection } from "@/components/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
 import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PageLayout from "@/components/PageLayout";
 
 const Activities = () => {
   const [searchParams] = useSearchParams();
@@ -31,7 +31,7 @@ const Activities = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <PageLayout>
         <SearchBar onFilterClick={() => console.log("Filter clicked")} />
         <main className="container px-4 py-6">
           <ErrorState 
@@ -39,13 +39,12 @@ const Activities = () => {
             onRetry={() => window.location.reload()}
           />
         </main>
-        <BottomNavigation />
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
       <main className="container px-4 py-6">
@@ -73,9 +72,7 @@ const Activities = () => {
           ))}
         </Tabs>
       </main>
-
-      <BottomNavigation />
-    </div>
+    </PageLayout>
   );
 };
 
