@@ -8,13 +8,13 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { ActivityCardSkeleton } from "@/components/ActivityCardSkeleton";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
-=======
->>>>>>> 42bf34d ( sauvegarde)
+import PageLayout from "@/components/PageLayout";
+import Footer from "@/components/Footer";
+import FAQSection from "@/components/FAQSection";
 
 const Index = () => {
   const navigate = useNavigate();
