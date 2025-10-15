@@ -651,13 +651,6 @@ export type Database = {
             referencedRelation: "sessions"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "refresh_tokens_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "sessions_report"
-            referencedColumns: ["id"]
-          },
         ]
       }
       reports_metrics: {
@@ -944,23 +937,7 @@ export type Database = {
       }
     }
     Views: {
-      sessions_report: {
-        Row: {
-          created_at: string | null
-          device: string | null
-          id: string | null
-          ip: unknown | null
-          last_seen_at: string | null
-          mfa_verified: boolean | null
-          refresh_token_expires_at: string | null
-          refresh_token_revoked: boolean | null
-          revoked: boolean | null
-          roles: string[] | null
-          tenant_id: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_age: {
@@ -988,6 +965,10 @@ export type Database = {
         Returns: number
       }
       cleanup_expired_sessions_and_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      cleanup_old_sessions: {
         Args: Record<PropertyKey, never>
         Returns: number
       }
