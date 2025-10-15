@@ -37,7 +37,7 @@ import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import MesInformations from "./pages/account/MesInformations";
-import MesEnfants from "./pages/account/MesEnfants";
+import MesEnfants from "./pages/account/kids/MesEnfants";
 import MesReservations from "./pages/account/MesReservations";
 import MesNotifications from "./pages/account/MesNotifications";
 import MesSessionsAccount from "./pages/account/MesSessions";

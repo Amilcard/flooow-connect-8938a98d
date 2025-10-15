@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
-import { ActivitySection } from "@/components/ActivitySection";
+import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { InfoBlocks } from "@/components/InfoBlocks";
-import { ActivitySection } from "@/components/ActivitySection";
+import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { ActivityCardSkeleton } from "@/components/ActivityCardSkeleton";
+import { ActivityCardSkeleton } from "@/components/Activity/ActivityCardSkeleton";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";

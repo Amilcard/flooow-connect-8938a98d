@@ -124,8 +124,6 @@ export const GeneralSimulateAidModal = ({
     if (!user) return;
 
     try {
-      console.log('Chargement du profil pour user:', user.id);
-      
       // Charger le profil utilisateur complet
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
@@ -133,27 +131,16 @@ export const GeneralSimulateAidModal = ({
         .eq('id', user.id)
         .single();
 
-      if (profileError) {
-        console.error('Erreur profil:', profileError);
-        throw profileError;
-      }
-      
-      console.log('Profil chargé:', profileData);
+      if (profileError) throw profileError;
       setUserProfile(profileData || {});
 
       // Charger les enfants
-      console.log('Chargement des enfants pour user:', user.id);
       const { data: childrenData, error: childrenError } = await supabase
         .from('children')
         .select('*')
         .eq('user_id', user.id);
 
-      if (childrenError) {
-        console.error('Erreur enfants:', childrenError);
-        throw childrenError;
-      }
-      
-      console.log('Enfants chargés:', childrenData);
+      if (childrenError) throw childrenError;
       setChildren(childrenData || []);
     } catch (err) {
       console.error('Erreur lors du chargement des données:', err);
@@ -163,7 +150,6 @@ export const GeneralSimulateAidModal = ({
   // Charger le profil utilisateur au montage du modal
   useEffect(() => {
     if (open && user) {
-      console.log('Modal ouvert, chargement des données...');
       loadUserProfile();
     }
   }, [open, user, loadUserProfile]);

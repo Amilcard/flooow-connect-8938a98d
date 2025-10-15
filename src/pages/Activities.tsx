@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
-import { ActivitySection } from "@/components/ActivitySection";
+import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
 import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ActivityCard } from "@/components/ActivityCard";
+import { ActivityCard } from "@/components/Activity/ActivityCard";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { SearchBar } from "@/components/SearchBar";
 import { LoadingState } from "@/components/LoadingState";

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SlotPicker } from "@/components/SlotPicker";
-import { SimulateAidModal } from "@/components/SimulateAidModal";
+import { SimulateAidModal } from "@/components/simulations/SimulateAidModal";
 import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
 import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
 import { LoadingState } from "@/components/LoadingState";
@@ -162,14 +162,14 @@ const ActivityDetail = () => {
   };
 
   // Calculate duration in days from slot
-  const calculateDurationDays = (slot: any): number => {
-    if (!slot) return 1;
-    const start = new Date(slot.start);
-    const end = new Date(slot.end);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(1, diffDays);
-  };
+    const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
+      if (!slot || !slot.start || !slot.end) return 1;
+      const start = new Date(slot.start);
+      const end = new Date(slot.end);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(1, diffDays);
+    };
 
   // Get selected child details
   const selectedChild = children.find(c => c.id === selectedChildId);
@@ -510,7 +510,8 @@ const ActivityDetail = () => {
         open={showAidModal}
         onOpenChange={setShowAidModal}
         activityPrice={activity.price_base || 0}
-        acceptedAids={Array.isArray(activity.accepts_aid_types) ? activity.accepts_aid_types as string[] : []}
+        activityCategories={[activity.category].filter(Boolean)}
+        durationDays={1}
       />
 
       <BottomNavigation />

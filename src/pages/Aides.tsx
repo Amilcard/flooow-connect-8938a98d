@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { SearchBar } from "@/components/SearchBar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { GeneralSimulateAidModal } from "@/components/simulations/GeneralSimulateAidModal";
 import { DollarSign, HelpCircle, Calculator } from "lucide-react";
 
 const Aides = () => {
+  const [showSimulator, setShowSimulator] = useState(false);
+
   const aides = [
     {
       name: "Pass'Sport",
@@ -57,8 +62,16 @@ const Aides = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm mb-4">
-              Le simulateur est accessible lors de la réservation d'une activité
+              Simulez vos aides pour une activité type et découvrez vos économies potentielles
             </p>
+            <Button 
+              onClick={() => setShowSimulator(true)} 
+              variant="secondary" 
+              className="bg-white text-primary hover:bg-white/90"
+            >
+              <Calculator className="w-4 h-4 mr-2" />
+              Lancer la simulation
+            </Button>
           </CardContent>
         </Card>
 
@@ -110,6 +123,12 @@ const Aides = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Simulateur Modal */}
+      <GeneralSimulateAidModal
+        open={showSimulator}
+        onOpenChange={setShowSimulator}
+      />
 
       <BottomNavigation />
     </div>
