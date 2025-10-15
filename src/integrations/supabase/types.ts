@@ -1165,6 +1165,15 @@ export type Database = {
         Args: { birth_date: string }
         Returns: number
       }
+      get_territories_from_postal: {
+        Args: { postal_code: string }
+        Returns: {
+          territory_id: string
+          territory_level: number
+          territory_name: string
+          territory_type: string
+        }[]
+      }
       get_territory_from_postal: {
         Args: { postal_code: string }
         Returns: {
