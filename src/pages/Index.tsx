@@ -4,12 +4,15 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
+import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { ActivityCardSkeleton } from "@/components/ActivityCardSkeleton";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { TerritoryCheck } from "@/components/TerritoryCheck";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -28,6 +31,28 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch user profile to check postal code
+  const { data: userProfile } = useQuery({
+    queryKey: ["user-profile-index"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: isLoggedIn
+  });
+
+  // Check territory access
+  const { data: territoryAccess } = useTerritoryAccess(userProfile?.postal_code || null);
   
   // Charger les différentes catégories d'activités (limité à 3 par section)
   const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ limit: 3 });
@@ -73,28 +98,40 @@ const Index = () => {
       )}
       
       <main className="container px-4 py-6 space-y-8">
-        <InfoBlocks />
+        {/* Territory Check for logged-in users */}
+        {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
+          <TerritoryCheck 
+            postalCode={userProfile.postal_code}
+          />
+        )}
 
-        <ActivitySection
-          title="Activités à proximité"
-          activities={nearbyActivities}
-          onSeeAll={() => navigate("/activities?type=nearby")}
-          onActivityClick={(id) => console.log("Activity clicked:", id)}
-        />
+        {/* Show activities only if user has access or not logged in */}
+        {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
+          <>
+            <InfoBlocks />
 
-        <ActivitySection
-          title="Activités Petits budgets"
-          activities={budgetActivities}
-          onSeeAll={() => navigate("/activities?type=budget")}
-          onActivityClick={(id) => console.log("Activity clicked:", id)}
-        />
+            <ActivitySection
+              title="Activités à proximité"
+              activities={nearbyActivities}
+              onSeeAll={() => navigate("/activities?type=nearby")}
+              onActivityClick={(id) => console.log("Activity clicked:", id)}
+            />
 
-        <ActivitySection
-          title="Activités Santé"
-          activities={healthActivities}
-          onSeeAll={() => navigate("/activities?type=health")}
-          onActivityClick={(id) => console.log("Activity clicked:", id)}
-        />
+            <ActivitySection
+              title="Activités Petits budgets"
+              activities={budgetActivities}
+              onSeeAll={() => navigate("/activities?type=budget")}
+              onActivityClick={(id) => console.log("Activity clicked:", id)}
+            />
+
+            <ActivitySection
+              title="Activités Santé"
+              activities={healthActivities}
+              onSeeAll={() => navigate("/activities?type=health")}
+              onActivityClick={(id) => console.log("Activity clicked:", id)}
+            />
+          </>
+        )}
       </main>
 
       <BottomNavigation />

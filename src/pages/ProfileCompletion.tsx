@@ -9,10 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { TerritoryCheck } from "@/components/TerritoryCheck";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Child {
   firstName: string;
   birthDate: string;
+  isStudent: boolean;
 }
 
 const ProfileCompletion = () => {
@@ -27,11 +30,12 @@ const ProfileCompletion = () => {
   });
 
   const [children, setChildren] = useState<Child[]>([
-    { firstName: "", birthDate: "" }
+    { firstName: "", birthDate: "", isStudent: false }
   ]);
+  const [isCovered, setIsCovered] = useState(true);
 
   const addChild = () => {
-    setChildren([...children, { firstName: "", birthDate: "" }]);
+    setChildren([...children, { firstName: "", birthDate: "", isStudent: false }]);
   };
 
   const removeChild = (index: number) => {
@@ -40,9 +44,9 @@ const ProfileCompletion = () => {
     }
   };
 
-  const updateChild = (index: number, field: keyof Child, value: string) => {
+  const updateChild = (index: number, field: keyof Child, value: string | boolean) => {
     const updated = [...children];
-    updated[index][field] = value;
+    updated[index][field] = value as never;
     setChildren(updated);
   };
 
@@ -75,7 +79,8 @@ const ProfileCompletion = () => {
             .insert({
               user_id: user.id,
               first_name: child.firstName,
-              dob: child.birthDate
+              dob: child.birthDate,
+              is_student: child.isStudent
             });
 
           if (childError) throw childError;
@@ -99,7 +104,7 @@ const ProfileCompletion = () => {
     }
   };
 
-  const canSubmit = formData.postalCode && children.some(c => c.firstName && c.birthDate);
+  const canSubmit = formData.postalCode && children.some(c => c.firstName && c.birthDate) && isCovered;
 
   return (
     <div className="min-h-screen bg-background">
@@ -141,6 +146,14 @@ const ProfileCompletion = () => {
                 Pour déterminer les aides locales disponibles
               </p>
             </div>
+
+            {/* Territory Coverage Check */}
+            {formData.postalCode && (
+              <TerritoryCheck 
+                postalCode={formData.postalCode}
+                onCovered={setIsCovered}
+              />
+            )}
 
             {/* Quotient Familial */}
             <div className="space-y-2">
@@ -217,6 +230,21 @@ const ProfileCompletion = () => {
                         required
                       />
                     </div>
+                  </div>
+
+                  {/* Student checkbox */}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`child-${index}-isStudent`}
+                      checked={child.isStudent}
+                      onCheckedChange={(checked) => updateChild(index, "isStudent", !!checked)}
+                    />
+                    <Label
+                      htmlFor={`child-${index}-isStudent`}
+                      className="text-sm font-normal cursor-pointer"
+                    >
+                      Lycéen / Étudiant
+                    </Label>
                   </div>
                 </Card>
               ))}

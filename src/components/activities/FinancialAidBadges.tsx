@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Loader2, Euro, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 
 interface Props {
@@ -37,6 +39,7 @@ export const FinancialAidBadges = ({
   quotientFamilial,
   cityCode
 }: Props) => {
+  const navigate = useNavigate();
   // Fetch all relevant financial aids
   const { data: aids = [], isLoading } = useQuery({
     queryKey: ["financial-aids-eligibility", activityCategories, childAge, quotientFamilial, cityCode],
@@ -83,7 +86,7 @@ export const FinancialAidBadges = ({
       if (quotientFamilial === 0) {
         return {
           status: "verify",
-          reason: "Complétez votre QF pour vérifier",
+          reason: "Renseignez votre QF pour vérifier",
           badge: "warning",
           icon: <AlertCircle size={14} />
         };
@@ -91,7 +94,7 @@ export const FinancialAidBadges = ({
       if (quotientFamilial > aid.qf_max) {
         return {
           status: "not_eligible",
-          reason: `QF max: ${aid.qf_max}€`,
+          reason: `Non éligible - QF max: ${aid.qf_max}€`,
           badge: "secondary",
           icon: <XCircle size={14} />
         };
@@ -129,6 +132,9 @@ export const FinancialAidBadges = ({
     return order[a.eligibility.status] - order[b.eligibility.status];
   });
 
+  // Check if QF is missing
+  const hasVerifyStatus = eligibleAids.some(aid => aid.eligibility.status === "verify");
+
   return (
     <Card>
       <CardHeader>
@@ -138,6 +144,21 @@ export const FinancialAidBadges = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        {hasVerifyStatus && quotientFamilial === 0 && (
+          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800 mb-2">
+              💡 Certaines aides nécessitent votre quotient familial
+            </p>
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => navigate("/profile-edit")}
+              className="w-full"
+            >
+              Compléter mon profil
+            </Button>
+          </div>
+        )}
         {eligibleAids.map((aid) => (
           <div
             key={aid.id}
