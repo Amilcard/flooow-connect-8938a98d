@@ -1260,6 +1260,10 @@ export type Database = {
         Args: { _session_id: string }
         Returns: undefined
       }
+      validate_mfa_backup_code: {
+        Args: { p_code_attempt: string; p_user_id: string }
+        Returns: boolean
+      }
       verify_backup_code: {
         Args: { hashed_code: string; plain_code: string }
         Returns: boolean
