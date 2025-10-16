@@ -80,6 +80,7 @@ export type Database = {
           age_max: number | null
           age_min: number | null
           capacity_policy: Json | null
+          categories: string[] | null
           category: string
           covoiturage_enabled: boolean | null
           created_at: string
@@ -101,6 +102,7 @@ export type Database = {
           transport_meta: Json | null
           transport_options: Json | null
           updated_at: string
+          vacation_periods: string[] | null
           video_url: string | null
           webhook_url_for_docs: string | null
         }
@@ -110,6 +112,7 @@ export type Database = {
           age_max?: number | null
           age_min?: number | null
           capacity_policy?: Json | null
+          categories?: string[] | null
           category: string
           covoiturage_enabled?: boolean | null
           created_at?: string
@@ -131,6 +134,7 @@ export type Database = {
           transport_meta?: Json | null
           transport_options?: Json | null
           updated_at?: string
+          vacation_periods?: string[] | null
           video_url?: string | null
           webhook_url_for_docs?: string | null
         }
@@ -140,6 +144,7 @@ export type Database = {
           age_max?: number | null
           age_min?: number | null
           capacity_policy?: Json | null
+          categories?: string[] | null
           category?: string
           covoiturage_enabled?: boolean | null
           created_at?: string
@@ -161,6 +166,7 @@ export type Database = {
           transport_meta?: Json | null
           transport_options?: Json | null
           updated_at?: string
+          vacation_periods?: string[] | null
           video_url?: string | null
           webhook_url_for_docs?: string | null
         }

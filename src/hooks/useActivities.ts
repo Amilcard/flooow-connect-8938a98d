@@ -8,10 +8,14 @@ export interface Activity {
   distance?: string;
   ageRange: string;
   category: string;
+  categories?: string[];
   price: number;
   hasAccessibility: boolean;
   hasFinancialAid: boolean;
   periodType?: string;
+  structureName?: string;
+  structureAddress?: string;
+  vacationPeriods?: string[];
 }
 
 interface ActivityFilters {
@@ -21,6 +25,7 @@ interface ActivityFilters {
   ageMin?: number;
   ageMax?: number;
   limit?: number;
+  vacationPeriod?: string;
 }
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
@@ -35,10 +40,14 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     image: imageUrl || "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop",
     ageRange: `${dbActivity.age_min}-${dbActivity.age_max} ans`,
     category: dbActivity.category,
+    categories: dbActivity.categories || [dbActivity.category],
     price: Number(dbActivity.price_base) || 0,
     hasAccessibility: dbActivity.accessibility_checklist?.wheelchair === true,
     hasFinancialAid: Array.isArray(dbActivity.accepts_aid_types) && dbActivity.accepts_aid_types.length > 0,
     periodType: dbActivity.period_type,
+    structureName: dbActivity.structures?.name,
+    structureAddress: dbActivity.structures?.address,
+    vacationPeriods: dbActivity.vacation_periods,
   };
 };
 
@@ -49,14 +58,16 @@ export const useActivities = (filters?: ActivityFilters) => {
       let query = supabase
         .from("activities")
         .select(`
-          id, title, category, age_min, age_max, price_base,
+          id, title, category, categories, age_min, age_max, price_base,
           images, accessibility_checklist, accepts_aid_types,
-          capacity_policy, covoiturage_enabled, structure_id, period_type
+          capacity_policy, covoiturage_enabled, structure_id, period_type,
+          vacation_periods,
+          structures:structure_id (name, address)
         `)
         .eq("published", true);
 
       if (filters?.category) {
-        query = query.eq("category", filters.category);
+        query = query.contains("categories", [filters.category]);
       }
 
       if (filters?.maxPrice !== undefined) {
@@ -69,6 +80,10 @@ export const useActivities = (filters?: ActivityFilters) => {
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
         query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
+      }
+
+      if (filters?.vacationPeriod) {
+        query = query.contains("vacation_periods", [filters.vacationPeriod]);
       }
 
       if (filters?.limit) {

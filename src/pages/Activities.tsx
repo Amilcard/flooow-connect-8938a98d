@@ -1,6 +1,8 @@
 import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
+import { VacationPeriodFilter } from "@/components/VacationPeriodFilter";
 import { useActivities } from "@/hooks/useActivities";
 import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,13 +12,16 @@ const Activities = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
   const type = searchParams.get("type");
+  const [selectedVacationPeriod, setSelectedVacationPeriod] = useState<string | undefined>();
 
   // Déterminer les filtres selon le type de section
   const getFilters = () => {
-    if (category) return { category };
-    if (type === "budget") return { maxPrice: 50 };
-    if (type === "health") return { hasAccessibility: true };
-    return {};
+    const filters: any = {};
+    if (category) filters.category = category;
+    if (type === "budget") filters.maxPrice = 50;
+    if (type === "health") filters.hasAccessibility = true;
+    if (selectedVacationPeriod) filters.vacationPeriod = selectedVacationPeriod;
+    return filters;
   };
 
   const { data: activities = [], isLoading, error } = useActivities(getFilters());
@@ -48,6 +53,11 @@ const Activities = () => {
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
       <main className="container px-4 py-6">
+        <VacationPeriodFilter 
+          selectedPeriod={selectedVacationPeriod}
+          onPeriodChange={setSelectedVacationPeriod}
+        />
+        
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="w-full mb-6 grid grid-cols-3 sm:grid-cols-6">
             <TabsTrigger value="all" className="flex-1">Toutes</TabsTrigger>

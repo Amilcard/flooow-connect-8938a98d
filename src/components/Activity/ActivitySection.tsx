@@ -16,6 +16,8 @@ interface Activity {
   age_min?: number;
   age_max?: number;
   periodType?: string;
+  structureName?: string;
+  structureAddress?: string;
 }
 
 interface ActivitySectionProps {
@@ -61,6 +63,8 @@ export const ActivitySection = ({
             {...activity}
             ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
             periodType={activity.periodType}
+            structureName={activity.structureName}
+            structureAddress={activity.structureAddress}
             onRequestClick={() => navigate(`/activity/${activity.id}`)}
           />
         ))}

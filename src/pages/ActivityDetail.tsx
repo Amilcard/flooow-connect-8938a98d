@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SlotPicker } from "@/components/SlotPicker";
 import { SimulateAidModal } from "@/components/simulations/SimulateAidModal";
 import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
@@ -25,7 +26,8 @@ import {
   Calendar,
   Info,
   FileText,
-  Building2
+  Building2,
+  HelpCircle
 } from "lucide-react";
 import { useState } from "react";
 import activitySportImg from "@/assets/activity-sport.jpg";
@@ -206,11 +208,19 @@ const ActivityDetail = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         
-        {/* Category badge */}
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-primary text-primary-foreground">
-            {activity.category}
-          </Badge>
+        {/* Category badges */}
+        <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
+          {activity.categories && activity.categories.length > 0 ? (
+            activity.categories.map((cat: string) => (
+              <Badge key={cat} className="bg-primary text-primary-foreground">
+                {cat}
+              </Badge>
+            ))
+          ) : (
+            <Badge className="bg-primary text-primary-foreground">
+              {activity.category}
+            </Badge>
+          )}
         </div>
 
         {/* Accessibility badge */}
@@ -251,9 +261,45 @@ const ActivityDetail = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Tarif</p>
-                <p className="text-4xl font-bold text-primary">
-                  {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
-                </p>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-2 cursor-help">
+                        <p className="text-4xl font-bold text-primary">
+                          {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
+                        </p>
+                        {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+                          <HelpCircle size={20} className="text-muted-foreground" />
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+                      <TooltipContent className="max-w-sm p-4">
+                        <div className="space-y-2">
+                          <p className="font-semibold">💡 Exemple de calcul avec aides :</p>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span>Prix de base :</span>
+                              <span className="font-medium">{activity.price_base}€</span>
+                            </div>
+                            <div className="flex justify-between text-green-600">
+                              <span>- Pass'Sport (exemple) :</span>
+                              <span className="font-medium">-50€</span>
+                            </div>
+                            <Separator className="my-2" />
+                            <div className="flex justify-between font-bold text-green-700">
+                              <span>Prix après aide :</span>
+                              <span>{Math.max(0, (activity.price_base || 0) - 50)}€</span>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Cliquez sur "Simuler les aides" pour un calcul personnalisé
+                          </p>
+                        </div>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
                 <p className="text-sm text-muted-foreground mt-1">par enfant</p>
               </div>
               

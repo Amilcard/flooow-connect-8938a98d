@@ -18,6 +18,9 @@ interface ActivityCardProps {
   hasAccessibility?: boolean;
   hasFinancialAid?: boolean;
   periodType?: string;
+  structureName?: string;
+  structureAddress?: string;
+  estimatedAidAmount?: number;
   onRequestClick?: () => void;
 }
 
@@ -42,6 +45,9 @@ export const ActivityCard = ({
   hasAccessibility = false,
   hasFinancialAid = false,
   periodType,
+  structureName,
+  structureAddress,
+  estimatedAidAmount,
   onRequestClick,
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
@@ -94,6 +100,13 @@ export const ActivityCard = ({
         <div>
           <h3 className="font-semibold text-lg line-clamp-2 mb-2">{title}</h3>
           
+          {structureName && (
+            <p className="text-sm text-muted-foreground mb-2">
+              📍 {structureName}
+              {structureAddress && ` • ${structureAddress.split(',')[1]?.trim() || structureAddress.split(',')[0]}`}
+            </p>
+          )}
+          
           <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
             {distance && (
               <span className="flex items-center gap-1">
@@ -112,10 +125,26 @@ export const ActivityCard = ({
 
         <div className="flex items-center justify-between gap-3 pt-2">
           <div>
-            <p className="text-2xl font-bold text-primary">
-              {price === 0 ? "Gratuit" : `${price}€`}
-            </p>
-            {hasFinancialAid && (
+            {estimatedAidAmount && estimatedAidAmount > 0 ? (
+              <div className="space-y-1">
+                <p className="text-lg line-through text-muted-foreground">
+                  {price}€
+                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-2xl font-bold text-green-600">
+                    {Math.max(0, price - estimatedAidAmount)}€
+                  </p>
+                  <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                    -{estimatedAidAmount}€ aides
+                  </Badge>
+                </div>
+              </div>
+            ) : (
+              <p className="text-2xl font-bold text-primary">
+                {price === 0 ? "Gratuit" : `${price}€`}
+              </p>
+            )}
+            {hasFinancialAid && !estimatedAidAmount && (
               <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 mt-1">
                 Aides disponibles
               </Badge>
