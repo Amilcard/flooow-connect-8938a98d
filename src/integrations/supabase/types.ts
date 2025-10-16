@@ -597,7 +597,6 @@ export type Database = {
       }
       mfa_settings: {
         Row: {
-          backup_codes: Json | null
           backup_codes_hashed: string[] | null
           backup_codes_used: Json | null
           created_at: string
@@ -609,7 +608,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          backup_codes?: Json | null
           backup_codes_hashed?: string[] | null
           backup_codes_used?: Json | null
           created_at?: string
@@ -621,7 +619,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          backup_codes?: Json | null
           backup_codes_hashed?: string[] | null
           backup_codes_used?: Json | null
           created_at?: string
