@@ -17,6 +17,7 @@ interface ActivityCardProps {
   price: number;
   hasAccessibility?: boolean;
   hasFinancialAid?: boolean;
+  periodType?: string;
   onRequestClick?: () => void;
 }
 
@@ -40,6 +41,7 @@ export const ActivityCard = ({
   price,
   hasAccessibility = false,
   hasFinancialAid = false,
+  periodType,
   onRequestClick,
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
@@ -64,6 +66,17 @@ export const ActivityCard = ({
           >
             {category}
           </Badge>
+          {periodType && (
+            <Badge 
+              variant="secondary" 
+              className="bg-white/90 text-foreground"
+              aria-label={`Période: ${periodType}`}
+            >
+              {periodType === 'annual' && '📅 Annuel'}
+              {periodType === 'school_holidays' && '🏖️ Vacances'}
+              {periodType === 'trimester' && '📆 Trimestre'}
+            </Badge>
+          )}
           {hasAccessibility && (
             <Badge 
               variant="secondary" 

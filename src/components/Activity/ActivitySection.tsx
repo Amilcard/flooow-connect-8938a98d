@@ -15,6 +15,7 @@ interface Activity {
   hasFinancialAid?: boolean;
   age_min?: number;
   age_max?: number;
+  periodType?: string;
 }
 
 interface ActivitySectionProps {
@@ -59,6 +60,7 @@ export const ActivitySection = ({
             key={activity.id}
             {...activity}
             ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
+            periodType={activity.periodType}
             onRequestClick={() => navigate(`/activity/${activity.id}`)}
           />
         ))}

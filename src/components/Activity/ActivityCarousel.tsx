@@ -11,6 +11,7 @@ interface Activity {
   price: number;
   hasAccessibility?: boolean;
   hasFinancialAid?: boolean;
+  periodType?: string;
 }
 
 interface ActivityCarouselProps {
@@ -35,6 +36,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
           >
             <ActivityCard
               {...activity}
+              periodType={activity.periodType}
               onRequestClick={() => onActivityClick?.(activity.id)}
             />
           </div>

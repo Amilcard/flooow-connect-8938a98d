@@ -90,6 +90,7 @@ export type Database = {
           images: string[] | null
           payment_echelonned: boolean | null
           payment_plans: Json | null
+          period_type: string | null
           price_base: number | null
           price_note: string | null
           published: boolean | null
@@ -119,6 +120,7 @@ export type Database = {
           images?: string[] | null
           payment_echelonned?: boolean | null
           payment_plans?: Json | null
+          period_type?: string | null
           price_base?: number | null
           price_note?: string | null
           published?: boolean | null
@@ -148,6 +150,7 @@ export type Database = {
           images?: string[] | null
           payment_echelonned?: boolean | null
           payment_plans?: Json | null
+          period_type?: string | null
           price_base?: number | null
           price_note?: string | null
           published?: boolean | null
