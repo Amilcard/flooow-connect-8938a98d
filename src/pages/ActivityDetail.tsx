@@ -270,6 +270,25 @@ const ActivityDetail = () => {
               )}
             </div>
 
+            {/* Multiple Pricing Options */}
+            {Array.isArray(activity.payment_plans) && activity.payment_plans.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-medium">Options tarifaires :</p>
+                <div className="grid gap-2">
+                  {activity.payment_plans.map((plan: any, idx: number) => (
+                    <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border">
+                      <span className="text-sm">{plan.label}</span>
+                      <span className="font-semibold text-primary">{plan.price}€</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activity.price_note && (
+              <p className="mt-3 text-sm text-muted-foreground italic">{activity.price_note}</p>
+            )}
+
             {activity.payment_echelonned && (
               <Badge variant="secondary" className="mt-4 bg-accent/10 text-accent border-accent/20">
                 <CreditCard size={14} className="mr-1" />

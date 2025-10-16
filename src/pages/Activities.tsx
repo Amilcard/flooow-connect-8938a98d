@@ -49,9 +49,10 @@ const Activities = () => {
       
       <main className="container px-4 py-6">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="w-full mb-6">
+          <TabsList className="w-full mb-6 grid grid-cols-3 sm:grid-cols-6">
             <TabsTrigger value="all" className="flex-1">Toutes</TabsTrigger>
             <TabsTrigger value="Sport" className="flex-1">Sport</TabsTrigger>
+            <TabsTrigger value="Culture" className="flex-1">Culture</TabsTrigger>
             <TabsTrigger value="Loisirs" className="flex-1">Loisirs</TabsTrigger>
             <TabsTrigger value="Vacances" className="flex-1">Vacances</TabsTrigger>
             <TabsTrigger value="Scolarité" className="flex-1">Scolarité</TabsTrigger>
@@ -65,7 +66,7 @@ const Activities = () => {
             />
           </TabsContent>
 
-          {["Sport", "Loisirs", "Vacances", "Scolarité"].map((cat) => (
+          {["Sport", "Culture", "Loisirs", "Vacances", "Scolarité"].map((cat) => (
             <TabsContent key={cat} value={cat}>
               <CategoryActivities category={cat} />
             </TabsContent>
