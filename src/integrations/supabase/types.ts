@@ -598,6 +598,8 @@ export type Database = {
       mfa_settings: {
         Row: {
           backup_codes: Json | null
+          backup_codes_hashed: string[] | null
+          backup_codes_used: Json | null
           created_at: string
           enforced: boolean | null
           id: string
@@ -608,6 +610,8 @@ export type Database = {
         }
         Insert: {
           backup_codes?: Json | null
+          backup_codes_hashed?: string[] | null
+          backup_codes_used?: Json | null
           created_at?: string
           enforced?: boolean | null
           id?: string
@@ -618,6 +622,8 @@ export type Database = {
         }
         Update: {
           backup_codes?: Json | null
+          backup_codes_hashed?: string[] | null
+          backup_codes_used?: Json | null
           created_at?: string
           enforced?: boolean | null
           id?: string
@@ -1226,6 +1232,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      hash_backup_code: {
+        Args: { plain_code: string }
+        Returns: string
+      }
       log_audit_event: {
         Args: {
           _action: string
@@ -1249,6 +1259,10 @@ export type Database = {
       update_session_last_seen: {
         Args: { _session_id: string }
         Returns: undefined
+      }
+      verify_backup_code: {
+        Args: { hashed_code: string; plain_code: string }
+        Returns: boolean
       }
     }
     Enums: {
