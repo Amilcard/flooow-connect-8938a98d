@@ -320,34 +320,58 @@ export type Database = {
         Row: {
           activity_id: string
           created_at: string
+          day_of_week: number | null
           end: string
+          end_date: string | null
           id: string
+          price_override: number | null
           recurrence: Json | null
+          recurrence_type: string | null
+          seats_available: number | null
           seats_remaining: number
           seats_total: number
           start: string
+          start_date: string | null
+          time_end: string | null
+          time_start: string | null
           updated_at: string
         }
         Insert: {
           activity_id: string
           created_at?: string
+          day_of_week?: number | null
           end: string
+          end_date?: string | null
           id?: string
+          price_override?: number | null
           recurrence?: Json | null
+          recurrence_type?: string | null
+          seats_available?: number | null
           seats_remaining?: number
           seats_total?: number
           start: string
+          start_date?: string | null
+          time_end?: string | null
+          time_start?: string | null
           updated_at?: string
         }
         Update: {
           activity_id?: string
           created_at?: string
+          day_of_week?: number | null
           end?: string
+          end_date?: string | null
           id?: string
+          price_override?: number | null
           recurrence?: Json | null
+          recurrence_type?: string | null
+          seats_available?: number | null
           seats_remaining?: number
           seats_total?: number
           start?: string
+          start_date?: string | null
+          time_end?: string | null
+          time_start?: string | null
           updated_at?: string
         }
         Relationships: [
