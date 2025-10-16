@@ -126,7 +126,7 @@ const Index = () => {
             />
 
             <ActivitySection
-              title="Activités Santé"
+              title="Activités Innovantes"
               activities={healthActivities}
               onSeeAll={() => navigate("/activities?type=health")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}

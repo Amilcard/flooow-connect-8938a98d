@@ -28,7 +28,7 @@ const ActivitiesMap = () => {
     searchParams.get("categories")?.split(",").filter(Boolean) || []
   );
 
-  const categories = ["Sport", "Culture", "Loisirs", "Scolarité", "Vacances"];
+  const categories = ["Sport", "Culture", "Loisirs", "Scolarité", "Vacances", "Activités Innovantes"];
 
   // Request geolocation
   useEffect(() => {

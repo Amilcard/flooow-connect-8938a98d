@@ -32,7 +32,7 @@ const infoBlocks: InfoBlock[] = [
   },
   {
     id: "handicap",
-    title: "Handicap & Santé",
+    title: "Handicap & Accessibilité",
     description: "Activités adaptées et accessibles pour tous les enfants",
     image: handicapSanteImg,
     icon: <Heart className="w-8 h-8" />,

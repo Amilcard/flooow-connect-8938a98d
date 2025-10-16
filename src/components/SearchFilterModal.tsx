@@ -33,7 +33,7 @@ interface SearchFilterModalProps {
   onResetFilters: () => void;
 }
 
-const categories = ["Sport", "Loisirs", "Vacances", "Scolarité", "Culture"];
+const categories = ["Sport", "Loisirs", "Vacances", "Scolarité", "Culture", "Activités Innovantes"];
 
 export const SearchFilterModal = ({
   open,

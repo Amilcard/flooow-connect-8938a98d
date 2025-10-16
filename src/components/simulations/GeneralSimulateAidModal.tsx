@@ -81,7 +81,8 @@ const ACTIVITY_CATEGORIES = [
   { value: "sport", label: "Sport", example: "Football, natation, tennis..." },
   { value: "culture", label: "Culture", example: "Théâtre, musique, art..." },
   { value: "loisirs", label: "Loisirs", example: "Centres de loisirs, clubs..." },
-  { value: "vacances", label: "Vacances", example: "Colonies, séjours..." }
+  { value: "vacances", label: "Vacances", example: "Colonies, séjours..." },
+  { value: "innovantes", label: "Activités Innovantes", example: "Robotique, code, innovation..." }
 ];
 
 export const GeneralSimulateAidModal = ({

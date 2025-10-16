@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Dumbbell, Palette, Plane, GraduationCap } from "lucide-react";
+import { Dumbbell, Palette, Plane, GraduationCap, Rocket } from "lucide-react";
 
 const categories = [
   {
@@ -25,6 +25,12 @@ const categories = [
     title: "Soutien scolaire",
     description: "Accompagnement, cours particuliers...",
     color: "from-green-500 to-green-600",
+  },
+  {
+    icon: Rocket,
+    title: "Activités Innovantes",
+    description: "Robotique, code, innovation, entrepreneuriat...",
+    color: "from-cyan-500 to-cyan-600",
   },
 ];
 

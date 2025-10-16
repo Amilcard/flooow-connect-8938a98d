@@ -29,7 +29,7 @@ const Activities = () => {
   const getTitle = () => {
     if (category) return `Activités ${category}`;
     if (type === "budget") return "Activités Petits budgets";
-    if (type === "health") return "Activités Santé";
+    if (type === "health") return "Activités Innovantes";
     if (type === "nearby") return "Activités à proximité";
     return "Toutes les activités";
   };
