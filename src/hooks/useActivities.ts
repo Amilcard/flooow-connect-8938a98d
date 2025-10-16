@@ -1,6 +1,48 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Import generated activity images
+import activityJudo69 from "@/assets/activity-judo-6-9.jpg";
+import activityNatation69 from "@/assets/activity-natation-6-9.jpg";
+import activityMultisports1013 from "@/assets/activity-multisports-10-13.jpg";
+import activityEscalade1417 from "@/assets/activity-escalade-14-17.jpg";
+import activityHiphop1417 from "@/assets/activity-hiphop-14-17.jpg";
+import activityMusique69 from "@/assets/activity-musique-6-9.jpg";
+import activityTheatre69 from "@/assets/activity-theatre-6-9.jpg";
+import activityArts1013 from "@/assets/activity-arts-10-13.jpg";
+import activityPhoto1417 from "@/assets/activity-photo-14-17.jpg";
+import activityRobotique1013 from "@/assets/activity-robotique-10-13.jpg";
+import activityJeux69 from "@/assets/activity-jeux-6-9.jpg";
+import activityCuisine69 from "@/assets/activity-cuisine-6-9.jpg";
+import activityJardinage1013 from "@/assets/activity-jardinage-10-13.jpg";
+import activitySoutien69 from "@/assets/activity-soutien-6-9.jpg";
+import activityCode1013 from "@/assets/activity-code-10-13.jpg";
+import activityStageFoot69 from "@/assets/activity-stage-foot-6-9.jpg";
+import activityCamp1013 from "@/assets/activity-camp-10-13.jpg";
+import activitySejour1417 from "@/assets/activity-sejour-14-17.jpg";
+
+// Image mapping for database paths
+const imageMap: Record<string, string> = {
+  '/src/assets/activity-judo-6-9.jpg': activityJudo69,
+  '/src/assets/activity-natation-6-9.jpg': activityNatation69,
+  '/src/assets/activity-multisports-10-13.jpg': activityMultisports1013,
+  '/src/assets/activity-escalade-14-17.jpg': activityEscalade1417,
+  '/src/assets/activity-hiphop-14-17.jpg': activityHiphop1417,
+  '/src/assets/activity-musique-6-9.jpg': activityMusique69,
+  '/src/assets/activity-theatre-6-9.jpg': activityTheatre69,
+  '/src/assets/activity-arts-10-13.jpg': activityArts1013,
+  '/src/assets/activity-photo-14-17.jpg': activityPhoto1417,
+  '/src/assets/activity-robotique-10-13.jpg': activityRobotique1013,
+  '/src/assets/activity-jeux-6-9.jpg': activityJeux69,
+  '/src/assets/activity-cuisine-6-9.jpg': activityCuisine69,
+  '/src/assets/activity-jardinage-10-13.jpg': activityJardinage1013,
+  '/src/assets/activity-soutien-6-9.jpg': activitySoutien69,
+  '/src/assets/activity-code-10-13.jpg': activityCode1013,
+  '/src/assets/activity-stage-foot-6-9.jpg': activityStageFoot69,
+  '/src/assets/activity-camp-10-13.jpg': activityCamp1013,
+  '/src/assets/activity-sejour-14-17.jpg': activitySejour1417,
+};
+
 export interface Activity {
   id: string;
   title: string;
@@ -30,9 +72,14 @@ interface ActivityFilters {
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
   // Use first image from images array if available
-  const imageUrl = dbActivity.images && dbActivity.images.length > 0 
+  let imageUrl = dbActivity.images && dbActivity.images.length > 0 
     ? dbActivity.images[0] 
     : dbActivity.cover;
+  
+  // Map database path to imported image
+  if (imageUrl && imageMap[imageUrl]) {
+    imageUrl = imageMap[imageUrl];
+  }
   
   return {
     id: dbActivity.id,
