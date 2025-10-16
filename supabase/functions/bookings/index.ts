@@ -224,8 +224,52 @@ serve(async (req) => {
         );
       }
 
-      // Check if user has structure role (simplified - in production check user_roles table)
-      // For now, allow any authenticated user to validate (you can add role check here)
+      // SECURITY: Verify user has structure role
+      const { data: userRole, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'structure')
+        .single();
+
+      if (roleError || !userRole) {
+        console.warn(`[bookings] Unauthorized validation attempt by user ${user.id}`);
+        return new Response(
+          JSON.stringify({ 
+            error: 'unauthorized_insufficient_permissions',
+            message: 'Seuls les organisateurs peuvent valider les réservations'
+          }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // SECURITY: Verify structure manages this activity
+      const activity = Array.isArray(booking.activities) ? booking.activities[0] : booking.activities;
+      const structureId = activity?.structure_id;
+      
+      if (!structureId) {
+        return new Response(
+          JSON.stringify({ error: "invalid_booking_structure" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { data: userStructure, error: structureError } = await supabase
+        .from('structures')
+        .select('id')
+        .eq('id', structureId)
+        .single();
+
+      if (structureError || !userStructure) {
+        console.warn(`[bookings] User ${user.id} attempted to validate booking for unauthorized structure`);
+        return new Response(
+          JSON.stringify({ 
+            error: 'unauthorized_wrong_structure',
+            message: 'Vous ne pouvez valider que les réservations de votre structure'
+          }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
       const newStatus = action === 'accept' ? 'validee' : 'refusee';
       

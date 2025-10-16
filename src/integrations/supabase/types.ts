@@ -1082,6 +1082,30 @@ export type Database = {
       }
     }
     Views: {
+      territory_user_stats: {
+        Row: {
+          avg_quotient_familial: number | null
+          divorced_count: number | null
+          high_income_count: number | null
+          low_income_count: number | null
+          married_count: number | null
+          medium_income_count: number | null
+          postal_code_prefixes: string[] | null
+          single_count: number | null
+          territory_id: string | null
+          total_users: number | null
+          widowed_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "territories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_children_with_age: {
         Row: {
           accessibility_flags: Json | null

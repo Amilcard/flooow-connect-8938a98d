@@ -53,9 +53,16 @@ function clearCookies(headers: Headers) {
 }
 
 async function createAccessToken(userId: string, roles: string[], sessionId: string): Promise<string> {
+  // CRITICAL SECURITY: JWT_SECRET must be configured in production
+  const jwtSecret = Deno.env.get('JWT_SECRET');
+  if (!jwtSecret) {
+    console.error('FATAL: JWT_SECRET environment variable not configured');
+    throw new Error('JWT_SECRET environment variable is required for security');
+  }
+
   const key = await crypto.subtle.importKey(
     'raw',
-    new TextEncoder().encode(Deno.env.get('JWT_SECRET') || 'change-me-in-production'),
+    new TextEncoder().encode(jwtSecret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
