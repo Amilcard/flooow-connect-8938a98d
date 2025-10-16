@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { BookingSchema, BookingValidationSchema, parseRequestBody } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,15 +45,19 @@ serve(async (req) => {
     
     // Route: POST /bookings - Create booking
     if (req.method === 'POST' && pathParts.length === 0) {
-      const body = await req.json();
-      const { activity_id, slot_id, child_id, idempotency_key, express_flag } = body;
-
-      if (!activity_id || !slot_id || !child_id) {
+      const validationResult = await parseRequestBody(req, BookingSchema);
+      
+      if (!validationResult.success) {
         return new Response(
-          JSON.stringify({ error: "missing_required_fields", required: ["activity_id", "slot_id", "child_id"] }),
+          JSON.stringify({ 
+            error: validationResult.error,
+            details: validationResult.details 
+          }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      const { activity_id, slot_id, child_id, idempotency_key, express_flag } = validationResult.data;
 
       // Check idempotency - if same key exists, return existing booking
       if (idempotency_key) {
@@ -190,15 +195,20 @@ serve(async (req) => {
     // Route: PATCH /bookings/:id/validate - Validate/reject booking (structure role)
     if (req.method === 'PATCH' && pathParts.length === 2 && pathParts[1] === 'validate') {
       const bookingId = pathParts[0];
-      const body = await req.json();
-      const { action, reason_code } = body; // action: "accept" | "reject"
-
-      if (!action || !['accept', 'reject'].includes(action)) {
+      
+      const validationResult = await parseRequestBody(req, BookingValidationSchema);
+      
+      if (!validationResult.success) {
         return new Response(
-          JSON.stringify({ error: "invalid_action", allowed: ["accept", "reject"] }),
+          JSON.stringify({ 
+            error: validationResult.error,
+            details: validationResult.details 
+          }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      const { action, reason_code } = validationResult.data;
 
       // Verify user has structure role for this booking's activity
       const { data: booking } = await supabase

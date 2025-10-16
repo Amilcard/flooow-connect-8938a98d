@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { AidSimulationSchema, parseRequestBody } from '../_shared/validation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,7 +22,19 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error('Unauthorized');
 
-    const { booking_id, child_id, activity_id, simulated_aids } = await req.json();
+    const validationResult = await parseRequestBody(req, AidSimulationSchema);
+    
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: validationResult.error,
+          details: validationResult.details 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { booking_id, child_id, activity_id, simulated_aids } = validationResult.data;
 
     const { data, error } = await supabase
       .from('aid_simulations')

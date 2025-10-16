@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { create, verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+import { LoginSchema, RefreshTokenSchema, parseRequestBody } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -91,7 +92,19 @@ serve(async (req) => {
 
     // ========== LOGIN ==========
     if (path === 'login' && req.method === 'POST') {
-      const { email, password, device = 'web' } = await req.json();
+      const validationResult = await parseRequestBody(req, LoginSchema);
+      
+      if (!validationResult.success) {
+        return new Response(
+          JSON.stringify({ 
+            error: validationResult.error,
+            details: validationResult.details 
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const { email, password, device } = validationResult.data;
 
       // Authenticate with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
