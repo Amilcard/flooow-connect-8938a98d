@@ -17,7 +17,7 @@ const Footer = () => {
 						<span className="text-xl font-semibold text-foreground">InKlusif Flooow</span>
 					</div>
 					<p className="text-sm text-muted-foreground leading-relaxed">
-						La plateforme pour faciliter l'accès aux activités pour tous les enfants.
+						La plateforme gratuite pour faciliter l'accès aux activités pour tous les enfants.
 					</p>
 					</div>
 
