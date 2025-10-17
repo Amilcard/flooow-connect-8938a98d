@@ -43,6 +43,28 @@ export const SlotPicker = ({ slots, onSelectSlot, selectedSlotId }: SlotPickerPr
     return "text-red-600";
   };
 
+  const getPeriodBadge = (startDate: Date) => {
+    const month = startDate.getMonth();
+    const year = startDate.getFullYear();
+    
+    // Période année scolaire (hors vacances)
+    if (
+      (year === 2025 && month >= 10) || // Nov-Dec 2025
+      (year === 2026 && month <= 7 && ![1, 3, 6, 7].includes(month)) // Jan-Aug 2026 hors vacances
+    ) {
+      return { label: "Année scolaire", variant: "default" as const };
+    }
+    
+    // Périodes vacances
+    if (year === 2025 && month === 10) return { label: "Toussaint 2025", variant: "secondary" as const };
+    if (year === 2025 && month === 11) return { label: "Noël 2025", variant: "secondary" as const };
+    if (year === 2026 && month === 1) return { label: "Hiver 2026", variant: "secondary" as const };
+    if (year === 2026 && month === 3) return { label: "Printemps 2026", variant: "secondary" as const };
+    if (year === 2026 && (month === 6 || month === 7)) return { label: "Été 2026", variant: "secondary" as const };
+    
+    return { label: "Année scolaire", variant: "default" as const };
+  };
+
   return (
     <div className="space-y-3">
       <h3 className="font-semibold text-lg">Choisir un créneau</h3>
@@ -57,6 +79,8 @@ export const SlotPicker = ({ slots, onSelectSlot, selectedSlotId }: SlotPickerPr
         {slots.map((slot) => {
           const isSelected = selectedSlotId === slot.id;
           const isFull = slot.seats_remaining === 0;
+          const slotDate = new Date(slot.start);
+          const periodBadge = getPeriodBadge(slotDate);
           
           return (
             <Card
@@ -71,9 +95,12 @@ export const SlotPicker = ({ slots, onSelectSlot, selectedSlotId }: SlotPickerPr
               onClick={() => !isFull && onSelectSlot(slot.id)}
             >
               <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-sm flex-wrap">
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                   <span className="font-medium">{formatDate(slot.start)}</span>
+                  <Badge variant={periodBadge.variant} className="text-xs">
+                    {periodBadge.label}
+                  </Badge>
                 </div>
                 
                 {isFull ? (
@@ -81,13 +108,13 @@ export const SlotPicker = ({ slots, onSelectSlot, selectedSlotId }: SlotPickerPr
                     Complet
                   </Badge>
                 ) : (
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="bg-green-100 text-green-700">
                     Disponible
                   </Badge>
                 )}
               </div>
 
-              <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-4 text-sm flex-wrap">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-muted-foreground" />
                   <span>{formatTime(slot.start)} - {formatTime(slot.end)}</span>

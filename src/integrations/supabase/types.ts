@@ -506,6 +506,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alternative_slots"
+            referencedColumns: ["slot_id"]
+          },
+          {
             foreignKeyName: "bookings_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1522,6 +1529,33 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_alternative_slots: {
+        Row: {
+          activity_id: string | null
+          activity_title: string | null
+          age_max: number | null
+          age_min: number | null
+          category: string | null
+          end: string | null
+          period_type: string | null
+          price_base: number | null
+          seats_remaining: number | null
+          seats_total: number | null
+          slot_id: string | null
+          start: string | null
+          structure_address: string | null
+          structure_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_slots_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vw_dashboard_collectivite_overview: {
         Row: {
           published_activities: number | null
@@ -1648,6 +1682,10 @@ export type Database = {
       update_session_last_seen: {
         Args: { _session_id: string }
         Returns: undefined
+      }
+      validate_booking_eligibility: {
+        Args: { p_activity_id: string; p_child_id: string; p_slot_id: string }
+        Returns: Json
       }
       validate_mfa_backup_code: {
         Args: { p_code_attempt: string; p_user_id: string }

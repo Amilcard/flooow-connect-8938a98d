@@ -80,7 +80,7 @@ serve(async (req) => {
       // Verify child belongs to user
       const { data: child, error: childError } = await supabase
         .from('children')
-        .select('id')
+        .select('id, dob')
         .eq('id', child_id)
         .eq('user_id', user.id)
         .single();
@@ -89,6 +89,36 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ error: "child_not_found_or_unauthorized" }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // P1: Validate eligibility (age + period) using database function
+      const { data: eligibilityCheck, error: eligibilityError } = await supabase
+        .rpc('validate_booking_eligibility', {
+          p_child_id: child_id,
+          p_activity_id: activity_id,
+          p_slot_id: slot_id
+        });
+
+      if (eligibilityError) {
+        console.error('[bookings] Eligibility check failed:', eligibilityError);
+        return new Response(
+          JSON.stringify({ error: "eligibility_check_failed", details: eligibilityError.message }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Reject if not eligible
+      if (eligibilityCheck && !eligibilityCheck.eligible) {
+        console.log(`[bookings] Eligibility rejected: ${eligibilityCheck.reason}`);
+        return new Response(
+          JSON.stringify({ 
+            error: "not_eligible",
+            reason: eligibilityCheck.reason,
+            message: eligibilityCheck.message,
+            details: eligibilityCheck
+          }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 

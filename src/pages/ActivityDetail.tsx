@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SlotPicker } from "@/components/SlotPicker";
+import { AvailableSlotsSection } from "@/components/AvailableSlotsSection";
 import { SimulateAidModal } from "@/components/simulations/SimulateAidModal";
 import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
 import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
@@ -284,23 +285,12 @@ const ActivityDetail = () => {
               </section>
             )}
 
-            {/* Service Period */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Période de prestation</h2>
-              <Card className="border-l-4 border-l-primary">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <CalendarRange className="text-primary flex-shrink-0" size={24} />
-                    <div>
-                      <p className="font-medium">Du 1er Novembre 2025 au 30 Août 2026</p>
-                      <p className="text-sm text-muted-foreground">
-                        Les activités se déroulent sur cette période académique
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
+            {/* Available Slots Section - P1 Priority */}
+            <AvailableSlotsSection 
+              slots={slots}
+              activityId={id!}
+              activityTitle={activity.title}
+            />
 
             {/* What's Included - Airbnb style */}
             <section>
