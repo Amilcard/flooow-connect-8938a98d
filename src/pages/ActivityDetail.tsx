@@ -5,11 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { SlotPicker } from "@/components/SlotPicker";
-import { AvailableSlotsSection } from "@/components/AvailableSlotsSection";
+import { BookingCard } from "@/components/BookingCard";
 import { SimulateAidModal } from "@/components/simulations/SimulateAidModal";
-import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
-import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -209,8 +206,8 @@ const ActivityDetail = () => {
         </div>
       </div>
 
-      {/* Hero Image - Style Airbnb */}
-      <div className="relative w-full h-[60vh] max-h-[600px] overflow-hidden">
+      {/* Hero Image - Airbnb Style with Limited Height */}
+      <div className="relative w-full h-[48vh] md:h-[52vh] max-h-[560px] min-h-[280px] md:min-h-[420px] overflow-hidden">
         <img
           src={imgError ? fallbackImage : displayImage}
           alt={activity.title}
@@ -218,8 +215,8 @@ const ActivityDetail = () => {
           onError={() => setImgError(true)}
         />
         
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        {/* Bottom gradient overlay - 20-30% */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
         
         {/* Floating badges */}
         <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
@@ -246,55 +243,80 @@ const ActivityDetail = () => {
         </div>
       </div>
 
-      {/* Main Content Container - Style Airbnb */}
-      <div className="container px-4 md:px-6 py-8 max-w-5xl mx-auto">
-        {/* Title Section - Airbnb style */}
-        <div className="space-y-3 pb-6 border-b">
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">{activity.title}</h1>
+      {/* Main Content Container - Airbnb Style with Grid */}
+      <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
+        {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
+        <div className="space-y-4 pb-8 border-b mb-8">
+          {/* Titre H1 fort */}
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            {activity.title}
+          </h1>
           
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Users size={18} className="text-primary" />
-              {ageRange}
+          {/* Méta informations (âge, durée, lieu) */}
+          <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
+            <span className="flex items-center gap-2">
+              <Users size={20} className="text-primary" />
+              <span className="font-medium text-foreground">{ageRange}</span>
             </span>
-            {activity.structures?.address && (
-              <span className="flex items-center gap-1.5">
-                <MapPin size={18} className="text-primary" />
-                {activity.structures.address}
+            
+            {activity.period_type && (
+              <span className="flex items-center gap-2">
+                <CalendarRange size={20} className="text-primary" />
+                <span className="text-muted-foreground">
+                  {activity.period_type === 'annual' || activity.period_type === 'trimester' 
+                    ? 'Année scolaire' 
+                    : 'Vacances scolaires'}
+                </span>
               </span>
             )}
-            {activity.structures?.name && (
-              <span className="flex items-center gap-1.5">
-                <Building2 size={18} className="text-primary" />
-                {activity.structures.name}
+            
+            {activity.structures?.address && (
+              <span className="flex items-center gap-2">
+                <MapPin size={20} className="text-primary" />
+                <span className="text-muted-foreground">{activity.structures.address}</span>
               </span>
             )}
           </div>
+
+          {/* Organisateur avec lien contact discret */}
+          {activity.structures?.name && (
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <Building2 size={20} className="text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">
+                  Organisé par {activity.structures.name}
+                </span>
+              </div>
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => setShowContactModal(true)}
+                className="h-auto p-0 text-sm text-primary hover:underline font-medium"
+              >
+                <MessageCircle size={16} className="mr-1.5" />
+                Contacter l'organisateur
+              </Button>
+            </div>
+          )}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mt-8">
-          {/* Left Column - Main content */}
-          <div className="md:col-span-2 space-y-10">
+        {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
+        <div className="grid md:grid-cols-12 gap-8">
+          {/* Left Column - Main content (8/12) */}
+          <div className="md:col-span-8 space-y-8">
             {/* Description Section */}
             {activity.description && (
-              <section>
-                <h2 className="text-2xl font-semibold mb-4">À propos de cette activité</h2>
+              <section className="space-y-3">
+                <h2 className="text-2xl font-bold text-foreground">À propos de cette activité</h2>
                 <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                   {activity.description}
                 </p>
               </section>
             )}
 
-            {/* Available Slots Section - P1 Priority */}
-            <AvailableSlotsSection 
-              slots={slots}
-              activityId={id!}
-              activityTitle={activity.title}
-            />
-
             {/* What's Included - Airbnb style */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Ce qui est proposé</h2>
+            <section className="space-y-4">
+              <h2 className="text-2xl font-bold text-foreground">Ce qui est proposé</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                   <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
@@ -349,14 +371,14 @@ const ActivityDetail = () => {
               </div>
             </section>
 
-            {/* Transport Information */}
+            {/* Transport Information - Accès & Transports */}
             {typeof activity.transport_meta === 'object' && activity.transport_meta !== null && (
-              <section>
-                <h2 className="text-2xl font-semibold mb-4">Accès et transports</h2>
-                <Card>
+              <section className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground">Accès et transports</h2>
+                <Card className="border-2">
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-start gap-3">
-                      <Bus size={20} className="text-primary mt-0.5" />
+                      <Bus size={22} className="text-primary mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="font-medium mb-1">STAS (Saint-Étienne)</p>
                         <p className="text-sm text-muted-foreground mb-2">
@@ -380,7 +402,7 @@ const ActivityDetail = () => {
                     <Separator />
                     
                     <div className="flex items-start gap-3">
-                      <Bike size={20} className="text-primary mt-0.5" />
+                      <Bike size={22} className="text-primary mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="font-medium mb-1">Vélivert</p>
                         <p className="text-sm text-muted-foreground mb-2">
@@ -404,8 +426,8 @@ const ActivityDetail = () => {
             {typeof activity.accessibility_checklist === 'object' && 
              activity.accessibility_checklist !== null && 
              Object.keys(activity.accessibility_checklist).length > 0 && (
-              <section>
-                <h2 className="text-2xl font-semibold mb-4">Accessibilité</h2>
+              <section className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground">Accessibilité</h2>
                 <div className="space-y-3">
                   {typeof activity.accessibility_checklist === 'object' && 
                    activity.accessibility_checklist !== null &&
@@ -433,8 +455,8 @@ const ActivityDetail = () => {
 
             {/* Financial Aids */}
             {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-              <section>
-                <h2 className="text-2xl font-semibold mb-4">Aides financières acceptées</h2>
+              <section className="space-y-4">
+                <h2 className="text-2xl font-bold text-foreground">Aides financières acceptées</h2>
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex flex-wrap gap-2">
@@ -457,9 +479,9 @@ const ActivityDetail = () => {
               </section>
             )}
 
-            {/* Host/Organizer Section - Airbnb style */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Organisé par</h2>
+            {/* Host/Organizer Section - Full Details */}
+            <section className="space-y-4">
+              <h2 className="text-2xl font-bold text-foreground">À propos de l'organisateur</h2>
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between gap-4">
@@ -516,155 +538,21 @@ const ActivityDetail = () => {
             </section>
           </div>
 
-          {/* Right Column - Booking card (sticky) */}
-          <div className="md:col-span-1">
-            <div className="sticky top-24 space-y-6">
-              {/* Price Card */}
-              <Card className="shadow-lg">
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-semibold">
-                        {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
-                      </span>
-                      {activity.price_base > 0 && (
-                        <span className="text-sm text-muted-foreground">par enfant</span>
-                      )}
-                    </div>
-                    {activity.price_note && (
-                      <p className="text-xs text-muted-foreground mt-1">{activity.price_note}</p>
-                    )}
-                  </div>
-
-                  {/* Pricing Options */}
-                  {Array.isArray(activity.payment_plans) && activity.payment_plans.length > 0 && (
-                    <>
-                      <Separator />
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Options tarifaires</p>
-                        {activity.payment_plans.map((plan: any, idx: number) => (
-                          <div key={idx} className="flex justify-between text-sm p-2 rounded hover:bg-muted/50">
-                            <span className="text-muted-foreground">{plan.label}</span>
-                            <span className="font-medium">{plan.price}€</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Child Selection */}
-              {children.length > 0 && (
-                <Card className="shadow-lg">
-                  <CardContent className="p-6 space-y-4">
-                    <h3 className="font-semibold">Sélectionner un enfant</h3>
-                    <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
-                      <div className="space-y-2">
-                        {children.map((child) => {
-                          const age = calculateAge(child.dob);
-                          const isEligible = age >= activity.age_min && age <= activity.age_max;
-                          
-                          return (
-                            <div
-                              key={child.id}
-                              className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors ${
-                                isEligible 
-                                  ? 'border-border hover:bg-muted/50 cursor-pointer' 
-                                  : 'border-destructive/30 bg-destructive/5 opacity-60'
-                              }`}
-                            >
-                              <RadioGroupItem value={child.id} id={child.id} disabled={!isEligible} />
-                              <Label
-                                htmlFor={child.id}
-                                className={`flex-1 cursor-pointer ${!isEligible && 'cursor-not-allowed'}`}
-                              >
-                                <div className="font-medium">{child.first_name}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {age} ans {!isEligible && `(âge requis: ${activity.age_min}-${activity.age_max} ans)`}
-                                </div>
-                              </Label>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </RadioGroup>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Financial Aid Eligibility */}
-              {userProfile && selectedChild && (
-                <Card className="shadow-lg">
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold mb-4">Vos aides éligibles</h3>
-                    <FinancialAidBadges
-                      activityCategories={[activity.category]}
-                      activityAcceptedAidSlugs={
-                        Array.isArray(activity.accepts_aid_types) 
-                          ? activity.accepts_aid_types 
-                          : typeof activity.accepts_aid_types === 'string'
-                            ? JSON.parse(activity.accepts_aid_types || '[]')
-                            : []
-                      }
-                      childAge={calculateAge(selectedChild.dob)}
-                      quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
-                      cityCode={userProfile.postal_code || ''}
-                    />
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Financial Aids Calculator */}
-              {userProfile && selectedChild && selectedSlot && activity.price_base > 0 && (
-                <FinancialAidsCalculator
-                  activityPrice={activity.price_base}
-                  activityCategories={[activity.category]}
-                  childAge={calculateAge(selectedChild.dob)}
-                  quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
-                  cityCode={userProfile.postal_code || ''}
-                  durationDays={calculateDurationDays(selectedSlot)}
-                />
-              )}
-
-              {/* Slots Picker */}
-              <Card className="shadow-lg">
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-4">Créneaux disponibles</h3>
-                  {slots.length > 0 ? (
-                    <SlotPicker
-                      slots={slots}
-                      onSelectSlot={setSelectedSlotId}
-                      selectedSlotId={selectedSlotId}
-                    />
-                  ) : (
-                    <div className="text-center py-8 space-y-2">
-                      <Calendar className="w-12 h-12 mx-auto text-muted-foreground/30" />
-                      <p className="text-sm text-muted-foreground">
-                        Aucun créneau disponible actuellement
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Contactez l'organisateur pour plus d'informations
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Booking Button */}
-              <Button
-                onClick={handleBooking}
-                disabled={!selectedSlotId || !selectedChildId || slots.length === 0}
-                className="w-full h-12 text-base font-semibold shadow-lg"
-                size="lg"
-              >
-                {!selectedChildId 
-                  ? "Sélectionnez un enfant"
-                  : !selectedSlotId 
-                  ? "Sélectionnez un créneau"
-                  : "Réserver"}
-              </Button>
-            </div>
+          {/* Right Column - Booking Card Sticky (4/12) */}
+          <div className="md:col-span-4">
+            <BookingCard
+              activity={activity}
+              slots={slots}
+              children={children}
+              userProfile={userProfile}
+              selectedSlotId={selectedSlotId}
+              selectedChildId={selectedChildId}
+              onSelectSlot={setSelectedSlotId}
+              onSelectChild={setSelectedChildId}
+              onBooking={handleBooking}
+              calculateAge={calculateAge}
+              calculateDurationDays={calculateDurationDays}
+            />
           </div>
         </div>
       </div>
