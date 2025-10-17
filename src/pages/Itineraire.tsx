@@ -24,9 +24,9 @@ const Itineraire = () => {
   const returnUrl = searchParams.get('return') || null;
 
   const handleBack = () => {
-    // If we have a return URL, use it
+    // If we have a return URL, use it and replace history to avoid loop
     if (returnUrl) {
-      navigate(returnUrl);
+      navigate(returnUrl, { replace: true });
     } 
     // Otherwise, try to go back in history
     else if (window.history.length > 1) {
@@ -34,7 +34,7 @@ const Itineraire = () => {
     } 
     // Fallback to activities page
     else {
-      navigate('/activities');
+      navigate('/activities', { replace: true });
     }
   };
   
@@ -43,7 +43,7 @@ const Itineraire = () => {
   const [travelMode, setTravelMode] = useState(
     transportType === 'bike' ? 'BICYCLING' : 
     transportType === 'walk' ? 'WALKING' :
-    'WALKING'
+    'TRANSIT'
   );
   const [routeData, setRouteData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
