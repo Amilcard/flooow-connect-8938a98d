@@ -109,7 +109,10 @@ const ActivitiesMap = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (window.history.length > 1) navigate(-1);
+              else navigate('/activities', { replace: true });
+            }}
             aria-label="Retour"
           >
             <ArrowLeft />
