@@ -33,7 +33,8 @@ import {
   MessageCircle,
   Bus,
   Bike,
-  CalendarRange
+  CalendarRange,
+  CheckCircle2
 } from "lucide-react";
 import { useState } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -192,302 +193,184 @@ const ActivityDetail = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header with back button */}
+      {/* Minimalist Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container flex items-center gap-3 py-3 px-4">
+        <div className="container flex items-center gap-3 py-4 px-4 md:px-6">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
             aria-label="Retour"
+            className="hover:bg-muted"
           >
-            <ArrowLeft />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="font-semibold text-lg truncate">{activity.title}</h1>
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+      {/* Hero Image - Style Airbnb */}
+      <div className="relative w-full h-[60vh] max-h-[600px] overflow-hidden">
         <img
           src={imgError ? fallbackImage : displayImage}
           alt={activity.title}
           className="w-full h-full object-cover"
           onError={() => setImgError(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         
-        {/* Category badges */}
-        <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        
+        {/* Floating badges */}
+        <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
           {activity.categories && activity.categories.length > 0 ? (
             activity.categories.map((cat: string) => (
-              <Badge key={cat} className="bg-primary text-primary-foreground">
+              <Badge key={cat} variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-lg">
                 {cat}
               </Badge>
             ))
           ) : (
-            <Badge className="bg-primary text-primary-foreground">
+            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-lg">
               {activity.category}
             </Badge>
           )}
-        </div>
-
-        {/* Accessibility badge */}
-        <div className="absolute top-4 right-4 flex gap-2">
           {typeof activity.accessibility_checklist === 'object' && 
            activity.accessibility_checklist !== null && 
            'wheelchair' in activity.accessibility_checklist &&
            activity.accessibility_checklist.wheelchair && (
-            <Badge className="bg-white/90 text-foreground">
+            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-lg">
               <Accessibility size={14} className="mr-1" />
               PMR
             </Badge>
           )}
         </div>
+      </div>
 
-        {/* Title overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-          <h2 className="text-2xl font-bold mb-1">{activity.title}</h2>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="flex items-center gap-1">
-              <Users size={16} />
+      {/* Main Content Container - Style Airbnb */}
+      <div className="container px-4 md:px-6 py-8 max-w-5xl mx-auto">
+        {/* Title Section - Airbnb style */}
+        <div className="space-y-3 pb-6 border-b">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">{activity.title}</h1>
+          
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Users size={18} className="text-primary" />
               {ageRange}
             </span>
+            {activity.structures?.address && (
+              <span className="flex items-center gap-1.5">
+                <MapPin size={18} className="text-primary" />
+                {activity.structures.address}
+              </span>
+            )}
             {activity.structures?.name && (
-              <span className="flex items-center gap-1">
-                <Building2 size={16} />
+              <span className="flex items-center gap-1.5">
+                <Building2 size={18} className="text-primary" />
                 {activity.structures.name}
               </span>
             )}
           </div>
         </div>
-      </div>
 
-      <div className="container px-4 py-6 space-y-4">
-        {/* Price Card - Prominent */}
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Tarif</p>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center gap-2 cursor-help">
-                        <p className="text-4xl font-bold text-primary">
-                          {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
-                        </p>
-                        {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-                          <HelpCircle size={20} className="text-muted-foreground" />
-                        )}
-                      </div>
-                    </TooltipTrigger>
-                    {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-                      <TooltipContent className="max-w-sm p-4">
-                        <div className="space-y-2">
-                          <p className="font-semibold">💡 Exemple de calcul avec aides :</p>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span>Prix de base :</span>
-                              <span className="font-medium">{activity.price_base}€</span>
-                            </div>
-                            <div className="flex justify-between text-green-600">
-                              <span>- Pass'Sport (exemple) :</span>
-                              <span className="font-medium">-50€</span>
-                            </div>
-                            <Separator className="my-2" />
-                            <div className="flex justify-between font-bold text-green-700">
-                              <span>Prix après aide :</span>
-                              <span>{Math.max(0, (activity.price_base || 0) - 50)}€</span>
-                            </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Cliquez sur "Simuler les aides" pour un calcul personnalisé
-                          </p>
-                        </div>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
-                <p className="text-sm text-muted-foreground mt-1">par enfant</p>
-              </div>
-              
-              {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-                <Button
-                  variant="default"
-                  size="lg"
-                  onClick={() => setShowAidModal(true)}
-                  className="min-h-[56px]"
-                >
-                  <Euro size={20} className="mr-2" />
-                  Simuler les aides
-                </Button>
-              )}
-            </div>
-
-            {/* Multiple Pricing Options */}
-            {Array.isArray(activity.payment_plans) && activity.payment_plans.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium">Options tarifaires :</p>
-                <div className="grid gap-2">
-                  {activity.payment_plans.map((plan: any, idx: number) => (
-                    <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border">
-                      <span className="text-sm">{plan.label}</span>
-                      <span className="font-semibold text-primary">{plan.price}€</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activity.price_note && (
-              <p className="mt-3 text-sm text-muted-foreground italic">{activity.price_note}</p>
-            )}
-
-            {activity.payment_echelonned && (
-              <Badge variant="secondary" className="mt-4 bg-accent/10 text-accent border-accent/20">
-                <CreditCard size={14} className="mr-1" />
-                Paiement en plusieurs fois possible
-              </Badge>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Child Selection */}
-        {children.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Users size={18} />
-                Sélectionner un enfant
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
-                <div className="space-y-3">
-                  {children.map((child) => {
-                    const age = calculateAge(child.dob);
-                    const isEligible = age >= activity.age_min && age <= activity.age_max;
-                    
-                    return (
-                      <div
-                        key={child.id}
-                        className={`flex items-center space-x-3 p-3 rounded-lg border ${
-                          isEligible ? 'border-border' : 'border-destructive/30 bg-destructive/5'
-                        }`}
-                      >
-                        <RadioGroupItem value={child.id} id={child.id} disabled={!isEligible} />
-                        <Label
-                          htmlFor={child.id}
-                          className={`flex-1 cursor-pointer ${!isEligible && 'text-muted-foreground'}`}
-                        >
-                          <div className="font-medium">{child.first_name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {age} ans {!isEligible && `(requis: ${activity.age_min}-${activity.age_max} ans)`}
-                          </div>
-                        </Label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </RadioGroup>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Financial Aid Eligibility Badges */}
-        {userProfile && selectedChild && (
-          <FinancialAidBadges
-            activityCategories={[activity.category]}
-            activityAcceptedAidSlugs={
-              Array.isArray(activity.accepts_aid_types) 
-                ? activity.accepts_aid_types 
-                : typeof activity.accepts_aid_types === 'string'
-                  ? JSON.parse(activity.accepts_aid_types || '[]')
-                  : []
-            }
-            childAge={calculateAge(selectedChild.dob)}
-            quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
-            cityCode={userProfile.postal_code || ''}
-          />
-        )}
-
-        {/* Financial Aids Calculator - Detailed calculation when slot selected */}
-        {userProfile && selectedChild && selectedSlot && activity.price_base > 0 && (
-          <FinancialAidsCalculator
-            activityPrice={activity.price_base}
-            activityCategories={[activity.category]}
-            childAge={calculateAge(selectedChild.dob)}
-            quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
-            cityCode={userProfile.postal_code || ''}
-            durationDays={calculateDurationDays(selectedSlot)}
-          />
-        )}
-
-        {/* Service Period Badge */}
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <CalendarRange className="text-primary flex-shrink-0" size={20} />
-              <div>
-                <p className="font-medium text-sm">Période de prestation</p>
-                <p className="text-sm text-muted-foreground">
-                  Du 1er Novembre 2025 au 30 Août 2026
+        <div className="grid md:grid-cols-3 gap-8 mt-8">
+          {/* Left Column - Main content */}
+          <div className="md:col-span-2 space-y-10">
+            {/* Description Section */}
+            {activity.description && (
+              <section>
+                <h2 className="text-2xl font-semibold mb-4">À propos de cette activité</h2>
+                <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {activity.description}
                 </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Info size={18} />
-              Informations pratiques
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {activity.structures?.address && (
-              <div className="flex items-start gap-3">
-                <MapPin size={18} className="text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-sm">Lieu</p>
-                  <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
-                </div>
-              </div>
+              </section>
             )}
-            
-            <Separator />
-            
-            <div className="flex items-start gap-3">
-              <Users size={18} className="text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Âge requis</p>
-                <p className="text-sm text-muted-foreground">{ageRange}</p>
+
+            {/* Service Period */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Période de prestation</h2>
+              <Card className="border-l-4 border-l-primary">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <CalendarRange className="text-primary flex-shrink-0" size={24} />
+                    <div>
+                      <p className="font-medium">Du 1er Novembre 2025 au 30 Août 2026</p>
+                      <p className="text-sm text-muted-foreground">
+                        Les activités se déroulent sur cette période académique
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+
+            {/* What's Included - Airbnb style */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Ce qui est proposé</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                  <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm">Tranche d'âge</p>
+                    <p className="text-sm text-muted-foreground">{ageRange}</p>
+                  </div>
+                </div>
+                
+                {activity.structures?.address && (
+                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                    <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">Lieu</p>
+                      <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
+                    </div>
+                  </div>
+                )}
+
+                {activity.covoiturage_enabled && (
+                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                    <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">Covoiturage</p>
+                      <p className="text-sm text-muted-foreground">Service disponible</p>
+                    </div>
+                  </div>
+                )}
+
+                {typeof activity.accessibility_checklist === 'object' && 
+                 activity.accessibility_checklist !== null && 
+                 'wheelchair' in activity.accessibility_checklist &&
+                 activity.accessibility_checklist.wheelchair && (
+                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                    <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">Accessibilité PMR</p>
+                      <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
+                    </div>
+                  </div>
+                )}
+
+                {activity.payment_echelonned && (
+                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                    <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-sm">Paiement échelonné</p>
+                      <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            </section>
 
             {/* Transport Information */}
             {typeof activity.transport_meta === 'object' && activity.transport_meta !== null && (
-              <>
-                <Separator />
-                <div className="space-y-3">
-                  <p className="font-medium text-sm flex items-center gap-2">
-                    <Bus size={18} className="text-primary" />
-                    Informations Transport
-                  </p>
-                  
-                  {/* STAS Info */}
-                  <div className="ml-6 space-y-2">
-                    <div className="flex items-start gap-2">
-                      <Bus size={16} className="text-muted-foreground mt-0.5" />
-                      <div className="text-sm">
-                        <p className="font-medium">STAS (Saint-Étienne)</p>
-                        <p className="text-muted-foreground">
+              <section>
+                <h2 className="text-2xl font-semibold mb-4">Accès et transports</h2>
+                <Card>
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Bus size={20} className="text-primary mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-medium mb-1">STAS (Saint-Étienne)</p>
+                        <p className="text-sm text-muted-foreground mb-2">
                           Arrêt le plus proche - {
-                            typeof activity.transport_meta === 'object' && 
-                            activity.transport_meta !== null && 
                             'bus_stop_distance_m' in activity.transport_meta && 
                             activity.transport_meta.bus_stop_distance_m
                               ? `${activity.transport_meta.bus_stop_distance_m}m` 
@@ -498,214 +381,304 @@ const ActivityDetail = () => {
                           href="https://www.reseau-stas.fr" 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-primary hover:underline text-xs"
+                          className="text-sm text-primary hover:underline font-medium"
                         >
                           Voir les horaires STAS →
                         </a>
                       </div>
                     </div>
-
-                    {/* Véliver Info */}
-                    <div className="flex items-start gap-2">
-                      <Bike size={16} className="text-muted-foreground mt-0.5" />
-                      <div className="text-sm">
-                        <p className="font-medium">Véliver</p>
-                        <p className="text-muted-foreground">Stations disponibles à proximité</p>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-start gap-3">
+                      <Bike size={20} className="text-primary mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-medium mb-1">Véliver</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Stations disponibles à proximité
+                        </p>
                         <a 
                           href="https://www.veliver.fr" 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-primary hover:underline text-xs"
+                          className="text-sm text-primary hover:underline font-medium"
                         >
                           Localiser une station →
                         </a>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </>
+                  </CardContent>
+                </Card>
+              </section>
             )}
 
-            {activity.covoiturage_enabled && (
-              <>
-                <Separator />
-                <div className="flex items-start gap-3">
-                  <Car size={18} className="text-primary mt-0.5 flex-shrink-0" />
+            {/* Accessibility Features */}
+            {typeof activity.accessibility_checklist === 'object' && 
+             activity.accessibility_checklist !== null && 
+             Object.keys(activity.accessibility_checklist).length > 0 && (
+              <section>
+                <h2 className="text-2xl font-semibold mb-4">Accessibilité</h2>
+                <div className="space-y-3">
+                  {typeof activity.accessibility_checklist === 'object' && 
+                   activity.accessibility_checklist !== null &&
+                   !Array.isArray(activity.accessibility_checklist) &&
+                   'wheelchair' in activity.accessibility_checklist &&
+                   activity.accessibility_checklist.wheelchair && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                      <span className="text-sm">Accessible en fauteuil roulant</span>
+                    </div>
+                  )}
+                  {typeof activity.accessibility_checklist === 'object' && 
+                   activity.accessibility_checklist !== null &&
+                   !Array.isArray(activity.accessibility_checklist) &&
+                   'sensory_support' in activity.accessibility_checklist &&
+                   activity.accessibility_checklist.sensory_support && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                      <span className="text-sm">Accompagnement sensoriel adapté</span>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* Financial Aids */}
+            {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+              <section>
+                <h2 className="text-2xl font-semibold mb-4">Aides financières acceptées</h2>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex flex-wrap gap-2">
+                      {activity.accepts_aid_types.map((aid: string) => (
+                        <Badge key={aid} variant="secondary" className="px-3 py-1">
+                          {aid}
+                        </Badge>
+                      ))}
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowAidModal(true)}
+                      className="w-full mt-4"
+                    >
+                      <Euro size={16} className="mr-2" />
+                      Calculer mes aides personnalisées
+                    </Button>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {/* Host/Organizer Section - Airbnb style */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Organisé par</h2>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">{activity.structures?.name}</h3>
+                        {activity.structures?.address && (
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {activity.structures.address}
+                          </p>
+                        )}
+                        
+                        {typeof activity.structures?.contact_json === 'object' && activity.structures?.contact_json !== null && (
+                          <div className="space-y-2">
+                            {'email' in activity.structures.contact_json && activity.structures.contact_json.email && (
+                              <a 
+                                href={`mailto:${activity.structures.contact_json.email}`}
+                                className="flex items-center gap-2 text-sm text-primary hover:underline"
+                              >
+                                <Mail size={16} />
+                                {String(activity.structures.contact_json.email)}
+                              </a>
+                            )}
+                            {'phone' in activity.structures.contact_json && activity.structures.contact_json.phone && (
+                              <a 
+                                href={`tel:${activity.structures.contact_json.phone}`}
+                                className="flex items-center gap-2 text-sm text-primary hover:underline"
+                              >
+                                <Phone size={16} />
+                                {String(activity.structures.contact_json.phone)}
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setShowContactModal(true)}
+                  >
+                    <MessageCircle size={16} className="mr-2" />
+                    Contacter l'organisateur
+                  </Button>
+                </CardContent>
+              </Card>
+            </section>
+          </div>
+
+          {/* Right Column - Booking card (sticky) */}
+          <div className="md:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              {/* Price Card */}
+              <Card className="shadow-lg">
+                <CardContent className="p-6 space-y-4">
                   <div>
-                    <p className="font-medium text-sm">Covoiturage disponible</p>
-                    <p className="text-sm text-muted-foreground">Proposez ou rejoignez un covoiturage</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-semibold">
+                        {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
+                      </span>
+                      {activity.price_base > 0 && (
+                        <span className="text-sm text-muted-foreground">par enfant</span>
+                      )}
+                    </div>
+                    {activity.price_note && (
+                      <p className="text-xs text-muted-foreground mt-1">{activity.price_note}</p>
+                    )}
                   </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Organizer Contact Card */}
-        <Card className="border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Building2 size={18} />
-              Contact Organisme
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div>
-                <p className="font-semibold text-sm mb-1">{activity.structures?.name}</p>
-                {activity.structures?.address && (
-                  <p className="text-sm text-muted-foreground flex items-start gap-2">
-                    <MapPin size={14} className="mt-0.5 flex-shrink-0" />
-                    {activity.structures.address}
-                  </p>
-                )}
-              </div>
+                  {/* Pricing Options */}
+                  {Array.isArray(activity.payment_plans) && activity.payment_plans.length > 0 && (
+                    <>
+                      <Separator />
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Options tarifaires</p>
+                        {activity.payment_plans.map((plan: any, idx: number) => (
+                          <div key={idx} className="flex justify-between text-sm p-2 rounded hover:bg-muted/50">
+                            <span className="text-muted-foreground">{plan.label}</span>
+                            <span className="font-medium">{plan.price}€</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
 
-              {typeof activity.structures?.contact_json === 'object' && activity.structures?.contact_json !== null && (
-                <div className="space-y-2">
-                  {'email' in activity.structures.contact_json && activity.structures.contact_json.email && (
-                    <a 
-                      href={`mailto:${activity.structures.contact_json.email}`}
-                      className="flex items-center gap-2 text-sm text-primary hover:underline"
-                    >
-                      <Mail size={16} />
-                      {String(activity.structures.contact_json.email)}
-                    </a>
-                  )}
-                  {'phone' in activity.structures.contact_json && activity.structures.contact_json.phone && (
-                    <a 
-                      href={`tel:${activity.structures.contact_json.phone}`}
-                      className="flex items-center gap-2 text-sm text-primary hover:underline"
-                    >
-                      <Phone size={16} />
-                      {String(activity.structures.contact_json.phone)}
-                    </a>
-                  )}
-                </div>
+              {/* Child Selection */}
+              {children.length > 0 && (
+                <Card className="shadow-lg">
+                  <CardContent className="p-6 space-y-4">
+                    <h3 className="font-semibold">Sélectionner un enfant</h3>
+                    <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
+                      <div className="space-y-2">
+                        {children.map((child) => {
+                          const age = calculateAge(child.dob);
+                          const isEligible = age >= activity.age_min && age <= activity.age_max;
+                          
+                          return (
+                            <div
+                              key={child.id}
+                              className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors ${
+                                isEligible 
+                                  ? 'border-border hover:bg-muted/50 cursor-pointer' 
+                                  : 'border-destructive/30 bg-destructive/5 opacity-60'
+                              }`}
+                            >
+                              <RadioGroupItem value={child.id} id={child.id} disabled={!isEligible} />
+                              <Label
+                                htmlFor={child.id}
+                                className={`flex-1 cursor-pointer ${!isEligible && 'cursor-not-allowed'}`}
+                              >
+                                <div className="font-medium">{child.first_name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {age} ans {!isEligible && `(âge requis: ${activity.age_min}-${activity.age_max} ans)`}
+                                </div>
+                              </Label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </RadioGroup>
+                  </CardContent>
+                </Card>
               )}
+
+              {/* Financial Aid Eligibility */}
+              {userProfile && selectedChild && (
+                <Card className="shadow-lg">
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold mb-4">Vos aides éligibles</h3>
+                    <FinancialAidBadges
+                      activityCategories={[activity.category]}
+                      activityAcceptedAidSlugs={
+                        Array.isArray(activity.accepts_aid_types) 
+                          ? activity.accepts_aid_types 
+                          : typeof activity.accepts_aid_types === 'string'
+                            ? JSON.parse(activity.accepts_aid_types || '[]')
+                            : []
+                      }
+                      childAge={calculateAge(selectedChild.dob)}
+                      quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
+                      cityCode={userProfile.postal_code || ''}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Financial Aids Calculator */}
+              {userProfile && selectedChild && selectedSlot && activity.price_base > 0 && (
+                <FinancialAidsCalculator
+                  activityPrice={activity.price_base}
+                  activityCategories={[activity.category]}
+                  childAge={calculateAge(selectedChild.dob)}
+                  quotientFamilial={userProfile.quotient_familial ? Number(userProfile.quotient_familial) : 0}
+                  cityCode={userProfile.postal_code || ''}
+                  durationDays={calculateDurationDays(selectedSlot)}
+                />
+              )}
+
+              {/* Slots Picker */}
+              <Card className="shadow-lg">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-4">Créneaux disponibles</h3>
+                  {slots.length > 0 ? (
+                    <SlotPicker
+                      slots={slots}
+                      onSelectSlot={setSelectedSlotId}
+                      selectedSlotId={selectedSlotId}
+                    />
+                  ) : (
+                    <div className="text-center py-8 space-y-2">
+                      <Calendar className="w-12 h-12 mx-auto text-muted-foreground/30" />
+                      <p className="text-sm text-muted-foreground">
+                        Aucun créneau disponible actuellement
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Contactez l'organisateur pour plus d'informations
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Booking Button */}
+              <Button
+                onClick={handleBooking}
+                disabled={!selectedSlotId || !selectedChildId || slots.length === 0}
+                className="w-full h-12 text-base font-semibold shadow-lg"
+                size="lg"
+              >
+                {!selectedChildId 
+                  ? "Sélectionnez un enfant"
+                  : !selectedSlotId 
+                  ? "Sélectionnez un créneau"
+                  : "Réserver"}
+              </Button>
             </div>
-
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => setShowContactModal(true)}
-            >
-              <MessageCircle size={16} className="mr-2" />
-              Poser une question
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Description */}
-        {activity.description && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <FileText size={18} />
-                Description
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
-                {activity.description}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Accessibility Features */}
-        {typeof activity.accessibility_checklist === 'object' && 
-         activity.accessibility_checklist !== null && 
-         Object.keys(activity.accessibility_checklist).length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Accessibility size={18} />
-                Accessibilité
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {typeof activity.accessibility_checklist === 'object' && 
-               activity.accessibility_checklist !== null &&
-               !Array.isArray(activity.accessibility_checklist) &&
-               'wheelchair' in activity.accessibility_checklist &&
-               activity.accessibility_checklist.wheelchair && (
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <span>Accessible en fauteuil roulant</span>
-                </div>
-              )}
-              {typeof activity.accessibility_checklist === 'object' && 
-               activity.accessibility_checklist !== null &&
-               !Array.isArray(activity.accessibility_checklist) &&
-               'sensory_support' in activity.accessibility_checklist &&
-               activity.accessibility_checklist.sensory_support && (
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <span>Accompagnement sensoriel adapté</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Available Aids */}
-        {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Euro size={18} />
-                Aides financières acceptées
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {activity.accepts_aid_types.map((aid: string) => (
-                  <Badge key={aid} variant="outline">
-                    {aid}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Slot Picker */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Calendar size={18} />
-              Créneaux disponibles
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {slots.length > 0 ? (
-              <SlotPicker
-                slots={slots}
-                onSelectSlot={setSelectedSlotId}
-                selectedSlotId={selectedSlotId}
-              />
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                Aucun créneau disponible pour le moment
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Booking button */}
-        <Button
-          onClick={handleBooking}
-          disabled={!selectedSlotId || !selectedChildId || slots.length === 0}
-          className="w-full h-14 text-lg shadow-lg"
-          size="lg"
-        >
-          {!selectedChildId 
-            ? "Sélectionnez un enfant"
-            : !selectedSlotId 
-            ? "Sélectionnez un créneau"
-            : "Réserver cette activité"}
-        </Button>
+          </div>
+        </div>
       </div>
 
       {showAidModal && (
