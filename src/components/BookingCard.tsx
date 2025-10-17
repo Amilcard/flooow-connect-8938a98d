@@ -147,127 +147,31 @@ export const BookingCard = ({
             )}
           </div>
 
-          {/* Child Selection */}
-          {children.length > 0 && upcomingSlots.length > 0 && (
-            <>
-              <Separator />
-              <div className="space-y-3">
-                <h3 className="font-semibold text-base text-foreground">
-                  Sélectionner un enfant
-                </h3>
-                <RadioGroup value={selectedChildId} onValueChange={onSelectChild}>
-                  <div className="space-y-2">
-                    {children.map((child) => {
-                      const age = calculateAge(child.dob);
-                      const isEligible = age >= activity.age_min && age <= activity.age_max;
-
-                      return (
-                        <div
-                          key={child.id}
-                          className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors ${
-                            isEligible
-                              ? "border-border hover:bg-muted/50 cursor-pointer"
-                              : "border-destructive/30 bg-destructive/5 opacity-60"
-                          }`}
-                        >
-                          <RadioGroupItem
-                            value={child.id}
-                            id={child.id}
-                            disabled={!isEligible}
-                          />
-                          <Label
-                            htmlFor={child.id}
-                            className={`flex-1 cursor-pointer ${
-                              !isEligible && "cursor-not-allowed"
-                            }`}
-                          >
-                            <div className="font-medium text-sm">{child.first_name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {age} ans{" "}
-                              {!isEligible &&
-                                `(requis: ${activity.age_min}-${activity.age_max} ans)`}
-                            </div>
-                          </Label>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </RadioGroup>
-              </div>
-            </>
-          )}
-
-          {/* Financial Aid Badges */}
-          {userProfile && selectedChild && upcomingSlots.length > 0 && (
-            <>
-              <Separator />
-              <div className="space-y-3">
-                <h3 className="font-semibold text-base text-foreground">Aides éligibles</h3>
-                <FinancialAidBadges
-                  activityCategories={[activity.category]}
-                  activityAcceptedAidSlugs={
-                    Array.isArray(activity.accepts_aid_types)
-                      ? activity.accepts_aid_types
-                      : []
-                  }
-                  childAge={calculateAge(selectedChild.dob)}
-                  quotientFamilial={
-                    userProfile.quotient_familial
-                      ? Number(userProfile.quotient_familial)
-                      : 0
-                  }
-                  cityCode={userProfile.postal_code || ""}
-                />
-              </div>
-            </>
-          )}
-
-          {/* Financial Calculator */}
-          {userProfile &&
-            selectedChild &&
-            selectedSlot &&
-            activity.price_base > 0 &&
-            upcomingSlots.length > 0 && (
-              <>
-                <Separator />
-                <FinancialAidsCalculator
-                  activityPrice={activity.price_base}
-                  activityCategories={[activity.category]}
-                  childAge={calculateAge(selectedChild.dob)}
-                  quotientFamilial={
-                    userProfile.quotient_familial
-                      ? Number(userProfile.quotient_familial)
-                      : 0
-                  }
-                  cityCode={userProfile.postal_code || ""}
-                  durationDays={calculateDurationDays(selectedSlot)}
-                />
-              </>
-            )}
-
           {/* Booking CTA */}
           {upcomingSlots.length > 0 && (
             <>
               <Separator />
               <Button
                 onClick={onBooking}
-                disabled={!selectedSlotId || !selectedChildId}
+                disabled={!selectedSlotId}
                 className="w-full h-12 text-base font-semibold shadow-md"
                 size="lg"
               >
-                {!selectedChildId
-                  ? "Sélectionnez un enfant"
-                  : !selectedSlotId
-                  ? "Sélectionnez un créneau"
-                  : "Réserver ce créneau"}
+                {!selectedSlotId ? "Sélectionnez un créneau" : "S'inscrire"}
               </Button>
 
-              {(!selectedSlotId || !selectedChildId) && (
+              {!selectedSlotId ? (
                 <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
                   <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Veuillez sélectionner un créneau et un enfant pour continuer la
-                    réservation
+                    Veuillez sélectionner un créneau pour continuer
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong className="text-foreground">Inscription rapide.</strong> Vous pourrez vérifier vos aides financières et compléter les informations nécessaires lors de la réservation.
                   </p>
                 </div>
               )}

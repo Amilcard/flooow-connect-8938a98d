@@ -13,6 +13,7 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -56,6 +57,7 @@ const getCategoryImage = (category: string): string => {
 const ActivityDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [selectedChildId, setSelectedChildId] = useState<string>();
   const [showAidModal, setShowAidModal] = useState(false);
@@ -150,11 +152,11 @@ const ActivityDetail = () => {
 
   const handleBooking = () => {
     if (!selectedSlotId) {
-      alert("Veuillez sélectionner un créneau");
-      return;
-    }
-    if (!selectedChildId) {
-      alert("Veuillez sélectionner un enfant");
+      toast({
+        title: "Créneau requis",
+        description: "Veuillez sélectionner un créneau",
+        variant: "destructive"
+      });
       return;
     }
     navigate(`/booking/${id}?slotId=${selectedSlotId}`);
