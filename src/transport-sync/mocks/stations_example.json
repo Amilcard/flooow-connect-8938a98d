@@ -1,0 +1,54 @@
+[
+  {
+    "station_id": "velivert_001",
+    "source": "velivert",
+    "name": "Station Capitole",
+    "lat": 43.6045,
+    "lon": 1.4442,
+    "available_bikes": 8,
+    "available_slots": 12,
+    "raw": {
+      "capacity": 20,
+      "type": "standard"
+    }
+  },
+  {
+    "station_id": "velivert_002",
+    "source": "velivert",
+    "name": "Station Jean Jaurès",
+    "lat": 43.6038,
+    "lon": 1.4525,
+    "available_bikes": 5,
+    "available_slots": 15,
+    "raw": {
+      "capacity": 20,
+      "type": "electric"
+    }
+  },
+  {
+    "station_id": "velivert_003",
+    "source": "velivert",
+    "name": "Station Esquirol",
+    "lat": 43.6028,
+    "lon": 1.4435,
+    "available_bikes": 12,
+    "available_slots": 8,
+    "raw": {
+      "capacity": 20,
+      "type": "standard"
+    }
+  },
+  {
+    "station_id": "velivert_marseille_001",
+    "source": "velivert",
+    "name": "Station Canebière",
+    "lat": 43.2965,
+    "lon": 5.3750,
+    "available_bikes": 10,
+    "available_slots": 10,
+    "raw": {
+      "capacity": 20,
+      "operator": "Le Vélo Marseille"
+    }
+  }
+]

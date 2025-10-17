@@ -1,0 +1,50 @@
+[
+  {
+    "stop_id": "stas_001",
+    "source": "stas",
+    "name": "Arrêt République",
+    "lat": 43.6055,
+    "lon": 1.4450,
+    "lines": ["L1", "L3", "L10"],
+    "raw": {
+      "municipality": "Toulouse",
+      "accessibility": "PMR"
+    }
+  },
+  {
+    "stop_id": "stas_002",
+    "source": "stas",
+    "name": "Arrêt Jean Jaurès",
+    "lat": 43.6045,
+    "lon": 1.4520,
+    "lines": ["L2", "L5"],
+    "raw": {
+      "municipality": "Toulouse",
+      "accessibility": "PMR"
+    }
+  },
+  {
+    "stop_id": "stas_003",
+    "source": "stas",
+    "name": "Arrêt Capitole",
+    "lat": 43.6048,
+    "lon": 1.4440,
+    "lines": ["L1", "L4", "L12"],
+    "raw": {
+      "municipality": "Toulouse",
+      "accessibility": "standard"
+    }
+  },
+  {
+    "stop_id": "gtfs_marseille_001",
+    "source": "gtfs",
+    "name": "Vieux-Port",
+    "lat": 43.2957,
+    "lon": 5.3750,
+    "lines": ["M1", "M2"],
+    "raw": {
+      "operator": "RTM",
+      "municipality": "Marseille"
+    }
+  }
+]

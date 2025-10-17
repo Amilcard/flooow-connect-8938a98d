@@ -391,6 +391,45 @@ export type Database = {
           },
         ]
       }
+      bike_stations: {
+        Row: {
+          available_bikes: number | null
+          available_slots: number | null
+          id: string
+          lat: number
+          lon: number
+          name: string | null
+          raw: Json | null
+          source: string
+          station_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_bikes?: number | null
+          available_slots?: number | null
+          id?: string
+          lat: number
+          lon: number
+          name?: string | null
+          raw?: Json | null
+          source: string
+          station_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_bikes?: number | null
+          available_slots?: number | null
+          id?: string
+          lat?: number
+          lon?: number
+          name?: string | null
+          raw?: Json | null
+          source?: string
+          station_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           activity_id: string
@@ -1098,6 +1137,10 @@ export type Database = {
           external_id: string | null
           id: string
           mode: string
+          nearest_station_id: string | null
+          nearest_station_source: string | null
+          nearest_stop_id: string | null
+          nearest_stop_source: string | null
           price_cents: number | null
           price_estimate: number | null
           raw: Json | null
@@ -1123,6 +1166,10 @@ export type Database = {
           external_id?: string | null
           id?: string
           mode: string
+          nearest_station_id?: string | null
+          nearest_station_source?: string | null
+          nearest_stop_id?: string | null
+          nearest_stop_source?: string | null
           price_cents?: number | null
           price_estimate?: number | null
           raw?: Json | null
@@ -1148,6 +1195,10 @@ export type Database = {
           external_id?: string | null
           id?: string
           mode?: string
+          nearest_station_id?: string | null
+          nearest_station_source?: string | null
+          nearest_stop_id?: string | null
+          nearest_stop_source?: string | null
           price_cents?: number | null
           price_estimate?: number | null
           raw?: Json | null
@@ -1205,6 +1256,42 @@ export type Database = {
           metadata?: Json | null
           name?: string
           station_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      transport_stops: {
+        Row: {
+          id: string
+          lat: number
+          lines: string[] | null
+          lon: number
+          name: string | null
+          raw: Json | null
+          source: string
+          stop_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          lat: number
+          lines?: string[] | null
+          lon: number
+          name?: string | null
+          raw?: Json | null
+          source: string
+          stop_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          lat?: number
+          lines?: string[] | null
+          lon?: number
+          name?: string | null
+          raw?: Json | null
+          source?: string
+          stop_id?: string
           updated_at?: string | null
         }
         Relationships: []
