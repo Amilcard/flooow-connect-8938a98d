@@ -307,7 +307,6 @@ const ActivityDetail = () => {
         <div className="grid md:grid-cols-12 gap-8">
           {/* Left Column - Main content (8/12) */}
           <div className="md:col-span-8 space-y-8">
-            {/* Description Section */}
             {activity.description && (
               <section className="space-y-3">
                 <h2 className="text-2xl font-bold text-foreground">À propos de cette activité</h2>
@@ -316,14 +315,6 @@ const ActivityDetail = () => {
                 </p>
               </section>
             )}
-
-            {/* Eco Mobility Section */}
-            <EcoMobilitySection 
-              activityId={activity.id}
-              activityAddress={activity.structures?.address}
-              structureName={activity.structures?.name}
-              structureContactJson={activity.structures?.contact_json}
-            />
 
             {/* Informations pratiques - Airbnb style */}
             <section className="space-y-4">
@@ -408,63 +399,13 @@ const ActivityDetail = () => {
               </section>
             )}
 
-            {/* Host/Organizer Section - Full Details */}
-            <section className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">À propos de l'organisateur</h2>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Building2 className="w-6 h-6 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-1">{activity.structures?.name}</h3>
-                        {activity.structures?.address && (
-                          <p className="text-sm text-muted-foreground mb-3">
-                            {activity.structures.address}
-                          </p>
-                        )}
-                        
-                        {typeof activity.structures?.contact_json === 'object' && activity.structures?.contact_json !== null && (
-                          <div className="space-y-2">
-                            {'email' in activity.structures.contact_json && activity.structures.contact_json.email && (
-                              <a 
-                                href={`mailto:${activity.structures.contact_json.email}`}
-                                className="flex items-center gap-2 text-sm text-primary hover:underline"
-                              >
-                                <Mail size={16} />
-                                {String(activity.structures.contact_json.email)}
-                              </a>
-                            )}
-                            {'phone' in activity.structures.contact_json && activity.structures.contact_json.phone && (
-                              <a 
-                                href={`tel:${activity.structures.contact_json.phone}`}
-                                className="flex items-center gap-2 text-sm text-primary hover:underline"
-                              >
-                                <Phone size={16} />
-                                {String(activity.structures.contact_json.phone)}
-                              </a>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => setShowContactModal(true)}
-                  >
-                    <MessageCircle size={16} className="mr-2" />
-                    Contacter l'organisateur
-                  </Button>
-                </CardContent>
-              </Card>
-            </section>
+            {/* Eco Mobility Section - En bas de page */}
+            <EcoMobilitySection 
+              activityId={activity.id}
+              activityAddress={activity.structures?.address}
+              structureName={activity.structures?.name}
+              structureContactJson={activity.structures?.contact_json}
+            />
           </div>
 
           {/* Right Column - Booking Card Sticky (4/12) */}
