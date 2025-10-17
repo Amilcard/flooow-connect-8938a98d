@@ -1086,39 +1086,75 @@ export type Database = {
       transport_offers: {
         Row: {
           activity_id: string
+          arrival_time: string | null
           carbon_saved_kg: number | null
           created_at: string | null
+          currency: string | null
+          departure_time: string | null
           distance_m: number | null
+          end_lat: number | null
+          end_lon: number | null
+          expired: boolean | null
+          external_id: string | null
           id: string
           mode: string
+          price_cents: number | null
           price_estimate: number | null
+          raw: Json | null
           route_details: Json | null
+          source: string | null
+          start_lat: number | null
+          start_lon: number | null
           station_id: string | null
           travel_time_min: number | null
           updated_at: string | null
         }
         Insert: {
           activity_id: string
+          arrival_time?: string | null
           carbon_saved_kg?: number | null
           created_at?: string | null
+          currency?: string | null
+          departure_time?: string | null
           distance_m?: number | null
+          end_lat?: number | null
+          end_lon?: number | null
+          expired?: boolean | null
+          external_id?: string | null
           id?: string
           mode: string
+          price_cents?: number | null
           price_estimate?: number | null
+          raw?: Json | null
           route_details?: Json | null
+          source?: string | null
+          start_lat?: number | null
+          start_lon?: number | null
           station_id?: string | null
           travel_time_min?: number | null
           updated_at?: string | null
         }
         Update: {
           activity_id?: string
+          arrival_time?: string | null
           carbon_saved_kg?: number | null
           created_at?: string | null
+          currency?: string | null
+          departure_time?: string | null
           distance_m?: number | null
+          end_lat?: number | null
+          end_lon?: number | null
+          expired?: boolean | null
+          external_id?: string | null
           id?: string
           mode?: string
+          price_cents?: number | null
           price_estimate?: number | null
+          raw?: Json | null
           route_details?: Json | null
+          source?: string | null
+          start_lat?: number | null
+          start_lon?: number | null
           station_id?: string | null
           travel_time_min?: number | null
           updated_at?: string | null
