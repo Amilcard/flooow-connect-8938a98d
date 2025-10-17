@@ -20,7 +20,6 @@ export interface SearchFilters {
   categories: string[];
   hasAccessibility: boolean;
   hasFinancialAid: boolean;
-  freeOnly: boolean;
   hasCovoiturage: boolean;
   maxPrice?: number;
 }
@@ -54,7 +53,6 @@ export const SearchFilterModal = ({
       categories: [],
       hasAccessibility: false,
       hasFinancialAid: false,
-      freeOnly: false,
       hasCovoiturage: false
     };
     setLocalFilters(resetFilters);
@@ -74,7 +72,6 @@ export const SearchFilterModal = ({
     localFilters.categories.length +
     (localFilters.hasAccessibility ? 1 : 0) +
     (localFilters.hasFinancialAid ? 1 : 0) +
-    (localFilters.freeOnly ? 1 : 0) +
     (localFilters.hasCovoiturage ? 1 : 0) +
     (localFilters.ageMin !== undefined ? 1 : 0) +
     (localFilters.maxPrice !== undefined ? 1 : 0);
@@ -138,16 +135,16 @@ export const SearchFilterModal = ({
           {/* Price */}
           <div className="space-y-3">
             <Label>Budget maximum</Label>
-            <div className="px-2">
+            <div className="space-y-3">
+              <Label>Prix maximum : {localFilters.maxPrice || 200}€</Label>
               <Slider
                 min={0}
                 max={200}
-                step={10}
+                step={5}
                 value={[localFilters.maxPrice || 200]}
-                onValueChange={([value]) => {
-                  setLocalFilters(prev => ({ ...prev, maxPrice: value === 200 ? undefined : value }));
-                }}
-                disabled={localFilters.freeOnly}
+                onValueChange={([value]) =>
+                  setLocalFilters(prev => ({ ...prev, maxPrice: value }))
+                }
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>0€</span>
@@ -158,22 +155,6 @@ export const SearchFilterModal = ({
 
           {/* Checkboxes */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="free"
-                checked={localFilters.freeOnly}
-                onCheckedChange={(checked) => {
-                  setLocalFilters(prev => ({ ...prev, freeOnly: checked as boolean }));
-                }}
-              />
-              <Label
-                htmlFor="free"
-                className="text-sm font-normal cursor-pointer"
-              >
-                Activités gratuites uniquement
-              </Label>
-            </div>
-
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="aid"

@@ -10,13 +10,15 @@ const Footer = () => {
 				<div className="grid md:grid-cols-4 gap-8 mb-8">
 					{/* Brand */}
 					<div className="space-y-4">
-						<div className="flex items-center gap-2">
+					<div className="flex items-center gap-3 mb-3">
+						<div className="p-2 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl">
 							<Heart className="w-6 h-6 text-primary" />
-							<span className="text-xl font-semibold text-foreground">InKlusif Flooow</span>
 						</div>
-						<p className="text-sm text-muted-foreground leading-relaxed">
-							La plateforme gratuite pour faciliter l'accès aux activités pour tous les enfants.
-						</p>
+						<span className="text-xl font-semibold text-foreground">InKlusif Flooow</span>
+					</div>
+					<p className="text-sm text-muted-foreground leading-relaxed">
+						La plateforme pour faciliter l'accès aux activités pour tous les enfants.
+					</p>
 					</div>
 
 					{/* Familles */}

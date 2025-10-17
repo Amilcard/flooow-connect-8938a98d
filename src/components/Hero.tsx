@@ -12,7 +12,7 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
             <Heart className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">Plateforme gratuite d'accès aux activités</span>
+            <span className="text-sm font-medium text-white">Plateforme d'accès aux activités</span>
           </div>
 
           {/* Main heading */}
@@ -39,10 +39,6 @@ const Hero = () => {
 
           {/* Trust indicators */}
           <div className="flex flex-wrap justify-center gap-8 pt-8 text-white/80 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-accent" />
-              <span>100% gratuit</span>
-            </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent" />
               <span>Accessible à tous</span>

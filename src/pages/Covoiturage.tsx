@@ -193,7 +193,7 @@ const Covoiturage = () => {
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>• Les coordonnées sont partagées uniquement après acceptation</p>
             <p>• Vérifiez toujours l'identité des personnes</p>
-            <p>• Le covoiturage est gratuit entre parents</p>
+            <p>• Partagez les frais équitablement entre parents</p>
           </CardContent>
         </Card>
       </div>

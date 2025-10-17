@@ -23,7 +23,6 @@ export const SearchBar = ({
     categories: [],
     hasAccessibility: false,
     hasFinancialAid: false,
-    freeOnly: false,
     hasCovoiturage: false
   });
 
@@ -44,7 +43,6 @@ export const SearchBar = ({
     if (newFilters.ageMax) params.append("maxAge", newFilters.ageMax.toString());
     if (newFilters.maxPrice) params.append("maxPrice", newFilters.maxPrice.toString());
     if (newFilters.hasFinancialAid) params.append("hasAid", "true");
-    if (newFilters.freeOnly) params.append("isFree", "true");
     if (newFilters.hasAccessibility) params.append("isPMR", "true");
     if (newFilters.hasCovoiturage) params.append("hasCovoiturage", "true");
     
@@ -58,7 +56,6 @@ export const SearchBar = ({
       categories: [],
       hasAccessibility: false,
       hasFinancialAid: false,
-      freeOnly: false,
       hasCovoiturage: false
     });
   };
@@ -67,7 +64,6 @@ export const SearchBar = ({
     filters.categories.length +
     (filters.hasAccessibility ? 1 : 0) +
     (filters.hasFinancialAid ? 1 : 0) +
-    (filters.freeOnly ? 1 : 0) +
     (filters.hasCovoiturage ? 1 : 0);
 
   return (
