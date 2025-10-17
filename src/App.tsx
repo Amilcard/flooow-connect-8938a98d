@@ -14,6 +14,7 @@ import ProfileEdit from "./pages/ProfileEdit";
 import StructureAuth from "./pages/StructureAuth";
 import StructureDashboard from "./pages/StructureDashboard";
 import StructureActivityForm from "./pages/StructureActivityForm";
+import CollectiviteDashboard from "./pages/CollectiviteDashboard";
 import Activities from "./pages/Activities";
 import Search from "./pages/Search";
 import ActivityDetail from "./pages/ActivityDetail";
@@ -76,6 +77,7 @@ const App = () => (
           <Route path="/structure-dashboard" element={<StructureDashboard />} />
           <Route path="/structure/activity/new" element={<StructureActivityForm />} />
           <Route path="/structure/activity/:id" element={<StructureActivityForm />} />
+          <Route path="/collectivite/dashboard" element={<CollectiviteDashboard />} />
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
