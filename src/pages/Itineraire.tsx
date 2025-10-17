@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,7 @@ const Itineraire = () => {
   );
   const [routeData, setRouteData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const markersRef = useRef<any[]>([]);
 
   // Get Google Maps API key
   useEffect(() => {
@@ -68,6 +70,34 @@ const Itineraire = () => {
     document.head.appendChild(script);
   };
 
+  // Fetch transport stops for STAS
+  const { data: busStops = [] } = useQuery({
+    queryKey: ["transport-stops"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("transport_stops")
+        .select("*")
+        .limit(50);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: transportType === 'bus'
+  });
+
+  // Fetch bike stations for Vélivert
+  const { data: bikeStations = [] } = useQuery({
+    queryKey: ["bike-stations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bike_stations")
+        .select("*")
+        .limit(50);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: transportType === 'bike'
+  });
+
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current || !googleMapsLoaded) return;
@@ -81,7 +111,7 @@ const Itineraire = () => {
     directionsRenderer.current = new google.maps.DirectionsRenderer({
       map: mapRef.current,
       polylineOptions: {
-        strokeColor: transportType === 'bike' ? '#10b981' : '#3b82f6',
+        strokeColor: transportType === 'bike' ? '#10b981' : transportType === 'walk' ? '#9333ea' : '#3b82f6',
         strokeWeight: 5,
         strokeOpacity: 0.75,
       },
@@ -91,8 +121,91 @@ const Itineraire = () => {
       if (directionsRenderer.current) {
         directionsRenderer.current.setMap(null);
       }
+      // Clear markers
+      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current = [];
     };
   }, [googleMapsLoaded, transportType]);
+
+  // Add markers for stops/stations
+  useEffect(() => {
+    if (!mapRef.current || !googleMapsLoaded) return;
+
+    const google = (window as any).google;
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+
+    if (transportType === 'bus' && busStops.length > 0) {
+      // Add bus stop markers
+      busStops.forEach(stop => {
+        const marker = new google.maps.Marker({
+          position: { lat: stop.lat, lng: stop.lon },
+          map: mapRef.current,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: '#3b82f6',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+          title: stop.name || 'Arrêt de bus'
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div class="p-2">
+              <h3 class="font-semibold text-sm">${stop.name || 'Arrêt de bus'}</h3>
+              ${stop.lines ? `<p class="text-xs text-gray-600 mt-1">Lignes: ${Array.isArray(stop.lines) ? stop.lines.join(', ') : stop.lines}</p>` : ''}
+            </div>
+          `
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(mapRef.current, marker);
+        });
+
+        markersRef.current.push(marker);
+      });
+    } else if (transportType === 'bike' && bikeStations.length > 0) {
+      // Add bike station markers
+      bikeStations.forEach(station => {
+        const marker = new google.maps.Marker({
+          position: { lat: station.lat, lng: station.lon },
+          map: mapRef.current,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: '#10b981',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2,
+          },
+          title: station.name || 'Station Vélivert'
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div class="p-2">
+              <h3 class="font-semibold text-sm">${station.name || 'Station Vélivert'}</h3>
+              <p class="text-xs text-gray-600 mt-1">
+                🚲 Vélos: ${station.available_bikes || 0} | 
+                📍 Places: ${station.available_slots || 0}
+              </p>
+            </div>
+          `
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(mapRef.current, marker);
+        });
+
+        markersRef.current.push(marker);
+      });
+    }
+  }, [googleMapsLoaded, transportType, busStops, bikeStations]);
 
   const calculateRoute = async () => {
     if (!departure || !arrival) {
@@ -213,7 +326,9 @@ const Itineraire = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="WALKING">À pied</SelectItem>
+                  {transportType !== 'walk' && transportType !== 'bus' && (
+                    <SelectItem value="WALKING">À pied</SelectItem>
+                  )}
                   <SelectItem value="BICYCLING">À vélo</SelectItem>
                   {transportType === 'bus' && (
                     <SelectItem value="TRANSIT">En transport</SelectItem>
