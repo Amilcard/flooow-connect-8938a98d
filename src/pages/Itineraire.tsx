@@ -21,6 +21,22 @@ const Itineraire = () => {
   
   const transportType = searchParams.get('type') || 'bus';
   const destination = searchParams.get('destination') || '';
+  const returnUrl = searchParams.get('return') || null;
+
+  const handleBack = () => {
+    // If we have a return URL, use it
+    if (returnUrl) {
+      navigate(returnUrl);
+    } 
+    // Otherwise, try to go back in history
+    else if (window.history.length > 1) {
+      navigate(-1);
+    } 
+    // Fallback to activities page
+    else {
+      navigate('/activities');
+    }
+  };
   
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
@@ -257,7 +273,7 @@ const Itineraire = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             aria-label="Retour"
           >
             <ArrowLeft className="w-5 h-5" />
