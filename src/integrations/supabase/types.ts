@@ -1083,6 +1083,129 @@ export type Database = {
           },
         ]
       }
+      transport_offers: {
+        Row: {
+          activity_id: string
+          carbon_saved_kg: number | null
+          created_at: string | null
+          distance_m: number | null
+          id: string
+          mode: string
+          price_estimate: number | null
+          route_details: Json | null
+          station_id: string | null
+          travel_time_min: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          activity_id: string
+          carbon_saved_kg?: number | null
+          created_at?: string | null
+          distance_m?: number | null
+          id?: string
+          mode: string
+          price_estimate?: number | null
+          route_details?: Json | null
+          station_id?: string | null
+          travel_time_min?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          activity_id?: string
+          carbon_saved_kg?: number | null
+          created_at?: string | null
+          distance_m?: number | null
+          id?: string
+          mode?: string
+          price_estimate?: number | null
+          route_details?: Json | null
+          station_id?: string | null
+          travel_time_min?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transport_offers_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transport_offers_station_id_fkey"
+            columns: ["station_id"]
+            isOneToOne: false
+            referencedRelation: "transport_stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transport_stations: {
+        Row: {
+          created_at: string | null
+          external_id: string | null
+          id: string
+          location: unknown | null
+          metadata: Json | null
+          name: string
+          station_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          external_id?: string | null
+          id?: string
+          location?: unknown | null
+          metadata?: Json | null
+          name: string
+          station_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          external_id?: string | null
+          id?: string
+          location?: unknown | null
+          metadata?: Json | null
+          name?: string
+          station_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      transport_sync_meta: {
+        Row: {
+          created_at: string | null
+          details: Json | null
+          error_message: string | null
+          id: string
+          last_sync_at: string | null
+          provider: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          last_sync_at?: string | null
+          provider: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          last_sync_at?: string | null
+          provider?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
