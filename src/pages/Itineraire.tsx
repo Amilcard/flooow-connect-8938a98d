@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Navigation, MapPin, Clock, Route, Bike, Bus } from "lucide-react";
+import { ArrowLeft, Navigation, MapPin, Clock, Route, Bike, Bus, Footprints } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -23,7 +23,11 @@ const Itineraire = () => {
   
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
-  const [travelMode, setTravelMode] = useState(transportType === 'bike' ? 'BICYCLING' : 'WALKING');
+  const [travelMode, setTravelMode] = useState(
+    transportType === 'bike' ? 'BICYCLING' : 
+    transportType === 'walk' ? 'WALKING' :
+    'WALKING'
+  );
   const [routeData, setRouteData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -148,11 +152,17 @@ const Itineraire = () => {
           <div className="flex items-center gap-2">
             {transportType === 'bike' ? (
               <Bike className="w-5 h-5 text-green-600" />
+            ) : transportType === 'walk' ? (
+              <Footprints className="w-5 h-5 text-purple-600" />
             ) : (
               <Bus className="w-5 h-5 text-blue-600" />
             )}
             <h1 className="text-xl font-semibold">
-              Itinéraire {transportType === 'bike' ? 'Vélivert' : 'STAS'}
+              Itinéraire {
+                transportType === 'bike' ? 'Vélivert' : 
+                transportType === 'walk' ? 'Marche santé' : 
+                'STAS'
+              }
             </h1>
           </div>
         </div>
@@ -283,6 +293,17 @@ const Itineraire = () => {
                     >
                       www.velivert.fr
                     </a>
+                  </p>
+                </div>
+              )}
+
+              {transportType === 'walk' && (
+                <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                  <p className="text-sm font-medium mb-2">
+                    👟 Marche santé
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Excellent pour la santé ! Profitez d'une balade active et découvrez votre quartier autrement.
                   </p>
                 </div>
               )}

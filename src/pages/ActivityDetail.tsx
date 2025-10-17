@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
+import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -371,56 +372,13 @@ const ActivityDetail = () => {
               </div>
             </section>
 
-            {/* Transport Information - Accès & Transports */}
-            {typeof activity.transport_meta === 'object' && activity.transport_meta !== null && (
-              <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">Accès et transports</h2>
-                <Card className="border-2">
-                  <CardContent className="p-6 space-y-4">
-                    <div className="flex items-start gap-3">
-                      <Bus size={22} className="text-primary mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="font-medium mb-1">STAS (Saint-Étienne)</p>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Arrêt le plus proche - {
-                            'bus_stop_distance_m' in activity.transport_meta && 
-                            activity.transport_meta.bus_stop_distance_m
-                              ? `${activity.transport_meta.bus_stop_distance_m}m` 
-                              : 'À proximité'
-                          }
-                        </p>
-                        <Button
-                          variant="link"
-                          className="h-auto p-0 text-sm text-primary hover:underline font-medium"
-                          onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activity.structures?.address || '')}`)}
-                        >
-                          Calculer mon itinéraire →
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="flex items-start gap-3">
-                      <Bike size={22} className="text-primary mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="font-medium mb-1">Vélivert</p>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Stations disponibles à proximité
-                        </p>
-                        <Button
-                          variant="link"
-                          className="h-auto p-0 text-sm text-primary hover:underline font-medium"
-                          onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activity.structures?.address || '')}`)}
-                        >
-                          Calculer mon itinéraire vélo →
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </section>
-            )}
+            {/* Eco Mobility Section */}
+            <EcoMobilitySection 
+              activityId={activity.id}
+              activityAddress={activity.structures?.address}
+              structureName={activity.structures?.name}
+              structureContactJson={activity.structures?.contact_json}
+            />
 
             {/* Accessibility Features */}
             {typeof activity.accessibility_checklist === 'object' && 
