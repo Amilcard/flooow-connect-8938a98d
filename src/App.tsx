@@ -40,6 +40,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import MesInformations from "./pages/account/MesInformations";
 import MesEnfants from "./pages/account/kids/MesEnfants";
 import MesReservations from "./pages/account/MesReservations";
+import ValidationsParentales from "./pages/account/ValidationsParentales";
 import MesNotifications from "./pages/account/MesNotifications";
 import MesSessionsAccount from "./pages/account/MesSessions";
 import MoyensPaiement from "./pages/account/MoyensPaiement";
@@ -95,6 +96,7 @@ const App = () => (
           <Route path="/mon-compte/informations" element={<MesInformations />} />
           <Route path="/mon-compte/enfants" element={<MesEnfants />} />
           <Route path="/mon-compte/reservations" element={<MesReservations />} />
+          <Route path="/mon-compte/validations" element={<ValidationsParentales />} />
           <Route path="/mon-compte/notifications" element={<MesNotifications />} />
           <Route path="/mon-compte/sessions" element={<MesSessionsAccount />} />
           <Route path="/mon-compte/paiement" element={<MoyensPaiement />} />

@@ -83,6 +83,13 @@ const MonCompte = () => {
       onClick: () => navigate("/mon-compte/reservations"),
     },
     {
+      icon: <FileText size={20} />,
+      title: "Demandes d'inscription",
+      subtitle: "Valider les demandes de vos enfants",
+      badge: null,
+      onClick: () => navigate("/mon-compte/validations"),
+    },
+    {
       icon: <Shield size={20} />,
       title: "Mes sessions",
       subtitle: "Gérer vos connexions actives",
