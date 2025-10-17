@@ -52,8 +52,8 @@ const Login = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2"
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 hover:bg-primary/10 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Retour
