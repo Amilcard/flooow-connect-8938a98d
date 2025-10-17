@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.reports]
 verify_jwt = false
+
+[functions.google-maps-token]
+verify_jwt = false
+
+[functions.google-maps-directions]
+verify_jwt = false
