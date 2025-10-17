@@ -720,6 +720,50 @@ export type Database = {
           },
         ]
       }
+      promo_codes: {
+        Row: {
+          activity_id: string
+          code: string
+          created_at: string
+          discount_percentage: number
+          id: string
+          max_usage: number
+          updated_at: string
+          usage_count: number
+          valid_until: string
+        }
+        Insert: {
+          activity_id: string
+          code: string
+          created_at?: string
+          discount_percentage?: number
+          id?: string
+          max_usage?: number
+          updated_at?: string
+          usage_count?: number
+          valid_until?: string
+        }
+        Update: {
+          activity_id?: string
+          code?: string
+          created_at?: string
+          discount_percentage?: number
+          id?: string
+          max_usage?: number
+          updated_at?: string
+          usage_count?: number
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_codes_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       refresh_tokens: {
         Row: {
           created_at: string
