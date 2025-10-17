@@ -331,27 +331,9 @@ const Itineraire = () => {
                   value={arrival}
                   onChange={(e) => setArrival(e.target.value)}
                   className="pl-10"
+                  disabled
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="mode">Mode de déplacement</Label>
-              <Select value={travelMode} onValueChange={setTravelMode}>
-                <SelectTrigger id="mode">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {transportType !== 'walk' && transportType !== 'bus' && (
-                    <SelectItem value="WALKING">À pied</SelectItem>
-                  )}
-                  <SelectItem value="BICYCLING">À vélo</SelectItem>
-                  {transportType === 'bus' && (
-                    <SelectItem value="TRANSIT">En transport</SelectItem>
-                  )}
-                  <SelectItem value="DRIVING">En voiture</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <Button 

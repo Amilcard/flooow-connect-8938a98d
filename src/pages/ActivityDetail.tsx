@@ -315,9 +315,17 @@ const ActivityDetail = () => {
               </section>
             )}
 
-            {/* What's Included - Airbnb style */}
+            {/* Eco Mobility Section */}
+            <EcoMobilitySection 
+              activityId={activity.id}
+              activityAddress={activity.structures?.address}
+              structureName={activity.structures?.name}
+              structureContactJson={activity.structures?.contact_json}
+            />
+
+            {/* Informations pratiques - Airbnb style */}
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">Ce qui est proposé</h2>
+              <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                   <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
@@ -371,45 +379,6 @@ const ActivityDetail = () => {
                 )}
               </div>
             </section>
-
-            {/* Eco Mobility Section */}
-            <EcoMobilitySection 
-              activityId={activity.id}
-              activityAddress={activity.structures?.address}
-              structureName={activity.structures?.name}
-              structureContactJson={activity.structures?.contact_json}
-            />
-
-            {/* Accessibility Features */}
-            {typeof activity.accessibility_checklist === 'object' && 
-             activity.accessibility_checklist !== null && 
-             Object.keys(activity.accessibility_checklist).length > 0 && (
-              <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">Accessibilité</h2>
-                <div className="space-y-3">
-                  {typeof activity.accessibility_checklist === 'object' && 
-                   activity.accessibility_checklist !== null &&
-                   !Array.isArray(activity.accessibility_checklist) &&
-                   'wheelchair' in activity.accessibility_checklist &&
-                   activity.accessibility_checklist.wheelchair && (
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm">Accessible en fauteuil roulant</span>
-                    </div>
-                  )}
-                  {typeof activity.accessibility_checklist === 'object' && 
-                   activity.accessibility_checklist !== null &&
-                   !Array.isArray(activity.accessibility_checklist) &&
-                   'sensory_support' in activity.accessibility_checklist &&
-                   activity.accessibility_checklist.sensory_support && (
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm">Accompagnement sensoriel adapté</span>
-                    </div>
-                  )}
-                </div>
-              </section>
-            )}
 
             {/* Financial Aids */}
             {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
