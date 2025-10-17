@@ -113,6 +113,12 @@ serve(async (req) => {
         );
       }
 
+      // ==========================================
+      // V1 FLOW: Auto-validation si express_flag = true
+      // ==========================================
+      const isV1AutoValidate = express_flag === true;
+      const bookingStatus = isV1AutoValidate ? 'validee' : 'en_attente';
+      
       // Create booking with trigger that will decrement seat atomically
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
@@ -123,7 +129,13 @@ serve(async (req) => {
           child_id,
           idempotency_key: idempotency_key || null,
           express_flag: express_flag || false,
-          status: 'en_attente',
+          status: bookingStatus,
+          history: isV1AutoValidate ? [{
+            timestamp: new Date().toISOString(),
+            action: 'auto_validated_v1',
+            reason: 'V1 demo mode - automatic validation',
+            express_flag: true
+          }] : []
         })
         .select()
         .single();
@@ -143,6 +155,18 @@ serve(async (req) => {
           JSON.stringify({ error: "booking_creation_failed", details: bookingError.message }),
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
+      }
+
+      // V1: Créer validations_parentales pour traçabilité (même en auto-validate)
+      if (isV1AutoValidate) {
+        await supabase.from('validations_parentales').insert({
+          booking_id: booking.id,
+          parent_id: user.id,
+          status: 'validee',
+          validated_at: new Date().toISOString()
+        });
+        
+        console.log(`[bookings] V1 auto-validated: ${booking.id}`);
       }
 
       // Get updated seat count

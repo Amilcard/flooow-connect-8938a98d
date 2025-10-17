@@ -71,6 +71,13 @@ export type Database = {
             referencedRelation: "territories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "active_sessions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
+          },
         ]
       }
       activities: {
@@ -718,6 +725,13 @@ export type Database = {
             referencedRelation: "territories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "profiles_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
+          },
         ]
       }
       promo_codes: {
@@ -834,6 +848,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "territories"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_metrics_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
           },
         ]
       }
@@ -990,6 +1011,13 @@ export type Database = {
             referencedRelation: "territories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "structures_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
+          },
         ]
       }
       territories: {
@@ -1046,6 +1074,13 @@ export type Database = {
             referencedRelation: "territories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "territories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
+          },
         ]
       }
       user_roles: {
@@ -1077,6 +1112,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "territories"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
           },
         ]
       }
@@ -1147,6 +1189,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "territories"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
           },
         ]
       }
@@ -1224,6 +1273,35 @@ export type Database = {
           has_qf: boolean | null
           has_territory: boolean | null
           id: string | null
+        }
+        Relationships: []
+      }
+      vw_dashboard_collectivite_overview: {
+        Row: {
+          published_activities: number | null
+          territory_id: string | null
+          territory_name: string | null
+          territory_type: string | null
+          total_activities: number | null
+          total_aid_simulations: number | null
+          total_registrations: number | null
+          total_revenue_potential: number | null
+          unique_children_registered: number | null
+        }
+        Relationships: []
+      }
+      vw_dashboard_financeur_aid_usage: {
+        Row: {
+          aid_categories: string[] | null
+          aid_description: string | null
+          aid_id: string | null
+          aid_name: string | null
+          avg_aid_amount: number | null
+          territory_level: string | null
+          total_children_benefiting: number | null
+          total_simulated_amount: number | null
+          total_simulations: number | null
+          unique_users: number | null
         }
         Relationships: []
       }
@@ -1341,6 +1419,7 @@ export type Database = {
         | "territory_admin"
         | "partner"
         | "superadmin"
+        | "collectivite_viewer"
       booking_status: "en_attente" | "validee" | "refusee" | "annulee"
     }
     CompositeTypes: {
@@ -1475,6 +1554,7 @@ export const Constants = {
         "territory_admin",
         "partner",
         "superadmin",
+        "collectivite_viewer",
       ],
       booking_status: ["en_attente", "validee", "refusee", "annulee"],
     },
