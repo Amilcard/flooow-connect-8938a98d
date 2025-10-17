@@ -1,11 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { SearchBar } from "@/components/SearchBar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bus, Bike, Car, Calculator, MapPin, ExternalLink } from "lucide-react";
+import { ArrowLeft, Bus, Bike, Car, Calculator, MapPin, ExternalLink } from "lucide-react";
 
 const EcoMobilite = () => {
+  const navigate = useNavigate();
+  
   const mobilityOptions = [
     {
       name: "STAS 10 €/mois",
@@ -15,7 +17,7 @@ const EcoMobilite = () => {
       eligibility: "Étudiants, demandeurs d'emploi, bénéficiaires RSA",
       cta: "Choisir mon abonnement",
       links: [
-        { label: "Réseau STAS", url: "https://www.reseau-stas.fr" }
+        { label: "Réseau STAS", url: "https://www.reseau-stas.fr/tarifs" }
       ]
     },
     {
@@ -26,7 +28,7 @@ const EcoMobilite = () => {
       eligibility: "Accessible à tous",
       cta: "Activer VéliVert",
       links: [
-        { label: "VéliVert STAS", url: "https://www.reseau-stas.fr/velivert" }
+        { label: "VéliVert STAS", url: "https://www.reseau-stas.fr" }
       ]
     },
     {
@@ -35,10 +37,9 @@ const EcoMobilite = () => {
       description: "Itinéraires multimodaux + achats + post-paiement",
       icon: <MapPin className="w-5 h-5" />,
       eligibility: "Téléchargement gratuit",
-      cta: "Ouvrir Moovizy",
+      cta: "En savoir plus",
       links: [
-        { label: "App Store", url: "https://apps.apple.com/fr/app/moovizy/id1542684702" },
-        { label: "Transdev", url: "https://www.transdev.com/fr/moovizy/" }
+        { label: "Transdev", url: "https://www.transdev.com" }
       ]
     },
     {
@@ -47,9 +48,9 @@ const EcoMobilite = () => {
       description: "Venir en bus depuis/vers La Ricamarie",
       icon: <Bus className="w-5 h-5" />,
       eligibility: "Tous les voyageurs STAS",
-      cta: "Voir les arrêts proches",
+      cta: "Voir les horaires",
       links: [
-        { label: "Ville La Ricamarie", url: "https://www.ville-laricamarie.fr" }
+        { label: "Réseau STAS", url: "https://www.reseau-stas.fr" }
       ]
     },
     {
@@ -60,7 +61,7 @@ const EcoMobilite = () => {
       eligibility: "Tous les habitants de la région AURA",
       cta: "Rejoindre Mov'ici",
       links: [
-        { label: "Région AURA", url: "https://www.auvergnerhonealpes.fr/actualite/1069/154-movici-plateforme-covoiturage.htm" }
+        { label: "Région AURA", url: "https://www.auvergnerhonealpes.fr" }
       ],
       note: "Prime nationale covoiturage terminée au 01/01/2025"
     }
@@ -68,13 +69,27 @@ const EcoMobilite = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <SearchBar />
+      <header className="border-b bg-card">
+        <div className="container flex items-center gap-4 py-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            aria-label="Retour à l'accueil"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-semibold">Éco-Mobilité</h1>
+          </div>
+        </div>
+      </header>
       
       <div className="container py-6 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold mb-2">Éco-Mobilité</h1>
+          <h2 className="text-2xl font-bold mb-2">Venir à l'activité</h2>
           <p className="text-muted-foreground">
-            Solutions de transport écologique pour venir à vos activités
+            Solutions de transport écologique pour vos déplacements
           </p>
         </div>
 
@@ -91,12 +106,12 @@ const EcoMobilite = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm mb-4">
-              Utilisez le simulateur Mon Impact Transport de l'ADEME pour mesurer vos efforts
+              Utilisez le simulateur de l'ADEME pour mesurer votre impact transport
             </p>
             <Button 
               variant="secondary" 
               className="bg-white text-primary hover:bg-white/90"
-              onClick={() => window.open("https://monimpacttransport.fr", "_blank")}
+              onClick={() => window.open("https://nosgestesclimat.fr/simulateur/bilan", "_blank")}
             >
               <Calculator className="w-4 h-4 mr-2" />
               Lancer le simulateur
@@ -159,9 +174,10 @@ const EcoMobilite = () => {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-primary hover:underline"
+                          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                         >
-                          {link.label} →
+                          {link.label}
+                          <ExternalLink className="w-3 h-3" />
                         </a>
                       ))}
                     </div>

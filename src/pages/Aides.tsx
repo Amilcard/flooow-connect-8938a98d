@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { SearchBar } from "@/components/SearchBar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GeneralSimulateAidModal } from "@/components/simulations/GeneralSimulateAidModal";
-import { DollarSign, HelpCircle, Calculator } from "lucide-react";
+import { ArrowLeft, HelpCircle, Calculator, ExternalLink } from "lucide-react";
 
 const Aides = () => {
+  const navigate = useNavigate();
   const [showSimulator, setShowSimulator] = useState(false);
 
   const aides = [
@@ -17,8 +18,8 @@ const Aides = () => {
       description: "70 € sur ma licence sportive",
       eligibility: "Enfants 6-18 ans, allocataires AAH, ARS ou AEEH",
       links: [
-        { label: "Info.gouv", url: "https://www.info.gouv.fr/pass-sport" },
-        { label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F35915" }
+        { label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F35915" },
+        { label: "Sports.gouv.fr", url: "https://www.sports.gouv.fr/pass-sport" }
       ]
     },
     {
@@ -27,7 +28,7 @@ const Aides = () => {
       description: "Sport, culture, santé, permis — services multiples",
       eligibility: "15-25 ans, lycéens et apprentis de la région AURA",
       links: [
-        { label: "Région AURA", url: "https://www.auvergnerhonealpes.fr/actualite/1183/154-pass-region.htm" }
+        { label: "Région AURA", url: "https://www.auvergnerhonealpes.fr" }
       ],
       validity: "Septembre 2025 - Août 2026"
     },
@@ -38,7 +39,7 @@ const Aides = () => {
       eligibility: "Allocataires CAF selon quotient familial",
       links: [
         { label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F1319" },
-        { label: "CAF Loire", url: "https://www.caf.fr/allocataires/caf-de-la-loire/offre-de-service" }
+        { label: "CAF.fr", url: "https://www.caf.fr" }
       ]
     },
     {
@@ -54,13 +55,27 @@ const Aides = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <SearchBar />
+      <header className="border-b bg-card">
+        <div className="container flex items-center gap-4 py-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            aria-label="Retour à l'accueil"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-semibold">Aides Financières</h1>
+          </div>
+        </div>
+      </header>
       
       <div className="container py-6 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold mb-2">Aides Financières</h1>
+          <h2 className="text-2xl font-bold mb-2">Découvrir les aides</h2>
           <p className="text-muted-foreground">
-            Découvrez les aides disponibles pour financer les activités de vos enfants
+            Aides disponibles pour financer les activités de vos enfants
           </p>
         </div>
 
@@ -122,15 +137,16 @@ const Aides = () => {
                     <p className="text-xs text-muted-foreground mb-2">Sources officielles :</p>
                     <div className="flex flex-wrap gap-2">
                       {aide.links.map((link) => (
-                        <a
-                          key={link.url}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-primary hover:underline"
-                        >
-                          {link.label} →
-                        </a>
+                      <a
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                      >
+                        {link.label}
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
                       ))}
                     </div>
                   </div>

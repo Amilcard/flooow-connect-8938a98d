@@ -1,10 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { SearchBar } from "@/components/SearchBar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Users, Info, ExternalLink } from "lucide-react";
+import { ArrowLeft, Heart, Users, Info, ExternalLink } from "lucide-react";
 
 const Inclusivite = () => {
+  const navigate = useNavigate();
+  
   const inclusiveServices = [
     {
       name: "Handi'Stas",
@@ -13,7 +15,7 @@ const Inclusivite = () => {
       eligibility: "Personnes à mobilité réduite résidant dans la métropole",
       cta: "Demander Handi'Stas",
       links: [
-        { label: "Réseau STAS", url: "https://www.reseau-stas.fr/handistas" }
+        { label: "Réseau STAS", url: "https://www.reseau-stas.fr" }
       ]
     },
     {
@@ -21,9 +23,9 @@ const Inclusivite = () => {
       description: "Sport adapté et programme 'Ville en partage'",
       icon: <Users className="w-5 h-5" />,
       eligibility: "Tous publics, avec ou sans handicap",
-      cta: "Voir le programme",
+      cta: "Découvrir les clubs",
       links: [
-        { label: "Saint-Étienne Métropole", url: "https://www.saint-etienne-metropole.fr" }
+        { label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F15066" }
       ]
     },
     {
@@ -40,11 +42,25 @@ const Inclusivite = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <SearchBar />
+      <header className="border-b bg-card">
+        <div className="container flex items-center gap-4 py-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            aria-label="Retour à l'accueil"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-semibold">Inclusivité & Accessibilité</h1>
+          </div>
+        </div>
+      </header>
       
       <div className="container py-6 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold mb-2">Inclusivité & Accessibilité</h1>
+          <h2 className="text-2xl font-bold mb-2">Une ville pour tous</h2>
           <p className="text-muted-foreground">
             Services et activités adaptés pour tous les enfants
           </p>
@@ -111,9 +127,10 @@ const Inclusivite = () => {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-primary hover:underline"
+                          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                         >
-                          {link.label} →
+                          {link.label}
+                          <ExternalLink className="w-3 h-3" />
                         </a>
                       ))}
                     </div>
