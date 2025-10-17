@@ -8,77 +8,87 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Navigation, MapPin, Clock, Route, Bike, Bus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 const Itineraire = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string>("");
+  const mapRef = useRef<any>(null);
+  const directionsRenderer = useRef<any>(null);
+  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
+  const [googleMapsToken, setGoogleMapsToken] = useState<string>("");
   
-  const transportType = searchParams.get('type') || 'bus'; // 'bus' or 'bike'
+  const transportType = searchParams.get('type') || 'bus';
   const destination = searchParams.get('destination') || '';
   
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
-  const [travelMode, setTravelMode] = useState(transportType === 'bike' ? 'cycling' : 'walking');
+  const [travelMode, setTravelMode] = useState(transportType === 'bike' ? 'BICYCLING' : 'WALKING');
   const [routeData, setRouteData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // Get Mapbox token from environment
+  // Get Google Maps API key
   useEffect(() => {
-    const getMapboxToken = async () => {
+    const getGoogleMapsToken = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('mapbox-token');
+        const { data, error } = await supabase.functions.invoke('google-maps-token');
         if (error) throw error;
         if (data?.token) {
-          setMapboxToken(data.token);
-          mapboxgl.accessToken = data.token;
+          setGoogleMapsToken(data.token);
+          loadGoogleMapsScript(data.token);
         }
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
+        console.error('Error fetching Google Maps token:', error);
         toast.error("Erreur de configuration de la carte");
       }
     };
-    getMapboxToken();
+    getGoogleMapsToken();
   }, []);
+
+  // Load Google Maps script
+  const loadGoogleMapsScript = (apiKey: string) => {
+    if ((window as any).google && (window as any).google.maps) {
+      setGoogleMapsLoaded(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setGoogleMapsLoaded(true);
+    script.onerror = () => {
+      console.error('Error loading Google Maps script');
+      toast.error("Erreur de chargement de Google Maps");
+    };
+    document.head.appendChild(script);
+  };
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current || !googleMapsLoaded) return;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [4.3872, 45.4397], // Saint-Étienne coordinates
+    const google = (window as any).google;
+    mapRef.current = new google.maps.Map(mapContainer.current, {
+      center: { lat: 45.4397, lng: 4.3872 }, // Saint-Étienne
       zoom: 12,
     });
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    directionsRenderer.current = new google.maps.DirectionsRenderer({
+      map: mapRef.current,
+      polylineOptions: {
+        strokeColor: transportType === 'bike' ? '#10b981' : '#3b82f6',
+        strokeWeight: 5,
+        strokeOpacity: 0.75,
+      },
+    });
 
     return () => {
-      map.current?.remove();
-    };
-  }, [mapboxToken]);
-
-  const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?proximity=4.3872,45.4397&country=fr&access_token=${mapboxToken}`
-      );
-      const data = await response.json();
-      
-      if (data.features && data.features.length > 0) {
-        return data.features[0].center;
+      if (directionsRenderer.current) {
+        directionsRenderer.current.setMap(null);
       }
-      return null;
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      return null;
-    }
-  };
+    };
+  }, [googleMapsLoaded, transportType]);
 
   const calculateRoute = async () => {
     if (!departure || !arrival) {
@@ -86,104 +96,40 @@ const Itineraire = () => {
       return;
     }
 
+    if (!googleMapsLoaded) {
+      toast.error("Chargement de la carte en cours...");
+      return;
+    }
+
     setLoading(true);
     try {
-      // Geocode addresses
-      const startCoords = await geocodeAddress(departure + ", Saint-Étienne");
-      const endCoords = await geocodeAddress(arrival + ", Saint-Étienne");
+      const google = (window as any).google;
+      const directionsService = new google.maps.DirectionsService();
+      
+      const request = {
+        origin: departure + ", Saint-Étienne",
+        destination: arrival + ", Saint-Étienne",
+        travelMode: travelMode,
+      };
 
-      if (!startCoords || !endCoords) {
-        toast.error("Impossible de localiser une ou plusieurs adresses");
-        setLoading(false);
-        return;
-      }
-
-      // Call our edge function for directions
-      const { data, error } = await supabase.functions.invoke('mapbox-directions', {
-        body: {
-          start: startCoords,
-          end: endCoords,
-          profile: travelMode,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.routes && data.routes.length > 0) {
-        setRouteData(data.routes[0]);
-        
-        // Display route on map
-        if (map.current) {
-          // Remove existing route if any
-          if (map.current.getSource('route')) {
-            map.current.removeLayer('route');
-            map.current.removeSource('route');
+      directionsService.route(request, (result: any, status: any) => {
+        if (status === 'OK' && result) {
+          setRouteData(result.routes[0].legs[0]);
+          if (directionsRenderer.current) {
+            directionsRenderer.current.setDirections(result);
           }
-
-          // Add route
-          map.current.addSource('route', {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              properties: {},
-              geometry: data.routes[0].geometry,
-            },
-          });
-
-          map.current.addLayer({
-            id: 'route',
-            type: 'line',
-            source: 'route',
-            layout: {
-              'line-join': 'round',
-              'line-cap': 'round',
-            },
-            paint: {
-              'line-color': transportType === 'bike' ? '#10b981' : '#3b82f6',
-              'line-width': 5,
-              'line-opacity': 0.75,
-            },
-          });
-
-          // Add markers
-          new mapboxgl.Marker({ color: '#22c55e' })
-            .setLngLat(startCoords)
-            .setPopup(new mapboxgl.Popup().setHTML('<p>Départ</p>'))
-            .addTo(map.current);
-
-          new mapboxgl.Marker({ color: '#ef4444' })
-            .setLngLat(endCoords)
-            .setPopup(new mapboxgl.Popup().setHTML('<p>Arrivée</p>'))
-            .addTo(map.current);
-
-          // Fit bounds to route
-          const bounds = new mapboxgl.LngLatBounds(startCoords, endCoords);
-          map.current.fitBounds(bounds, { padding: 50 });
+          toast.success("Itinéraire calculé !");
+        } else {
+          console.error('Directions request failed:', status);
+          toast.error("Aucun itinéraire trouvé");
         }
-
-        toast.success("Itinéraire calculé !");
-      } else {
-        toast.error("Aucun itinéraire trouvé");
-      }
+        setLoading(false);
+      });
     } catch (error) {
       console.error('Error calculating route:', error);
       toast.error("Erreur lors du calcul de l'itinéraire");
-    } finally {
       setLoading(false);
     }
-  };
-
-  const formatDuration = (seconds: number): string => {
-    const minutes = Math.round(seconds / 60);
-    if (minutes < 60) return `${minutes} min`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}min`;
-  };
-
-  const formatDistance = (meters: number): string => {
-    if (meters < 1000) return `${Math.round(meters)} m`;
-    return `${(meters / 1000).toFixed(1)} km`;
   };
 
   return (
@@ -257,24 +203,19 @@ const Itineraire = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="walking">
-                    À pied
-                  </SelectItem>
-                  <SelectItem value="cycling">
-                    À vélo
-                  </SelectItem>
+                  <SelectItem value="WALKING">À pied</SelectItem>
+                  <SelectItem value="BICYCLING">À vélo</SelectItem>
                   {transportType === 'bus' && (
-                    <SelectItem value="driving-traffic">
-                      En transport
-                    </SelectItem>
+                    <SelectItem value="TRANSIT">En transport</SelectItem>
                   )}
+                  <SelectItem value="DRIVING">En voiture</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <Button 
               onClick={calculateRoute} 
-              disabled={loading || !mapboxToken}
+              disabled={loading || !googleMapsLoaded}
               className="w-full"
             >
               <Route className="w-4 h-4 mr-2" />
@@ -297,13 +238,13 @@ const Itineraire = () => {
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Distance</p>
                   <p className="text-2xl font-semibold">
-                    {formatDistance(routeData.distance)}
+                    {routeData.distance?.text}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Durée estimée</p>
                   <p className="text-2xl font-semibold">
-                    {formatDuration(routeData.duration)}
+                    {routeData.duration?.text}
                   </p>
                 </div>
               </div>
