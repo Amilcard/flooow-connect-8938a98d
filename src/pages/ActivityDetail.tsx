@@ -27,9 +27,16 @@ import {
   Info,
   FileText,
   Building2,
-  HelpCircle
+  HelpCircle,
+  Mail,
+  Phone,
+  MessageCircle,
+  Bus,
+  Bike,
+  CalendarRange
 } from "lucide-react";
 import { useState } from "react";
+import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -52,6 +59,7 @@ const ActivityDetail = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [selectedChildId, setSelectedChildId] = useState<string>();
   const [showAidModal, setShowAidModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   // Fetch activity details
@@ -64,7 +72,8 @@ const ActivityDetail = () => {
           *,
           structures:structure_id (
             name,
-            address
+            address,
+            contact_json
           )
         `)
         .eq("id", id)
@@ -415,6 +424,21 @@ const ActivityDetail = () => {
           />
         )}
 
+        {/* Service Period Badge */}
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <CalendarRange className="text-primary flex-shrink-0" size={20} />
+              <div>
+                <p className="font-medium text-sm">Période de prestation</p>
+                <p className="text-sm text-muted-foreground">
+                  Du 1er Novembre 2025 au 30 Août 2026
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Info */}
         <Card>
           <CardHeader>
@@ -444,18 +468,131 @@ const ActivityDetail = () => {
               </div>
             </div>
 
+            {/* Transport Information */}
+            {typeof activity.transport_meta === 'object' && activity.transport_meta !== null && (
+              <>
+                <Separator />
+                <div className="space-y-3">
+                  <p className="font-medium text-sm flex items-center gap-2">
+                    <Bus size={18} className="text-primary" />
+                    Informations Transport
+                  </p>
+                  
+                  {/* STAS Info */}
+                  <div className="ml-6 space-y-2">
+                    <div className="flex items-start gap-2">
+                      <Bus size={16} className="text-muted-foreground mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium">STAS (Saint-Étienne)</p>
+                        <p className="text-muted-foreground">
+                          Arrêt le plus proche - {
+                            typeof activity.transport_meta === 'object' && 
+                            activity.transport_meta !== null && 
+                            'bus_stop_distance_m' in activity.transport_meta && 
+                            activity.transport_meta.bus_stop_distance_m
+                              ? `${activity.transport_meta.bus_stop_distance_m}m` 
+                              : 'À proximité'
+                          }
+                        </p>
+                        <a 
+                          href="https://www.reseau-stas.fr" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline text-xs"
+                        >
+                          Voir les horaires STAS →
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Véliver Info */}
+                    <div className="flex items-start gap-2">
+                      <Bike size={16} className="text-muted-foreground mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium">Véliver</p>
+                        <p className="text-muted-foreground">Stations disponibles à proximité</p>
+                        <a 
+                          href="https://www.veliver.fr" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline text-xs"
+                        >
+                          Localiser une station →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
             {activity.covoiturage_enabled && (
               <>
                 <Separator />
                 <div className="flex items-start gap-3">
                   <Car size={18} className="text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-sm">Covoiturage</p>
+                    <p className="font-medium text-sm">Covoiturage disponible</p>
                     <p className="text-sm text-muted-foreground">Proposez ou rejoignez un covoiturage</p>
                   </div>
                 </div>
               </>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Organizer Contact Card */}
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Building2 size={18} />
+              Contact Organisme
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold text-sm mb-1">{activity.structures?.name}</p>
+                {activity.structures?.address && (
+                  <p className="text-sm text-muted-foreground flex items-start gap-2">
+                    <MapPin size={14} className="mt-0.5 flex-shrink-0" />
+                    {activity.structures.address}
+                  </p>
+                )}
+              </div>
+
+              {typeof activity.structures?.contact_json === 'object' && activity.structures?.contact_json !== null && (
+                <div className="space-y-2">
+                  {'email' in activity.structures.contact_json && activity.structures.contact_json.email && (
+                    <a 
+                      href={`mailto:${activity.structures.contact_json.email}`}
+                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <Mail size={16} />
+                      {String(activity.structures.contact_json.email)}
+                    </a>
+                  )}
+                  {'phone' in activity.structures.contact_json && activity.structures.contact_json.phone && (
+                    <a 
+                      href={`tel:${activity.structures.contact_json.phone}`}
+                      className="flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <Phone size={16} />
+                      {String(activity.structures.contact_json.phone)}
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => setShowContactModal(true)}
+            >
+              <MessageCircle size={16} className="mr-2" />
+              Poser une question
+            </Button>
           </CardContent>
         </Card>
 
@@ -571,13 +708,26 @@ const ActivityDetail = () => {
         </Button>
       </div>
 
-      <SimulateAidModal
-        open={showAidModal}
-        onOpenChange={setShowAidModal}
-        activityPrice={activity.price_base || 0}
-        activityCategories={[activity.category].filter(Boolean)}
-        durationDays={1}
-      />
+      {showAidModal && (
+        <SimulateAidModal
+          open={showAidModal}
+          onOpenChange={setShowAidModal}
+          activityPrice={activity.price_base || 0}
+          activityCategories={[activity.category].filter(Boolean)}
+          durationDays={calculateDurationDays(selectedSlot)}
+        />
+      )}
+
+      {activity.structures && typeof activity.structures.contact_json === 'object' && activity.structures.contact_json !== null && (
+        <ContactOrganizerModal
+          open={showContactModal}
+          onOpenChange={setShowContactModal}
+          organizerName={activity.structures.name}
+          organizerEmail={'email' in activity.structures.contact_json ? String(activity.structures.contact_json.email) : ''}
+          organizerPhone={'phone' in activity.structures.contact_json ? String(activity.structures.contact_json.phone) : undefined}
+          activityTitle={activity.title}
+        />
+      )}
 
       <BottomNavigation />
     </div>
