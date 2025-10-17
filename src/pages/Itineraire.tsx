@@ -206,7 +206,7 @@ const Itineraire = () => {
               <Bus className="w-5 h-5 text-blue-600" />
             )}
             <h1 className="text-xl font-semibold">
-              Itinéraire {transportType === 'bike' ? 'Véliver' : 'STAS'}
+              Itinéraire {transportType === 'bike' ? 'Vélivert' : 'STAS'}
             </h1>
           </div>
         </div>
@@ -330,17 +330,17 @@ const Itineraire = () => {
               {transportType === 'bike' && (
                 <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
                   <p className="text-sm font-medium mb-2">
-                    🚲 Stations Véliver
+                    🚲 Stations Vélivert
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Localisez les stations disponibles sur{' '}
                     <a
-                      href="https://www.veliver.fr"
+                      href="https://www.velivert.fr"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-green-600 hover:underline font-medium"
                     >
-                      www.veliver.fr
+                      www.velivert.fr
                     </a>
                   </p>
                 </div>

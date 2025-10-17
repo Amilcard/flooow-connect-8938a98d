@@ -392,7 +392,7 @@ const ActivityDetail = () => {
                     <div className="flex items-start gap-3">
                       <Bike size={20} className="text-primary mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-medium mb-1">Véliver</p>
+                        <p className="font-medium mb-1">Vélivert</p>
                         <p className="text-sm text-muted-foreground mb-2">
                           Stations disponibles à proximité
                         </p>
