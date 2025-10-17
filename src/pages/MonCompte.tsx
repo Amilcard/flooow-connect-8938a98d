@@ -19,11 +19,12 @@ import {
   Settings,
   Shield,
   Calendar,
-  CreditCard,
   MapPin,
   Phone,
   Mail,
-  Edit
+  Edit,
+  ArrowLeft,
+  Car
 } from "lucide-react";
 
 const MonCompte = () => {
@@ -104,11 +105,11 @@ const MonCompte = () => {
       onClick: () => navigate("/mon-compte/notifications"),
     },
     {
-      icon: <CreditCard size={20} />,
-      title: "Moyens de paiement",
-      subtitle: "Cartes bancaires, portefeuille",
+      icon: <Car size={20} />,
+      title: "Mon Covoiturage",
+      subtitle: "Demander ou proposer un covoiturage",
       badge: null,
-      onClick: () => navigate("/mon-compte/paiement"),
+      onClick: () => navigate("/mon-compte/covoiturage"),
     },
     {
       icon: <Settings size={20} />,
@@ -131,6 +132,16 @@ const MonCompte = () => {
       {/* Header avec profil utilisateur */}
       <div className="bg-gradient-to-br from-primary to-accent text-white">
         <div className="container p-6">
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="text-white hover:bg-white/20"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </div>
           <div className="flex items-center space-x-4">
             <Avatar className="w-16 h-16 border-4 border-white/20">
               <AvatarImage src={user?.avatar} alt={user?.firstName} />

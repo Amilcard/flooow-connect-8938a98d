@@ -44,6 +44,7 @@ import ValidationsParentales from "./pages/account/ValidationsParentales";
 import MesNotifications from "./pages/account/MesNotifications";
 import MesSessionsAccount from "./pages/account/MesSessions";
 import MoyensPaiement from "./pages/account/MoyensPaiement";
+import MonCovoiturage from "./pages/account/MonCovoiturage";
 import Parametres from "./pages/account/Parametres";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -100,6 +101,7 @@ const App = () => (
           <Route path="/mon-compte/notifications" element={<MesNotifications />} />
           <Route path="/mon-compte/sessions" element={<MesSessionsAccount />} />
           <Route path="/mon-compte/paiement" element={<MoyensPaiement />} />
+          <Route path="/mon-compte/covoiturage" element={<MonCovoiturage />} />
           <Route path="/mon-compte/parametres" element={<Parametres />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/legal/privacy" element={<PrivacyPolicy />} />
