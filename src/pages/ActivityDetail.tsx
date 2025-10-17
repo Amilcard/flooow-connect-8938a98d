@@ -377,14 +377,13 @@ const ActivityDetail = () => {
                               : 'À proximité'
                           }
                         </p>
-                        <a 
-                          href="https://www.reseau-stas.fr" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline font-medium"
+                        <Button
+                          variant="link"
+                          className="h-auto p-0 text-sm text-primary hover:underline font-medium"
+                          onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activity.structures?.address || '')}`)}
                         >
-                          Voir les horaires STAS →
-                        </a>
+                          Calculer mon itinéraire →
+                        </Button>
                       </div>
                     </div>
                     
@@ -397,14 +396,13 @@ const ActivityDetail = () => {
                         <p className="text-sm text-muted-foreground mb-2">
                           Stations disponibles à proximité
                         </p>
-                        <a 
-                          href="https://www.veliver.fr" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline font-medium"
+                        <Button
+                          variant="link"
+                          className="h-auto p-0 text-sm text-primary hover:underline font-medium"
+                          onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activity.structures?.address || '')}`)}
                         >
-                          Localiser une station →
-                        </a>
+                          Calculer mon itinéraire vélo →
+                        </Button>
                       </div>
                     </div>
                   </CardContent>

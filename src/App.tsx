@@ -33,6 +33,7 @@ import ParentSignup from "./pages/ParentSignup";
 import ValidationParentale from "./pages/ValidationParentale";
 import ActivitiesMap from "./pages/ActivitiesMap";
 import ChildDashboard from "./pages/ChildDashboard";
+import Itineraire from "./pages/Itineraire";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -104,6 +105,7 @@ const App = () => (
           <Route path="/legal/cookies" element={<Cookies />} />
           <Route path="/legal/mentions" element={<MentionsLegales />} />
           <Route path="/legal/cgu" element={<CGU />} />
+          <Route path="/itineraire" element={<Itineraire />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
