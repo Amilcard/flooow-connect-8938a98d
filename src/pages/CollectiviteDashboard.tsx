@@ -2,10 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3 } from "lucide-react";
 import { LoadingState } from "@/components/LoadingState";
 import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 export default function CollectiviteDashboard() {
   // Fetch overview data
@@ -22,23 +26,84 @@ export default function CollectiviteDashboard() {
     }
   });
 
-  // Fetch aid usage data
-  const { data: aidUsage, isLoading: loadingAids } = useQuery({
-    queryKey: ['financeur-aid-usage'],
+  // Fetch activities analysis
+  const { data: activitiesAnalysis, isLoading: loadingActivities } = useQuery({
+    queryKey: ['collectivite-activities-analysis'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_dashboard_financeur_aid_usage')
-        .select('*')
-        .order('total_simulations', { ascending: false });
+        .from('vw_collectivite_activities_analysis' as any)
+        .select('*');
       
       if (error) throw error;
-      return data;
+      return data as any[];
     }
   });
 
-  if (loadingOverview || loadingAids) {
+  // Fetch aids by QF
+  const { data: aidsByQF, isLoading: loadingAidsByQF } = useQuery({
+    queryKey: ['collectivite-aids-by-qf'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vw_collectivite_aids_by_qf' as any)
+        .select('*');
+      
+      if (error) throw error;
+      return data as any[];
+    }
+  });
+
+  // Fetch transport analysis
+  const { data: transportAnalysis, isLoading: loadingTransport } = useQuery({
+    queryKey: ['collectivite-transport-analysis'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vw_collectivite_transport_analysis' as any)
+        .select('*');
+      
+      if (error) throw error;
+      return data as any[];
+    }
+  });
+
+  // Fetch demographics
+  const { data: demographics, isLoading: loadingDemographics } = useQuery({
+    queryKey: ['collectivite-demographics'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vw_collectivite_demographics' as any)
+        .select('*');
+      
+      if (error) throw error;
+      return data as any[];
+    }
+  });
+
+  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics) {
     return <LoadingState />;
   }
+
+  // Prepare chart data
+  const activitiesByCategory = activitiesAnalysis?.reduce((acc, item) => {
+    const existing = acc.find(a => a.name === item.category);
+    if (existing) {
+      existing.value += item.total_activities || 0;
+    } else {
+      acc.push({ name: item.category || 'Non classé', value: item.total_activities || 0 });
+    }
+    return acc;
+  }, [] as Array<{name: string, value: number}>);
+
+  const transportByMode = transportAnalysis?.map(t => ({
+    name: t.transport_mode || 'Non renseigné',
+    bookings: t.total_bookings || 0,
+    co2_saved: Number(t.co2_saved_kg || 0).toFixed(1)
+  }));
+
+  const aidsByQFChart = aidsByQF?.map(aid => ({
+    name: aid.qf_range,
+    simulations: aid.total_simulations || 0,
+    conversion: Number(aid.conversion_rate_pct || 0).toFixed(1)
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -122,64 +187,282 @@ export default function CollectiviteDashboard() {
             </Card>
           </div>
 
-          {/* Aid Usage Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Utilisation des Aides Financières
-              </CardTitle>
-              <CardDescription>
-                Détail des aides simulées par dispositif
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Aide</TableHead>
-                    <TableHead>Niveau</TableHead>
-                    <TableHead className="text-right">Simulations</TableHead>
-                    <TableHead className="text-right">Utilisateurs</TableHead>
-                    <TableHead className="text-right">Enfants</TableHead>
-                    <TableHead className="text-right">Montant Moyen</TableHead>
-                    <TableHead className="text-right">Montant Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {aidUsage && aidUsage.length > 0 ? (
-                    aidUsage.map((aid) => (
-                      <TableRow key={aid.aid_id}>
-                        <TableCell className="font-medium">{aid.aid_name}</TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-primary/10 text-primary">
-                            {aid.territory_level}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">{aid.total_simulations}</TableCell>
-                        <TableCell className="text-right">{aid.unique_users}</TableCell>
-                        <TableCell className="text-right">{aid.total_children_benefiting}</TableCell>
-                        <TableCell className="text-right">
-                          {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
-                            .format(Number(aid.avg_aid_amount || 0))}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
-                            .format(Number(aid.total_simulated_amount || 0))}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground">
-                        Aucune donnée disponible
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          {/* Analyses détaillées par thématique */}
+          <Tabs defaultValue="activities" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="activities">
+                <Activity className="h-4 w-4 mr-2" />
+                Activités
+              </TabsTrigger>
+              <TabsTrigger value="aids">
+                <DollarSign className="h-4 w-4 mr-2" />
+                Aides
+              </TabsTrigger>
+              <TabsTrigger value="transport">
+                <Bus className="h-4 w-4 mr-2" />
+                Éco-mobilité
+              </TabsTrigger>
+              <TabsTrigger value="demographics">
+                <Users className="h-4 w-4 mr-2" />
+                Démographie
+              </TabsTrigger>
+            </TabsList>
+
+            {/* TAB 1: ACTIVITÉS */}
+            <TabsContent value="activities" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Graphique répartition par catégorie */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Répartition par Catégorie</CardTitle>
+                    <CardDescription>Distribution des activités</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={activitiesByCategory}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {activitiesByCategory?.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Tableau par structure */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Top Structures</CardTitle>
+                    <CardDescription>Par nombre d'activités</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Structure</TableHead>
+                          <TableHead className="text-right">Activités</TableHead>
+                          <TableHead className="text-right">Taux acceptation</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {activitiesAnalysis?.slice(0, 5).map((item, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium">{item.structure_name}</TableCell>
+                            <TableCell className="text-right">{item.total_activities}</TableCell>
+                            <TableCell className="text-right">
+                              <span className="font-semibold text-green-600">
+                                {item.acceptance_rate_pct || 0}%
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 2: AIDES FINANCIÈRES */}
+            <TabsContent value="aids" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Graphique par QF */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Simulations par Quotient Familial</CardTitle>
+                    <CardDescription>Distribution par tranche de revenus</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={aidsByQFChart}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="simulations" fill="#8884d8" name="Simulations" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Taux de conversion */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Taux de Conversion par QF</CardTitle>
+                    <CardDescription>Simulation → Réservation</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Tranche QF</TableHead>
+                          <TableHead className="text-right">Simulations</TableHead>
+                          <TableHead className="text-right">Conversion</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {aidsByQF?.map((aid, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium">{aid.qf_range}</TableCell>
+                            <TableCell className="text-right">{aid.total_simulations}</TableCell>
+                            <TableCell className="text-right">
+                              <span className="font-semibold text-primary">
+                                {aid.conversion_rate_pct || 0}%
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 3: ÉCO-MOBILITÉ */}
+            <TabsContent value="transport" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Graphique modes de transport */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Leaf className="h-5 w-5 text-green-600" />
+                      Modes de Transport Utilisés
+                    </CardTitle>
+                    <CardDescription>Répartition des déplacements</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={transportByMode}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="bookings" fill="#82ca9d" name="Réservations" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* CO2 économisé */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Leaf className="h-5 w-5 text-green-600" />
+                      Impact Environnemental
+                    </CardTitle>
+                    <CardDescription>CO₂ économisé par mode de transport</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Mode</TableHead>
+                          <TableHead className="text-right">Réservations</TableHead>
+                          <TableHead className="text-right">CO₂ économisé</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {transportAnalysis?.map((transport, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium capitalize">{transport.transport_mode}</TableCell>
+                            <TableCell className="text-right">{transport.total_bookings}</TableCell>
+                            <TableCell className="text-right">
+                              <span className="font-semibold text-green-600">
+                                {Number(transport.co2_saved_kg || 0).toFixed(1)} kg
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 4: DÉMOGRAPHIE */}
+            <TabsContent value="demographics" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Répartition par revenu */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Répartition par Niveau de Revenu</CardTitle>
+                    <CardDescription>Basé sur le Quotient Familial</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={demographics?.map(d => ({
+                            name: d.income_category,
+                            value: d.total_users || 0
+                          }))}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {demographics?.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Statistiques par situation */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Situation Familiale</CardTitle>
+                    <CardDescription>Répartition des utilisateurs</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Situation</TableHead>
+                          <TableHead className="text-right">Utilisateurs</TableHead>
+                          <TableHead className="text-right">Enfants</TableHead>
+                          <TableHead className="text-right">QF Moyen</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {demographics?.filter(d => d.marital_status).map((demo, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium capitalize">{demo.marital_status}</TableCell>
+                            <TableCell className="text-right">{demo.total_users}</TableCell>
+                            <TableCell className="text-right">{demo.total_children}</TableCell>
+                            <TableCell className="text-right">
+                              {Number(demo.avg_qf || 0).toFixed(0)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
