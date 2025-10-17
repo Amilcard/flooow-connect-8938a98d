@@ -21,6 +21,8 @@ import Booking from "./pages/Booking";
 import BookingStatus from "./pages/BookingStatus";
 import MonCompte from "./pages/MonCompte";
 import Aides from "./pages/Aides";
+import EcoMobilite from "./pages/EcoMobilite";
+import Inclusivite from "./pages/Inclusivite";
 import Support from "./pages/Support";
 import FAQ from "./pages/FAQ";
 import ChildSignup from "./pages/ChildSignup";
@@ -45,6 +47,8 @@ import MesNotifications from "./pages/account/MesNotifications";
 import MesSessionsAccount from "./pages/account/MesSessions";
 import MoyensPaiement from "./pages/account/MoyensPaiement";
 import MonCovoiturage from "./pages/account/MonCovoiturage";
+import ProfilEligibilite from "./pages/account/ProfilEligibilite";
+import MesJustificatifs from "./pages/account/MesJustificatifs";
 import Parametres from "./pages/account/Parametres";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
@@ -80,6 +84,8 @@ const App = () => (
           <Route path="/booking-status/:id" element={<BookingStatus />} />
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />
+          <Route path="/eco-mobilite" element={<EcoMobilite />} />
+          <Route path="/inclusivite" element={<Inclusivite />} />
           <Route path="/support" element={<Support />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/child-signup" element={<ChildSignup />} />
@@ -102,6 +108,8 @@ const App = () => (
           <Route path="/mon-compte/sessions" element={<MesSessionsAccount />} />
           <Route path="/mon-compte/paiement" element={<MoyensPaiement />} />
           <Route path="/mon-compte/covoiturage" element={<MonCovoiturage />} />
+          <Route path="/mon-compte/eligibilite" element={<ProfilEligibilite />} />
+          <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
           <Route path="/mon-compte/parametres" element={<Parametres />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/legal/privacy" element={<PrivacyPolicy />} />

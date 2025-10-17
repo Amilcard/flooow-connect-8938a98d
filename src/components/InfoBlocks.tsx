@@ -42,13 +42,12 @@ const infoBlocks: InfoBlock[] = [
 
 export const InfoBlocks = () => {
   const handleBlockClick = (id: string) => {
-    console.log(`Info block clicked: ${id}`);
     if (id === "aides") {
       window.location.href = "/aides";
     } else if (id === "mobilite") {
-      console.log("Mobilité - TODO");
+      window.location.href = "/eco-mobilite";
     } else if (id === "handicap") {
-      console.log("Handicap - TODO");
+      window.location.href = "/inclusivite";
     }
   };
 

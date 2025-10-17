@@ -24,7 +24,8 @@ import {
   Mail,
   Edit,
   ArrowLeft,
-  Car
+  Car,
+  Euro
 } from "lucide-react";
 
 const MonCompte = () => {
@@ -75,6 +76,20 @@ const MonCompte = () => {
       subtitle: "Gérer les profils de vos enfants",
       badge: userStats.enfants,
       onClick: () => navigate("/mon-compte/enfants"),
+    },
+    {
+      icon: <Euro size={20} />,
+      title: "Profil d'éligibilité",
+      subtitle: "Estimer mes aides potentielles",
+      badge: null,
+      onClick: () => navigate("/mon-compte/eligibilite"),
+    },
+    {
+      icon: <FileText size={20} />,
+      title: "Mes justificatifs",
+      subtitle: "Télécharger mes documents",
+      badge: null,
+      onClick: () => navigate("/mon-compte/justificatifs"),
     },
     {
       icon: <Calendar size={20} />,

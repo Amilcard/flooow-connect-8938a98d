@@ -12,28 +12,43 @@ const Aides = () => {
 
   const aides = [
     {
-      name: "Pass'Sport",
-      amount: "50€",
-      description: "Aide pour la pratique sportive des 6-18 ans",
-      eligibility: "QF < 13500€",
+      name: "Pass'Sport 2025-2026",
+      amount: "70€",
+      description: "70 € sur ma licence sportive",
+      eligibility: "Enfants 6-18 ans, allocataires AAH, ARS ou AEEH",
+      links: [
+        { label: "Info.gouv", url: "https://www.info.gouv.fr/pass-sport" },
+        { label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F35915" }
+      ]
     },
     {
-      name: "CAF - Aide Vacances",
+      name: "PASS'Région jeunes",
       amount: "Variable",
-      description: "Aide pour les séjours vacances",
-      eligibility: "Allocataire CAF",
+      description: "Sport, culture, santé, permis — services multiples",
+      eligibility: "15-25 ans, lycéens et apprentis de la région AURA",
+      links: [
+        { label: "Région AURA", url: "https://www.auvergnerhonealpes.fr/actualite/1183/154-pass-region.htm" }
+      ],
+      validity: "Septembre 2025 - Août 2026"
     },
     {
-      name: "ANCV - Chèques Vacances",
+      name: "CAF Loire — Loisirs & Séjours",
       amount: "Variable",
-      description: "Chèques vacances pour les familles",
-      eligibility: "Selon revenus",
+      description: "Aides pour loisirs et séjours vacances",
+      eligibility: "Allocataires CAF selon quotient familial",
+      links: [
+        { label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F1319" },
+        { label: "CAF Loire", url: "https://www.caf.fr/allocataires/caf-de-la-loire/offre-de-service" }
+      ]
     },
     {
-      name: "Aide Locale",
+      name: "La Ricamarie — Transport collégiens + Bourse étudiants",
       amount: "Variable",
-      description: "Aides territoriales spécifiques",
-      eligibility: "Selon territoire",
+      description: "Aide transport collégiens et bourse pour étudiants",
+      eligibility: "Résidents La Ricamarie selon critères CCAS",
+      links: [
+        { label: "Ville La Ricamarie", url: "https://www.ville-laricamarie.fr" }
+      ]
     },
   ];
 
@@ -83,20 +98,43 @@ const Aides = () => {
             <Card key={aide.name}>
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-base">{aide.name}</CardTitle>
-                    <CardDescription>{aide.description}</CardDescription>
+                    <CardDescription className="mt-1">{aide.description}</CardDescription>
+                    {aide.validity && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Validité : {aide.validity}
+                      </p>
+                    )}
                   </div>
-                  <Badge variant="secondary" className="ml-2">
+                  <Badge variant="secondary" className="ml-2 shrink-0">
                     {aide.amount}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <HelpCircle className="w-4 h-4" />
                   <span>Éligibilité : {aide.eligibility}</span>
                 </div>
+                {aide.links && aide.links.length > 0 && (
+                  <div className="pt-2 border-t">
+                    <p className="text-xs text-muted-foreground mb-2">Sources officielles :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {aide.links.map((link) => (
+                        <a
+                          key={link.url}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary hover:underline"
+                        >
+                          {link.label} →
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
