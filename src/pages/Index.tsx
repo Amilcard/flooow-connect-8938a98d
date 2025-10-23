@@ -3,6 +3,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { useActivities } from "@/hooks/useActivities";
+import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
@@ -60,8 +61,29 @@ const Index = () => {
   const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ limit: 3 });
   const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ maxPrice: 50, limit: 3 });
   const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ hasAccessibility: true, limit: 3 });
+  const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(8);
 
-  const isLoading = loadingNearby || loadingBudget || loadingHealth;
+  const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingMocks;
+
+  // Debug-only: force an explicit invoke to verify network POST for mock-activities
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log("🧪 Debug: Invoking mock-activities from Index...");
+        const { data, error } = await supabase.functions.invoke('mock-activities', {
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (error) {
+          console.error('🧪 Debug error mock-activities:', error);
+        } else {
+          console.log('🧪 Debug success mock-activities length:', Array.isArray(data) ? data.length : 'n/a');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
+
 
   if (errorNearby) {
     return (
@@ -130,6 +152,12 @@ const Index = () => {
               activities={healthActivities}
               onSeeAll={() => navigate("/activities?type=health")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
+            />
+
+            <ActivitySection
+              title="Activités Saint-Étienne (Mocks)"
+              activities={mockActivities}
+              onActivityClick={(id) => console.log("Mock activity clicked:", id)}
             />
           </>
         )}
