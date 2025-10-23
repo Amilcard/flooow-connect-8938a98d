@@ -26,7 +26,14 @@ const Activities = () => {
   };
 
   const { data: activities = [], isLoading, error } = useActivities(getFilters());
-  const { data: mockActivities = [], isLoading: loadingMocks } = useMockActivities(10);
+  const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(10);
+
+  console.log("📊 Activities page state:", { 
+    activitiesCount: activities.length, 
+    mockActivitiesCount: mockActivities.length,
+    loadingMocks,
+    mockError 
+  });
 
   const getTitle = () => {
     if (category) return `Activités ${category}`;
@@ -78,12 +85,16 @@ const Activities = () => {
                 onActivityClick={(id) => console.log("Activity clicked:", id)}
               />
               
-              {!loadingMocks && mockActivities.length > 0 && (
-                <ActivitySection
-                  title="Activités Saint-Étienne (Mocks)"
-                  activities={mockActivities}
-                  onActivityClick={(id) => console.log("Mock activity clicked:", id)}
-                />
+              <ActivitySection
+                title="Activités Saint-Étienne (Mocks)"
+                activities={mockActivities}
+                onActivityClick={(id) => console.log("Mock activity clicked:", id)}
+              />
+              
+              {mockError && (
+                <div className="p-4 bg-destructive/10 text-destructive rounded-md">
+                  Erreur lors du chargement des activités mock: {mockError.message}
+                </div>
               )}
             </div>
           </TabsContent>

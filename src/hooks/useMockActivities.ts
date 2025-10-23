@@ -44,20 +44,27 @@ const mapMockToActivity = (mock: MockActivity): Activity => {
 export const useMockActivities = (limit?: number) => {
   return useQuery({
     queryKey: ["mock-activities", limit],
+    enabled: true, // Force l'exécution
+    retry: 1,
     queryFn: async () => {
+      console.log("🔵 Fetching mock activities from Edge Function...");
+      
       const { data, error } = await supabase.functions.invoke('mock-activities', {
         headers: { 'Content-Type': 'application/json' }
       });
 
       if (error) {
-        console.error("Error fetching mock activities:", error);
+        console.error("❌ Error fetching mock activities:", error);
         throw error;
       }
 
+      console.log("✅ Mock activities received:", data?.length || 0);
+      
       const mockActivities = (data || []) as MockActivity[];
       const mappedActivities = mockActivities.map(mapMockToActivity);
       
       return limit ? mappedActivities.slice(0, limit) : mappedActivities;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
