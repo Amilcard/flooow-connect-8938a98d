@@ -20,7 +20,7 @@ export type Database = {
           device_info: Json | null
           expires_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           last_seen: string
           revoke_reason: string | null
           revoked: boolean | null
@@ -36,7 +36,7 @@ export type Database = {
           device_info?: Json | null
           expires_at: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           last_seen?: string
           revoke_reason?: string | null
           revoked?: boolean | null
@@ -52,7 +52,7 @@ export type Database = {
           device_info?: Json | null
           expires_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           last_seen?: string
           revoke_reason?: string | null
           revoked?: boolean | null
@@ -292,7 +292,7 @@ export type Database = {
           action: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           resource_id: string | null
           resource_type: string
@@ -303,7 +303,7 @@ export type Database = {
           action: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           resource_id?: string | null
           resource_type: string
@@ -314,7 +314,7 @@ export type Database = {
           action?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           resource_id?: string | null
           resource_type?: string
@@ -979,7 +979,7 @@ export type Database = {
           created_at: string
           device: string | null
           id: string
-          ip: unknown | null
+          ip: unknown
           last_seen_at: string
           mfa_verified: boolean
           revoked: boolean
@@ -992,7 +992,7 @@ export type Database = {
           created_at?: string
           device?: string | null
           id?: string
-          ip?: unknown | null
+          ip?: unknown
           last_seen_at?: string
           mfa_verified?: boolean
           revoked?: boolean
@@ -1005,7 +1005,7 @@ export type Database = {
           created_at?: string
           device?: string | null
           id?: string
-          ip?: unknown | null
+          ip?: unknown
           last_seen_at?: string
           mfa_verified?: boolean
           revoked?: boolean
@@ -1022,7 +1022,7 @@ export type Database = {
           contact_json: Json | null
           created_at: string
           id: string
-          location: unknown | null
+          location: unknown
           name: string
           territory_id: string
           updated_at: string
@@ -1033,7 +1033,7 @@ export type Database = {
           contact_json?: Json | null
           created_at?: string
           id?: string
-          location?: unknown | null
+          location?: unknown
           name: string
           territory_id: string
           updated_at?: string
@@ -1044,7 +1044,7 @@ export type Database = {
           contact_json?: Json | null
           created_at?: string
           id?: string
-          location?: unknown | null
+          location?: unknown
           name?: string
           territory_id?: string
           updated_at?: string
@@ -1239,7 +1239,7 @@ export type Database = {
           created_at: string | null
           external_id: string | null
           id: string
-          location: unknown | null
+          location: unknown
           metadata: Json | null
           name: string
           station_type: string | null
@@ -1249,7 +1249,7 @@ export type Database = {
           created_at?: string | null
           external_id?: string | null
           id?: string
-          location?: unknown | null
+          location?: unknown
           metadata?: Json | null
           name: string
           station_type?: string | null
@@ -1259,7 +1259,7 @@ export type Database = {
           created_at?: string | null
           external_id?: string | null
           id?: string
-          location?: unknown | null
+          location?: unknown
           metadata?: Json | null
           name?: string
           station_type?: string | null
@@ -1587,10 +1587,7 @@ export type Database = {
       }
     }
     Functions: {
-      calculate_age: {
-        Args: { birth_date: string }
-        Returns: number
-      }
+      calculate_age: { Args: { birth_date: string }; Returns: number }
       calculate_eligible_aids: {
         Args: {
           p_activity_price: number
@@ -1607,26 +1604,14 @@ export type Database = {
           territory_level: string
         }[]
       }
-      cleanup_expired_sessions: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      cleanup_expired_sessions_and_tokens: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      cleanup_old_sessions: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      cleanup_expired_sessions: { Args: never; Returns: number }
+      cleanup_expired_sessions_and_tokens: { Args: never; Returns: number }
+      cleanup_old_sessions: { Args: never; Returns: number }
       decrement_seat_atomic: {
         Args: { _booking_id: string; _slot_id: string }
         Returns: Json
       }
-      get_child_age: {
-        Args: { birth_date: string }
-        Returns: number
-      }
+      get_child_age: { Args: { birth_date: string }; Returns: number }
       get_territories_from_postal: {
         Args: { postal_code: string }
         Returns: {
@@ -1644,10 +1629,7 @@ export type Database = {
           territory_type: string
         }[]
       }
-      get_user_territory: {
-        Args: { _user_id: string }
-        Returns: string
-      }
+      get_user_territory: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1655,10 +1637,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      hash_backup_code: {
-        Args: { plain_code: string }
-        Returns: string
-      }
+      hash_backup_code: { Args: { plain_code: string }; Returns: string }
       log_audit_event: {
         Args: {
           _action: string
