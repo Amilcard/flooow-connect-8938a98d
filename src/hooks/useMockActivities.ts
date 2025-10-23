@@ -50,7 +50,11 @@ export const useMockActivities = (limit?: number) => {
       console.log("🔵 Fetching mock activities from Edge Function...");
       
       const { data, error } = await supabase.functions.invoke('mock-activities', {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store'
+        },
+        body: { _ts: Date.now() }
       });
 
       if (error) {
