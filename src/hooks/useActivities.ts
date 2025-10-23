@@ -1,6 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Fetch mock activities from edge function
+export async function fetchMockActivities() {
+  const { data, error } = await supabase.functions.invoke('mock-activities', {
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (error) {
+    console.error("Error fetching mock activities:", error);
+    throw error;
+  }
+  return data; // array de 40 activités
+}
+
 export interface Activity {
   id: string;
   title: string;
