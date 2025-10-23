@@ -60,6 +60,9 @@ import RGPD from "./pages/legal/RGPD";
 import Cookies from "./pages/legal/Cookies";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CGU from "./pages/legal/CGU";
+import DashboardCollectivite from "./pages/DashboardCollectivite";
+import DashboardFinanceur from "./pages/DashboardFinanceur";
+import DashboardAnalytics from "./pages/DashboardAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +87,9 @@ const App = () => (
           <Route path="/collectivite/dashboard" element={<CollectiviteDashboard />} />
           <Route path="/structure/analytics" element={<StructureAnalytics />} />
           <Route path="/financeur/dashboard" element={<FinanceurDashboard />} />
+          <Route path="/dashboard/collectivite" element={<DashboardCollectivite />} />
+          <Route path="/dashboard/financeur" element={<DashboardFinanceur />} />
+          <Route path="/dashboard/analytics" element={<DashboardAnalytics />} />
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
