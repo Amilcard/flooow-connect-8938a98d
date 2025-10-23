@@ -15,9 +15,9 @@ import StructureAuth from "./pages/StructureAuth";
 import StructureDashboard from "./pages/StructureDashboard";
 import StructureActivityForm from "./pages/StructureActivityForm";
 import CollectiviteDashboard from "./pages/CollectiviteDashboard";
-import StructureAnalytics from "./pages/StructureAnalytics";
 import FinanceurDashboard from "./pages/FinanceurDashboard";
-import DashboardsAccess from "./pages/DashboardsAccess";
+import DashboardRedirect from "./pages/DashboardRedirect";
+import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import Activities from "./pages/Activities";
 import Search from "./pages/Search";
 import ActivityDetail from "./pages/ActivityDetail";
@@ -60,9 +60,6 @@ import RGPD from "./pages/legal/RGPD";
 import Cookies from "./pages/legal/Cookies";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CGU from "./pages/legal/CGU";
-import DashboardCollectivite from "./pages/DashboardCollectivite";
-import DashboardFinanceur from "./pages/DashboardFinanceur";
-import DashboardAnalytics from "./pages/DashboardAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -80,16 +77,40 @@ const App = () => (
           <Route path="/profile-completion" element={<ProfileCompletion />} />
           <Route path="/profile-edit" element={<ProfileEdit />} />
           <Route path="/structure-auth" element={<StructureAuth />} />
-          <Route path="/structure-dashboard" element={<StructureDashboard />} />
-          <Route path="/structure/activity/new" element={<StructureActivityForm />} />
-          <Route path="/structure/activity/:id" element={<StructureActivityForm />} />
-          <Route path="/dashboards" element={<DashboardsAccess />} />
-          <Route path="/collectivite/dashboard" element={<CollectiviteDashboard />} />
-          <Route path="/structure/analytics" element={<StructureAnalytics />} />
-          <Route path="/financeur/dashboard" element={<FinanceurDashboard />} />
-          <Route path="/dashboard/collectivite" element={<DashboardCollectivite />} />
-          <Route path="/dashboard/financeur" element={<DashboardFinanceur />} />
-          <Route path="/dashboard/analytics" element={<DashboardAnalytics />} />
+          
+          {/* Dashboard auto-redirect based on role */}
+          <Route path="/dashboards" element={<DashboardRedirect />} />
+          
+          {/* Structure Dashboard - Protected */}
+          <Route path="/dashboard/structure" element={
+            <RoleProtectedRoute allowedRoles={['structure']}>
+              <StructureDashboard />
+            </RoleProtectedRoute>
+          } />
+          <Route path="/structure/activity/new" element={
+            <RoleProtectedRoute allowedRoles={['structure']}>
+              <StructureActivityForm />
+            </RoleProtectedRoute>
+          } />
+          <Route path="/structure/activity/:id" element={
+            <RoleProtectedRoute allowedRoles={['structure']}>
+              <StructureActivityForm />
+            </RoleProtectedRoute>
+          } />
+          
+          {/* Collectivité Dashboard - Protected */}
+          <Route path="/dashboard/collectivite" element={
+            <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
+              <CollectiviteDashboard />
+            </RoleProtectedRoute>
+          } />
+          
+          {/* Financeur Dashboard - Protected */}
+          <Route path="/dashboard/financeur" element={
+            <RoleProtectedRoute allowedRoles={['partner', 'superadmin']}>
+              <FinanceurDashboard />
+            </RoleProtectedRoute>
+          } />
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
