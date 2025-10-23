@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { VacationPeriodFilter } from "@/components/VacationPeriodFilter";
 import { useActivities } from "@/hooks/useActivities";
+import { useMockActivities } from "@/hooks/useMockActivities";
 import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageLayout from "@/components/PageLayout";
@@ -25,6 +26,7 @@ const Activities = () => {
   };
 
   const { data: activities = [], isLoading, error } = useActivities(getFilters());
+  const { data: mockActivities = [], isLoading: loadingMocks } = useMockActivities(10);
 
   const getTitle = () => {
     if (category) return `Activités ${category}`;
@@ -69,11 +71,21 @@ const Activities = () => {
           </TabsList>
 
           <TabsContent value="all">
-            <ActivitySection
-              title={getTitle()}
-              activities={activities}
-              onActivityClick={(id) => console.log("Activity clicked:", id)}
-            />
+            <div className="space-y-8">
+              <ActivitySection
+                title={getTitle()}
+                activities={activities}
+                onActivityClick={(id) => console.log("Activity clicked:", id)}
+              />
+              
+              {!loadingMocks && mockActivities.length > 0 && (
+                <ActivitySection
+                  title="Activités Saint-Étienne (Mocks)"
+                  activities={mockActivities}
+                  onActivityClick={(id) => console.log("Mock activity clicked:", id)}
+                />
+              )}
+            </div>
           </TabsContent>
 
           {["Sport", "Culture", "Loisirs", "Vacances", "Scolarité"].map((cat) => (
