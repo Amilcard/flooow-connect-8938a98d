@@ -3,6 +3,9 @@ project_id = "lddlzlthtwuwxxrrbxuc"
 [functions.activities]
 verify_jwt = false
 
+[functions.mock-activities]
+verify_jwt = false
+
 [functions.bookings]
 verify_jwt = false
 

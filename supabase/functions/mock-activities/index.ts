@@ -1203,7 +1203,8 @@ serve(async (req) => {
     return new Response(null, { headers, status: 204 });
   }
 
-  if (req.method === "GET") {
+  // Accept both GET and POST (POST is used by supabase.functions.invoke)
+  if (req.method === "GET" || req.method === "POST") {
     return new Response(JSON.stringify(mockActivities), {
       headers,
       status: 200,
