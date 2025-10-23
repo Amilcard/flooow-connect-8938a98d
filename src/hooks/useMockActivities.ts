@@ -16,11 +16,11 @@ interface MockActivity {
     transport: string;
   };
   accessibilite: string[];
-  aidesEligibles: string[];
+  aidesEligibles: string[]; // Format simplifié: ["Pass'Sport", "CAF/VACAF", "ANCV"]
   mobilite: {
-    transportCommun: { disponible: boolean; lignes: string[] };
-    velo: { disponible: boolean; station: string };
-    covoiturage: { disponible: boolean };
+    TC: string;     // Format: "Ligne T3 STAS"
+    velo: boolean;  // true/false
+    covoit: boolean; // true/false
   };
 }
 
@@ -43,9 +43,14 @@ const mapMockToActivity = (mock: MockActivity): Activity => {
 
 export const useMockActivities = (limit?: number) => {
   return useQuery({
-    queryKey: ["mock-activities", limit],
-    enabled: true, // Force l'exécution
-    retry: 1,
+    queryKey: ["mock-activities", "b2ef1", limit], // Version key to bust cache
+    enabled: true,
+    staleTime: 0, // Data is always stale
+    gcTime: 0, // No garbage collection cache  
+    refetchOnMount: 'always', // Always refetch on mount
+    refetchOnWindowFocus: true, // Refetch on window focus
+    retry: 2,
+    retryDelay: 1000,
     queryFn: async () => {
       console.log("🔵 Fetching mock activities from Edge Function...");
       
@@ -54,7 +59,10 @@ export const useMockActivities = (limit?: number) => {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store'
         },
-        body: { _ts: Date.now() }
+        body: { 
+          _ts: Date.now(),
+          _v: 'b2ef1' // Version parameter to bust CDN cache
+        }
       });
 
       if (error) {
@@ -69,6 +77,5 @@ export const useMockActivities = (limit?: number) => {
       
       return limit ? mappedActivities.slice(0, limit) : mappedActivities;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
