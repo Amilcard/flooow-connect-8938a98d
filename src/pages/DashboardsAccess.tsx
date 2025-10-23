@@ -10,45 +10,45 @@ export default function DashboardsAccess() {
 
   const dashboards = [
     {
-      title: "Tableau de bord Collectivité",
-      description: "Vue d'ensemble des activités, inscriptions et aides sur votre territoire",
+      title: "Dashboard Collectivité",
+      description: "Statistiques territoriales, inscriptions et profil des usagers",
       icon: Building2,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
-      path: "/collectivite/dashboard",
+      path: "/dashboard/collectivite",
       features: [
-        "Activités publiées et inscriptions",
-        "Simulations d'aides financières",
-        "Revenu potentiel du territoire",
-        "Statistiques par dispositif d'aide"
+        "Activités publiées",
+        "Inscriptions et bénéficiaires",
+        "Profil socio-économique",
+        "Répartition par statut"
       ]
     },
     {
-      title: "Tableau de bord Structure",
-      description: "Performance et statistiques de vos activités",
-      icon: BarChart3,
+      title: "Dashboard Financeur",
+      description: "Analyse de l'utilisation des aides financières et impact",
+      icon: DollarSign,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      path: "/structure/analytics",
+      path: "/dashboard/financeur",
       features: [
-        "Réservations par activité",
-        "Chiffre d'affaires validé",
-        "Taux de validation",
-        "Suivi des réservations en attente"
+        "Top aides demandées",
+        "Montants simulés",
+        "Enfants bénéficiaires",
+        "Taux d'utilisation"
       ]
     },
     {
-      title: "Tableau de bord Financeur",
-      description: "Impact et utilisation des aides financières",
-      icon: DollarSign,
+      title: "Analytics Globales",
+      description: "Métriques générales et évolution de la plateforme",
+      icon: BarChart3,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
-      path: "/financeur/dashboard",
+      path: "/dashboard/analytics",
       features: [
-        "Simulations par dispositif d'aide",
-        "Nombre de bénéficiaires",
-        "Montants moyens et totaux",
-        "Taux d'utilisation des aides"
+        "Total activités",
+        "Réservations",
+        "Utilisateurs inscrits",
+        "Évolution sur 30 jours"
       ]
     }
   ];
