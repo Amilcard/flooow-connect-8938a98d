@@ -65,25 +65,6 @@ const Index = () => {
 
   const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingMocks;
 
-  // Debug-only: force an explicit invoke to verify network POST for mock-activities
-  useEffect(() => {
-    (async () => {
-      try {
-        console.log("🧪 Debug: Invoking mock-activities from Index...");
-        const { data, error } = await supabase.functions.invoke('mock-activities', {
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (error) {
-          console.error('🧪 Debug error mock-activities:', error);
-        } else {
-          console.log('🧪 Debug success mock-activities length:', Array.isArray(data) ? data.length : 'n/a');
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, []);
-
 
   if (errorNearby) {
     return (
