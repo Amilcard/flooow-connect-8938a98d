@@ -1,0 +1,1243 @@
+[
+  {
+    "id": "sport-001",
+    "theme": "Sport",
+    "titre": "École de Football - ASSE Kids",
+    "ageMin": 6,
+    "ageMax": 10,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "16:00"},
+      {"jour": "Samedi", "debut": "10:00", "fin": "12:00"}
+    ],
+    "lieu": {
+      "nom": "Stade Geoffroy-Guichard",
+      "adresse": "14 Rue Paul et Pierre Guichard, 42000 Saint-Étienne",
+      "lat": 45.4609,
+      "lon": 4.3895
+    },
+    "cout": 180,
+    "aidesEligibles": ["PassSport", "CAF", "Coupon Sport"],
+    "mobilite": {
+      "TC": ["Tram T3 - Arrêt Geoffroy-Guichard", "Bus 7, 9"],
+      "velo": "Piste cyclable à 200m",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["sport_collectif", "plein_air"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-002",
+    "titre": "Natation Jeunes - Piscine Métare",
+    "theme": "Sport",
+    "ageMin": 7,
+    "ageMax": 12,
+    "accessibilite": ["pmr_access", "adapted_equipment"],
+    "creneaux": [
+      {"jour": "Lundi", "debut": "17:30", "fin": "18:30"},
+      {"jour": "Jeudi", "debut": "17:30", "fin": "18:30"}
+    ],
+    "lieu": {
+      "nom": "Centre Nautique Métare",
+      "adresse": "Rue André Malraux, 42000 Saint-Étienne",
+      "lat": 45.4215,
+      "lon": 4.4005
+    },
+    "cout": 120,
+    "aidesEligibles": ["PassSport", "CAF"],
+    "mobilite": {
+      "TC": ["Bus C1 - Arrêt Métare"],
+      "velo": "Parking vélo sécurisé",
+      "covoit": true
+    },
+    "prerequis": ["Savoir nager 25m", "Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "test_natation", "obligatoire": false, "label": "Test de natation"}
+    ],
+    "santeTags": ["sport_aquatique", "endurance"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-003",
+    "titre": "Judo Club Stéphanois",
+    "theme": "Sport",
+    "ageMin": 6,
+    "ageMax": 9,
+    "accessibilite": [],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:30", "fin": "15:30"},
+      {"jour": "Samedi", "debut": "09:00", "fin": "10:00"}
+    ],
+    "lieu": {
+      "nom": "Dojo Municipal Beaulieu",
+      "adresse": "2 Rue Claudius Buard, 42000 Saint-Étienne",
+      "lat": 45.4289,
+      "lon": 4.4012
+    },
+    "cout": 150,
+    "aidesEligibles": ["PassSport", "CAF"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Beaulieu"],
+      "velo": "Station Vélivert à 100m",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical", "Licence FFJ"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "photo_identite", "obligatoire": true, "label": "Photo d'identité"}
+    ],
+    "santeTags": ["sport_combat", "discipline"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-004",
+    "titre": "Basket - ASSE Basket Jeunes",
+    "theme": "Sport",
+    "ageMin": 10,
+    "ageMax": 13,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "15:00", "fin": "17:00"},
+      {"jour": "Vendredi", "debut": "18:00", "fin": "19:30"}
+    ],
+    "lieu": {
+      "nom": "Gymnase Jean Moulin",
+      "adresse": "Rue Jean Moulin, 42000 Saint-Étienne",
+      "lat": 45.4324,
+      "lon": 4.3892
+    },
+    "cout": 160,
+    "aidesEligibles": ["PassSport", "CAF"],
+    "mobilite": {
+      "TC": ["Bus 10, 11 - Arrêt Jean Moulin"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"}
+    ],
+    "santeTags": ["sport_collectif", "cardio"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-005",
+    "titre": "Escalade Aventure Ados",
+    "theme": "Sport",
+    "ageMin": 13,
+    "ageMax": 17,
+    "accessibilite": [],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "16:00", "fin": "18:00"},
+      {"jour": "Samedi", "debut": "14:00", "fin": "16:00"}
+    ],
+    "lieu": {
+      "nom": "Bloc Session - Salle d'Escalade",
+      "adresse": "5 Rue de la Montat, 42000 Saint-Étienne",
+      "lat": 45.4401,
+      "lon": 4.3877
+    },
+    "cout": 200,
+    "aidesEligibles": ["PassSport"],
+    "mobilite": {
+      "TC": ["Tram T1 - Arrêt Châteaucreux", "Bus 3, 7"],
+      "velo": "Station Vélivert à 50m",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical", "Pas de contre-indication vertige"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"}
+    ],
+    "santeTags": ["sport_technique", "force", "concentration"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-006",
+    "titre": "Tennis Club Municipal",
+    "theme": "Sport",
+    "ageMin": 8,
+    "ageMax": 14,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "15:30"},
+      {"jour": "Samedi", "debut": "10:30", "fin": "12:00"}
+    ],
+    "lieu": {
+      "nom": "Tennis Club Montplaisir",
+      "adresse": "Parc de Montplaisir, 42100 Saint-Étienne",
+      "lat": 45.4456,
+      "lon": 4.4121
+    },
+    "cout": 190,
+    "aidesEligibles": ["PassSport", "CAF", "Coupon Sport"],
+    "mobilite": {
+      "TC": ["Bus C2 - Arrêt Montplaisir"],
+      "velo": "Parking vélo couvert",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"}
+    ],
+    "santeTags": ["sport_raquette", "precision"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-007",
+    "titre": "Danse Hip-Hop Jeunes",
+    "theme": "Sport",
+    "ageMin": 10,
+    "ageMax": 16,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mardi", "debut": "18:00", "fin": "19:30"},
+      {"jour": "Samedi", "debut": "14:00", "fin": "15:30"}
+    ],
+    "lieu": {
+      "nom": "Centre Culturel Beaulieu",
+      "adresse": "13 Rue Michel Rondet, 42000 Saint-Étienne",
+      "lat": 45.4298,
+      "lon": 4.4025
+    },
+    "cout": 140,
+    "aidesEligibles": ["PassSport", "CAF"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Beaulieu", "Bus 6"],
+      "velo": "Station Vélivert proche",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"}
+    ],
+    "santeTags": ["danse", "expression_artistique", "cardio"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "sport-008",
+    "titre": "Rugby École des Minimes",
+    "theme": "Sport",
+    "ageMin": 9,
+    "ageMax": 12,
+    "accessibilite": [],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "16:00"},
+      {"jour": "Samedi", "debut": "10:00", "fin": "12:00"}
+    ],
+    "lieu": {
+      "nom": "Stade des Minimes",
+      "adresse": "Boulevard des Minimes, 42230 Roche-la-Molière",
+      "lat": 45.4332,
+      "lon": 4.3254
+    },
+    "cout": 170,
+    "aidesEligibles": ["PassSport", "CAF"],
+    "mobilite": {
+      "TC": ["Bus 16 - Arrêt Roche Centre"],
+      "velo": "Non recommandé (distance)",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical", "Assurance sport"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "assurance", "obligatoire": true, "label": "Attestation assurance"}
+    ],
+    "santeTags": ["sport_collectif", "contact", "endurance"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-001",
+    "titre": "Cours de Piano Individuels",
+    "theme": "Culture",
+    "ageMin": 7,
+    "ageMax": 15,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Lundi au Vendredi", "debut": "17:00", "fin": "19:00", "note": "Créneaux 30min individuels"}
+    ],
+    "lieu": {
+      "nom": "Conservatoire Massenet",
+      "adresse": "5 Rue Michel Rondet, 42000 Saint-Étienne",
+      "lat": 45.4305,
+      "lon": 4.4019
+    },
+    "cout": 250,
+    "aidesEligibles": ["CAF", "Chèque Culture"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Beaulieu"],
+      "velo": "Parking vélo sécurisé",
+      "covoit": false
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "justificatif_domicile", "obligatoire": true, "label": "Justificatif de domicile"}
+    ],
+    "santeTags": ["musique", "concentration", "dexterite"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-002",
+    "titre": "Théâtre Enfants - Jeune Scène",
+    "theme": "Culture",
+    "ageMin": 6,
+    "ageMax": 10,
+    "accessibilite": ["pmr_access", "sensory_friendly"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:30", "fin": "16:00"},
+      {"jour": "Samedi", "debut": "10:00", "fin": "11:30"}
+    ],
+    "lieu": {
+      "nom": "Théâtre du Parc",
+      "adresse": "9 Rue Michel Servet, 42000 Saint-Étienne",
+      "lat": 45.4378,
+      "lon": 4.3921
+    },
+    "cout": 180,
+    "aidesEligibles": ["CAF", "Pass Culture (dès 15 ans)"],
+    "mobilite": {
+      "TC": ["Tram T1, T3 - Arrêt Peuple"],
+      "velo": "Station Vélivert à 100m",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "photo", "obligatoire": false, "label": "Photo (pour spectacle)"}
+    ],
+    "santeTags": ["expression_artistique", "confiance_en_soi"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-003",
+    "titre": "Atelier Arts Plastiques",
+    "theme": "Culture",
+    "ageMin": 8,
+    "ageMax": 14,
+    "accessibilite": ["pmr_access", "adapted_equipment"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "15:00", "fin": "17:00"}
+    ],
+    "lieu": {
+      "nom": "Maison de la Culture et des Loisirs",
+      "adresse": "Place Jean Jaurès, 42000 Saint-Étienne",
+      "lat": 45.4389,
+      "lon": 4.3903
+    },
+    "cout": 120,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T1 - Arrêt Châteaucreux"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["arts_visuels", "creativite"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-004",
+    "titre": "Chorale Jeunes Voix",
+    "theme": "Culture",
+    "ageMin": 9,
+    "ageMax": 16,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Jeudi", "debut": "18:00", "fin": "19:30"}
+    ],
+    "lieu": {
+      "nom": "Église Saint-Charles",
+      "adresse": "Rue Bergson, 42000 Saint-Étienne",
+      "lat": 45.4267,
+      "lon": 4.3978
+    },
+    "cout": 80,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Bus 5, 7 - Arrêt Bergson"],
+      "velo": "Parking vélo disponible",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["musique", "chant", "groupe"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-005",
+    "titre": "Danse Classique - École de Danse",
+    "theme": "Culture",
+    "ageMin": 6,
+    "ageMax": 12,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mardi", "debut": "17:00", "fin": "18:00"},
+      {"jour": "Jeudi", "debut": "17:00", "fin": "18:00"}
+    ],
+    "lieu": {
+      "nom": "Studio Danse Harmonie",
+      "adresse": "15 Rue de la Paix, 42000 Saint-Étienne",
+      "lat": 45.4412,
+      "lon": 4.3889
+    },
+    "cout": 200,
+    "aidesEligibles": ["CAF", "Chèque Culture"],
+    "mobilite": {
+      "TC": ["Tram T3 - Arrêt Carnot"],
+      "velo": "Station Vélivert à 200m",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"}
+    ],
+    "santeTags": ["danse", "souplesse", "posture"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-006",
+    "titre": "Photographie Ados Créatifs",
+    "theme": "Culture",
+    "ageMin": 13,
+    "ageMax": 17,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Samedi", "debut": "14:00", "fin": "16:30"}
+    ],
+    "lieu": {
+      "nom": "MJC Montplaisir",
+      "adresse": "8 Avenue de la Libération, 42100 Saint-Étienne",
+      "lat": 45.4467,
+      "lon": 4.4134
+    },
+    "cout": 150,
+    "aidesEligibles": ["Pass Culture"],
+    "mobilite": {
+      "TC": ["Bus C2 - Arrêt Montplaisir"],
+      "velo": "Parking vélo couvert",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["arts_visuels", "numerique", "observation"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-007",
+    "titre": "Cirque et Acrobatie",
+    "theme": "Culture",
+    "ageMin": 7,
+    "ageMax": 14,
+    "accessibilite": [],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "16:00"}
+    ],
+    "lieu": {
+      "nom": "Chapiteau Cirque en Scène",
+      "adresse": "Parc de l'Europe, 42000 Saint-Étienne",
+      "lat": 45.4501,
+      "lon": 4.3956
+    },
+    "cout": 160,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Bus 2 - Arrêt Parc Europe"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": ["Certificat médical"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"}
+    ],
+    "santeTags": ["acrobatie", "equilibre", "creativite"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "culture-008",
+    "titre": "Guitare Électrique - Rock School",
+    "theme": "Culture",
+    "ageMin": 11,
+    "ageMax": 17,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "16:00", "fin": "17:30"},
+      {"jour": "Vendredi", "debut": "18:00", "fin": "19:30"}
+    ],
+    "lieu": {
+      "nom": "Studio Musical La Forge",
+      "adresse": "27 Rue de la République, 42000 Saint-Étienne",
+      "lat": 45.4356,
+      "lon": 4.3912
+    },
+    "cout": 220,
+    "aidesEligibles": ["CAF", "Pass Culture"],
+    "mobilite": {
+      "TC": ["Tram T1 - Arrêt République"],
+      "velo": "Station Vélivert à 50m",
+      "covoit": false
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["musique", "concentration", "coordination"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-001",
+    "titre": "Centre de Loisirs Mercredi",
+    "theme": "Loisirs",
+    "ageMin": 6,
+    "ageMax": 11,
+    "accessibilite": ["pmr_access", "sensory_friendly"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "08:00", "fin": "18:00", "note": "Journée complète ou demi-journée"}
+    ],
+    "lieu": {
+      "nom": "Centre Social Beaulieu",
+      "adresse": "3 Rue Claudius Buard, 42000 Saint-Étienne",
+      "lat": 45.4287,
+      "lon": 4.4018
+    },
+    "cout": 25,
+    "aidesEligibles": ["CAF", "Tarif QF"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Beaulieu"],
+      "velo": "Parking vélo disponible",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire"}
+    ],
+    "santeTags": ["multi_activites", "socialisation"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-002",
+    "titre": "Club Robotique et Code",
+    "theme": "Loisirs",
+    "ageMin": 9,
+    "ageMax": 14,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Samedi", "debut": "14:00", "fin": "16:00"}
+    ],
+    "lieu": {
+      "nom": "Fablab La Rotonde",
+      "adresse": "École des Mines, 158 Cours Fauriel, 42000 Saint-Étienne",
+      "lat": 45.4234,
+      "lon": 4.4098
+    },
+    "cout": 100,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt École des Mines"],
+      "velo": "Station Vélivert proche",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["technologie", "logique", "creativite"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-003",
+    "titre": "Atelier Cuisine Jeunes Chefs",
+    "theme": "Loisirs",
+    "ageMin": 8,
+    "ageMax": 13,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "16:00"}
+    ],
+    "lieu": {
+      "nom": "MJC Michelet",
+      "adresse": "22 Rue Michelet, 42000 Saint-Étienne",
+      "lat": 45.4423,
+      "lon": 4.3934
+    },
+    "cout": 90,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T3 - Arrêt Foch"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "allergies_alimentaires", "obligatoire": false, "label": "Fiche allergies"}
+    ],
+    "santeTags": ["cuisine", "autonomie", "creativite"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-004",
+    "titre": "Club d'Échecs Junior",
+    "theme": "Loisirs",
+    "ageMin": 7,
+    "ageMax": 15,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Vendredi", "debut": "17:30", "fin": "19:00"}
+    ],
+    "lieu": {
+      "nom": "Maison des Associations",
+      "adresse": "4 Rue André Malraux, 42000 Saint-Étienne",
+      "lat": 45.4198,
+      "lon": 4.3989
+    },
+    "cout": 60,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Bus C1 - Arrêt Malraux"],
+      "velo": "Parking vélo disponible",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["strategie", "concentration", "logique"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-005",
+    "titre": "Jardinage et Nature",
+    "theme": "Loisirs",
+    "ageMin": 6,
+    "ageMax": 11,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Samedi", "debut": "10:00", "fin": "12:00"}
+    ],
+    "lieu": {
+      "nom": "Jardin Partagé Côte Chaude",
+      "adresse": "Rue de la Côte, 42100 Saint-Étienne",
+      "lat": 45.4489,
+      "lon": 4.4067
+    },
+    "cout": 40,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Bus 8 - Arrêt Côte Chaude"],
+      "velo": "Accès facile",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["nature", "plein_air", "ecologie"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-006",
+    "titre": "Atelier Sciences Expérimentales",
+    "theme": "Loisirs",
+    "ageMin": 9,
+    "ageMax": 13,
+    "accessibilite": ["pmr_access", "adapted_equipment"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "15:00", "fin": "17:00"}
+    ],
+    "lieu": {
+      "nom": "Planétarium de Saint-Étienne",
+      "adresse": "28 Rue Pierre et Dominique Ponchardier, 42100 Saint-Étienne",
+      "lat": 45.4523,
+      "lon": 4.4156
+    },
+    "cout": 110,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Bus 9 - Arrêt Planétarium"],
+      "velo": "Parking vélo sécurisé",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["sciences", "curiosite", "experimentation"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-007",
+    "titre": "Jeux de Société et Stratégie",
+    "theme": "Loisirs",
+    "ageMin": 10,
+    "ageMax": 16,
+    "accessibilite": ["pmr_access", "sensory_friendly"],
+    "creneaux": [
+      {"jour": "Samedi", "debut": "14:30", "fin": "17:00"}
+    ],
+    "lieu": {
+      "nom": "Ludothèque Municipale",
+      "adresse": "12 Place du Peuple, 42000 Saint-Étienne",
+      "lat": 45.4372,
+      "lon": 4.3915
+    },
+    "cout": 50,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T1, T3 - Arrêt Peuple"],
+      "velo": "Station Vélivert à 50m",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["jeux", "socialisation", "strategie"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "loisirs-008",
+    "titre": "Club Modélisme et Maquettes",
+    "theme": "Loisirs",
+    "ageMin": 11,
+    "ageMax": 17,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "17:00"}
+    ],
+    "lieu": {
+      "nom": "Maison des Jeunes Terrenoire",
+      "adresse": "Place Virgile Barel, 42100 Saint-Étienne",
+      "lat": 45.4612,
+      "lon": 4.4289
+    },
+    "cout": 80,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T3 - Arrêt Terrenoire"],
+      "velo": "Parking vélo disponible",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["precision", "patience", "creativite"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-001",
+    "titre": "Soutien Scolaire Primaire",
+    "theme": "Scolarité",
+    "ageMin": 6,
+    "ageMax": 11,
+    "accessibilite": ["pmr_access", "adapted_equipment"],
+    "creneaux": [
+      {"jour": "Lundi", "debut": "17:00", "fin": "18:30"},
+      {"jour": "Jeudi", "debut": "17:00", "fin": "18:30"}
+    ],
+    "lieu": {
+      "nom": "Centre Social Beaulieu",
+      "adresse": "3 Rue Claudius Buard, 42000 Saint-Étienne",
+      "lat": 45.4287,
+      "lon": 4.4018
+    },
+    "cout": 50,
+    "aidesEligibles": ["CAF", "CLAS"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Beaulieu"],
+      "velo": "Parking vélo disponible",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "bulletin_scolaire", "obligatoire": false, "label": "Bulletin scolaire"}
+    ],
+    "santeTags": ["scolaire", "apprentissage"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-002",
+    "titre": "Aide aux Devoirs Collège",
+    "theme": "Scolarité",
+    "ageMin": 11,
+    "ageMax": 15,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mardi", "debut": "17:00", "fin": "18:30"},
+      {"jour": "Vendredi", "debut": "17:00", "fin": "18:30"}
+    ],
+    "lieu": {
+      "nom": "MJC Montplaisir",
+      "adresse": "8 Avenue de la Libération, 42100 Saint-Étienne",
+      "lat": 45.4467,
+      "lon": 4.4134
+    },
+    "cout": 70,
+    "aidesEligibles": ["CAF", "CLAS"],
+    "mobilite": {
+      "TC": ["Bus C2 - Arrêt Montplaisir"],
+      "velo": "Parking vélo couvert",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["scolaire", "methodologie"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-003",
+    "titre": "Atelier Français Langue Étrangère",
+    "theme": "Scolarité",
+    "ageMin": 8,
+    "ageMax": 16,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "14:00", "fin": "16:00"}
+    ],
+    "lieu": {
+      "nom": "Centre Social Tarentaize",
+      "adresse": "7 Rue Condorcet, 42000 Saint-Étienne",
+      "lat": 45.4445,
+      "lon": 4.3823
+    },
+    "cout": 30,
+    "aidesEligibles": ["CAF", "Gratuit pour QPV"],
+    "mobilite": {
+      "TC": ["Bus 4 - Arrêt Tarentaize"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["langue", "integration"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-004",
+    "titre": "Préparation Brevet - Maths",
+    "theme": "Scolarité",
+    "ageMin": 13,
+    "ageMax": 15,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Samedi", "debut": "09:00", "fin": "11:00"}
+    ],
+    "lieu": {
+      "nom": "Lycée Claude Fauriel",
+      "adresse": "28 Avenue de la Libération, 42000 Saint-Étienne",
+      "lat": 45.4501,
+      "lon": 4.4089
+    },
+    "cout": 90,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Fauriel"],
+      "velo": "Parking vélo sécurisé",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["scolaire", "examen", "mathematiques"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-005",
+    "titre": "Atelier Lecture et Écriture",
+    "theme": "Scolarité",
+    "ageMin": 6,
+    "ageMax": 10,
+    "accessibilite": ["pmr_access", "sensory_friendly"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "10:00", "fin": "11:30"}
+    ],
+    "lieu": {
+      "nom": "Bibliothèque Municipale Tarentaize",
+      "adresse": "26 Rue Émile Zola, 42000 Saint-Étienne",
+      "lat": 45.4456,
+      "lon": 4.3812
+    },
+    "cout": 0,
+    "aidesEligibles": [],
+    "mobilite": {
+      "TC": ["Bus 4, 12 - Arrêt Zola"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["lecture", "ecriture", "imagination"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-006",
+    "titre": "Soutien Anglais Collège",
+    "theme": "Scolarité",
+    "ageMin": 11,
+    "ageMax": 14,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Jeudi", "debut": "17:30", "fin": "19:00"}
+    ],
+    "lieu": {
+      "nom": "MJC Michelet",
+      "adresse": "22 Rue Michelet, 42000 Saint-Étienne",
+      "lat": 45.4423,
+      "lon": 4.3934
+    },
+    "cout": 80,
+    "aidesEligibles": ["CAF", "CLAS"],
+    "mobilite": {
+      "TC": ["Tram T3 - Arrêt Foch"],
+      "velo": "Arceaux vélo disponibles",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["langue", "scolaire"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-007",
+    "titre": "Méthodologie et Organisation",
+    "theme": "Scolarité",
+    "ageMin": 12,
+    "ageMax": 16,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Samedi", "debut": "10:00", "fin": "12:00"}
+    ],
+    "lieu": {
+      "nom": "Centre d'Animation Beaulieu",
+      "adresse": "13 Rue Michel Rondet, 42000 Saint-Étienne",
+      "lat": 45.4298,
+      "lon": 4.4025
+    },
+    "cout": 60,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T2 - Arrêt Beaulieu"],
+      "velo": "Station Vélivert proche",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["methodologie", "organisation", "autonomie"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "scolarite-008",
+    "titre": "Atelier Sciences Scolaire",
+    "theme": "Scolarité",
+    "ageMin": 9,
+    "ageMax": 13,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"jour": "Mercredi", "debut": "16:00", "fin": "17:30"}
+    ],
+    "lieu": {
+      "nom": "Collège Marc Seguin",
+      "adresse": "1 Rue Marc Seguin, 42000 Saint-Étienne",
+      "lat": 45.4523,
+      "lon": 4.3989
+    },
+    "cout": 70,
+    "aidesEligibles": ["CAF", "CLAS"],
+    "mobilite": {
+      "TC": ["Bus 11 - Arrêt Seguin"],
+      "velo": "Parking vélo disponible",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"}
+    ],
+    "santeTags": ["sciences", "scolaire", "experimentation"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-001",
+    "titre": "Séjour Montagne Hiver",
+    "theme": "Vacances",
+    "ageMin": 10,
+    "ageMax": 14,
+    "accessibilite": [],
+    "creneaux": [
+      {"periode": "Février 2025", "duree": "7 jours", "debut": "2025-02-17", "fin": "2025-02-23"}
+    ],
+    "lieu": {
+      "nom": "Chalet Les Sapins - Prabouré",
+      "adresse": "Le Bessat, 42660",
+      "lat": 45.3823,
+      "lon": 4.5234
+    },
+    "cout": 380,
+    "aidesEligibles": ["CAF", "ANCV", "JPA"],
+    "mobilite": {
+      "TC": ["Départ groupé depuis gare Châteaucreux"],
+      "velo": "Non applicable",
+      "covoit": false
+    },
+    "prerequis": ["Certificat médical", "Test ski recommandé"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire complète"},
+      {"cle": "carte_vitale", "obligatoire": true, "label": "Copie carte vitale"}
+    ],
+    "santeTags": ["sejour", "montagne", "ski", "collectif"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-002",
+    "titre": "Camp Nature et Randonnée",
+    "theme": "Vacances",
+    "ageMin": 8,
+    "ageMax": 13,
+    "accessibilite": [],
+    "creneaux": [
+      {"periode": "Juillet 2025", "duree": "5 jours", "debut": "2025-07-07", "fin": "2025-07-11"}
+    ],
+    "lieu": {
+      "nom": "Base de loisirs Pilat",
+      "adresse": "Saint-Genest-Malifaux, 42660",
+      "lat": 45.3445,
+      "lon": 4.4678
+    },
+    "cout": 250,
+    "aidesEligibles": ["CAF", "ANCV"],
+    "mobilite": {
+      "TC": ["Départ groupé depuis Place Jean Jaurès"],
+      "velo": "Non applicable",
+      "covoit": false
+    },
+    "prerequis": ["Certificat médical", "Savoir nager recommandé"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire"},
+      {"cle": "carte_vitale", "obligatoire": true, "label": "Copie carte vitale"}
+    ],
+    "santeTags": ["sejour", "nature", "randonnee", "bivouac"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-003",
+    "titre": "Colonie Sportive Multisports",
+    "theme": "Vacances",
+    "ageMin": 9,
+    "ageMax": 15,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"periode": "Août 2025", "duree": "10 jours", "debut": "2025-08-11", "fin": "2025-08-20"}
+    ],
+    "lieu": {
+      "nom": "Centre Sportif Régional",
+      "adresse": "Andrézieux-Bouthéon, 42160",
+      "lat": 45.5234,
+      "lon": 4.2678
+    },
+    "cout": 420,
+    "aidesEligibles": ["CAF", "ANCV", "PassSport"],
+    "mobilite": {
+      "TC": ["Départ groupé depuis gare Châteaucreux"],
+      "velo": "Non applicable",
+      "covoit": false
+    },
+    "prerequis": ["Certificat médical sport"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical sport"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire"},
+      {"cle": "carte_vitale", "obligatoire": true, "label": "Copie carte vitale"}
+    ],
+    "santeTags": ["sejour", "sport", "collectif", "competition"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-004",
+    "titre": "Stage Théâtre Intensif",
+    "theme": "Vacances",
+    "ageMin": 11,
+    "ageMax": 16,
+    "accessibilite": ["pmr_access", "sensory_friendly"],
+    "creneaux": [
+      {"periode": "Avril 2025", "duree": "5 jours", "debut": "2025-04-21", "fin": "2025-04-25"}
+    ],
+    "lieu": {
+      "nom": "Comédie de Saint-Étienne",
+      "adresse": "7 Avenue Émile Loubet, 42000 Saint-Étienne",
+      "lat": 45.4389,
+      "lon": 4.3856
+    },
+    "cout": 180,
+    "aidesEligibles": ["CAF", "Pass Culture"],
+    "mobilite": {
+      "TC": ["Tram T1 - Arrêt Carnot"],
+      "velo": "Station Vélivert à 100m",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "photo", "obligatoire": false, "label": "Photo"}
+    ],
+    "santeTags": ["theatre", "expression", "spectacle"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-005",
+    "titre": "Séjour Linguistique Anglais",
+    "theme": "Vacances",
+    "ageMin": 13,
+    "ageMax": 17,
+    "accessibilite": [],
+    "creneaux": [
+      {"periode": "Juillet 2025", "duree": "14 jours", "debut": "2025-07-14", "fin": "2025-07-27"}
+    ],
+    "lieu": {
+      "nom": "Centre International - Parc du Pilat",
+      "adresse": "Bourg-Argental, 42220",
+      "lat": 45.2978,
+      "lon": 4.5589
+    },
+    "cout": 650,
+    "aidesEligibles": ["CAF", "ANCV"],
+    "mobilite": {
+      "TC": ["Départ groupé depuis gare Châteaucreux"],
+      "velo": "Non applicable",
+      "covoit": false
+    },
+    "prerequis": ["Niveau A2 anglais recommandé"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire"},
+      {"cle": "carte_vitale", "obligatoire": true, "label": "Copie carte vitale"},
+      {"cle": "passeport", "obligatoire": false, "label": "Copie passeport"}
+    ],
+    "santeTags": ["sejour", "langue", "international", "immersion"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-006",
+    "titre": "Camp Arts et Créativité",
+    "theme": "Vacances",
+    "ageMin": 7,
+    "ageMax": 12,
+    "accessibilite": ["pmr_access", "adapted_equipment"],
+    "creneaux": [
+      {"periode": "Juillet 2025", "duree": "5 jours", "debut": "2025-07-21", "fin": "2025-07-25"}
+    ],
+    "lieu": {
+      "nom": "Château de Bouthéon",
+      "adresse": "Andrézieux-Bouthéon, 42160",
+      "lat": 45.5289,
+      "lon": 4.2789
+    },
+    "cout": 220,
+    "aidesEligibles": ["CAF", "ANCV"],
+    "mobilite": {
+      "TC": ["Départ groupé depuis Place Jacquard"],
+      "velo": "Non applicable",
+      "covoit": false
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire"}
+    ],
+    "santeTags": ["sejour", "arts", "creativite", "nature"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-007",
+    "titre": "Stage Cuisine Ados",
+    "theme": "Vacances",
+    "ageMin": 13,
+    "ageMax": 17,
+    "accessibilite": ["pmr_access"],
+    "creneaux": [
+      {"periode": "Octobre 2025", "duree": "3 jours", "debut": "2025-10-27", "fin": "2025-10-29"}
+    ],
+    "lieu": {
+      "nom": "École Hôtelière Sainte-Marie",
+      "adresse": "4 Rue Benoit Charvet, 42000 Saint-Étienne",
+      "lat": 45.4378,
+      "lon": 4.3967
+    },
+    "cout": 150,
+    "aidesEligibles": ["CAF"],
+    "mobilite": {
+      "TC": ["Tram T1 - Arrêt Peuple"],
+      "velo": "Station Vélivert proche",
+      "covoit": true
+    },
+    "prerequis": [],
+    "pieces": [
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "allergies_alimentaires", "obligatoire": true, "label": "Fiche allergies alimentaires"}
+    ],
+    "santeTags": ["cuisine", "gastronomie", "autonomie"],
+    "territoire": "Saint-Étienne Métropole"
+  },
+  {
+    "id": "vacances-008",
+    "titre": "Séjour VTT Pilat",
+    "theme": "Vacances",
+    "ageMin": 11,
+    "ageMax": 16,
+    "accessibilite": [],
+    "creneaux": [
+      {"periode": "Juin 2025", "duree": "5 jours", "debut": "2025-06-23", "fin": "2025-06-27"}
+    ],
+    "lieu": {
+      "nom": "Base VTT du Pilat",
+      "adresse": "Bourg-Argental, 42220",
+      "lat": 45.2989,
+      "lon": 4.5567
+    },
+    "cout": 320,
+    "aidesEligibles": ["CAF", "ANCV", "PassSport"],
+    "mobilite": {
+      "TC": ["Départ groupé depuis Place Jean Jaurès"],
+      "velo": "VTT fournis sur place",
+      "covoit": false
+    },
+    "prerequis": ["Certificat médical sport", "Savoir faire du vélo"],
+    "pieces": [
+      {"cle": "certificat_medical", "obligatoire": true, "label": "Certificat médical sport"},
+      {"cle": "autorisation_parentale", "obligatoire": true, "label": "Autorisation parentale"},
+      {"cle": "fiche_sanitaire", "obligatoire": true, "label": "Fiche sanitaire"},
+      {"cle": "carte_vitale", "obligatoire": true, "label": "Copie carte vitale"}
+    ],
+    "santeTags": ["sejour", "velo", "nature", "sport"],
+    "territoire": "Saint-Étienne Métropole"
+  }
+]
