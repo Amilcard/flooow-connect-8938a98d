@@ -30,6 +30,11 @@ const Header = () => {
             <a href="#organismes" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Pour les organismes
             </a>
+            {isAuthenticated && (
+              <Link to="/dashboards" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                Dashboard
+              </Link>
+            )}
             <a href="#a-propos" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               À propos
             </a>
@@ -73,6 +78,11 @@ const Header = () => {
               <a href="#organismes" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 Pour les organismes
               </a>
+              {isAuthenticated && (
+                <Link to="/dashboards" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  Dashboard
+                </Link>
+              )}
               <a href="#a-propos" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 À propos
               </a>

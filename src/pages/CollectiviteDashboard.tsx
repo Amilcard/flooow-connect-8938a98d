@@ -3,15 +3,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3 } from "lucide-react";
+import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3, Accessibility, MapPin, HeartPulse } from "lucide-react";
 import { LoadingState } from "@/components/LoadingState";
 import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Badge } from "@/components/ui/badge";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 export default function CollectiviteDashboard() {
+  // Fetch KPIs from edge function
+  const { data: kpisData, isLoading: loadingKpis } = useQuery({
+    queryKey: ['dashboard-kpis'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('dashboard-kpis');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Fetch overview data
   const { data: overview, isLoading: loadingOverview } = useQuery({
     queryKey: ['collectivite-overview'],
@@ -78,9 +89,11 @@ export default function CollectiviteDashboard() {
     }
   });
 
-  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics) {
+  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis) {
     return <LoadingState />;
   }
+
+  const kpis = kpisData?.kpis || {};
 
   // Prepare chart data
   const activitiesByCategory = activitiesAnalysis?.reduce((acc, item) => {
@@ -121,7 +134,95 @@ export default function CollectiviteDashboard() {
             </p>
           </div>
 
-          {/* Stats Cards */}
+          {/* KPIs Spécifiques - Section Santé & Inclusion */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {/* Inscriptions */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Inscriptions</CardTitle>
+                <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{kpis.inscriptions?.total || 0}</div>
+                <p className="text-xs text-muted-foreground">
+                  {/* Source: bookings.status = 'validee' */}
+                  Réservations validées
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* % Handicap */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Accessibilité</CardTitle>
+                <Accessibility className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{kpis.handicap?.percentage || 0}%</div>
+                <p className="text-xs text-muted-foreground">
+                  {/* Source: children.accessibility_flags */}
+                  {kpis.handicap?.count || 0}/{kpis.handicap?.total || 0} avec handicap
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* % QPV */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">QPV</CardTitle>
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {kpis.qpv?.percentage === "N/A" ? (
+                    <Badge variant="outline">N/A</Badge>
+                  ) : (
+                    `${kpis.qpv?.percentage}%`
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {/* Source: profiles.city_insee (à intégrer) */}
+                  Quartiers prioritaires
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Répartition mobilité (synthèse) */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Mobilité</CardTitle>
+                <Bus className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs space-y-1">
+                  {/* Source: bookings.transport_mode */}
+                  {kpis.mobilite?.distribution?.slice(0, 3).map((item: any) => (
+                    <div key={item.mode} className="flex justify-between">
+                      <span className="capitalize">{item.mode}:</span>
+                      <span className="font-semibold">{item.percentage}%</span>
+                    </div>
+                  )) || <span className="text-muted-foreground">Aucune donnée</span>}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Indicateur santé */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Activité/Semaine</CardTitle>
+                <HeartPulse className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{kpis.sante?.weeklyMinutes || 0} min</div>
+                <p className="text-xs text-muted-foreground">
+                  {/* Source: slots.start/end × bookings */}
+                  Moyenne hebdomadaire
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Stats Cards Générales */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -141,14 +242,14 @@ export default function CollectiviteDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Inscriptions
+                  Enfants Uniques
                 </CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{overview?.total_registrations || 0}</div>
+                <div className="text-2xl font-bold">{overview?.unique_children_registered || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                  {overview?.unique_children_registered || 0} enfants uniques
+                  Bénéficiaires distincts
                 </p>
               </CardContent>
             </Card>
