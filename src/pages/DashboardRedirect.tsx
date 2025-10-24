@@ -13,7 +13,7 @@ const ROLE_DASHBOARD_MAP: Record<AppRole, string> = {
   structure: "/dashboard/structure",
   territory_admin: "/dashboard/collectivite",
   partner: "/dashboard/financeur",
-  superadmin: "/dashboard/collectivite",
+  superadmin: "/dashboard/superadmin",
   family: "/"
 };
 

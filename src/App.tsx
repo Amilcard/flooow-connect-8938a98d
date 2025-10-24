@@ -16,6 +16,7 @@ import StructureDashboard from "./pages/StructureDashboard";
 import StructureActivityForm from "./pages/StructureActivityForm";
 import CollectiviteDashboard from "./pages/CollectiviteDashboard";
 import FinanceurDashboard from "./pages/FinanceurDashboard";
+import SuperadminDashboard from "./pages/SuperadminDashboard";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import Activities from "./pages/Activities";
@@ -83,6 +84,13 @@ const App = () => (
           <Route path="/dashboards" element={<DashboardRedirect />} />
           <Route path="/dashboard" element={<DashboardRedirect />} />
           
+          {/* Superadmin Dashboard - Protected */}
+          <Route path="/dashboard/superadmin" element={
+            <RoleProtectedRoute allowedRoles={['superadmin']}>
+              <SuperadminDashboard />
+            </RoleProtectedRoute>
+          } />
+
           {/* Structure Dashboard - Protected */}
           <Route path="/dashboard/structure" element={
             <RoleProtectedRoute allowedRoles={['structure']}>
