@@ -1,10 +1,19 @@
+/**
+ * ⚠️ SECURITY WARNING ⚠️
+ * Client-side encryption DOES NOT protect data transmitted to servers.
+ * Only use for local-only data or user-password-protected data.
+ * 
+ * For PII (emails, addresses, phone numbers, quotient_familial), 
+ * use server-side encryption with keys managed by the backend.
+ * 
+ * An attacker with access to the JavaScript can extract the password 
+ * and decrypt all data - client-side encryption provides no protection 
+ * against this attack vector.
+ */
+
 // Utilitaires simples de chiffrement pour le front-end
 // Utilise Web Crypto API : PBKDF2 pour dériver une clé depuis un mot de passe/secret,
 // et AES-GCM pour chiffrer/déchiffrer des chaînes.
-
-// Note : pour des données sensibles (emails, numéros) il vaut mieux chiffrer côté serveur
-// où la clé est détenue de manière sécurisée. Ici c'est utile pour chiffrer localement
-// avant stockage local ou envoi chiffré.
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();

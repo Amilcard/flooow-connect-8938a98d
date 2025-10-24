@@ -46,7 +46,7 @@ serve(async (req) => {
         .eq('user_id', user.id);
 
       const isAdmin = userRoles?.some(r => 
-        r.role === 'superadmin' || r.role === 'territory_admin'
+        r.role === 'superadmin'
       );
 
       let query = supabaseClient
@@ -139,13 +139,10 @@ serve(async (req) => {
 
       const isOwner = session.user_id === user.id;
       const isSuperAdmin = userRoles?.some(r => r.role === 'superadmin');
-      const isTerritoryAdmin = userRoles?.some(r => 
-        r.role === 'territory_admin' && r.territory_id === session.tenant_id
-      );
 
-      if (!isOwner && !isSuperAdmin && !isTerritoryAdmin) {
+      if (!isOwner && !isSuperAdmin) {
         return new Response(
-          JSON.stringify({ error: 'Insufficient permissions' }),
+          JSON.stringify({ error: 'Insufficient permissions - superadmin only' }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }

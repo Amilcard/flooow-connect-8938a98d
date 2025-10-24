@@ -1,20 +1,22 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 
-interface User {
+interface AuthUser {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   avatar?: string;
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   signup: (userData: {
     firstName: string;
     lastName: string;
@@ -39,16 +41,25 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté au chargement
+    // Check current session
     const checkAuth = async () => {
       try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            firstName: session.user.user_metadata?.firstName,
+            lastName: session.user.user_metadata?.lastName,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+              `${session.user.user_metadata?.firstName || ''} ${session.user.user_metadata?.lastName || ''}`
+            )}&background=6366f1&color=fff`
+          });
         }
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -58,24 +69,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          firstName: session.user.user_metadata?.firstName,
+          lastName: session.user.user_metadata?.lastName,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            `${session.user.user_metadata?.firstName || ''} ${session.user.user_metadata?.lastName || ''}`
+          )}&background=6366f1&color=fff`
+        });
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulation d'appel API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const userData: User = {
-        id: '1',
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        firstName: 'John',
-        lastName: 'Doe',
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('John Doe')}&background=6366f1&color=fff`
-      };
+        password,
+      });
       
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      if (error) throw error;
+      
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email || '',
+          firstName: data.user.user_metadata?.firstName,
+          lastName: data.user.user_metadata?.lastName,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            `${data.user.user_metadata?.firstName || ''} ${data.user.user_metadata?.lastName || ''}`
+          )}&background=6366f1&color=fff`
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -90,27 +127,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }) => {
     setIsLoading(true);
     try {
-      // Simulation d'appel API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const newUser: User = {
-        id: '1',
+      const { data, error } = await supabase.auth.signUp({
         email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.firstName + ' ' + userData.lastName)}&background=6366f1&color=fff`
-      };
+        password: userData.password,
+        options: {
+          data: {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            phone: userData.phone,
+          },
+        },
+      });
       
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      if (error) throw error;
+      
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email || '',
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            `${userData.firstName} ${userData.lastName}`
+          )}&background=6366f1&color=fff`
+        });
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('user');
+    navigate('/');
   };
 
   const value = {

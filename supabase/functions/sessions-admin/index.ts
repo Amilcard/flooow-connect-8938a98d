@@ -39,18 +39,17 @@ serve(async (req) => {
     const url = new URL(req.url);
     const method = req.method;
 
-    // Check if user is admin
+    // Check if user is superadmin
     const { data: userRoles } = await supabase
       .from('user_roles')
-      .select('role, territory_id')
+      .select('role')
       .eq('user_id', user.id);
 
     const isSuperAdmin = userRoles?.some(r => r.role === 'superadmin');
-    const isTerritoryAdmin = userRoles?.some(r => r.role === 'territory_admin');
     
-    if (!isSuperAdmin && !isTerritoryAdmin) {
+    if (!isSuperAdmin) {
       return new Response(
-        JSON.stringify({ error: 'Insufficient permissions' }),
+        JSON.stringify({ error: 'Insufficient permissions - superadmin only' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -59,21 +58,11 @@ serve(async (req) => {
     if (method === 'GET') {
       const searchQuery = url.searchParams.get('search') || '';
       
-      let query = supabase
+      const { data: sessions, error: sessionsError } = await supabase
         .from('sessions_report')
         .select('*')
         .eq('revoked', false)
         .order('created_at', { ascending: false });
-
-      // Territory filtering for territory admins
-      if (!isSuperAdmin && isTerritoryAdmin) {
-        const userTerritory = userRoles?.find(r => r.role === 'territory_admin')?.territory_id;
-        if (userTerritory) {
-          query = query.eq('tenant_id', userTerritory);
-        }
-      }
-
-      const { data: sessions, error: sessionsError } = await query;
 
       if (sessionsError) {
         return new Response(
@@ -125,16 +114,7 @@ serve(async (req) => {
         );
       }
 
-      // Check territory permissions for territory admins
-      if (!isSuperAdmin && isTerritoryAdmin) {
-        const userTerritory = userRoles?.find(r => r.role === 'territory_admin')?.territory_id;
-        if (session.tenant_id !== userTerritory) {
-          return new Response(
-            JSON.stringify({ error: 'Insufficient permissions' }),
-            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-      }
+      // Only superadmins can revoke sessions (already checked above)
 
       const { revoke_reason } = await req.json().catch(() => ({ revoke_reason: 'Admin revocation' }));
 
