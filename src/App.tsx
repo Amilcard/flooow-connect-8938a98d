@@ -81,6 +81,7 @@ const App = () => (
           
           {/* Dashboard auto-redirect based on role */}
           <Route path="/dashboards" element={<DashboardRedirect />} />
+          <Route path="/dashboard" element={<DashboardRedirect />} />
           
           {/* Structure Dashboard - Protected */}
           <Route path="/dashboard/structure" element={

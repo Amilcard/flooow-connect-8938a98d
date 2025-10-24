@@ -38,6 +38,13 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Redirect authenticated users to the appropriate dashboard
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/dashboards", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
   // Fetch user profile to check postal code
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile-index"],
