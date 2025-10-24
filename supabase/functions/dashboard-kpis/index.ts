@@ -49,10 +49,33 @@ serve(async (req) => {
       ? ((childrenWithDisability / childrenData.length) * 100).toFixed(1)
       : '0';
 
-    // 3. % QPV - Placeholder (données non disponibles actuellement)
-    // Source future : profiles.city_insee + référentiel QPV externe
-    const qpvPercentage = "N/A";
-    const qpvNote = "Donnée QPV non disponible - nécessite intégration référentiel QPV national";
+    // 3. % QPV - Calcul basé sur city_insee des profils vs référentiel QPV
+    const { data: profilesData } = await supabaseClient
+      .from('profiles')
+      .select('city_insee')
+      .not('city_insee', 'is', null);
+
+    const totalProfiles = profilesData?.length || 0;
+    
+    // Récupérer tous les codes INSEE QPV du référentiel
+    const { data: qpvData } = await supabaseClient
+      .from('qpv_reference')
+      .select('code_insee');
+
+    const qpvCodeInsee = new Set(qpvData?.map(q => q.code_insee) || []);
+    
+    // Compter les profils en QPV
+    const profilesInQPV = profilesData?.filter(
+      profile => profile.city_insee && qpvCodeInsee.has(profile.city_insee)
+    ).length || 0;
+
+    const qpvPercentage = totalProfiles > 0 
+      ? ((profilesInQPV / totalProfiles) * 100).toFixed(1)
+      : '0';
+    
+    const qpvNote = qpvData && qpvData.length > 0 
+      ? `Basé sur ${qpvData.length} codes INSEE QPV du référentiel`
+      : "Référentiel QPV vide - aucune donnée QPV chargée";
 
     // 4. Répartition mobilité
     const { data: mobilityData } = await supabaseClient

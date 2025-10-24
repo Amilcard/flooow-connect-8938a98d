@@ -824,6 +824,48 @@ export type Database = {
           },
         ]
       }
+      qpv_reference: {
+        Row: {
+          code_insee: string
+          code_qp: string
+          commune_qp: string
+          created_at: string
+          departement: string | null
+          id: string
+          metadata: Json | null
+          nom_qp: string
+          population: number | null
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          code_insee: string
+          code_qp: string
+          commune_qp: string
+          created_at?: string
+          departement?: string | null
+          id?: string
+          metadata?: Json | null
+          nom_qp: string
+          population?: number | null
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code_insee?: string
+          code_qp?: string
+          commune_qp?: string
+          created_at?: string
+          departement?: string | null
+          id?: string
+          metadata?: Json | null
+          nom_qp?: string
+          population?: number | null
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       refresh_tokens: {
         Row: {
           created_at: string
