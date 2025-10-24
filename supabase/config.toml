@@ -21,8 +21,29 @@ verify_jwt = false
 [functions.reports]
 verify_jwt = false
 
+[functions.dashboard-kpis]
+verify_jwt = false
+
+[functions.auth-session]
+verify_jwt = false
+
+[functions.auth-sessions]
+verify_jwt = false
+
+[functions.sessions-admin]
+verify_jwt = false
+
+[functions.sessions-management]
+verify_jwt = false
+
 [functions.google-maps-token]
 verify_jwt = false
 
 [functions.google-maps-directions]
+verify_jwt = false
+
+[functions.mapbox-token]
+verify_jwt = false
+
+[functions.mapbox-directions]
 verify_jwt = false
