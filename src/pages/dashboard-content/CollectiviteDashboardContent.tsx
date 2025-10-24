@@ -4,6 +4,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { useDashboardKPIs } from "@/hooks/useDashboardStats";
+import { LoadingState } from "@/components/LoadingState";
+import { ErrorState } from "@/components/ErrorState";
 
 const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6"];
 
@@ -12,31 +15,17 @@ interface CollectiviteDashboardContentProps {
 }
 
 export default function CollectiviteDashboardContent({ territoryId }: CollectiviteDashboardContentProps) {
-  // Source: Données mockées pour la démo (future intégration avec edge function mock-activities)
-  // Calcul: Agrégation des bookings validés du territoire
+  const { data: kpisData, isLoading, error } = useDashboardKPIs();
+
+  if (isLoading) return <LoadingState />;
+  if (error) return <ErrorState message="Erreur lors du chargement des KPIs" />;
+
   const kpis = {
-    // Source: COUNT(bookings WHERE status='validee' AND territory_id=...)
-    total_inscriptions: 342,
-    
-    // Source: COUNT(children WHERE accessibility_flags IS NOT NULL) / COUNT(children) * 100
-    disability_percentage: 8.2,
-    
-    // Source: COUNT(profiles WHERE postal_code IN qpv_reference) / COUNT(profiles) * 100
-    // ⚠️ PLACEHOLDER: Calcul QPV nécessite jointure profiles ↔ qpv_reference (non implémenté)
-    qpv_percentage: 15.7,
-    
-    // Source: SUM(activity_duration * bookings_count) estimé par semaine
-    // ⚠️ PLACEHOLDER: Calcul estimé, non basé sur données réelles de participation
-    estimated_weekly_minutes: 4820,
-    
-    // Source: COUNT(bookings GROUP BY transport_mode) / COUNT(bookings) * 100
-    // Valeurs: TC (Transport en Commun), vélo, covoit, voiture
-    mobility_distribution: {
-      car: 45,
-      transport_public: 30,
-      bike: 15,
-      walk: 10
-    }
+    total_inscriptions: kpisData?.kpis?.inscriptions?.total || 0,
+    disability_percentage: parseFloat(kpisData?.kpis?.handicap?.percentage || '0'),
+    qpv_percentage: parseFloat(kpisData?.kpis?.qpv?.percentage || '0'),
+    estimated_weekly_minutes: parseInt(kpisData?.kpis?.sante?.weeklyMinutes || '0'),
+    mobility_distribution: kpisData?.kpis?.mobilite?.distribution || []
   };
 
   const overview = {
@@ -101,7 +90,7 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           <CardContent>
             <div className="text-2xl font-bold">{kpis.qpv_percentage.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Résidents QPV <span className="text-orange-500">(placeholder)</span>
+              Résidents QPV
             </p>
           </CardContent>
         </Card>
@@ -114,7 +103,7 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           <CardContent>
             <div className="text-2xl font-bold">{kpis.estimated_weekly_minutes}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Minutes/semaine <span className="text-orange-500">(estimé)</span>
+              Minutes/semaine
             </p>
           </CardContent>
         </Card>
@@ -173,12 +162,11 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={[
-              { mode: "TC", count: kpis.mobility_distribution.transport_public, label: "Transport en commun" },
-              { mode: "Vélo", count: kpis.mobility_distribution.bike, label: "Vélo" },
-              { mode: "Covoit", count: kpis.mobility_distribution.car, label: "Covoiturage" },
-              { mode: "Voiture", count: kpis.mobility_distribution.walk, label: "Voiture perso" }
-            ]}>
+            <BarChart data={kpis.mobility_distribution.map((item: any) => ({
+              mode: item.mode,
+              count: parseFloat(item.percentage),
+              label: item.mode
+            }))}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="mode" />
               <YAxis label={{ value: '% inscrits', angle: -90, position: 'insideLeft' }} />

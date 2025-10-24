@@ -83,3 +83,15 @@ export const useBookingsStats = () => {
     },
   });
 };
+
+export const useDashboardKPIs = () => {
+  return useQuery({
+    queryKey: ['dashboard-kpis'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('dashboard-kpis');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+};

@@ -49,33 +49,19 @@ serve(async (req) => {
       ? ((childrenWithDisability / childrenData.length) * 100).toFixed(1)
       : '0';
 
-    // 3. % QPV - Calcul basé sur city_insee des profils vs référentiel QPV
-    const { data: profilesData } = await supabaseClient
-      .from('profiles')
-      .select('city_insee')
-      .not('city_insee', 'is', null);
+    // 3. % QPV - Utilisation de la vue v_qpv_stats (basée sur codes postaux)
+    const { data: qpvStats } = await supabaseClient
+      .from('v_qpv_stats')
+      .select('*')
+      .single();
 
-    const totalProfiles = profilesData?.length || 0;
+    const qpvPercentage = qpvStats?.qpv_percentage?.toFixed(1) || '0';
+    const totalProfiles = qpvStats?.total_profiles || 0;
+    const profilesInQPV = qpvStats?.qpv_profiles || 0;
     
-    // Récupérer tous les codes INSEE QPV du référentiel
-    const { data: qpvData } = await supabaseClient
-      .from('qpv_reference')
-      .select('code_insee');
-
-    const qpvCodeInsee = new Set(qpvData?.map(q => q.code_insee) || []);
-    
-    // Compter les profils en QPV
-    const profilesInQPV = profilesData?.filter(
-      profile => profile.city_insee && qpvCodeInsee.has(profile.city_insee)
-    ).length || 0;
-
-    const qpvPercentage = totalProfiles > 0 
-      ? ((profilesInQPV / totalProfiles) * 100).toFixed(1)
-      : '0';
-    
-    const qpvNote = qpvData && qpvData.length > 0 
-      ? `Basé sur ${qpvData.length} codes INSEE QPV du référentiel`
-      : "Référentiel QPV vide - aucune donnée QPV chargée";
+    const qpvNote = totalProfiles > 0 
+      ? `${profilesInQPV} profils en QPV sur ${totalProfiles} (basé sur codes postaux)`
+      : "Aucun profil avec code postal renseigné";
 
     // 4. Répartition mobilité
     const { data: mobilityData } = await supabaseClient

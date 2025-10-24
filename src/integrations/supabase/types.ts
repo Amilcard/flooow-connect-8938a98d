@@ -781,6 +781,7 @@ export type Database = {
           profile_json: Json | null
           quotient_familial: number | null
           rejection_reason: string | null
+          street_address: string | null
           territory_id: string | null
           updated_at: string
           validated_at: string | null
@@ -798,6 +799,7 @@ export type Database = {
           profile_json?: Json | null
           quotient_familial?: number | null
           rejection_reason?: string | null
+          street_address?: string | null
           territory_id?: string | null
           updated_at?: string
           validated_at?: string | null
@@ -815,6 +817,7 @@ export type Database = {
           profile_json?: Json | null
           quotient_familial?: number | null
           rejection_reason?: string | null
+          street_address?: string | null
           territory_id?: string | null
           updated_at?: string
           validated_at?: string | null
@@ -892,6 +895,7 @@ export type Database = {
           metadata: Json | null
           nom_qp: string
           population: number | null
+          postal_codes: string[] | null
           region: string | null
           updated_at: string
         }
@@ -905,6 +909,7 @@ export type Database = {
           metadata?: Json | null
           nom_qp: string
           population?: number | null
+          postal_codes?: string[] | null
           region?: string | null
           updated_at?: string
         }
@@ -918,6 +923,7 @@ export type Database = {
           metadata?: Json | null
           nom_qp?: string
           population?: number | null
+          postal_codes?: string[] | null
           region?: string | null
           updated_at?: string
         }
@@ -1628,6 +1634,14 @@ export type Database = {
         }
         Relationships: []
       }
+      v_qpv_stats: {
+        Row: {
+          qpv_percentage: number | null
+          qpv_profiles: number | null
+          total_profiles: number | null
+        }
+        Relationships: []
+      }
       vw_alternative_slots: {
         Row: {
           activity_id: string | null
@@ -1737,6 +1751,7 @@ export type Database = {
         Returns: boolean
       }
       hash_backup_code: { Args: { plain_code: string }; Returns: string }
+      is_profile_in_qpv: { Args: { p_profile_id: string }; Returns: boolean }
       log_audit_event: {
         Args: {
           _action: string
