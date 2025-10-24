@@ -200,10 +200,7 @@ const ActivityDetail = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              if (window.history.length > 1) navigate(-1);
-              else navigate('/activities', { replace: true });
-            }}
+            onClick={() => navigate(-1)}
             aria-label="Retour"
             className="hover:bg-muted"
           >
