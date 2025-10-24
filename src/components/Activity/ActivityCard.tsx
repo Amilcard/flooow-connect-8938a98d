@@ -2,11 +2,16 @@ import { MapPin, Users, Accessibility, Heart, Calendar, Clock } from "lucide-rea
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { Activity } from "@/types/domain";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
 
+/**
+ * [D1] ActivityCard utilise le type domain Activity unifié
+ * Props compatibles avec Activity mais permet aussi passage direct des champs
+ */
 interface ActivityCardProps {
   id: string;
   title: string;

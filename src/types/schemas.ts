@@ -1,0 +1,135 @@
+/**
+ * Validation Schemas & Adapters
+ * Zod schemas pour validation runtime + adapters avec defaults sécurisés
+ */
+
+import { z } from 'zod';
+import type { Activity, ActivityRaw, ActivityCategory } from './domain';
+
+/**
+ * Schema Zod pour validation des activités
+ */
+export const ActivityDomainSchema = z.object({
+  id: z.string().uuid('ID invalide'),
+  title: z.string().min(1, 'Titre requis').max(200, 'Titre trop long'),
+  image: z.string().default('https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop'),
+  distance: z.string().optional(),
+  ageRange: z.string().default('6-17 ans'),
+  ageMin: z.number().int().min(6).max(17).optional(),
+  ageMax: z.number().int().min(6).max(17).optional(),
+  category: z.string().min(1, 'Catégorie requise'),
+  categories: z.array(z.string()).default([]),
+  price: z.number().min(0, 'Prix négatif interdit').default(0),
+  hasAccessibility: z.boolean().default(false),
+  hasFinancialAid: z.boolean().default(false),
+  periodType: z.string().optional(),
+  structureName: z.string().optional(),
+  structureAddress: z.string().optional(),
+  vacationPeriods: z.array(z.string()).default([]),
+  accessibility: z.object({
+    wheelchair: z.boolean().optional(),
+    visual_impaired: z.boolean().optional(),
+    hearing_impaired: z.boolean().optional(),
+    mobility_impaired: z.boolean().optional(),
+  }).optional(),
+  mobility: z.object({
+    TC: z.string().optional(),
+    velo: z.boolean().optional(),
+    covoit: z.boolean().optional(),
+  }).optional(),
+  description: z.string().optional(),
+  aidesEligibles: z.array(z.string()).default([]),
+});
+
+/**
+ * Adapter avec defaults sécurisés
+ * Convertit ActivityRaw (sources externes) → Activity (domain)
+ */
+export function toActivity(raw: ActivityRaw): Activity {
+  // Normalisation des champs avec plusieurs variantes possibles
+  const title = raw.titre || raw.title || 'Activité sans titre';
+  const ageMin = raw.ageMin ?? raw.age_min ?? 6;
+  const ageMax = raw.ageMax ?? raw.age_max ?? 17;
+  const price = raw.cout ?? raw.price ?? raw.price_base ?? 0;
+  const category = raw.theme || raw.category || 'Loisirs';
+  
+  // Construction objet avec valeurs par défaut
+  const activity: Activity = {
+    id: raw.id,
+    title,
+    image: (raw.images && raw.images.length > 0) 
+      ? raw.images[0] 
+      : 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop',
+    ageRange: `${ageMin}-${ageMax} ans`,
+    ageMin,
+    ageMax,
+    category,
+    categories: raw.categories || [category],
+    price: Number(price),
+    hasAccessibility: !!(raw.accessibilite && raw.accessibilite.length > 0) || 
+                      !!(raw.accessibility_checklist?.wheelchair),
+    hasFinancialAid: !!(raw.aidesEligibles && raw.aidesEligibles.length > 0) || 
+                     !!(raw.accepts_aid_types && raw.accepts_aid_types.length > 0),
+    periodType: raw.period_type,
+    structureName: raw.lieu?.nom || raw.structures?.name,
+    structureAddress: raw.lieu?.adresse || raw.structures?.address,
+    vacationPeriods: raw.vacation_periods || [],
+    description: raw.description,
+    aidesEligibles: raw.aidesEligibles || [],
+  };
+
+  // Mobilité optionnelle
+  if (raw.mobilite || raw.covoiturage_enabled) {
+    activity.mobility = {
+      TC: raw.lieu?.transport || raw.mobilite?.TC,
+      velo: raw.mobilite?.velo,
+      covoit: raw.mobilite?.covoit ?? raw.covoiturage_enabled,
+    };
+  }
+
+  // Accessibilité optionnelle
+  if (raw.accessibility_checklist) {
+    activity.accessibility = raw.accessibility_checklist;
+  }
+
+  return activity;
+}
+
+/**
+ * Validation avec safeParse et logging des écarts
+ */
+export function validateAndParseActivity(raw: ActivityRaw): {
+  activity: Activity | null;
+  success: boolean;
+  errors?: string[];
+} {
+  try {
+    const activity = toActivity(raw);
+    const result = ActivityDomainSchema.safeParse(activity);
+
+    if (!result.success) {
+      const errors = result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      console.warn(`⚠️ Validation échouée pour activité ${raw.id}:`, errors);
+      
+      // On retourne l'activité avec defaults même si validation échoue
+      // (pas d'erreur bloquante, principe de résilience)
+      return {
+        activity,
+        success: false,
+        errors,
+      };
+    }
+
+    return {
+      activity: result.data as Activity,
+      success: true,
+    };
+  } catch (error) {
+    console.error(`❌ Erreur critique parsing activité ${raw.id}:`, error);
+    return {
+      activity: null,
+      success: false,
+      errors: ['Erreur critique de parsing'],
+    };
+  }
+}

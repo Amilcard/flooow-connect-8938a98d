@@ -1,45 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Activity } from "./useActivities";
-
-interface MockActivity {
-  id: string;
-  theme: string;
-  titre: string;
-  description: string;
-  ageMin: number;
-  ageMax: number;
-  cout: number;
-  lieu: {
-    nom: string;
-    adresse: string;
-    transport: string;
-  };
-  accessibilite: string[];
-  aidesEligibles: string[]; // Format simplifié: ["Pass'Sport", "CAF/VACAF", "ANCV"]
-  mobilite: {
-    TC: string;     // Format: "Ligne T3 STAS"
-    velo: boolean;  // true/false
-    covoit: boolean; // true/false
-  };
-}
-
-const mapMockToActivity = (mock: MockActivity): Activity => {
-  return {
-    id: mock.id,
-    title: mock.titre,
-    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop",
-    ageRange: `${mock.ageMin}-${mock.ageMax} ans`,
-    category: mock.theme,
-    categories: [mock.theme],
-    price: mock.cout,
-    hasAccessibility: mock.accessibilite.length > 0,
-    hasFinancialAid: mock.aidesEligibles.length > 0,
-    periodType: "annual",
-    structureName: mock.lieu.nom,
-    structureAddress: mock.lieu.adresse,
-  };
-};
+import type { Activity } from "@/types/domain";
+import { validateAndParseActivity } from "@/types/schemas";
+import type { ActivityRaw } from "@/types/domain";
 
 export const useMockActivities = (limit?: number) => {
   return useQuery({
@@ -52,7 +15,7 @@ export const useMockActivities = (limit?: number) => {
     retry: 2,
     retryDelay: 1000,
     queryFn: async () => {
-      console.log("🔵 Fetching mock activities from Edge Function...");
+      console.log("🔵 [D1] Fetching mock activities from Edge Function...");
       
       const { data, error } = await supabase.functions.invoke('mock-activities', {
         headers: { 
@@ -72,10 +35,33 @@ export const useMockActivities = (limit?: number) => {
 
       console.log("✅ Mock activities received:", data?.length || 0);
       
-      const mockActivities = (data || []) as MockActivity[];
-      const mappedActivities = mockActivities.map(mapMockToActivity);
+      const mockActivities = (data || []) as ActivityRaw[];
       
-      return limit ? mappedActivities.slice(0, limit) : mappedActivities;
+      // [D1] Validation avec safeParse + logging des écarts
+      const validatedActivities: Activity[] = [];
+      let validCount = 0;
+      let correctedCount = 0;
+      
+      mockActivities.forEach((raw) => {
+        const result = validateAndParseActivity(raw);
+        
+        if (result.activity) {
+          validatedActivities.push(result.activity);
+          
+          if (result.success) {
+            validCount++;
+          } else {
+            correctedCount++;
+            console.warn(`🟨 [D1] Activité ${raw.id} corrigée via defaults:`, result.errors);
+          }
+        } else {
+          console.error(`❌ [D1] Activité ${raw.id} rejetée (erreur critique)`);
+        }
+      });
+      
+      console.log(`📊 [D1] Validation: ${validCount} OK / ${correctedCount} corrigées / ${mockActivities.length - validatedActivities.length} rejetées`);
+      
+      return limit ? validatedActivities.slice(0, limit) : validatedActivities;
     },
   });
 };

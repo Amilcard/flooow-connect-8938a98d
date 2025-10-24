@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Activity } from "@/types/domain";
+import { toActivity } from "@/types/schemas";
+import type { ActivityRaw } from "@/types/domain";
+
+// Export le type depuis domain pour rétro-compatibilité
+export type { Activity } from "@/types/domain";
 
 // Fetch mock activities from edge function
 export async function fetchMockActivities() {
@@ -11,23 +17,6 @@ export async function fetchMockActivities() {
     throw error;
   }
   return data; // array de 40 activités
-}
-
-export interface Activity {
-  id: string;
-  title: string;
-  image: string;
-  distance?: string;
-  ageRange: string;
-  category: string;
-  categories?: string[];
-  price: number;
-  hasAccessibility: boolean;
-  hasFinancialAid: boolean;
-  periodType?: string;
-  structureName?: string;
-  structureAddress?: string;
-  vacationPeriods?: string[];
 }
 
 interface ActivityFilters {
@@ -46,21 +35,25 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     ? dbActivity.images[0] 
     : dbActivity.cover;
   
-  return {
+  // Mapper les données DB vers ActivityRaw puis utiliser toActivity
+  const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
-    image: imageUrl || "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop",
-    ageRange: `${dbActivity.age_min}-${dbActivity.age_max} ans`,
+    images: dbActivity.images,
+    age_min: dbActivity.age_min,
+    age_max: dbActivity.age_max,
+    price_base: dbActivity.price_base,
     category: dbActivity.category,
-    categories: dbActivity.categories || [dbActivity.category],
-    price: Number(dbActivity.price_base) || 0,
-    hasAccessibility: dbActivity.accessibility_checklist?.wheelchair === true,
-    hasFinancialAid: Array.isArray(dbActivity.accepts_aid_types) && dbActivity.accepts_aid_types.length > 0,
-    periodType: dbActivity.period_type,
-    structureName: dbActivity.structures?.name,
-    structureAddress: dbActivity.structures?.address,
-    vacationPeriods: dbActivity.vacation_periods,
+    categories: dbActivity.categories,
+    accessibility_checklist: dbActivity.accessibility_checklist,
+    accepts_aid_types: dbActivity.accepts_aid_types,
+    period_type: dbActivity.period_type,
+    structures: dbActivity.structures,
+    vacation_periods: dbActivity.vacation_periods,
+    covoiturage_enabled: dbActivity.covoiturage_enabled,
   };
+
+  return toActivity(raw);
 };
 
 export const useActivities = (filters?: ActivityFilters) => {
