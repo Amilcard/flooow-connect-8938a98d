@@ -47,3 +47,9 @@ verify_jwt = false
 
 [functions.mapbox-directions]
 verify_jwt = false
+
+[functions.child-signup-code]
+verify_jwt = false
+
+[functions.child-signup-email]
+verify_jwt = false
