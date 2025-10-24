@@ -68,10 +68,18 @@ const SignUp = () => {
       });
 
       if (error) throw error;
+
+      // Create profile with pending status
+      if (data.user) {
+        await supabase
+          .from('profiles')
+          .update({ account_status: 'pending' })
+          .eq('id', data.user.id);
+      }
       
       toast({
-        title: "Compte créé avec succès !",
-        description: "Bienvenue dans la communauté InKlusif",
+        title: "Demande envoyée !",
+        description: "Votre compte sera activé après validation par notre équipe. Vous recevrez un email de confirmation.",
       });
       
       navigate('/');

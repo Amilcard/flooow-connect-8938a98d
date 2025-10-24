@@ -439,7 +439,9 @@ export type Database = {
           history: Json | null
           id: string
           idempotency_key: string | null
+          parent_notified_at: string | null
           reason_code: string | null
+          requires_parent_validation: boolean | null
           slot_id: string
           status: Database["public"]["Enums"]["booking_status"]
           transport_mode: string | null
@@ -454,7 +456,9 @@ export type Database = {
           history?: Json | null
           id?: string
           idempotency_key?: string | null
+          parent_notified_at?: string | null
           reason_code?: string | null
+          requires_parent_validation?: boolean | null
           slot_id: string
           status?: Database["public"]["Enums"]["booking_status"]
           transport_mode?: string | null
@@ -469,7 +473,9 @@ export type Database = {
           history?: Json | null
           id?: string
           idempotency_key?: string | null
+          parent_notified_at?: string | null
           reason_code?: string | null
+          requires_parent_validation?: boolean | null
           slot_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
           transport_mode?: string | null
@@ -728,6 +734,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string | null
           city_insee: string | null
           created_at: string
           email: string
@@ -736,10 +743,14 @@ export type Database = {
           postal_code: string | null
           profile_json: Json | null
           quotient_familial: number | null
+          rejection_reason: string | null
           territory_id: string | null
           updated_at: string
+          validated_at: string | null
+          validated_by: string | null
         }
         Insert: {
+          account_status?: string | null
           city_insee?: string | null
           created_at?: string
           email: string
@@ -748,10 +759,14 @@ export type Database = {
           postal_code?: string | null
           profile_json?: Json | null
           quotient_familial?: number | null
+          rejection_reason?: string | null
           territory_id?: string | null
           updated_at?: string
+          validated_at?: string | null
+          validated_by?: string | null
         }
         Update: {
+          account_status?: string | null
           city_insee?: string | null
           created_at?: string
           email?: string
@@ -760,8 +775,11 @@ export type Database = {
           postal_code?: string | null
           profile_json?: Json | null
           quotient_familial?: number | null
+          rejection_reason?: string | null
           territory_id?: string | null
           updated_at?: string
+          validated_at?: string | null
+          validated_by?: string | null
         }
         Relationships: [
           {

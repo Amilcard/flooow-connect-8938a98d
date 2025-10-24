@@ -88,6 +88,21 @@ export default function SuperadminDashboard() {
     }
   });
 
+  // Fetch pending family accounts
+  const { data: pendingAccounts, isLoading: loadingPending } = useQuery({
+    queryKey: ['pending-accounts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('account_status', 'pending')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Fetch all user roles
   const { data: userRoles, isLoading: loadingUsers } = useQuery({
     queryKey: ['all-user-roles'],
@@ -104,6 +119,30 @@ export default function SuperadminDashboard() {
       return data;
     }
   });
+
+  const handleValidateAccount = async (profileId: string, action: 'approve' | 'reject', reason?: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-validate-family', {
+        body: { profileId, action, reason }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: action === 'approve' ? "Compte validé" : "Compte rejeté",
+        description: data.message
+      });
+
+      // Refresh pending accounts
+      await supabase.from('profiles').select('*').eq('account_status', 'pending');
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de valider le compte",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleCreateUser = async () => {
     if (!newUser.email || !newUser.firstName || !newUser.lastName || !newUser.role) {
@@ -324,8 +363,15 @@ export default function SuperadminDashboard() {
           </div>
 
           {/* Detailed tabs */}
-          <Tabs defaultValue="users" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
+          <Tabs defaultValue="pending" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="pending">
+                <Users className="h-4 w-4 mr-2" />
+                En attente
+                {pendingAccounts && pendingAccounts.length > 0 && (
+                  <Badge variant="destructive" className="ml-2">{pendingAccounts.length}</Badge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="users">
                 <Users className="h-4 w-4 mr-2" />
                 Utilisateurs
@@ -339,6 +385,68 @@ export default function SuperadminDashboard() {
                 Territoires
               </TabsTrigger>
             </TabsList>
+
+            {/* TAB: PENDING ACCOUNTS */}
+            <TabsContent value="pending" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Comptes en attente de validation</CardTitle>
+                  <CardDescription>Familles ayant créé un compte</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Informations</TableHead>
+                        <TableHead>Inscrit le</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pendingAccounts && pendingAccounts.length > 0 ? (
+                        pendingAccounts.map((account) => (
+                          <TableRow key={account.id}>
+                            <TableCell className="font-medium">{account.email}</TableCell>
+                            <TableCell>
+                              {(account.profile_json as any)?.first_name} {(account.profile_json as any)?.last_name}
+                            </TableCell>
+                            <TableCell>
+                              {new Date(account.created_at).toLocaleDateString('fr-FR')}
+                            </TableCell>
+                            <TableCell className="text-right space-x-2">
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleValidateAccount(account.id, 'approve')}
+                              >
+                                Valider
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  const reason = prompt('Raison du rejet :');
+                                  if (reason) handleValidateAccount(account.id, 'reject', reason);
+                                }}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                Rejeter
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center text-muted-foreground">
+                            Aucune demande en attente
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* TAB: USERS */}
             <TabsContent value="users" className="space-y-4">
