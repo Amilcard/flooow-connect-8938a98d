@@ -12,12 +12,25 @@ interface CollectiviteDashboardContentProps {
 }
 
 export default function CollectiviteDashboardContent({ territoryId }: CollectiviteDashboardContentProps) {
-  // Données mockées pour la démo
+  // Source: Données mockées pour la démo (future intégration avec edge function mock-activities)
+  // Calcul: Agrégation des bookings validés du territoire
   const kpis = {
+    // Source: COUNT(bookings WHERE status='validee' AND territory_id=...)
     total_inscriptions: 342,
+    
+    // Source: COUNT(children WHERE accessibility_flags IS NOT NULL) / COUNT(children) * 100
     disability_percentage: 8.2,
+    
+    // Source: COUNT(profiles WHERE postal_code IN qpv_reference) / COUNT(profiles) * 100
+    // ⚠️ PLACEHOLDER: Calcul QPV nécessite jointure profiles ↔ qpv_reference (non implémenté)
     qpv_percentage: 15.7,
+    
+    // Source: SUM(activity_duration * bookings_count) estimé par semaine
+    // ⚠️ PLACEHOLDER: Calcul estimé, non basé sur données réelles de participation
     estimated_weekly_minutes: 4820,
+    
+    // Source: COUNT(bookings GROUP BY transport_mode) / COUNT(bookings) * 100
+    // Valeurs: TC (Transport en Commun), vélo, covoit, voiture
     mobility_distribution: {
       car: 45,
       transport_public: 30,
@@ -87,7 +100,9 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{kpis.qpv_percentage.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground mt-1">Résidents QPV</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Résidents QPV <span className="text-orange-500">(placeholder)</span>
+            </p>
           </CardContent>
         </Card>
 
@@ -98,7 +113,9 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{kpis.estimated_weekly_minutes}</div>
-            <p className="text-xs text-muted-foreground mt-1">Minutes/semaine estimées</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Minutes/semaine <span className="text-orange-500">(estimé)</span>
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -145,6 +162,35 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           </CardContent>
         </Card>
       </div>
+
+      {/* Répartition Mobilité */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Car className="w-5 h-5" />
+            Répartition Mobilité
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={[
+              { mode: "TC", count: kpis.mobility_distribution.transport_public, label: "Transport en commun" },
+              { mode: "Vélo", count: kpis.mobility_distribution.bike, label: "Vélo" },
+              { mode: "Covoit", count: kpis.mobility_distribution.car, label: "Covoiturage" },
+              { mode: "Voiture", count: kpis.mobility_distribution.walk, label: "Voiture perso" }
+            ]}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="mode" />
+              <YAxis label={{ value: '% inscrits', angle: -90, position: 'insideLeft' }} />
+              <Tooltip formatter={(value) => `${value}%`} />
+              <Bar dataKey="count" fill="#6366f1" />
+            </BarChart>
+          </ResponsiveContainer>
+          <p className="text-xs text-muted-foreground mt-2">
+            Source: transport_mode enregistré lors des réservations
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Analyses détaillées */}
       <Tabs defaultValue="activities" className="w-full">
