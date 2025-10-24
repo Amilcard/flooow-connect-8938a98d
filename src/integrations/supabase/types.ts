@@ -534,6 +534,42 @@ export type Database = {
           },
         ]
       }
+      child_signup_requests: {
+        Row: {
+          child_dob: string
+          child_first_name: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          parent_email: string
+          status: string | null
+          validated_at: string | null
+          validation_token: string
+        }
+        Insert: {
+          child_dob: string
+          child_first_name: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          parent_email: string
+          status?: string | null
+          validated_at?: string | null
+          validation_token: string
+        }
+        Update: {
+          child_dob?: string
+          child_first_name?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          parent_email?: string
+          status?: string | null
+          validated_at?: string | null
+          validation_token?: string
+        }
+        Relationships: []
+      }
       children: {
         Row: {
           accessibility_flags: Json | null
@@ -738,6 +774,7 @@ export type Database = {
           city_insee: string | null
           created_at: string
           email: string
+          family_code: string | null
           id: string
           marital_status: string | null
           postal_code: string | null
@@ -754,6 +791,7 @@ export type Database = {
           city_insee?: string | null
           created_at?: string
           email: string
+          family_code?: string | null
           id: string
           marital_status?: string | null
           postal_code?: string | null
@@ -770,6 +808,7 @@ export type Database = {
           city_insee?: string | null
           created_at?: string
           email?: string
+          family_code?: string | null
           id?: string
           marital_status?: string | null
           postal_code?: string | null
