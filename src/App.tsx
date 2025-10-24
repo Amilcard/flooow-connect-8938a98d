@@ -39,6 +39,7 @@ import ParentSignup from "./pages/ParentSignup";
 import ValidationParentale from "./pages/ValidationParentale";
 import ActivitiesMap from "./pages/ActivitiesMap";
 import ChildDashboard from "./pages/ChildDashboard";
+import DemoDashboard from "./pages/DemoDashboard";
 import Itineraire from "./pages/Itineraire";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
@@ -111,6 +112,10 @@ const App = () => (
               <FinanceurDashboard />
             </RoleProtectedRoute>
           } />
+          
+          {/* Demo Dashboard - No auth required */}
+          <Route path="/demo-dashboard" element={<DemoDashboard />} />
+          
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
