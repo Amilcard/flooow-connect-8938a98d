@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -43,7 +43,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     // Check current session
@@ -160,7 +160,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    navigate('/');
+    window.location.assign('/');
   };
 
   const value = {
