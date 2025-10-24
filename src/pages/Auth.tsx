@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { Progress } from "@/components/ui/progress";
 
 const Auth = () => {
@@ -164,14 +165,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
+          <BackButton fallback="/" />
           <h1 className="font-semibold text-lg">Connexion</h1>
         </div>
       </div>

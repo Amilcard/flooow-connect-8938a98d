@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Building2 } from "lucide-react";
+import { Building2 } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const StructureAuth = () => {
@@ -122,14 +123,7 @@ const StructureAuth = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
+          <BackButton fallback="/" />
           <h1 className="font-semibold text-lg">Inscription Structure</h1>
         </div>
       </div>

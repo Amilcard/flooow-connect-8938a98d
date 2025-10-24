@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -110,14 +111,7 @@ const ProfileCompletion = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
+          <BackButton fallback="/" />
           <h1 className="font-semibold text-lg">Complétez votre profil</h1>
         </div>
       </div>

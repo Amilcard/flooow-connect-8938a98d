@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PageLayout from '@/components/PageLayout';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  ArrowLeft, 
+   
   Bell, 
   Calendar, 
   Mail, 
@@ -180,14 +180,7 @@ const MesNotifications = () => {
       <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
         <div className="container flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/mon-compte')}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
             <div>
               <h1 className="text-xl font-bold">Mes notifications</h1>
               <p className="text-white/90 text-sm">

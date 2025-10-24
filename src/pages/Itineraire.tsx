@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Navigation, MapPin, Clock, Route, Bike, Bus, Footprints } from "lucide-react";
+import { Navigation, MapPin, Clock, Route, Bike, Bus, Footprints } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -276,7 +277,7 @@ const Itineraire = () => {
             onClick={handleBack}
             aria-label="Retour"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <Bike className="w-5 h-5" />
           </Button>
           <div className="flex items-center gap-2">
             {transportType === 'bike' ? (

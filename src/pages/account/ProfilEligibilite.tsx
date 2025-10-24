@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User, FileText, Calendar, Euro } from "lucide-react";
+import { User, FileText, Calendar, Euro } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -106,14 +107,7 @@ const ProfilEligibilite = () => {
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b bg-card">
         <div className="container flex items-center gap-4 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/mon-compte")}
-            aria-label="Retour"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+          <BackButton fallback="/mon-compte" className="hover:bg-muted" />
           <div>
             <h1 className="text-xl font-semibold">Profil d'éligibilité</h1>
             <p className="text-sm text-muted-foreground">

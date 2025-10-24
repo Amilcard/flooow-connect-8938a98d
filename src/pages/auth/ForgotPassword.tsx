@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import { useToast } from '@/hooks/use-toast';
 
 const ForgotPassword = () => {
@@ -42,15 +43,7 @@ const ForgotPassword = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col">
         <div className="flex items-center justify-between p-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/login')}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Connexion
-          </Button>
+          <BackButton fallback="/login" variant="ghost" size="sm" showText className="gap-2" />
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">
@@ -107,15 +100,7 @@ const ForgotPassword = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/login')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Connexion
-        </Button>
+        <BackButton fallback="/login" variant="ghost" size="sm" showText className="gap-2" />
       </div>
 
       {/* Main Content */}

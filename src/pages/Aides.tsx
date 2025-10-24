@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GeneralSimulateAidModal } from "@/components/simulations/GeneralSimulateAidModal";
-import { ArrowLeft, HelpCircle, Calculator, ExternalLink } from "lucide-react";
+import { HelpCircle, Calculator, ExternalLink } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 const Aides = () => {
   const navigate = useNavigate();
@@ -57,14 +58,7 @@ const Aides = () => {
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b bg-card">
         <div className="container flex items-center gap-4 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            aria-label="Retour à l'accueil"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+          <BackButton fallback="/" />
           <div>
             <h1 className="text-xl font-semibold">Aides Financières</h1>
           </div>

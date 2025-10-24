@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import PageLayout from '@/components/PageLayout';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  ArrowLeft, 
+   
   CreditCard, 
   Plus, 
   Trash2, 
@@ -211,14 +211,7 @@ const MoyensPaiement = () => {
       <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
         <div className="container flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/mon-compte')}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
             <div>
               <h1 className="text-xl font-bold">Moyens de paiement</h1>
               <p className="text-white/90 text-sm">

@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { FinancialAidSelector } from "@/components/activities/FinancialAidSelector";
 import { LoadingState } from "@/components/LoadingState";
 
@@ -187,14 +187,7 @@ const StructureActivityForm = () => {
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/structure-dashboard")}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
+          <BackButton fallback="/structure-dashboard" />
           <h1 className="font-semibold text-lg">
             {id ? "Modifier l'activité" : "Nouvelle activité"}
           </h1>

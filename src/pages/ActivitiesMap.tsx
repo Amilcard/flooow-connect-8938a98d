@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Search, Filter } from "lucide-react";
+import { MapPin, Search, Filter } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { LoadingState } from "@/components/LoadingState";
 import {
   Sheet,
@@ -106,17 +107,7 @@ const ActivitiesMap = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              if (window.history.length > 1) navigate(-1);
-              else navigate('/activities', { replace: true });
-            }}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
+          <BackButton fallback="/activities" />
           <h1 className="font-semibold text-lg flex-1">Carte des activités</h1>
           
           {/* Filters sheet */}

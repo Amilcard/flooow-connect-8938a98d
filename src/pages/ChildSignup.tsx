@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { SearchBar } from "@/components/SearchBar";
-import { ArrowLeft, UserPlus, Clock } from "lucide-react";
+import { UserPlus, Clock } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { toast } from "sonner";
 
 const ChildSignup = () => {
@@ -69,14 +70,7 @@ const ChildSignup = () => {
       <SearchBar />
       
       <div className="container py-6 space-y-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="gap-2"
-        >
-          <ArrowLeft size={18} />
-          Retour
-        </Button>
+        <BackButton fallback="/" showText={true} className="gap-2" size="default" />
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Créer un profil enfant</h1>

@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import KidAddModal from './KidAddModal';
 import { 
-  ArrowLeft, 
+   
   Plus, 
   Calendar, 
   User, 
@@ -162,14 +162,7 @@ const MesEnfants = () => {
       <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
         <div className="container flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/mon-compte')}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
           <div>
             <h1 className="text-xl font-bold">Mes enfants</h1>
             <p className="text-white/90 text-sm">{children.length} enfant{children.length > 1 ? 's' : ''} enregistré{children.length > 1 ? 's' : ''}</p>

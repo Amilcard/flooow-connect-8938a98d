@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import { useToast } from '@/hooks/use-toast';
 import AppearanceSettings from '@/components/account/AppearanceSettings';
 import SecuritySettings from '@/components/account/SecuritySettings';
@@ -107,14 +107,7 @@ const Parametres: React.FC = () => {
 		<PageLayout showHeader={false}>
 			<div className="bg-gradient-to-r from-primary to-accent text-white p-4">
 				<div className="container flex items-center space-x-4">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => navigate('/mon-compte')}
-						className="text-white hover:bg-white/20"
-					>
-						<ArrowLeft className="w-4 h-4" />
-					</Button>
+					<BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
 					<div>
 						<h1 className="text-xl font-bold">Paramètres</h1>
 						<p className="text-white/90 text-sm">Personnalisez votre expérience</p>

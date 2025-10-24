@@ -7,7 +7,8 @@ import { ActivityCard } from "@/components/Activity/ActivityCard";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { SearchBar } from "@/components/SearchBar";
 import { LoadingState } from "@/components/LoadingState";
-import { ArrowLeft, AlertCircle, ListTodo } from "lucide-react";
+import { AlertCircle, ListTodo } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -70,14 +71,7 @@ const Alternatives = () => {
       <SearchBar />
       
       <div className="container py-6 space-y-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="gap-2"
-        >
-          <ArrowLeft size={18} />
-          Retour
-        </Button>
+        <BackButton fallback="/" showText={true} className="gap-2" size="default" />
 
         {/* Refusal notice */}
         <Card className="border-2 border-destructive/20 bg-destructive/5">

@@ -3,7 +3,8 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bus, Bike, Car, Calculator, MapPin, ExternalLink } from "lucide-react";
+import { Bus, Bike, Car, Calculator, MapPin, ExternalLink } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 const EcoMobilite = () => {
   const navigate = useNavigate();
@@ -71,14 +72,7 @@ const EcoMobilite = () => {
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b bg-card">
         <div className="container flex items-center gap-4 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            aria-label="Retour à l'accueil"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+          <BackButton fallback="/" />
           <div>
             <h1 className="text-xl font-semibold">Éco-Mobilité</h1>
           </div>

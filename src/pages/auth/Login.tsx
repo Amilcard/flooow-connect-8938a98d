@@ -49,15 +49,7 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 hover:bg-primary/10 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </Button>
+        <BackButton fallback="/" variant="ghost" size="sm" showText className="gap-2 hover:bg-primary/10 transition-colors" />
       </div>
 
       {/* Main Content */}
