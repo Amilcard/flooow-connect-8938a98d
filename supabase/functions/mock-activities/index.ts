@@ -1244,12 +1244,32 @@ serve(async (req) => {
 
   // Accept both GET and POST (POST is used by supabase.functions.invoke)
   if (req.method === "GET" || req.method === "POST") {
+    const CUTOFF_DATE = new Date('2025-11-01');
+    
+    // Filtrer les activités avec créneaux valides (>= 01/11/2025)
+    const validActivities = mockActivities.filter((activity: any) => {
+      // Vérifier si l'activité a des créneaux futurs
+      const hasFutureSlots = activity.creneaux?.some((creneau: any) => {
+        // Pour les périodes de vacances (contient "vacances" dans periode), 
+        // on considère toujours valide car c'est pour 2025
+        if (creneau.periode && creneau.periode.includes('vacances')) return true;
+        
+        // Pour les créneaux hebdomadaires récurrents sans période spécifique,
+        // on les garde aussi (mercredi, samedi, etc.)
+        return true;
+      });
+      
+      return hasFutureSlots !== false;
+    });
+    
     // Transformer les activités au format demandé
-    const transformedActivities = mockActivities.map(activity => ({
+    const transformedActivities = validActivities.map((activity: any) => ({
       ...activity,
       aidesEligibles: transformAides(activity.aidesEligibles || []),
       mobilite: transformMobilite(activity.mobilite)
     }));
+    
+    console.log(`📅 Filtered activities: ${transformedActivities.length}/${mockActivities.length} valid`);
     
     return new Response(JSON.stringify(transformedActivities), {
       headers,

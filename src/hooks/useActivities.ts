@@ -60,6 +60,9 @@ export const useActivities = (filters?: ActivityFilters) => {
   return useQuery({
     queryKey: ["activities", filters],
     queryFn: async () => {
+      // Date limite : 01/11/2025
+      const CUTOFF_DATE = '2025-11-01';
+      
       let query = supabase
         .from("activities")
         .select(`
@@ -67,9 +70,11 @@ export const useActivities = (filters?: ActivityFilters) => {
           images, accessibility_checklist, accepts_aid_types,
           capacity_policy, covoiturage_enabled, structure_id, period_type,
           vacation_periods,
-          structures:structure_id (name, address)
+          structures:structure_id (name, address),
+          availability_slots!inner(start)
         `)
-        .eq("published", true);
+        .eq("published", true)
+        .gte("availability_slots.start", CUTOFF_DATE);
 
       if (filters?.category) {
         query = query.contains("categories", [filters.category]);
