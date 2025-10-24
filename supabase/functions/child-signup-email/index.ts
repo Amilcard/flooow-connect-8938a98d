@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
-import { Resend } from 'npm:resend@4.0.0';
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -159,16 +158,24 @@ serve(async (req) => {
 </html>
     `;
 
-    // Send email
-    const { error: emailError } = await resend.emails.send({
-      from: 'InKlusif <onboarding@resend.dev>',
-      to: [parentEmail],
-      subject: `${childName} souhaite s'inscrire sur InKlusif`,
-      html,
+    // Send email via Resend API
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: 'InKlusif <onboarding@resend.dev>',
+        to: [parentEmail],
+        subject: `${childName} souhaite s'inscrire sur InKlusif`,
+        html,
+      }),
     });
 
-    if (emailError) {
-      console.error('Error sending email:', emailError);
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.json();
+      console.error('Error sending email:', errorData);
       return new Response(
         JSON.stringify({ error: 'Erreur lors de l\'envoi de l\'email' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
