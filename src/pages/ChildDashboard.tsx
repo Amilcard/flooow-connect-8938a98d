@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Calendar, CheckCircle, Clock, Trophy, Sparkles } from "lucide-react";
 import { LoadingState } from "@/components/LoadingState";
+import { useSmartBack } from "@/hooks/useSmartBack";
 
 const ChildDashboard = () => {
   const navigate = useNavigate();
+  const handleBack = useSmartBack("/");
   const [showCelebration, setShowCelebration] = useState(false);
 
   // Fetch child's bookings

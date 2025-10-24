@@ -12,6 +12,7 @@ import { ArrowLeft, User, Calendar, MapPin, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useBookingDraft } from "@/hooks/useBookingDraft";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useSmartBack } from "@/hooks/useSmartBack";
 
 const Booking = () => {
   const { id } = useParams();
@@ -19,6 +20,7 @@ const Booking = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const slotId = searchParams.get("slotId");
+  const handleBack = useSmartBack(id ? `/activity/${id}` : "/activities");
 
   const { draft, saveDraft, clearDraft, hasDraft } = useBookingDraft(id!, slotId!);
   const [selectedChildId, setSelectedChildId] = useState<string>(draft?.childId || "");

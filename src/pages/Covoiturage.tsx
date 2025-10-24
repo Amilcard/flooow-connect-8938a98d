@@ -10,12 +10,14 @@ import { ArrowLeft, Car, MapPin, Users, Clock, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useSmartBack } from "@/hooks/useSmartBack";
 
 const Covoiturage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activityId = searchParams.get("activityId");
   const slotId = searchParams.get("slotId");
+  const handleBack = useSmartBack(activityId ? `/activity/${activityId}` : "/activities");
 
   // Fetch activity details
   const { data: activity, isLoading: activityLoading } = useQuery({

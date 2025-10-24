@@ -18,12 +18,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSmartBack } from "@/hooks/useSmartBack";
 
 const ValidationParentale = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const handleBack = useSmartBack("/mes-sessions");
   
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");

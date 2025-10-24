@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useSmartBack } from "@/hooks/useSmartBack";
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const handleBack = useSmartBack("/mon-compte");
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({

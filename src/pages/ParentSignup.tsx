@@ -9,11 +9,13 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useSmartBack } from "@/hooks/useSmartBack";
 
 const ParentSignup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+  const handleBack = useSmartBack("/");
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
