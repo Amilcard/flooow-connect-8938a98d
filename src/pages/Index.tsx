@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
@@ -16,10 +16,13 @@ import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
 import Footer from "@/components/Footer";
 import FAQSection from "@/components/FAQSection";
+import { AccessibilityFilters, AccessibilityFilter } from "@/components/AccessibilityFilters";
+import type { Activity } from "@/types/domain";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [accessibilityFilters, setAccessibilityFilters] = useState<AccessibilityFilter[]>([]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -64,6 +67,28 @@ const Index = () => {
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(8);
 
   const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingMocks;
+
+  // Filtrage des activités selon les critères d'accessibilité
+  const filteredMockActivities = useMemo(() => {
+    if (accessibilityFilters.length === 0) return mockActivities;
+
+    return mockActivities.filter((activity: Activity) => {
+      if (!activity.accessibility) return false;
+
+      return accessibilityFilters.every(filter => {
+        switch (filter) {
+          case 'motor':
+            return activity.accessibility?.wheelchair || activity.accessibility?.mobility_impaired;
+          case 'cognitive':
+            return activity.accessibility?.hearing_impaired || activity.accessibility?.visual_impaired;
+          case 'developmental':
+            return activity.accessibility?.wheelchair || activity.accessibility?.mobility_impaired;
+          default:
+            return false;
+        }
+      });
+    });
+  }, [mockActivities, accessibilityFilters]);
 
 
   if (errorNearby) {
@@ -114,6 +139,17 @@ const Index = () => {
           <>
             <InfoBlocks />
 
+            {/* Filtres d'accessibilité discrets */}
+            {mockActivities.length > 0 && (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">Accessibilité :</span>
+                <AccessibilityFilters 
+                  selectedFilters={accessibilityFilters}
+                  onFilterChange={setAccessibilityFilters}
+                />
+              </div>
+            )}
+
             <ActivitySection
               title="Activités à proximité"
               activities={nearbyActivities}
@@ -137,7 +173,7 @@ const Index = () => {
 
             <ActivitySection
               title="Activités Saint-Étienne (Mocks)"
-              activities={mockActivities}
+              activities={filteredMockActivities}
               onActivityClick={(id) => console.log("Mock activity clicked:", id)}
             />
           </>
