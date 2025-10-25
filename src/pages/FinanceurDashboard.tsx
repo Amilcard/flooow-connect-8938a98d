@@ -8,18 +8,16 @@ import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
 
 export default function FinanceurDashboard() {
-  // Fetch aid usage data
+  // Fetch aid usage data (MOCK for demo)
   const { data: aidUsage, isLoading } = useQuery({
-    queryKey: ['financeur-dashboard'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_dashboard_financeur_aid_usage')
-        .select('*')
-        .order('total_simulations', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    }
+    queryKey: ['financeur-dashboard-mock'],
+    queryFn: async () => [
+      { aid_id: "1", aid_name: "Pass'Sport", territory_level: "National", total_simulations: 142, unique_users: 98, total_children_benefiting: 156, avg_aid_amount: 50, total_simulated_amount: 7100 },
+      { aid_id: "2", aid_name: "CAF/VACAF", territory_level: "Départemental", total_simulations: 98, unique_users: 67, total_children_benefiting: 124, avg_aid_amount: 120, total_simulated_amount: 11760 },
+      { aid_id: "3", aid_name: "Bourse Collectivité", territory_level: "Local", total_simulations: 87, unique_users: 54, total_children_benefiting: 98, avg_aid_amount: 80, total_simulated_amount: 6960 },
+      { aid_id: "4", aid_name: "Pass'Culture", territory_level: "National", total_simulations: 56, unique_users: 42, total_children_benefiting: 67, avg_aid_amount: 30, total_simulated_amount: 1680 },
+      { aid_id: "5", aid_name: "ANCV", territory_level: "National", total_simulations: 29, unique_users: 18, total_children_benefiting: 34, avg_aid_amount: 150, total_simulated_amount: 4350 }
+    ]
   });
 
   if (isLoading) {

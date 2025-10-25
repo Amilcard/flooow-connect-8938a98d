@@ -13,80 +13,74 @@ import { Badge } from "@/components/ui/badge";
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 export default function CollectiviteDashboard() {
-  // Fetch KPIs from edge function
+  // Fetch KPIs from edge function (mock version for demo)
   const { data: kpisData, isLoading: loadingKpis } = useQuery({
-    queryKey: ['dashboard-kpis'],
+    queryKey: ['dashboard-kpis-mock'],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('dashboard-kpis');
+      const { data, error } = await supabase.functions.invoke('dashboard-kpis-mock');
       if (error) throw error;
       return data;
     }
   });
 
-  // Fetch overview data
+  // Fetch overview data (MOCK for demo)
   const { data: overview, isLoading: loadingOverview } = useQuery({
-    queryKey: ['collectivite-overview'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_dashboard_collectivite_overview')
-        .select('*')
-        .single();
-      
-      if (error) throw error;
-      return data;
-    }
+    queryKey: ['collectivite-overview-mock'],
+    queryFn: async () => ({
+      territory_name: "Saint-Étienne Métropole",
+      territory_type: "EPCI",
+      total_activities: 42,
+      published_activities: 40,
+      unique_children_registered: 289,
+      total_revenue_potential: 48650,
+      total_aid_simulations: 412
+    })
   });
 
-  // Fetch activities analysis
+  // Fetch activities analysis (MOCK for demo)
   const { data: activitiesAnalysis, isLoading: loadingActivities } = useQuery({
-    queryKey: ['collectivite-activities-analysis'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_collectivite_activities_analysis' as any)
-        .select('*');
-      
-      if (error) throw error;
-      return data as any[];
-    }
+    queryKey: ['collectivite-activities-analysis-mock'],
+    queryFn: async () => [
+      { category: "Sport", structure_name: "AS Saint-Étienne", total_activities: 12, acceptance_rate_pct: 87 },
+      { category: "Culture", structure_name: "Conservatoire", total_activities: 8, acceptance_rate_pct: 92 },
+      { category: "Loisirs", structure_name: "MJC Beaulieu", total_activities: 10, acceptance_rate_pct: 78 },
+      { category: "Scolarité", structure_name: "Centre Soutien", total_activities: 7, acceptance_rate_pct: 95 },
+      { category: "Vacances", structure_name: "Centre Aéré", total_activities: 5, acceptance_rate_pct: 81 }
+    ]
   });
 
-  // Fetch aids by QF
+  // Fetch aids by QF (MOCK for demo)
   const { data: aidsByQF, isLoading: loadingAidsByQF } = useQuery({
-    queryKey: ['collectivite-aids-by-qf'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_collectivite_aids_by_qf' as any)
-        .select('*');
-      
-      if (error) throw error;
-      return data as any[];
-    }
+    queryKey: ['collectivite-aids-by-qf-mock'],
+    queryFn: async () => [
+      { qf_range: "0-500", total_simulations: 142, conversion_rate_pct: 68 },
+      { qf_range: "501-1000", total_simulations: 98, conversion_rate_pct: 72 },
+      { qf_range: "1001-1500", total_simulations: 67, conversion_rate_pct: 65 },
+      { qf_range: "1501-2000", total_simulations: 45, conversion_rate_pct: 58 },
+      { qf_range: ">2000", total_simulations: 28, conversion_rate_pct: 45 }
+    ]
   });
 
-  // Fetch transport analysis
+  // Fetch transport analysis (MOCK for demo)
   const { data: transportAnalysis, isLoading: loadingTransport } = useQuery({
-    queryKey: ['collectivite-transport-analysis'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_collectivite_transport_analysis' as any)
-        .select('*');
-      
-      if (error) throw error;
-      return data as any[];
-    }
+    queryKey: ['collectivite-transport-analysis-mock'],
+    queryFn: async () => [
+      { transport_mode: "bus", total_bookings: 142, co2_saved_kg: 852 },
+      { transport_mode: "bike", total_bookings: 67, co2_saved_kg: 201 },
+      { transport_mode: "covoiturage", total_bookings: 28, co2_saved_kg: 168 },
+      { transport_mode: "walking", total_bookings: 12, co2_saved_kg: 36 }
+    ]
   });
 
-  // Fetch demographics
+  // Fetch demographics (MOCK for demo)
   const { data: demographics, isLoading: loadingDemographics } = useQuery({
-    queryKey: ['collectivite-demographics'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_collectivite_demographics' as any)
-        .select('*');
-      
-      if (error) throw error;
-      return data as any[];
-    }
+    queryKey: ['collectivite-demographics-mock'],
+    queryFn: async () => [
+      { income_category: "Faibles revenus", marital_status: "parent_solo", total_users: 78, total_children: 142, avg_qf: 420 },
+      { income_category: "Revenus modestes", marital_status: "couple", total_users: 112, total_children: 198, avg_qf: 890 },
+      { income_category: "Revenus moyens", marital_status: "couple", total_users: 67, total_children: 123, avg_qf: 1450 },
+      { income_category: "Revenus élevés", marital_status: "couple", total_users: 32, total_children: 58, avg_qf: 2100 }
+    ]
   });
 
   if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis) {
