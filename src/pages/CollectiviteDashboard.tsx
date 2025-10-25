@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3, Accessibility, MapPin, HeartPulse } from "lucide-react";
+import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3, Accessibility, MapPin, HeartPulse, GraduationCap, Heart } from "lucide-react";
 import { LoadingState } from "@/components/LoadingState";
 import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -83,7 +83,49 @@ export default function CollectiviteDashboard() {
     ]
   });
 
-  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis) {
+  // THEME 1: Réussite éducative / Décrochage (MOCK for demo)
+  const { data: educationData, isLoading: loadingEducation } = useQuery({
+    queryKey: ['collectivite-education-mock'],
+    queryFn: async () => ({
+      total_demandes_scolaire: 87,
+      demandes_qpv: 52,
+      demandes_hors_qpv: 35,
+      places_trouvees: 68,
+      sans_solution: 19,
+      abandon_reasons: [
+        { reason: "Pas de place disponible", count: 8 },
+        { reason: "Trop loin du domicile", count: 5 },
+        { reason: "Horaires incompatibles", count: 4 },
+        { reason: "Paperasse administrative", count: 2 }
+      ]
+    })
+  });
+
+  // THEME 2: Santé / Bien-être (MOCK for demo)
+  const { data: healthData, isLoading: loadingHealth } = useQuery({
+    queryKey: ['collectivite-health-mock'],
+    queryFn: async () => ({
+      total_demandes_sante: 124,
+      motivations: [
+        { motivation: "Bouger plus / santé", count: 58, percentage: 46.8 },
+        { motivation: "Détente / stress / anxiété", count: 42, percentage: 33.9 },
+        { motivation: "Socialiser / sortir isolement", count: 24, percentage: 19.3 }
+      ],
+      places_trouvees: 98,
+      sans_solution: 26,
+      repartition_age: [
+        { age_range: "6-10 ans", count: 34 },
+        { age_range: "11-14 ans", count: 48 },
+        { age_range: "15-17 ans", count: 42 }
+      ],
+      repartition_qpv: {
+        qpv: 48,
+        hors_qpv: 76
+      }
+    })
+  });
+
+  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis || loadingEducation || loadingHealth) {
     return <LoadingState />;
   }
 
@@ -284,7 +326,7 @@ export default function CollectiviteDashboard() {
 
           {/* Analyses détaillées par thématique */}
           <Tabs defaultValue="activities" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
               <TabsTrigger value="activities">
                 <Activity className="h-4 w-4 mr-2" />
                 Activités
@@ -300,6 +342,14 @@ export default function CollectiviteDashboard() {
               <TabsTrigger value="demographics">
                 <Users className="h-4 w-4 mr-2" />
                 Démographie
+              </TabsTrigger>
+              <TabsTrigger value="education">
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Réussite éduc.
+              </TabsTrigger>
+              <TabsTrigger value="health">
+                <Heart className="h-4 w-4 mr-2" />
+                Santé/Prévention
               </TabsTrigger>
             </TabsList>
 
@@ -553,6 +603,172 @@ export default function CollectiviteDashboard() {
                         ))}
                       </TableBody>
                     </Table>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 5: RÉUSSITE ÉDUCATIVE / DÉCROCHAGE */}
+            <TabsContent value="education" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* KPIs Réussite éducative */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5 text-purple-600" />
+                      Accompagnement scolaire
+                    </CardTitle>
+                    <CardDescription>Lutte contre le décrochage</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Demandes totales</p>
+                        <p className="text-2xl font-bold">{educationData?.total_demandes_scolaire}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Places trouvées</p>
+                        <p className="text-2xl font-bold text-green-600">{educationData?.places_trouvees}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Sans solution</p>
+                        <p className="text-2xl font-bold text-orange-600">{educationData?.sans_solution}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Taux de succès</p>
+                        <p className="text-2xl font-bold">
+                          {educationData ? ((educationData.places_trouvees / educationData.total_demandes_scolaire) * 100).toFixed(0) : 0}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <p className="text-sm font-medium mb-2">Répartition QPV</p>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">QPV</p>
+                          <p className="text-xl font-bold text-primary">{educationData?.demandes_qpv}</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Hors QPV</p>
+                          <p className="text-xl font-bold">{educationData?.demandes_hors_qpv}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Raisons d'abandon */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Raisons d'abandon</CardTitle>
+                    <CardDescription>Freins identifiés</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Raison</TableHead>
+                          <TableHead className="text-right">Nombre</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {educationData?.abandon_reasons.map((item, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium">{item.reason}</TableCell>
+                            <TableCell className="text-right">
+                              <span className="font-semibold text-orange-600">{item.count}</span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                      <p className="text-xs font-medium text-purple-900 dark:text-purple-100">
+                        💡 Besoin d'accompagnement scolaire identifié là où l'offre manque (QPV prioritaire)
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 6: SANTÉ / BIEN-ÊTRE */}
+            <TabsContent value="health" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* KPIs Santé */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-pink-600" />
+                      Prévention santé / bien-être
+                    </CardTitle>
+                    <CardDescription>Activités physiques adaptées</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Demandes totales</p>
+                        <p className="text-2xl font-bold">{healthData?.total_demandes_sante}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Places trouvées</p>
+                        <p className="text-2xl font-bold text-green-600">{healthData?.places_trouvees}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Sans solution</p>
+                        <p className="text-2xl font-bold text-orange-600">{healthData?.sans_solution}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Taux de succès</p>
+                        <p className="text-2xl font-bold">
+                          {healthData ? ((healthData.places_trouvees / healthData.total_demandes_sante) * 100).toFixed(0) : 0}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <p className="text-sm font-medium mb-2">Répartition QPV</p>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">QPV</p>
+                          <p className="text-xl font-bold text-primary">{healthData?.repartition_qpv.qpv}</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Hors QPV</p>
+                          <p className="text-xl font-bold">{healthData?.repartition_qpv.hors_qpv}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Motivations santé */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Motivations des familles</CardTitle>
+                    <CardDescription>Pourquoi choisir ces activités ?</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {healthData?.motivations.map((item, idx) => (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="font-medium">{item.motivation}</span>
+                            <span className="text-muted-foreground">{item.count} ({item.percentage}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-pink-600 h-2 rounded-full"
+                              style={{ width: `${item.percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg">
+                      <p className="text-xs font-medium text-pink-900 dark:text-pink-100">
+                        💡 Prévention santé mentale et physique des jeunes prioritaire
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
