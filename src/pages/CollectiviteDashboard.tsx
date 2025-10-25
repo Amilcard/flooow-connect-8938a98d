@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3, Accessibility, MapPin, HeartPulse, GraduationCap, Heart } from "lucide-react";
+import { Users, Activity, DollarSign, TrendingUp, Building2, CheckCircle, Bus, Leaf, BarChart3, Accessibility, MapPin, HeartPulse, GraduationCap, Heart, Shield, Users2, Navigation } from "lucide-react";
 import { LoadingState } from "@/components/LoadingState";
 import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -125,7 +125,90 @@ export default function CollectiviteDashboard() {
     })
   });
 
-  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis || loadingEducation || loadingHealth) {
+  // THEME 3: Tranquillité publique / Temps sensibles (MOCK for demo)
+  const { data: safetyData, isLoading: loadingSafety } = useQuery({
+    queryKey: ['collectivite-safety-mock'],
+    queryFn: async () => ({
+      jeunes_11_17_creneaux_sensibles: 156,
+      repartition_creneaux: [
+        { creneau: "Soirs (18h-21h)", count: 67, qpv: 42, hors_qpv: 25 },
+        { creneau: "Week-ends", count: 54, qpv: 31, hors_qpv: 23 },
+        { creneau: "Vacances", count: 35, qpv: 18, hors_qpv: 17 }
+      ],
+      taux_saturation_qpv: 89,
+      taux_saturation_hors_qpv: 62,
+      places_disponibles_total: 178,
+      places_occupees: 156
+    })
+  });
+
+  // THEME 4: Égalité filles-garçons (MOCK for demo)
+  const { data: genderData, isLoading: loadingGender } = useQuery({
+    queryKey: ['collectivite-gender-mock'],
+    queryFn: async () => ({
+      acces_sport: {
+        filles_demandes: 89,
+        filles_places: 72,
+        garcons_demandes: 134,
+        garcons_places: 118
+      },
+      acces_culture: {
+        filles_demandes: 76,
+        filles_places: 68,
+        garcons_demandes: 54,
+        garcons_places: 48
+      },
+      focus_qpv_filles: {
+        demandes: 52,
+        places_trouvees: 38,
+        sans_solution: 14
+      },
+      taux_acces_global: {
+        filles: 73.2,
+        garcons: 82.5
+      }
+    })
+  });
+
+  // THEME 5: Mobilité / Transport (MOCK for demo)
+  const { data: mobilityData, isLoading: loadingMobility } = useQuery({
+    queryKey: ['collectivite-mobility-mock'],
+    queryFn: async () => ({
+      abandons_transport_total: 34,
+      abandons_qpv: 23,
+      abandons_hors_qpv: 11,
+      raisons_abandon: [
+        { reason: "Trop loin / pas de transport", count: 18 },
+        { reason: "Pas d'accompagnement possible", count: 10 },
+        { reason: "Horaires transport incompatibles", count: 6 }
+      ],
+      temps_moyen_trajet: {
+        qpv: 28,
+        hors_qpv: 15,
+        global: 21
+      }
+    })
+  });
+
+  // THEME 6: Handicap / Accessibilité (MOCK for demo)
+  const { data: accessibilityData, isLoading: loadingAccessibility } = useQuery({
+    queryKey: ['collectivite-accessibility-mock'],
+    queryFn: async () => ({
+      enfants_besoins_specifiques: 43,
+      repartition_besoins: [
+        { type: "Moteur", count: 12 },
+        { type: "TSA / Autisme", count: 15 },
+        { type: "TDAH / TDA", count: 10 },
+        { type: "Autre accompagnement", count: 6 }
+      ],
+      propositions_accessibles_trouvees: 28,
+      sans_solution: 15,
+      abandons_accessibilite: 9,
+      taux_inclusion: 65.1
+    })
+  });
+
+  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis || loadingEducation || loadingHealth || loadingSafety || loadingGender || loadingMobility || loadingAccessibility) {
     return <LoadingState />;
   }
 
@@ -326,30 +409,46 @@ export default function CollectiviteDashboard() {
 
           {/* Analyses détaillées par thématique */}
           <Tabs defaultValue="activities" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-1">
               <TabsTrigger value="activities">
-                <Activity className="h-4 w-4 mr-2" />
+                <Activity className="h-4 w-4 mr-1" />
                 Activités
               </TabsTrigger>
               <TabsTrigger value="aids">
-                <DollarSign className="h-4 w-4 mr-2" />
+                <DollarSign className="h-4 w-4 mr-1" />
                 Aides
               </TabsTrigger>
               <TabsTrigger value="transport">
-                <Bus className="h-4 w-4 mr-2" />
+                <Bus className="h-4 w-4 mr-1" />
                 Éco-mobilité
               </TabsTrigger>
               <TabsTrigger value="demographics">
-                <Users className="h-4 w-4 mr-2" />
+                <Users className="h-4 w-4 mr-1" />
                 Démographie
               </TabsTrigger>
               <TabsTrigger value="education">
-                <GraduationCap className="h-4 w-4 mr-2" />
+                <GraduationCap className="h-4 w-4 mr-1" />
                 Réussite éduc.
               </TabsTrigger>
               <TabsTrigger value="health">
-                <Heart className="h-4 w-4 mr-2" />
-                Santé/Prévention
+                <Heart className="h-4 w-4 mr-1" />
+                Santé
+              </TabsTrigger>
+              <TabsTrigger value="safety">
+                <Shield className="h-4 w-4 mr-1" />
+                Tranquillité
+              </TabsTrigger>
+              <TabsTrigger value="gender">
+                <Users2 className="h-4 w-4 mr-1" />
+                Égalité F/G
+              </TabsTrigger>
+              <TabsTrigger value="mobility">
+                <Navigation className="h-4 w-4 mr-1" />
+                Mobilité
+              </TabsTrigger>
+              <TabsTrigger value="accessibility">
+                <Accessibility className="h-4 w-4 mr-1" />
+                Handicap
               </TabsTrigger>
             </TabsList>
 
@@ -767,6 +866,348 @@ export default function CollectiviteDashboard() {
                     <div className="mt-4 p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg">
                       <p className="text-xs font-medium text-pink-900 dark:text-pink-100">
                         💡 Prévention santé mentale et physique des jeunes prioritaire
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 7: TRANQUILLITÉ PUBLIQUE / TEMPS SENSIBLES */}
+            <TabsContent value="safety" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* KPIs Tranquillité publique */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="h-5 w-5 text-blue-600" />
+                      Occupation jeunes 11-17 ans
+                    </CardTitle>
+                    <CardDescription>Créneaux sensibles encadrés</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Jeunes occupés</p>
+                        <p className="text-3xl font-bold text-blue-600">{safetyData?.jeunes_11_17_creneaux_sensibles}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Taux occupation</p>
+                        <p className="text-3xl font-bold">
+                          {safetyData ? ((safetyData.places_occupees / safetyData.places_disponibles_total) * 100).toFixed(0) : 0}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t space-y-2">
+                      <p className="text-sm font-medium mb-2">Saturation par zone</p>
+                      <div className="space-y-2">
+                        <div>
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>QPV</span>
+                            <span className="font-semibold text-orange-600">{safetyData?.taux_saturation_qpv}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div className="bg-orange-600 h-2 rounded-full" style={{ width: `${safetyData?.taux_saturation_qpv}%` }} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>Hors QPV</span>
+                            <span className="font-semibold text-green-600">{safetyData?.taux_saturation_hors_qpv}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div className="bg-green-600 h-2 rounded-full" style={{ width: `${safetyData?.taux_saturation_hors_qpv}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Répartition créneaux */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Répartition par créneau</CardTitle>
+                    <CardDescription>Soirs, week-ends, vacances</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Créneau</TableHead>
+                          <TableHead className="text-right">QPV</TableHead>
+                          <TableHead className="text-right">Hors QPV</TableHead>
+                          <TableHead className="text-right">Total</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {safetyData?.repartition_creneaux.map((item, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-medium">{item.creneau}</TableCell>
+                            <TableCell className="text-right text-primary font-semibold">{item.qpv}</TableCell>
+                            <TableCell className="text-right">{item.hors_qpv}</TableCell>
+                            <TableCell className="text-right font-bold">{item.count}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <p className="text-xs font-medium text-blue-900 dark:text-blue-100">
+                        💡 Occupation encadrée des jeunes sur les temps où ça chauffe
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 8: ÉGALITÉ FILLES-GARÇONS */}
+            <TabsContent value="gender" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Accès Sport F/G */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users2 className="h-5 w-5 text-purple-600" />
+                      Accès aux activités sportives
+                    </CardTitle>
+                    <CardDescription>Filles vs Garçons</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-purple-600">Filles</p>
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Demandes</p>
+                          <p className="text-2xl font-bold">{genderData?.acces_sport.filles_demandes}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Places obtenues</p>
+                          <p className="text-xl font-bold text-green-600">{genderData?.acces_sport.filles_places}</p>
+                        </div>
+                        <p className="text-xs font-semibold">
+                          Taux: {genderData ? ((genderData.acces_sport.filles_places / genderData.acces_sport.filles_demandes) * 100).toFixed(0) : 0}%
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-blue-600">Garçons</p>
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Demandes</p>
+                          <p className="text-2xl font-bold">{genderData?.acces_sport.garcons_demandes}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-muted-foreground">Places obtenues</p>
+                          <p className="text-xl font-bold text-green-600">{genderData?.acces_sport.garcons_places}</p>
+                        </div>
+                        <p className="text-xs font-semibold">
+                          Taux: {genderData ? ((genderData.acces_sport.garcons_places / genderData.acces_sport.garcons_demandes) * 100).toFixed(0) : 0}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <p className="text-sm font-medium mb-2">Taux accès global</p>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Filles</p>
+                          <p className="text-xl font-bold text-purple-600">{genderData?.taux_acces_global.filles}%</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Garçons</p>
+                          <p className="text-xl font-bold text-blue-600">{genderData?.taux_acces_global.garcons}%</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Écart</p>
+                          <p className="text-xl font-bold text-orange-600">
+                            {genderData ? Math.abs(genderData.taux_acces_global.filles - genderData.taux_acces_global.garcons).toFixed(1) : 0}%
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Focus QPV Filles */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Focus Filles en QPV</CardTitle>
+                    <CardDescription>Accès prioritaire</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Demandes</p>
+                        <p className="text-2xl font-bold">{genderData?.focus_qpv_filles.demandes}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Places</p>
+                        <p className="text-2xl font-bold text-green-600">{genderData?.focus_qpv_filles.places_trouvees}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Sans solution</p>
+                        <p className="text-2xl font-bold text-orange-600">{genderData?.focus_qpv_filles.sans_solution}</p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-medium mb-2">Accès Culture (F vs G)</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Filles culture</p>
+                          <p className="font-semibold">{genderData?.acces_culture.filles_places} / {genderData?.acces_culture.filles_demandes}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Garçons culture</p>
+                          <p className="font-semibold">{genderData?.acces_culture.garcons_places} / {genderData?.acces_culture.garcons_demandes}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                      <p className="text-xs font-medium text-purple-900 dark:text-purple-100">
+                        💡 Accès des filles du quartier aux activités encadrées
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 9: MOBILITÉ / TRANSPORT */}
+            <TabsContent value="mobility" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* KPIs Mobilité */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Navigation className="h-5 w-5 text-indigo-600" />
+                      Freins mobilité / transport
+                    </CardTitle>
+                    <CardDescription>Abandons liés au transport</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Abandons total</p>
+                        <p className="text-3xl font-bold text-orange-600">{mobilityData?.abandons_transport_total}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Temps trajet moyen</p>
+                        <p className="text-3xl font-bold">{mobilityData?.temps_moyen_trajet.global} min</p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <p className="text-sm font-medium mb-2">Répartition par zone</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Abandons QPV</p>
+                          <p className="text-2xl font-bold text-primary">{mobilityData?.abandons_qpv}</p>
+                          <p className="text-xs">Trajet: {mobilityData?.temps_moyen_trajet.qpv} min</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Abandons hors QPV</p>
+                          <p className="text-2xl font-bold">{mobilityData?.abandons_hors_qpv}</p>
+                          <p className="text-xs">Trajet: {mobilityData?.temps_moyen_trajet.hors_qpv} min</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Raisons abandon mobilité */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Raisons d'abandon</CardTitle>
+                    <CardDescription>Pourquoi les familles renoncent</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {mobilityData?.raisons_abandon.map((item, idx) => (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="font-medium">{item.reason}</span>
+                            <span className="text-muted-foreground">{item.count}</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-indigo-600 h-2 rounded-full"
+                              style={{ width: `${(item.count / (mobilityData?.abandons_transport_total || 1)) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                      <p className="text-xs font-medium text-indigo-900 dark:text-indigo-100">
+                        💡 Manque solutions mobilité / besoin navette / activités dans le quartier
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* TAB 10: HANDICAP / ACCESSIBILITÉ */}
+            <TabsContent value="accessibility" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* KPIs Handicap */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Accessibility className="h-5 w-5 text-teal-600" />
+                      Inclusion handicap
+                    </CardTitle>
+                    <CardDescription>Besoins spécifiques</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Enfants concernés</p>
+                        <p className="text-3xl font-bold">{accessibilityData?.enfants_besoins_specifiques}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Taux inclusion</p>
+                        <p className="text-3xl font-bold text-teal-600">{accessibilityData?.taux_inclusion}%</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Solutions trouvées</p>
+                        <p className="text-2xl font-bold text-green-600">{accessibilityData?.propositions_accessibles_trouvees}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Sans solution</p>
+                        <p className="text-2xl font-bold text-orange-600">{accessibilityData?.sans_solution}</p>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <p className="text-sm text-muted-foreground">Abandons accessibilité</p>
+                      <p className="text-xl font-bold text-red-600">{accessibilityData?.abandons_accessibilite}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Répartition besoins */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Répartition par besoin</CardTitle>
+                    <CardDescription>Types de besoins spécifiques</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {accessibilityData?.repartition_besoins.map((item, idx) => (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="font-medium">{item.type}</span>
+                            <span className="text-muted-foreground">{item.count}</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-teal-600 h-2 rounded-full"
+                              style={{ width: `${(item.count / (accessibilityData?.enfants_besoins_specifiques || 1)) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg">
+                      <p className="text-xs font-medium text-teal-900 dark:text-teal-100">
+                        💡 Inclusion handicap enfants/adolescents - Cartographie zones sans offre adaptée
                       </p>
                     </div>
                   </CardContent>
