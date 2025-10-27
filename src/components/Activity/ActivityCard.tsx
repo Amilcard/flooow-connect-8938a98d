@@ -27,6 +27,12 @@ interface ActivityCardProps {
   structureAddress?: string;
   estimatedAidAmount?: number;
   onRequestClick?: () => void;
+  // Nouveaux champs pour 10 axes
+  isHealthFocused?: boolean;
+  isApa?: boolean;
+  isInsertionPro?: boolean;
+  insertionType?: string;
+  complexityScore?: number;
 }
 
 const getCategoryImage = (category: string): string => {
@@ -55,6 +61,11 @@ export const ActivityCard = ({
   structureAddress,
   estimatedAidAmount,
   onRequestClick,
+  isHealthFocused = false,
+  isApa = false,
+  isInsertionPro = false,
+  insertionType,
+  complexityScore,
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
   const displayImage = image || fallbackImage;
@@ -78,16 +89,16 @@ export const ActivityCard = ({
         />
         
         {/* BADGES OVERLAY */}
-        <div className="absolute top-2 left-2 flex flex-wrap gap-1.5">
-          <Badge 
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
+          <Badge
             className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
             aria-label={`Catégorie: ${category}`}
           >
             {category}
           </Badge>
           {periodType && (
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
               aria-label={`Période: ${periodType}`}
             >
@@ -97,12 +108,30 @@ export const ActivityCard = ({
             </Badge>
           )}
           {hasAccessibility && (
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
               aria-label="Accessible PMR"
             >
               <Accessibility size={12} />
+            </Badge>
+          )}
+          {isHealthFocused && (
+            <Badge
+              variant="secondary"
+              className="bg-green-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label="Activité santé/bien-être"
+            >
+              {isApa ? '⚕️ APA' : '💚 Santé'}
+            </Badge>
+          )}
+          {isInsertionPro && (
+            <Badge
+              variant="secondary"
+              className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label={`Insertion professionnelle: ${insertionType || ''}`}
+            >
+              💼 {insertionType === 'BAFA' ? 'BAFA' : insertionType === 'stage_decouverte' ? 'Stage' : 'Insertion pro'}
             </Badge>
           )}
         </div>
@@ -205,10 +234,18 @@ export const ActivityCard = ({
                 Aides dispo
               </Badge>
             )}
+            {complexityScore && complexityScore >= 1 && complexityScore <= 5 && (
+              <div className="flex items-center gap-1 mt-1" title={`Complexité administrative: ${complexityScore}/5`}>
+                <span className="text-[10px] text-muted-foreground">Admin:</span>
+                {[...Array(complexityScore)].map((_, i) => (
+                  <span key={i} className="text-[10px] text-yellow-500">⭐</span>
+                ))}
+              </div>
+            )}
           </div>
 
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="h-8 text-xs px-4"
             onClick={onRequestClick}
             aria-label={`Voir détails de ${title}`}
