@@ -30,12 +30,24 @@ export const AccompagnementRequest = () => {
     setIsRequesting(true);
 
     try {
-      // Mettre à jour le profil
+      // Récupérer le profile_json actuel
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_json')
+        .eq('id', user.id)
+        .single();
+
+      const currentJson = profile?.profile_json as Record<string, any> || {};
+
+      // Mettre à jour le profil avec les infos d'accompagnement dans profile_json
       const { error } = await supabase
         .from('profiles')
         .update({
-          besoin_accompagnement: true,
-          accompagnement_demande_le: new Date().toISOString()
+          profile_json: {
+            ...currentJson,
+            besoin_accompagnement: true,
+            accompagnement_demande_le: new Date().toISOString()
+          }
         })
         .eq('id', user.id);
 
