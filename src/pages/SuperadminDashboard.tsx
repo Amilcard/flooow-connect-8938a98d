@@ -42,33 +42,47 @@ export default function SuperadminDashboard() {
   });
 
   // Fetch global stats
-  const { data: globalStats, isLoading: loadingStats } = useQuery({
+  const { data: globalStats, isLoading: loadingStats, isError: errorStats } = useQuery({
     queryKey: ['global-stats'],
     queryFn: async () => {
-      const { data: kpisData } = await supabase.functions.invoke('dashboard-kpis');
-      
-      const { data: allActivities } = await supabase
-        .from('activities')
-        .select('id, published, price_base');
-      
-      const { data: allStructures } = await supabase
-        .from('structures')
-        .select('id, territory_id');
-      
-      const { data: allUsers } = await supabase
-        .from('profiles')
-        .select('id, territory_id');
+      try {
+        const { data: kpisData } = await supabase.functions.invoke('dashboard-kpis');
+        
+        const { data: allActivities } = await supabase
+          .from('activities')
+          .select('id, published, price_base');
+        
+        const { data: allStructures } = await supabase
+          .from('structures')
+          .select('id, territory_id');
+        
+        const { data: allUsers } = await supabase
+          .from('profiles')
+          .select('id, territory_id');
 
-      return {
-        kpis: kpisData?.kpis || {},
-        totalActivities: allActivities?.length || 0,
-        publishedActivities: allActivities?.filter(a => a.published).length || 0,
-        totalStructures: allStructures?.length || 0,
-        totalUsers: allUsers?.length || 0,
-        territories: territories?.length || 0
-      };
+        return {
+          kpis: kpisData?.kpis || {},
+          totalActivities: allActivities?.length || 0,
+          publishedActivities: allActivities?.filter(a => a.published).length || 0,
+          totalStructures: allStructures?.length || 0,
+          totalUsers: allUsers?.length || 0,
+          territories: territories?.length || 0
+        };
+      } catch (error) {
+        console.error('Error fetching global stats:', error);
+        return {
+          kpis: {},
+          totalActivities: 0,
+          publishedActivities: 0,
+          totalStructures: 0,
+          totalUsers: 0,
+          territories: territories?.length || 0
+        };
+      }
     },
-    enabled: !!territories
+    enabled: !!territories,
+    retry: 1,
+    staleTime: 30000
   });
 
   // Fetch all structures with details
@@ -84,8 +98,10 @@ export default function SuperadminDashboard() {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
-    }
+      return data || [];
+    },
+    retry: 1,
+    staleTime: 30000
   });
 
   // Fetch pending family accounts
@@ -116,8 +132,10 @@ export default function SuperadminDashboard() {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
-    }
+      return data || [];
+    },
+    retry: 1,
+    staleTime: 30000
   });
 
   const handleValidateAccount = async (profileId: string, action: 'approve' | 'reject', reason?: string) => {
@@ -199,7 +217,13 @@ export default function SuperadminDashboard() {
   };
 
   if (loadingStats || loadingStructures || loadingUsers) {
-    return <LoadingState />;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <LoadingState fullScreen />
+        <BottomNavigation />
+      </div>
+    );
   }
 
   return (
