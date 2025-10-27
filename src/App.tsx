@@ -32,6 +32,7 @@ import Support from "./pages/Support";
 import FAQ from "./pages/FAQ";
 import ChildSignup from "./pages/ChildSignup";
 import ChildSelfSignup from "./pages/ChildSelfSignup";
+import ValidateChildSignup from "./pages/ValidateChildSignup";
 import Alternatives from "./pages/Alternatives";
 import Covoiturage from "./pages/Covoiturage";
 import MesSessions from "./pages/MesSessions";
@@ -140,6 +141,7 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/child-signup" element={<ChildSignup />} />
           <Route path="/child-self-signup" element={<ChildSelfSignup />} />
+          <Route path="/validate-child-signup" element={<ValidateChildSignup />} />
           <Route path="/alternatives" element={<Alternatives />} />
           <Route path="/covoiturage" element={<Covoiturage />} />
           <Route path="/mes-sessions" element={<MesSessions />} />

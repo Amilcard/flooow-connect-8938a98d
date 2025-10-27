@@ -31,6 +31,39 @@ serve(async (req) => {
       );
     }
 
+    // Vérifier que le parent existe et est actif
+    const { data: parent, error: parentError } = await supabaseAdmin
+      .from('profiles')
+      .select('id, account_status')
+      .eq('email', parentEmail)
+      .maybeSingle();
+
+    if (parentError) {
+      console.error('Error checking parent:', parentError);
+      return new Response(
+        JSON.stringify({ error: 'Erreur lors de la vérification du compte parent' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!parent) {
+      return new Response(
+        JSON.stringify({
+          error: 'Aucun compte parent trouvé avec cet email. Créez d\'abord un compte parent sur l\'application.'
+        }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (parent.account_status !== 'active') {
+      return new Response(
+        JSON.stringify({
+          error: 'Le compte parent doit être validé par un administrateur avant de pouvoir inscrire un enfant.'
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Check rate limit: max 3 requests per email per day
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: recentRequests, error: countError } = await supabaseAdmin
