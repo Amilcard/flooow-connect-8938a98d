@@ -84,6 +84,7 @@ export type Database = {
         Row: {
           accepts_aid_types: Json | null
           accessibility_checklist: Json | null
+          activity_purpose: string | null
           age_max: number | null
           age_min: number | null
           capacity_policy: Json | null
@@ -96,6 +97,8 @@ export type Database = {
           external_portal_url: string | null
           id: string
           images: string[] | null
+          is_apa: boolean | null
+          is_health_focused: boolean | null
           payment_echelonned: boolean | null
           payment_plans: Json | null
           period_type: string | null
@@ -116,6 +119,7 @@ export type Database = {
         Insert: {
           accepts_aid_types?: Json | null
           accessibility_checklist?: Json | null
+          activity_purpose?: string | null
           age_max?: number | null
           age_min?: number | null
           capacity_policy?: Json | null
@@ -128,6 +132,8 @@ export type Database = {
           external_portal_url?: string | null
           id?: string
           images?: string[] | null
+          is_apa?: boolean | null
+          is_health_focused?: boolean | null
           payment_echelonned?: boolean | null
           payment_plans?: Json | null
           period_type?: string | null
@@ -148,6 +154,7 @@ export type Database = {
         Update: {
           accepts_aid_types?: Json | null
           accessibility_checklist?: Json | null
+          activity_purpose?: string | null
           age_max?: number | null
           age_min?: number | null
           capacity_policy?: Json | null
@@ -160,6 +167,8 @@ export type Database = {
           external_portal_url?: string | null
           id?: string
           images?: string[] | null
+          is_apa?: boolean | null
+          is_health_focused?: boolean | null
           payment_echelonned?: boolean | null
           payment_plans?: Json | null
           period_type?: string | null
@@ -432,6 +441,7 @@ export type Database = {
       }
       bookings: {
         Row: {
+          abandon_raison_financiere: boolean | null
           activity_id: string
           child_id: string
           created_at: string
@@ -442,6 +452,7 @@ export type Database = {
           parent_notified_at: string | null
           reason_code: string | null
           requires_parent_validation: boolean | null
+          reste_a_charge: number | null
           slot_id: string
           status: Database["public"]["Enums"]["booking_status"]
           transport_mode: string | null
@@ -449,6 +460,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          abandon_raison_financiere?: boolean | null
           activity_id: string
           child_id: string
           created_at?: string
@@ -459,6 +471,7 @@ export type Database = {
           parent_notified_at?: string | null
           reason_code?: string | null
           requires_parent_validation?: boolean | null
+          reste_a_charge?: number | null
           slot_id: string
           status?: Database["public"]["Enums"]["booking_status"]
           transport_mode?: string | null
@@ -466,6 +479,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          abandon_raison_financiere?: boolean | null
           activity_id?: string
           child_id?: string
           created_at?: string
@@ -476,6 +490,7 @@ export type Database = {
           parent_notified_at?: string | null
           reason_code?: string | null
           requires_parent_validation?: boolean | null
+          reste_a_charge?: number | null
           slot_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
           transport_mode?: string | null
@@ -778,9 +793,11 @@ export type Database = {
           id: string
           marital_status: string | null
           postal_code: string | null
+          price_blocked: boolean | null
           profile_json: Json | null
           quotient_familial: number | null
           rejection_reason: string | null
+          seuil_prix_max: number | null
           street_address: string | null
           territory_id: string | null
           updated_at: string
@@ -796,9 +813,11 @@ export type Database = {
           id: string
           marital_status?: string | null
           postal_code?: string | null
+          price_blocked?: boolean | null
           profile_json?: Json | null
           quotient_familial?: number | null
           rejection_reason?: string | null
+          seuil_prix_max?: number | null
           street_address?: string | null
           territory_id?: string | null
           updated_at?: string
@@ -814,9 +833,11 @@ export type Database = {
           id?: string
           marital_status?: string | null
           postal_code?: string | null
+          price_blocked?: boolean | null
           profile_json?: Json | null
           quotient_familial?: number | null
           rejection_reason?: string | null
+          seuil_prix_max?: number | null
           street_address?: string | null
           territory_id?: string | null
           updated_at?: string
@@ -1620,6 +1641,16 @@ export type Database = {
           },
         ]
       }
+      v_non_recours_financier: {
+        Row: {
+          familles_bloquees: number | null
+          rac_moyen: number | null
+          reservations_abandonnees_prix: number | null
+          reservations_rac_eleve: number | null
+          seuil_prix_median: number | null
+        }
+        Relationships: []
+      }
       v_profile_completion: {
         Row: {
           completion_message: string | null
@@ -1716,6 +1747,10 @@ export type Database = {
           official_link: string
           territory_level: string
         }[]
+      }
+      calculate_reste_a_charge: {
+        Args: { p_price_base: number; p_simulated_aids: Json }
+        Returns: number
       }
       cleanup_expired_sessions: { Args: never; Returns: number }
       cleanup_expired_sessions_and_tokens: { Args: never; Returns: number }
