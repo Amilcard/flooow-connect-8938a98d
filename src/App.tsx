@@ -43,6 +43,10 @@ import ValidationParentale from "./pages/ValidationParentale";
 import ActivitiesMap from "./pages/ActivitiesMap";
 import ChildDashboard from "./pages/ChildDashboard";
 import DemoDashboard from "./pages/DemoDashboard";
+import DemoParent from "./pages/demo/DemoParent";
+import DemoCollectivite from "./pages/demo/DemoCollectivite";
+import DemoFinanceur from "./pages/demo/DemoFinanceur";
+import DemoStructure from "./pages/demo/DemoStructure";
 import Itineraire from "./pages/Itineraire";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
@@ -124,9 +128,13 @@ const App = () => (
             </RoleProtectedRoute>
           } />
           
-          {/* Demo Dashboard - No auth required */}
+          {/* Demo Dashboards - No auth required - Multiple screens for presentations */}
           <Route path="/demo-dashboard" element={<DemoDashboard />} />
-          
+          <Route path="/demo/parent" element={<DemoParent />} />
+          <Route path="/demo/collectivite" element={<DemoCollectivite />} />
+          <Route path="/demo/financeur" element={<DemoFinanceur />} />
+          <Route path="/demo/structure" element={<DemoStructure />} />
+
           <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
