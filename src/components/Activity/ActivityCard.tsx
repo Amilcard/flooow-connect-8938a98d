@@ -1,4 +1,4 @@
-import { MapPin, Users, Accessibility, Heart, Calendar, Clock } from "lucide-react";
+import { MapPin, Users, Accessibility, Heart, Bus, Bike, Car } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,12 @@ interface ActivityCardProps {
   structureName?: string;
   structureAddress?: string;
   estimatedAidAmount?: number;
+  aidesEligibles?: string[];
+  mobility?: {
+    TC?: string;
+    velo?: boolean;
+    covoit?: boolean;
+  };
   onRequestClick?: () => void;
   // Nouveaux champs pour 10 axes
   isHealthFocused?: boolean;
@@ -60,6 +66,8 @@ export const ActivityCard = ({
   structureName,
   structureAddress,
   estimatedAidAmount,
+  aidesEligibles = [],
+  mobility,
   onRequestClick,
   isHealthFocused = false,
   isApa = false,
@@ -69,10 +77,10 @@ export const ActivityCard = ({
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
   const displayImage = image || fallbackImage;
-  
+
   // Calculate price after aids (simulation)
   const priceAfterAids = price > 100 ? Math.round(price * 0.7) : price;
-  const hasAids = priceAfterAids < price;
+  const hasAids = priceAfterAids < price || aidesEligibles.length > 0;
   
   return (
     <Card className="group overflow-hidden border border-border bg-card hover:shadow-xl transition-all duration-300 cursor-pointer">
@@ -180,7 +188,7 @@ export const ActivityCard = ({
                 <span>{ageRange}</span>
               </div>
             )}
-            
+
             {distance && (
               <div className="flex items-center gap-1">
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
@@ -188,6 +196,50 @@ export const ActivityCard = ({
               </div>
             )}
           </div>
+
+          {/* Mobilité */}
+          {mobility && (mobility.TC || mobility.velo || mobility.covoit) && (
+            <div className="flex items-center gap-2 text-xs">
+              {mobility.TC && (
+                <div className="flex items-center gap-1 text-primary" title={mobility.TC}>
+                  <Bus className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{mobility.TC.split(' ').slice(0, 2).join(' ')}</span>
+                </div>
+              )}
+              {mobility.velo && (
+                <div className="flex items-center gap-1 text-green-600" title="Vélo disponible">
+                  <Bike className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Vélo</span>
+                </div>
+              )}
+              {mobility.covoit && (
+                <div className="flex items-center gap-1 text-blue-600" title="Covoiturage">
+                  <Car className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Covoit</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Aides financières */}
+          {aidesEligibles && aidesEligibles.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-1">
+              {aidesEligibles.slice(0, 3).map((aide) => (
+                <Badge
+                  key={aide}
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
+                >
+                  {aide}
+                </Badge>
+              ))}
+              {aidesEligibles.length > 3 && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  +{aidesEligibles.length - 3}
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
 
         {/* PRICING + CTA */}
@@ -248,9 +300,9 @@ export const ActivityCard = ({
             size="sm"
             className="h-8 text-xs px-4"
             onClick={onRequestClick}
-            aria-label={`Voir détails de ${title}`}
+            aria-label={`Intéressé par ${title}`}
           >
-            Voir détails
+            Je suis intéressé
           </Button>
         </div>
       </div>
