@@ -64,6 +64,7 @@ import RGPD from "./pages/legal/RGPD";
 import Cookies from "./pages/legal/Cookies";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CGU from "./pages/legal/CGU";
+import Collectivites from "./pages/Collectivites";
 
 const queryClient = new QueryClient();
 
@@ -170,6 +171,7 @@ const App = () => (
           <Route path="/legal/cookies" element={<Cookies />} />
           <Route path="/legal/mentions" element={<MentionsLegales />} />
           <Route path="/legal/cgu" element={<CGU />} />
+          <Route path="/collectivites" element={<Collectivites />} />
           <Route path="/itineraire" element={<Itineraire />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

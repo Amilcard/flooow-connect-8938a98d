@@ -43,17 +43,18 @@ const Footer = () => {
 						</ul>
 					</div>
 
-					{/* À propos */}
-					<div className="space-y-4">
-						<h4 className="font-semibold text-foreground">À propos</h4>
-						<ul className="space-y-2 text-sm text-muted-foreground">
-							  <li><Link to="/about" className="hover:text-primary transition-colors">Notre mission</Link></li>
-							  <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
-							  <li><Link to="/legal/mentions" className="hover:text-primary transition-colors">Mentions légales</Link></li>
-							  <li><Link to="/legal/privacy" className="hover:text-primary transition-colors">Politique de confidentialité</Link></li>
-							  <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
-						</ul>
-					</div>
+				{/* À propos */}
+				<div className="space-y-4">
+					<h4 className="font-semibold text-foreground">À propos</h4>
+					<ul className="space-y-2 text-sm text-muted-foreground">
+						  <li><Link to="/about" className="hover:text-primary transition-colors">Notre mission</Link></li>
+						  <li><Link to="/collectivites" className="hover:text-primary transition-colors">Offre Collectivités</Link></li>
+						  <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+						  <li><Link to="/legal/mentions" className="hover:text-primary transition-colors">Mentions légales</Link></li>
+						  <li><Link to="/legal/privacy" className="hover:text-primary transition-colors">Politique de confidentialité</Link></li>
+						  <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+					</ul>
+				</div>
 				</div>
 
 				<div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
