@@ -4,15 +4,25 @@
 
 **Gestionnaire** : Association Jungle Attitude  
 **Adresse** : 3 rue Flobert, 42100 Saint-Étienne  
-**Hébergement** : Hostinger  
+**SIREN** : 912 423 779  
+**SIRET siège** : 912 423 779 00012  
+**RNA** : W691104559  
+**APE** : 94.99Z - Autres organisations fonctionnant par adhésion volontaire  
+**Catégorie juridique** : 9220 - Association déclarée  
+**Appartenance ESS** : Oui  
+**Active depuis** : 09/09/2021  
+
+**Hébergement** : Hostinger Horizon  
 **Type de contrat** : Prestations de services (< 40K€, pas de marché public)  
 **Clients potentiels** : Collectivités, communautés de communes, départements, régions, État, partenaires financiers, acteurs éco-mobilité
 
 **IMPORTANT - Spécificités du service** :
 - ❌ **PAS de paiement en ligne** (mise en relation uniquement)
 - ❌ **PAS de téléchargement/stockage de documents administratifs ou médicaux**
+- ❌ **AUCUNE donnée de santé** (confirmation explicite)
 - ✅ **Mise en lien** familles ↔ organismes (qui gèrent documents/paiements)
-- 🍪 **Installation prévue** : Gestion des cookies conforme CNIL
+- ✅ **Traitement données mineurs** : Uniquement en lien avec validation parentale et finalité de l'application (matching activités)
+- 🍪 **Installation prévue** : Gestion des cookies conforme CNIL (hébergement Hostinger Horizon)
 
 ---
 
@@ -127,16 +137,20 @@ Ce document fait le point complet sur **ce qui existe déjà** dans votre platef
 ```
 - Éditeur : Association Jungle Attitude
 - Adresse : 3 rue Flobert, 42100 Saint-Étienne
-- SIRET : [à compléter par l'association]
-- Hébergeur : Hostinger
+- SIREN : 912 423 779
+- SIRET siège : 912 423 779 00012
+- RNA : W691104559
+- APE : 94.99Z - Autres organisations fonctionnant par adhésion volontaire
+- Catégorie juridique : 9220 - Association déclarée
+- Appartenance ESS : Oui
+- Date de création : 09/09/2021
+- Hébergeur : Hostinger Horizon
 - Contact : support@flooow.fr
 ```
 
 **❌ Ce qui MANQUE encore** :
 - Directeur de publication (président de l'association)
-- SIRET réel de Jungle Attitude
-- Coordonnées complètes Hostinger
-- Numéro RNA de l'association
+- Coordonnées complètes Hostinger Horizon (adresse hébergeur)
 - Coordonnées du DPO (si désigné)
 
 ---
@@ -217,34 +231,37 @@ Ce document fait le point complet sur **ce qui existe déjà** dans votre platef
 ---
 
 #### ✔️ **Table `children`**
-**Statut** : 🟡 **MINEURS - ATTENTION MODÉRÉE**
+**Statut** : 🟢 **MINEURS - CONFORMITÉ AMÉLIORÉE**
 
 **Données collectées** :
 ```
 - first_name ✓
-- dob (date de naissance) ⚠️ SENSIBLE
-- education_level ⚠️
-- school_postal_code ⚠️
-- needs_json ⚠️ (handicap - descriptif uniquement)
-- accessibility_flags ⚠️ (besoins accessibilité)
+- dob (date de naissance) ⚠️ SENSIBLE (nécessaire pour matching activités par âge)
+- education_level ⚠️ (nécessaire pour orientation scolaire)
+- school_postal_code ⚠️ (géolocalisation approximative pour proximité)
+- needs_json ✅ (descriptif accessibilité uniquement - PAS de données médicales)
+- accessibility_flags ✅ (besoins accessibilité - PAS de diagnostic médical)
 - is_student ✓
 ```
 
-**✅ BONNE NOUVELLE - PAS DE DOCUMENTS MÉDICAUX** :
+**✅ CONFORMITÉ RENFORCÉE - CONFIRMATION OFFICIELLE** :
+→ L'application ne stocke **AUCUNE donnée de santé** (confirmation explicite)
 → L'application ne stocke **AUCUN** document administratif ou médical
-→ Les données de santé restent chez les organismes partenaires
-→ Seules des **informations descriptives** pour matching activités/besoins
+→ Les données médicales/administratives restent chez les organismes partenaires
+→ Seules des **informations descriptives d'accessibilité** pour matching activités/besoins
+→ **Finalité claire** : Validation parentale + Mise en relation familles/activités adaptées
 
-**🚨 ALERTES RGPD (réduites mais existantes)** :
-1. **Données sensibles** (needs_json, accessibility_flags) = catégorie spéciale RGPD
-2. **Base légale** : Consentement parental + Mission d'intérêt public
-3. **DPIA RECOMMANDÉE** (mineurs + descriptif handicap)
-4. **Chiffrement optionnel** (données descriptives, pas médicales)
+**🔵 CADRE RGPD CLARIFIÉ** :
+1. **Type de données** : Descriptif accessibilité (NON = données de santé au sens RGPD strict)
+2. **Base légale** : Consentement parental + Mission d'intérêt public (collectivités)
+3. **Finalité légitime** : Matching activités inclusives adaptées aux besoins
+4. **DPIA** : Recommandée (mineurs + profilage) mais moins critique (pas de santé)
+5. **Minimisation** : Respectée (juste nécessaire pour orientation activités)
 
 **❌ Ce qui MANQUE** :
-- **Consentement parental traçable** (table dédiée ?)
-- **Information claire** : "pas de stockage de documents médicaux"
-- **Pseudonymisation** recommandée pour needs_json
+- **Consentement parental traçable** pour traitement données enfant (table dédiée)
+- **Information transparente** : Clarifier dans CGU/RGPD "pas de données médicales"
+- **Durée de conservation** : Définir durée max (ex: jusqu'à majorité + 1 an)
 
 ---
 
@@ -331,11 +348,14 @@ audit_logs:
 
 #### **Pièces administratives pour Jungle Attitude** :
 ```
-✅ Récépissé de déclaration d'association (RNA)
+✅ Récépissé de déclaration d'association (RNA : W691104559)
 ✅ Statuts de l'association
-⚠️ SIRET à jour
-⚠️ Attestations fiscales/URSSAF
-⚠️ RC pro & cyber (responsabilité civile)
+✅ SIREN : 912 423 779
+✅ SIRET siège : 912 423 779 00012
+✅ APE : 94.99Z - Autres organisations fonctionnant par adhésion volontaire
+✅ Appartenance ESS : Oui
+⚠️ Attestations fiscales/URSSAF (à préparer si demandées)
+⚠️ RC pro & cyber - Responsabilité civile (à vérifier si souscrite)
 ⚠️ RIB
 ⚠️ Attestation d'assurance
 ```
@@ -353,13 +373,16 @@ Pas besoin de :
 
 **Statut** : ❌ **NON RÉALISÉE**
 
-**Raisons obligatoires** :
+**Raisons pour DPIA** :
 ```
-🔴 Traitement de données de mineurs
-🔴 Données de santé (needs_json, accessibility_flags)
-🔴 Profilage (quotient familial, critères d'éligibilité)
-🔴 Croisement mobilité + aides sociales
+🔴 Traitement de données de mineurs (validation parentale)
+🟡 Profilage social (quotient familial, critères d'éligibilité aides)
+🟡 Croisement mobilité + aides sociales
+🟢 PAS de données de santé (descriptif accessibilité ≠ données médicales)
 ```
+
+**🎯 NIVEAU DE RISQUE RÉVISÉ** : **MODÉRÉ** (au lieu de ÉLEVÉ)
+→ Confirmation absence données santé = réduction significative du risque RGPD
 
 **Contenu requis** :
 ```
@@ -463,32 +486,39 @@ Pas besoin de :
 
 ---
 
-### 🟡 8. CHIFFREMENT DES DONNÉES SENSIBLES (Priorité réduite)
+### 🟢 8. CHIFFREMENT DES DONNÉES (Priorité adaptée)
 
-**Statut** : ⚠️ **OPTIONNEL (pas de docs médicaux)**
+**Statut** : ✅ **BON NIVEAU DE BASE**
 
-**✅ BONNE NOUVELLE** :
-→ Pas de documents administratifs/médicaux stockés
-→ Seules des **informations descriptives** pour matching
+**✅ EXCELLENTE NOUVELLE** :
+→ **AUCUNE donnée de santé** (confirmation officielle)
+→ **AUCUN document administratif/médical** stocké
+→ Seules des **informations descriptives d'accessibilité** pour matching activités
 
 **Données actuellement en clair** :
 ```
-⚠️ needs_json (descriptif handicap) → PSEUDONYMISATION recommandée
-⚠️ accessibility_flags → OK (flags simples)
-⚠️ quotient_familial → PSEUDONYMISATION recommandée
-⚠️ profile_json → À VÉRIFIER contenu
+✅ needs_json (descriptif accessibilité - NON médical) → RLS suffit
+✅ accessibility_flags → OK (flags simples)
+⚠️ quotient_familial → Pseudonymisation recommandée (donnée économique sensible)
+⚠️ profile_json → À VÉRIFIER contenu (peut contenir données variées)
 ```
 
-**Recommandations adaptées** :
+**Mesures de sécurité existantes** :
 ```
-→ Chiffrement en transit (HTTPS) ✅ DÉJÀ FAIT
-→ Pseudonymisation needs_json (optionnel, best practice)
-→ Hachage quotient_familial (optionnel)
-→ RLS stricte (déjà en place ✅)
-→ Logs d'accès (déjà en place ✅)
+✅ Chiffrement en transit (HTTPS/TLS)
+✅ RLS stricte (accès contrôlé par rôle)
+✅ Logs d'accès (audit_logs complet)
+✅ Sessions sécurisées (gestion multi-device)
 ```
 
-**🎯 PRIORITÉ BASSE** : Pas de données médicales = moins de risque
+**Recommandations complémentaires** :
+```
+→ Pseudonymisation quotient_familial (hachage avec sel)
+→ Vérifier contenu profile_json (limiter aux données nécessaires)
+→ Chiffrement au repos optionnel (best practice, non obligatoire)
+```
+
+**🎯 PRIORITÉ MOYENNE** : Absence de données médicales = risque RGPD standard (non élevé)
 
 ---
 
