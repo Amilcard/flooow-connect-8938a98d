@@ -1,9 +1,25 @@
 # 📋 AUDIT COMPLET : CONFORMITÉ RGPD & CADRE CONTRACTUEL
 
+## 🎯 INFORMATIONS PROJET RÉELLES
+
+**Gestionnaire** : Association Jungle Attitude  
+**Adresse** : 3 rue Flobert, 42100 Saint-Étienne  
+**Hébergement** : Hostinger  
+**Type de contrat** : Prestations de services (< 40K€, pas de marché public)  
+**Clients potentiels** : Collectivités, communautés de communes, départements, régions, État, partenaires financiers, acteurs éco-mobilité
+
+**IMPORTANT - Spécificités du service** :
+- ❌ **PAS de paiement en ligne** (mise en relation uniquement)
+- ❌ **PAS de téléchargement/stockage de documents administratifs ou médicaux**
+- ✅ **Mise en lien** familles ↔ organismes (qui gèrent documents/paiements)
+- 🍪 **Installation prévue** : Gestion des cookies conforme CNIL
+
+---
+
 ## 🎯 OBJECTIF DU DOCUMENT
 
 Ce document fait le point complet sur **ce qui existe déjà** dans votre plateforme InKlusif Flooow concernant :
-- Le cadre contractuel et les achats publics
+- Le cadre contractuel adapté aux prestations de service
 - La conformité RGPD (données personnelles, mineurs)
 
 ---
@@ -98,7 +114,7 @@ Ce document fait le point complet sur **ce qui existe déjà** dans votre platef
 ---
 
 #### ✔️ **MentionsLegales.tsx** - `/legal/mentions-legales`
-**Statut** : ⚠️ **INCOMPLET**
+**Statut** : ⚠️ **À METTRE À JOUR AVEC INFOS RÉELLES**
 
 **Contenu actuel** :
 ```
@@ -107,13 +123,21 @@ Ce document fait le point complet sur **ce qui existe déjà** dans votre platef
 - Contact : support@flooow.fr
 ```
 
-**❌ Ce qui MANQUE** :
-- Adresse complète de l'éditeur
-- Directeur de publication
-- SIRET réel (actuellement placeholder)
-- Nom et coordonnées de l'hébergeur
-- Numéro de déclaration CNIL (si applicable)
-- Coordonnées du DPO
+**✅ Informations réelles à intégrer** :
+```
+- Éditeur : Association Jungle Attitude
+- Adresse : 3 rue Flobert, 42100 Saint-Étienne
+- SIRET : [à compléter par l'association]
+- Hébergeur : Hostinger
+- Contact : support@flooow.fr
+```
+
+**❌ Ce qui MANQUE encore** :
+- Directeur de publication (président de l'association)
+- SIRET réel de Jungle Attitude
+- Coordonnées complètes Hostinger
+- Numéro RNA de l'association
+- Coordonnées du DPO (si désigné)
 
 ---
 
@@ -193,29 +217,34 @@ Ce document fait le point complet sur **ce qui existe déjà** dans votre platef
 ---
 
 #### ✔️ **Table `children`**
-**Statut** : 🔴 **MINEURS - HAUTE SENSIBILITÉ**
+**Statut** : 🟡 **MINEURS - ATTENTION MODÉRÉE**
 
 **Données collectées** :
 ```
 - first_name ✓
-- dob (date de naissance) 🔴 SENSIBLE
+- dob (date de naissance) ⚠️ SENSIBLE
 - education_level ⚠️
 - school_postal_code ⚠️
-- needs_json 🔴 TRÈS SENSIBLE (handicap ?)
-- accessibility_flags 🔴 DONNÉES DE SANTÉ
+- needs_json ⚠️ (handicap - descriptif uniquement)
+- accessibility_flags ⚠️ (besoins accessibilité)
 - is_student ✓
 ```
 
-**🚨 ALERTES RGPD** :
-1. **Données de santé** (needs_json, accessibility_flags) = catégorie spéciale RGPD
-2. **Base légale requise** : Consentement parental **explicite** + Mission d'intérêt public
-3. **DPIA OBLIGATOIRE** (mineurs + données de santé)
-4. **Chiffrement recommandé** pour needs_json et accessibility_flags
+**✅ BONNE NOUVELLE - PAS DE DOCUMENTS MÉDICAUX** :
+→ L'application ne stocke **AUCUN** document administratif ou médical
+→ Les données de santé restent chez les organismes partenaires
+→ Seules des **informations descriptives** pour matching activités/besoins
+
+**🚨 ALERTES RGPD (réduites mais existantes)** :
+1. **Données sensibles** (needs_json, accessibility_flags) = catégorie spéciale RGPD
+2. **Base légale** : Consentement parental + Mission d'intérêt public
+3. **DPIA RECOMMANDÉE** (mineurs + descriptif handicap)
+4. **Chiffrement optionnel** (données descriptives, pas médicales)
 
 **❌ Ce qui MANQUE** :
 - **Consentement parental traçable** (table dédiée ?)
-- **Chiffrement** des données de santé
-- **Accès restreint** (logs spécifiques)
+- **Information claire** : "pas de stockage de documents médicaux"
+- **Pseudonymisation** recommandée pour needs_json
 
 ---
 
@@ -286,28 +315,37 @@ audit_logs:
 
 ## ❌ CE QUI N'EXISTE PAS (ET DEVRAIT)
 
-### 🔴 1. CADRE CONTRACTUEL & ACHATS PUBLICS
+### 🔴 1. CADRE CONTRACTUEL ADAPTÉ (< 40K€)
 
-#### **Aucun document contractuel** :
+**✅ BONNE NOUVELLE** : Sous le seuil des marchés publics (< 40K€)
+→ Cadre simplifié : **prestations de services** au lieu de marché public
+
+#### **Documents contractuels recommandés** :
 ```
-❌ Pas de CCTP (Cahier des Clauses Techniques Particulières)
-❌ Pas de CCAP (Cahier des Clauses Administratives Particulières)
-❌ Pas de BPU/DQE (Bordereau de Prix Unitaires)
-❌ Pas de contrat de sous-traitance art. 28 RGPD
-❌ Pas de clauses de réversibilité
-❌ Pas de SLA (Service Level Agreement)
-❌ Pas de plan de sécurité
+✅ Devis + Convention de prestation (plus simple que CCTP/CCAP)
+⚠️ Contrat de sous-traitance art. 28 RGPD (OBLIGATOIRE si traitement de données)
+⚠️ Conditions Générales de Prestation (CGP)
+⚠️ Annexe technique : SLA adapté (disponibilité, support)
+⚠️ Clause de réversibilité des données
 ```
 
-#### **Pièces administratives manquantes** :
+#### **Pièces administratives pour Jungle Attitude** :
 ```
-❌ Kbis/SIREN Flooow
-❌ Attestations fiscales/URSSAF
-❌ RC pro & cyber
-❌ RIB
-❌ Déclaration de non-condamnation
-❌ Attestation d'assurance
+✅ Récépissé de déclaration d'association (RNA)
+✅ Statuts de l'association
+⚠️ SIRET à jour
+⚠️ Attestations fiscales/URSSAF
+⚠️ RC pro & cyber (responsabilité civile)
+⚠️ RIB
+⚠️ Attestation d'assurance
 ```
+
+#### **🎯 CADRE SIMPLIFIÉ = MOINS LOURD**
+Pas besoin de :
+- ❌ Procédure d'appel d'offres
+- ❌ CCTP/CCAP complets
+- ❌ BPU/DQE détaillés
+- ✅ Mais RGPD reste obligatoire (art. 28)
 
 ---
 
@@ -425,25 +463,32 @@ audit_logs:
 
 ---
 
-### 🔴 8. CHIFFREMENT DES DONNÉES SENSIBLES
+### 🟡 8. CHIFFREMENT DES DONNÉES SENSIBLES (Priorité réduite)
 
-**Statut** : ⚠️ **PARTIEL**
+**Statut** : ⚠️ **OPTIONNEL (pas de docs médicaux)**
 
-**Données en clair (non chiffrées)** :
+**✅ BONNE NOUVELLE** :
+→ Pas de documents administratifs/médicaux stockés
+→ Seules des **informations descriptives** pour matching
+
+**Données actuellement en clair** :
 ```
-🔴 needs_json (handicap) → À CHIFFRER
-🔴 accessibility_flags → À CHIFFRER
-🔴 quotient_familial → À PSEUDONYMISER
-⚠️ profile_json → À VÉRIFIER
+⚠️ needs_json (descriptif handicap) → PSEUDONYMISATION recommandée
+⚠️ accessibility_flags → OK (flags simples)
+⚠️ quotient_familial → PSEUDONYMISATION recommandée
+⚠️ profile_json → À VÉRIFIER contenu
 ```
 
-**Recommandations** :
+**Recommandations adaptées** :
 ```
-→ Chiffrement au repos (AES-256)
-→ Chiffrement en transit (HTTPS uniquement - déjà fait)
-→ Pseudonymisation des données économiques
-→ Clés de chiffrement gérées séparément (Vault)
+→ Chiffrement en transit (HTTPS) ✅ DÉJÀ FAIT
+→ Pseudonymisation needs_json (optionnel, best practice)
+→ Hachage quotient_familial (optionnel)
+→ RLS stricte (déjà en place ✅)
+→ Logs d'accès (déjà en place ✅)
 ```
+
+**🎯 PRIORITÉ BASSE** : Pas de données médicales = moins de risque
 
 ---
 
@@ -461,42 +506,63 @@ audit_logs:
 
 ### 🟠 À AMÉLIORER (30%)
 ```
-⚠️ Pages légales (squelettes à compléter)
-⚠️ Paramètres de confidentialité (trop basiques)
-⚠️ Politique de cookies (non conforme)
-⚠️ Minimisation des données (à vérifier)
+⚠️ Pages légales (compléter avec infos Jungle Attitude)
+⚠️ Paramètres de confidentialité (export/suppression)
+⚠️ Politique de cookies (CMP à installer - prévu ✅)
+⚠️ Minimisation des données (déjà bien : pas de docs médicaux)
 ```
 
-### 🔴 MANQUANT CRITIQUE (30%)
+### 🔴 MANQUANT CRITIQUE (20% - réduit car pas de paiement/docs)
 ```
-❌ DPIA/PIA (obligatoire)
-❌ Contrat de sous-traitance art. 28
-❌ CMP cookies conforme CNIL
-❌ Chiffrement données de santé
+❌ DPIA/PIA (recommandée mineurs, moins critique sans docs médicaux)
+❌ Contrat de sous-traitance art. 28 (obligatoire RGPD)
+⚠️ CMP cookies conforme CNIL (installation prévue ✅)
 ❌ Procédure violation de données
 ❌ Registre des traitements
 ❌ Export/suppression compte
-❌ Consentement parental explicite (santé/photos)
+❌ Consentement parental explicite (photos activités)
 ```
 
-**SCORE GLOBAL** : **40/100** 🔴
+**✅ POINTS POSITIFS MAJEURS** :
+- Pas de paiement en ligne = pas de risque financier
+- Pas de docs médicaux/administratifs = risque RGPD très réduit
+- Modèle "mise en relation" = responsabilité diluée
+
+**SCORE GLOBAL** : **55/100** 🟡 (amélioration significative grâce au modèle simplifié)
 
 ---
 
-## 🚀 PLAN D'ACTION PRIORITAIRE
+## 🚀 PLAN D'ACTION PRIORITAIRE ADAPTÉ (Jungle Attitude)
 
-### 🔥 **URGENCE 1 (Légal bloquant)**
-1. **Rédiger DPIA/PIA** (mineurs + santé)
-2. **Contrat de sous-traitance art. 28** (collectivité ↔ Flooow)
-3. **Chiffrer needs_json et accessibility_flags**
-4. **Compléter mentions légales** (SIRET, DPO, hébergeur)
+### 🔥 **URGENCE 1 (Légal indispensable - 2 semaines)**
+1. **✍️ Compléter mentions légales** avec infos Jungle Attitude
+   - Adresse : 3 rue Flobert, 42100 Saint-Étienne
+   - SIRET de l'association
+   - Hébergeur : Hostinger (coordonnées complètes)
+   - Président de l'association (directeur de publication)
 
-### 🔥 **URGENCE 2 (Conformité RGPD)**
-5. **CMP cookies** conforme CNIL (Axeptio ou Tarteaucitron)
-6. **Consentement parental explicite** (santé, photos)
-7. **Export des données** (portabilité)
-8. **Suppression du compte** (droit à l'effacement)
-9. **Registre des traitements** (art. 30)
+2. **📋 Contrat de sous-traitance art. 28 RGPD**
+   - Modèle simplifié (pas marché public)
+   - À signer avec chaque client (collectivité, etc.)
+   - Template prêt à l'emploi disponible
+
+3. **🍪 CMP cookies conforme CNIL** (installation prévue ✅)
+   - Tarteaucitron.js (gratuit, simple)
+   - Intégration 2-3h de dev
+
+### 🔥 **URGENCE 2 (Conformité RGPD - 1 mois)**
+4. **📊 DPIA simplifiée** (recommandée, pas urgente)
+   - Modèle allégé (pas de docs médicaux)
+   - Focus : mineurs + descriptif handicap
+
+5. **🔐 Fonctionnalités compte utilisateur**
+   - Export des données (portabilité)
+   - Suppression du compte (effacement)
+   - Consentement parental photos activités
+
+6. **📝 Registre des traitements** (art. 30)
+   - Template à compléter
+   - Mise à jour annuelle
 
 ### 🔥 **URGENCE 3 (Documentation)**
 10. **Compléter Politique de confidentialité** (détails par catégorie)
