@@ -48,7 +48,7 @@ const Footer = () => {
 					<h4 className="font-semibold text-foreground">À propos</h4>
 					<ul className="space-y-2 text-sm text-muted-foreground">
 						  <li><Link to="/about" className="hover:text-primary transition-colors">Notre mission</Link></li>
-						  <li><Link to="/collectivites" className="hover:text-primary transition-colors">Offre Collectivités</Link></li>
+						  <li><a href="https://flooow.info" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Offre Collectivités</a></li>
 						  <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
 						  <li><Link to="/legal/mentions" className="hover:text-primary transition-colors">Mentions légales</Link></li>
 						  <li><Link to="/legal/privacy" className="hover:text-primary transition-colors">Politique de confidentialité</Link></li>
