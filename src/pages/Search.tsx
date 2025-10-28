@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
@@ -9,6 +9,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { logSearch } from "@/lib/tracking";
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -33,6 +34,16 @@ const Search = () => {
   if (hasCovoiturage) filters.covoiturage_enabled = true;
 
   const { data: activities, isLoading, error } = useActivities(filters);
+
+  // Logger la recherche quand les résultats changent
+  useEffect(() => {
+    if (activities && !isLoading) {
+      logSearch({
+        filtersApplied: filters,
+        resultsCount: activities.length
+      });
+    }
+  }, [activities, isLoading]);
 
   if (error) {
     return <ErrorState message="Impossible de charger les activités" />;

@@ -35,9 +35,10 @@ import {
   CalendarRange,
   CheckCircle2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
+import { useActivityViewTracking } from "@/lib/tracking";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -63,6 +64,14 @@ const ActivityDetail = () => {
   const [showAidModal, setShowAidModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
+
+  // Tracking consultation activité (durée)
+  const trackActivityView = useActivityViewTracking(id, 'direct');
+  
+  useEffect(() => {
+    // Cleanup: logger la durée de consultation à la fermeture
+    return trackActivityView;
+  }, [id]);
 
   // Fetch activity details
   const { data: activity, isLoading, error } = useQuery({

@@ -196,6 +196,58 @@ export type Database = {
           },
         ]
       }
+      activity_views: {
+        Row: {
+          activity_id: string | null
+          created_at: string | null
+          id: string
+          session_id: string | null
+          source: string | null
+          user_id: string | null
+          view_duration_seconds: number | null
+        }
+        Insert: {
+          activity_id?: string | null
+          created_at?: string | null
+          id?: string
+          session_id?: string | null
+          source?: string | null
+          user_id?: string | null
+          view_duration_seconds?: number | null
+        }
+        Update: {
+          activity_id?: string | null
+          created_at?: string | null
+          id?: string
+          session_id?: string | null
+          source?: string | null
+          user_id?: string | null
+          view_duration_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_views_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aid_simulations: {
         Row: {
           activity_id: string
@@ -450,6 +502,9 @@ export type Database = {
           id: string
           idempotency_key: string | null
           parent_notified_at: string | null
+          participation_confirmed: boolean | null
+          participation_confirmed_at: string | null
+          participation_confirmed_by: string | null
           reason_code: string | null
           requires_parent_validation: boolean | null
           reste_a_charge: number | null
@@ -469,6 +524,9 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           parent_notified_at?: string | null
+          participation_confirmed?: boolean | null
+          participation_confirmed_at?: string | null
+          participation_confirmed_by?: string | null
           reason_code?: string | null
           requires_parent_validation?: boolean | null
           reste_a_charge?: number | null
@@ -488,6 +546,9 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           parent_notified_at?: string | null
+          participation_confirmed?: boolean | null
+          participation_confirmed_at?: string | null
+          participation_confirmed_by?: string | null
           reason_code?: string | null
           requires_parent_validation?: boolean | null
           reste_a_charge?: number | null
@@ -517,6 +578,20 @@ export type Database = {
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "v_children_with_age"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_participation_confirmed_by_fkey"
+            columns: ["participation_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_participation_confirmed_by_fkey"
+            columns: ["participation_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
             referencedColumns: ["id"]
           },
           {
@@ -1092,6 +1167,51 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_completion"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      search_logs: {
+        Row: {
+          created_at: string | null
+          filters_applied: Json | null
+          id: string
+          results_count: number | null
+          search_query: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          filters_applied?: Json | null
+          id?: string
+          results_count?: number | null
+          search_query?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          filters_applied?: Json | null
+          id?: string
+          results_count?: number | null
+          search_query?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "search_logs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_completion"

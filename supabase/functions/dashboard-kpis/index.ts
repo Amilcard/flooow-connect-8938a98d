@@ -113,6 +113,93 @@ serve(async (req) => {
     // Estimation hebdomadaire (hypothèse : 1 activité/semaine en moyenne)
     const weeklyActivityMinutes = avgMinutesPerActivity;
 
+    // 6. Nb recherches (nouveauté - tracking)
+    const { count: totalSearches } = await supabaseClient
+      .from('search_logs')
+      .select('*', { count: 'exact', head: true });
+
+    // 7. Top 5 activités consultées (nouveauté - tracking)
+    const { data: activityViewsAgg } = await supabaseClient
+      .from('activity_views')
+      .select('activity_id');
+    
+    const viewCounts = activityViewsAgg?.reduce((acc: Record<string, number>, view) => {
+      acc[view.activity_id] = (acc[view.activity_id] || 0) + 1;
+      return acc;
+    }, {}) || {};
+
+    const topActivitiesIds = Object.entries(viewCounts)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
+      .slice(0, 5)
+      .map(([id]) => id);
+
+    const { data: topActivities } = topActivitiesIds.length > 0 
+      ? await supabaseClient
+          .from('activities')
+          .select('id, title, category')
+          .in('id', topActivitiesIds)
+      : { data: [] };
+
+    const topActivitiesWithViews = topActivities?.map(act => ({
+      ...act,
+      views: viewCounts[act.id] || 0
+    })).sort((a, b) => b.views - a.views) || [];
+
+    // 8. Taux conversion (vues → réservations)
+    const { count: totalViews } = await supabaseClient
+      .from('activity_views')
+      .select('*', { count: 'exact', head: true });
+
+    const conversionRate = totalViews && totalViews > 0
+      ? (((totalInscriptions || 0) / totalViews) * 100).toFixed(1)
+      : '0';
+
+    // 9. Taux participation réelle (confirmée)
+    const { count: confirmedParticipations } = await supabaseClient
+      .from('bookings')
+      .select('*', { count: 'exact', head: true })
+      .eq('participation_confirmed', true);
+
+    const participationRate = totalInscriptions && totalInscriptions > 0
+      ? (((confirmedParticipations || 0) / totalInscriptions) * 100).toFixed(1)
+      : '0';
+
+    // 10. Impact par territoire
+    const { data: territoryBookings } = await supabaseClient
+      .from('bookings')
+      .select(`
+        id,
+        activities!inner(
+          structure_id,
+          structures!inner(
+            territory_id,
+            territories(name)
+          )
+        )
+      `)
+      .eq('status', 'validee');
+
+    const territoryStats = territoryBookings?.reduce((acc: Record<string, any>, booking: any) => {
+      const territoryId = booking.activities?.structures?.territory_id;
+      const territoryName = booking.activities?.structures?.territories?.name;
+      
+      if (territoryId && territoryName) {
+        if (!acc[territoryId]) {
+          acc[territoryId] = {
+            territory_id: territoryId,
+            territory_name: territoryName,
+            bookings_count: 0
+          };
+        }
+        acc[territoryId].bookings_count++;
+      }
+      return acc;
+    }, {}) || {};
+
+    const territoryImpact = Object.values(territoryStats)
+      .sort((a: any, b: any) => b.bookings_count - a.bookings_count)
+      .slice(0, 10); // Top 10 territoires
+
     const response = {
       kpis: {
         inscriptions: {
@@ -143,6 +230,36 @@ serve(async (req) => {
           avgPerActivity: avgMinutesPerActivity,
           source: "availability_slots.start/end × bookings validées",
           description: "Minutes d'activité physique par semaine (estimation)"
+        },
+        // NOUVEAUX KPIs basés sur tracking
+        recherches: {
+          total: totalSearches || 0,
+          source: "search_logs",
+          description: "Nombre total de recherches effectuées sur la plateforme"
+        },
+        topActivites: {
+          activities: topActivitiesWithViews,
+          source: "activity_views (agrégation)",
+          description: "Top 5 des activités les plus consultées"
+        },
+        conversion: {
+          rate: conversionRate,
+          views: totalViews || 0,
+          bookings: totalInscriptions || 0,
+          source: "activity_views + bookings",
+          description: "Taux de conversion (consultations → réservations)"
+        },
+        participation: {
+          rate: participationRate,
+          confirmed: confirmedParticipations || 0,
+          total: totalInscriptions || 0,
+          source: "bookings.participation_confirmed",
+          description: "Taux de participation effective (présence confirmée)"
+        },
+        territories: {
+          impact: territoryImpact,
+          source: "bookings + structures + territories",
+          description: "Répartition des inscriptions par territoire"
         }
       },
       timestamp: new Date().toISOString()

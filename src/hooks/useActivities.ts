@@ -23,6 +23,8 @@ interface ActivityFilters {
   category?: string;
   maxPrice?: number;
   hasAccessibility?: boolean;
+  hasCovoiturage?: boolean;
+  hasFinancialAid?: boolean;
   ageMin?: number;
   ageMax?: number;
   limit?: number;
@@ -94,6 +96,14 @@ export const useActivities = (filters?: ActivityFilters) => {
 
       if (filters?.vacationPeriod) {
         query = query.contains("vacation_periods", [filters.vacationPeriod]);
+      }
+
+      if (filters?.hasCovoiturage) {
+        query = query.eq("covoiturage_enabled", true);
+      }
+
+      if (filters?.hasFinancialAid) {
+        query = query.not("accepts_aid_types", "is", null);
       }
 
       if (filters?.limit) {
