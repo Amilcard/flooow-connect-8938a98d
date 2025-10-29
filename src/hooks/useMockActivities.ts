@@ -8,21 +8,20 @@ export const useMockActivities = (limit?: number) => {
   return useQuery({
     queryKey: ["mock-activities", "b2ef1", limit], // Version key to bust cache
     enabled: true,
-    staleTime: 0, // Data is always stale
-    gcTime: 0, // No garbage collection cache  
-    refetchOnMount: 'always', // Always refetch on mount
-    refetchOnWindowFocus: true, // Refetch on window focus
-    retry: 2,
-    retryDelay: 1000,
+    staleTime: 60000, // Cache 1 minute
+    gcTime: 300000, // Cache 5 minutes
+    refetchOnMount: false, // Pas de refetch automatique
+    refetchOnWindowFocus: false, // Pas de refetch au focus
+    retry: 0, // Pas de retry automatique (évite saccades)
     queryFn: async () => {
       console.log("🔵 [D1] Fetching mock activities from Edge Function...");
-      
+
       const { data, error } = await supabase.functions.invoke('mock-activities', {
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store'
         },
-        body: { 
+        body: {
           _ts: Date.now(),
           _v: 'b2ef1' // Version parameter to bust CDN cache
         }
@@ -30,7 +29,8 @@ export const useMockActivities = (limit?: number) => {
 
       if (error) {
         console.error("❌ Error fetching mock activities:", error);
-        throw error;
+        // Fallback sur tableau vide au lieu d'erreur
+        return [];
       }
 
       console.log("✅ Mock activities received:", data?.length || 0);

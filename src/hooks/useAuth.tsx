@@ -158,9 +158,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    // Nettoyer l'état AVANT l'appel API pour éviter boucle
     setUser(null);
-    window.location.assign('/');
+
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Continue quand même, l'état est déjà nettoyé
+    }
+
+    // Redirection directe sans passer par routeur
+    window.location.href = '/';
   };
 
   const value = {
