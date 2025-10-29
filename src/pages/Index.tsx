@@ -152,15 +152,15 @@ const Index = () => {
             <InfoBlocks />
 
             {/* Filtres d'accessibilité discrets */}
-            {mockActivities.length > 0 && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-h-10">
                 <span className="text-sm text-muted-foreground">Accessibilité :</span>
-                <AccessibilityFilters 
-                  selectedFilters={accessibilityFilters}
-                  onFilterChange={setAccessibilityFilters}
-                />
+                <div className={mockActivities.length === 0 ? "opacity-50 pointer-events-none" : ""}>
+                  <AccessibilityFilters 
+                    selectedFilters={accessibilityFilters}
+                    onFilterChange={setAccessibilityFilters}
+                  />
+                </div>
               </div>
-            )}
 
             <ActivitySection
               title="Activités à proximité"

@@ -61,6 +61,11 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
 export const useActivities = (filters?: ActivityFilters) => {
   return useQuery({
     queryKey: ["activities", filters],
+    staleTime: 300000, // 5min
+    gcTime: 600000, // 10min
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: false,
     queryFn: async () => {
       // Date limite : 01/11/2025
       const CUTOFF_DATE = '2025-11-01';
