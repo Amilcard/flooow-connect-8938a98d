@@ -8,11 +8,11 @@ export const useMockActivities = (limit?: number) => {
   return useQuery({
     queryKey: ["mock-activities", "b2ef1", limit], // Version key to bust cache
     enabled: true,
-    staleTime: 0, // Data is always stale
-    gcTime: 0, // No garbage collection cache  
-    refetchOnMount: 'always', // Always refetch on mount
-    refetchOnWindowFocus: true, // Refetch on window focus
-    retry: 2,
+    staleTime: 30000, // 30 secondes avant de considérer les données périmées
+    gcTime: 60000, // Garde en cache 1 minute
+    refetchOnMount: true, // Refetch on mount
+    refetchOnWindowFocus: false, // Ne pas refetch sur focus pour éviter saccades
+    retry: 0, // Pas de retry pour éviter les appels répétés
     retryDelay: 1000,
     queryFn: async () => {
       console.log("🔵 [D1] Fetching mock activities from Edge Function...");
