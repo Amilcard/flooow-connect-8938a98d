@@ -32,7 +32,18 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Validation mot de passe complexe
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      toast({
+        title: "Mot de passe trop faible",
+        description: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Erreur",
@@ -204,7 +215,7 @@ const SignUp = () => {
               {/* Téléphone */}
               <div className="space-y-2">
                 <Label htmlFor="phone" className="text-sm font-medium">
-                  Numéro de téléphone
+                  Numéro de téléphone <span className="text-muted-foreground text-xs">(optionnel)</span>
                 </Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -215,7 +226,6 @@ const SignUp = () => {
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="+33 6 12 34 56 78"
                     className="pl-10 h-11 border-2 focus:border-accent transition-colors"
-                    required
                   />
                 </div>
               </div>

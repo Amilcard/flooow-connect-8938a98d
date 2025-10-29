@@ -24,7 +24,7 @@ const DashboardRedirect = () => {
     queryKey: ["user-role-redirect"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         throw new Error("Non authentifié");
       }
@@ -36,33 +36,39 @@ const DashboardRedirect = () => {
         .maybeSingle();
 
       if (error) throw error;
-      
+
       return data?.role as AppRole | null;
     }
   });
 
   useEffect(() => {
-    if (userRole) {
-      const dashboardPath = ROLE_DASHBOARD_MAP[userRole];
-      navigate(dashboardPath, { replace: true });
+    if (!isLoading) {
+      if (userRole) {
+        const dashboardPath = ROLE_DASHBOARD_MAP[userRole];
+        navigate(dashboardPath, { replace: true });
+      } else {
+        // Pas de rôle défini → nouveau compte ou en attente
+        // Rediriger vers page d'accueil
+        navigate("/", { replace: true });
+      }
     }
-  }, [userRole, navigate]);
+  }, [userRole, isLoading, navigate]);
 
   if (isLoading) {
     return <LoadingState />;
   }
 
-  if (error || !userRole) {
+  if (error) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="p-6 max-w-md text-center">
-          <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Erreur d'accès</h2>
+          <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Compte en attente</h2>
           <p className="text-muted-foreground mb-4">
-            Impossible de déterminer votre rôle. Veuillez vous reconnecter.
+            Votre compte est en attente de validation par notre équipe. Vous recevrez un email dès que votre compte sera activé.
           </p>
-          <Button onClick={() => navigate("/auth")}>
-            Se connecter
+          <Button onClick={() => navigate("/")}>
+            Retour à l'accueil
           </Button>
         </Card>
       </div>
