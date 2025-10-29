@@ -14,6 +14,15 @@ serve(async (req) => {
   }
 
   try {
+    // Vérifier que RESEND_API_KEY est configurée
+    if (!RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured in Supabase Secrets');
+      return new Response(
+        JSON.stringify({ error: 'Service d\'email non configuré. Contactez l\'administrateur.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -125,9 +134,17 @@ serve(async (req) => {
     }
 
     // Build validation URLs
-    const baseUrl = Deno.env.get('SUPABASE_URL')?.replace('/supabase', '') || req.headers.get('origin') || 'https://app.example.com';
-    const validationUrl = `${baseUrl}/validate-child-signup?token=${validationToken}&action=approve`;
-    const rejectUrl = `${baseUrl}/validate-child-signup?token=${validationToken}&action=reject`;
+    const FRONTEND_URL = Deno.env.get('FRONTEND_URL');
+    if (!FRONTEND_URL) {
+      console.error('FRONTEND_URL not configured in Supabase Secrets');
+      return new Response(
+        JSON.stringify({ error: 'Configuration serveur manquante (FRONTEND_URL). Contactez l\'administrateur.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const validationUrl = `${FRONTEND_URL}/validate-child-signup?token=${validationToken}&action=approve`;
+    const rejectUrl = `${FRONTEND_URL}/validate-child-signup?token=${validationToken}&action=reject`;
 
     // Build email HTML
     const formattedDob = new Date(childDob).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -208,10 +225,34 @@ serve(async (req) => {
 
     if (!emailResponse.ok) {
       const errorData = await emailResponse.json();
-      console.error('Error sending email:', errorData);
+      console.error('Resend API error:', emailResponse.status, errorData);
+
+      let userMessage = 'Impossible d\'envoyer l\'email';
+      let statusCode = emailResponse.status;
+
+      // Gestion d'erreurs détaillée selon le code HTTP de Resend
+      switch (emailResponse.status) {
+        case 400:
+          userMessage = 'L\'adresse email semble invalide';
+          break;
+        case 401:
+        case 403:
+          userMessage = 'Service d\'email temporairement indisponible. Veuillez contacter le support.';
+          statusCode = 500; // Ne pas exposer les erreurs d'authentification
+          break;
+        case 429:
+          userMessage = 'Trop de demandes d\'envoi d\'emails. Réessayez dans quelques minutes.';
+          break;
+        case 503:
+          userMessage = 'Service d\'email temporairement indisponible. Réessayez plus tard.';
+          break;
+        default:
+          userMessage = `Erreur lors de l\'envoi de l\'email (${emailResponse.status})`;
+      }
+
       return new Response(
-        JSON.stringify({ error: 'Erreur lors de l\'envoi de l\'email' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: userMessage }),
+        { status: statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
