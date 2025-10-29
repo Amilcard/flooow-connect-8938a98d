@@ -11,6 +11,11 @@ interface AuthUser {
   avatar?: string;
 }
 
+interface AuthSession {
+  access_token: string;
+  refresh_token: string;
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
@@ -42,6 +47,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   
 
@@ -51,6 +57,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
+          setSession(session);
           setUser({
             id: session.user.id,
             email: session.user.email || '',
@@ -73,6 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
+        setSession(session);
         setUser({
           id: session.user.id,
           email: session.user.email || '',
@@ -83,6 +91,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           )}&background=6366f1&color=fff`
         });
       } else {
+        setSession(null);
         setUser(null);
       }
     });
@@ -102,7 +111,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) throw error;
       
-      if (data.user) {
+      if (data.user && data.session) {
+        setSession(data.session);
         setUser({
           id: data.user.id,
           email: data.user.email || '',
@@ -141,7 +151,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) throw error;
       
-      if (data.user) {
+      if (data.user && data.session) {
+        setSession(data.session);
         setUser({
           id: data.user.id,
           email: data.user.email || '',
@@ -158,9 +169,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    window.location.assign('/');
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    } finally {
+      // Toujours nettoyer l'état local et rediriger, même si signOut échoue
+      setUser(null);
+      setSession(null);
+      window.location.assign('/auth');
+    }
   };
 
   const value = {
