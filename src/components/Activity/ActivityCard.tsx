@@ -1,3 +1,4 @@
+import React from "react";
 import { MapPin, Users, Accessibility, Heart, Bus, Bike, Car } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +54,7 @@ const getCategoryImage = (category: string): string => {
   return categoryMap[category] || activityLoisirsImg;
 };
 
-export const ActivityCard = ({
+export const ActivityCard = React.memo(({
   title,
   image,
   distance,
@@ -90,7 +91,9 @@ export const ActivityCard = ({
           src={displayImage}
           alt={title}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          decoding="async"
+          style={{ contentVisibility: 'auto' }}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 will-change-transform"
           onError={(e) => {
             e.currentTarget.src = fallbackImage;
           }}
@@ -308,4 +311,4 @@ export const ActivityCard = ({
       </div>
     </Card>
   );
-};
+});
