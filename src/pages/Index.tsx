@@ -25,17 +25,22 @@ const Index = () => {
   const [accessibilityFilters, setAccessibilityFilters] = useState<AccessibilityFilter[]>([]);
 
   useEffect(() => {
+    let mounted = true;
+    
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
+      if (mounted) setIsLoggedIn(!!session);
     };
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsLoggedIn(!!session);
+      if (mounted) setIsLoggedIn(!!session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Redirect authenticated users to the appropriate dashboard

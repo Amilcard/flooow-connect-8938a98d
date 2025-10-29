@@ -6,14 +6,13 @@ import type { ActivityRaw } from "@/types/domain";
 
 export const useMockActivities = (limit?: number) => {
   return useQuery({
-    queryKey: ["mock-activities", "b2ef1", limit], // Version key to bust cache
+    queryKey: ["mock-activities", "b2ef1", limit],
     enabled: true,
-    staleTime: 30000, // 30 secondes avant de considérer les données périmées
-    gcTime: 60000, // Garde en cache 1 minute
-    refetchOnMount: true, // Refetch on mount
-    refetchOnWindowFocus: false, // Ne pas refetch sur focus pour éviter saccades
-    retry: 0, // Pas de retry pour éviter les appels répétés
-    retryDelay: 1000,
+    staleTime: 300000, // 5 minutes
+    gcTime: 600000, // 10 minutes
+    refetchOnMount: false, // Pas de refetch automatique
+    refetchOnWindowFocus: false,
+    retry: false, // Désactiver complètement les retry
     queryFn: async () => {
       console.log("🔵 [D1] Fetching mock activities from Edge Function...");
       
@@ -30,7 +29,8 @@ export const useMockActivities = (limit?: number) => {
 
       if (error) {
         console.error("❌ Error fetching mock activities:", error);
-        throw error;
+        // Retourner tableau vide au lieu de throw pour éviter les saccades
+        return [];
       }
 
       console.log("✅ Mock activities received:", data?.length || 0);

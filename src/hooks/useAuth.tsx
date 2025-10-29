@@ -169,16 +169,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
+    // Nettoyer immédiatement l'état local AVANT l'appel API
+    setUser(null);
+    setSession(null);
+    
     try {
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
-    } finally {
-      // Toujours nettoyer l'état local et rediriger, même si signOut échoue
-      setUser(null);
-      setSession(null);
-      window.location.assign('/auth');
     }
+    
+    // Redirection simple sans rechargement complet
+    window.location.href = '/';
   };
 
   const value = {
