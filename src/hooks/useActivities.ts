@@ -69,7 +69,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       let query = supabase
         .from("activities")
         .select(`
-          id, title, category, categories, age_min, age_max, price_base,
+          id, title, description, category, categories, age_min, age_max, price_base,
           images, accessibility_checklist, accepts_aid_types,
           capacity_policy, covoiturage_enabled, structure_id, period_type,
           vacation_periods,
@@ -80,7 +80,8 @@ export const useActivities = (filters?: ActivityFilters) => {
         .gte("availability_slots.start", CUTOFF_DATE);
 
       if (filters?.searchQuery) {
-        query = query.ilike("title", `%${filters.searchQuery}%`);
+        // Recherche insensible aux accents et casse
+        query = query.or(`title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
       }
 
       if (filters?.category) {
