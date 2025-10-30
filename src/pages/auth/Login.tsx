@@ -30,13 +30,17 @@ const Login = () => {
         description: "Bienvenue dans InKlusif !",
       });
       
-      navigate('/');
-    } catch (error) {
-      toast({
-        title: "Erreur de connexion",
-        description: "Vérifiez vos identifiants",
-        variant: "destructive",
-      });
+      // Petit délai pour laisser la session se stabiliser
+      setTimeout(() => navigate('/'), 100);
+    } catch (error: any) {
+      // Afficher l'erreur seulement si elle provient vraiment de l'auth
+      if (error?.message) {
+        toast({
+          title: "Erreur de connexion",
+          description: "Vérifiez vos identifiants",
+          variant: "destructive",
+        });
+      }
     }
   };
 
