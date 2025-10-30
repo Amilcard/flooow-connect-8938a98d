@@ -38,6 +38,10 @@ const Search = () => {
 
   const { data: activities, isLoading, error } = useActivities(filters);
 
+  // Si recherche textuelle mais aucun résultat, afficher toutes les activités
+  const { data: allActivities } = useActivities({ limit: 20 });
+  const displayActivities = (activities && activities.length > 0) ? activities : (searchQuery ? allActivities : activities);
+
   // Logger la recherche quand les résultats changent
   useEffect(() => {
     if (activities && !isLoading) {
@@ -88,7 +92,7 @@ const Search = () => {
 
         {/* Results count */}
         <p className="text-sm text-muted-foreground">
-          {activities?.length || 0} activité(s) trouvée(s)
+          {displayActivities?.length || 0} activité(s) trouvée(s)
         </p>
 
         {/* View content */}
@@ -98,7 +102,7 @@ const Search = () => {
           ) : (
             <ActivitySection
               title="Résultats de recherche"
-              activities={activities || []}
+              activities={displayActivities || []}
             />
           )
         ) : (

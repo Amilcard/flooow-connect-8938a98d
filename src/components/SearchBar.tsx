@@ -87,10 +87,16 @@ export const SearchBar = ({
                 aria-hidden="true"
               />
               <Input
-                type="search"
+                type="text"
                 placeholder={placeholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSearch(e as any);
+                  }
+                }}
                 className="pl-12 pr-4 h-14 rounded-full text-base bg-secondary/50 border-0 focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Rechercher des activités"
               />
