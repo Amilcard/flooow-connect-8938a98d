@@ -111,18 +111,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) throw error;
       
-      if (data.user && data.session) {
-        setSession(data.session);
-        setUser({
-          id: data.user.id,
-          email: data.user.email || '',
-          firstName: data.user.user_metadata?.firstName,
-          lastName: data.user.user_metadata?.lastName,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            `${data.user.user_metadata?.firstName || ''} ${data.user.user_metadata?.lastName || ''}`
-          )}&background=6366f1&color=fff`
-        });
+      // Vérification explicite du succès
+      if (!data.user || !data.session) {
+        throw new Error('Échec de connexion : session invalide');
       }
+      
+      setSession(data.session);
+      setUser({
+        id: data.user.id,
+        email: data.user.email || '',
+        firstName: data.user.user_metadata?.firstName,
+        lastName: data.user.user_metadata?.lastName,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          `${data.user.user_metadata?.firstName || ''} ${data.user.user_metadata?.lastName || ''}`
+        )}&background=6366f1&color=fff`
+      });
     } finally {
       setIsLoading(false);
     }
