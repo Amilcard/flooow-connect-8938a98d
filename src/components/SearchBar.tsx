@@ -28,7 +28,16 @@ export const SearchBar = ({
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Si callback fourni, l'appeler
     onSearch?.(searchQuery);
+
+    // Naviguer vers page recherche avec query
+    if (searchQuery.trim()) {
+      const params = new URLSearchParams();
+      params.append("q", searchQuery);
+      navigate(`/search?${params.toString()}`);
+    }
   };
 
   const handleApplyFilters = (newFilters: SearchFilters) => {
