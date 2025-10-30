@@ -29,6 +29,7 @@ interface ActivityFilters {
   ageMax?: number;
   limit?: number;
   vacationPeriod?: string;
+  searchQuery?: string;
 }
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
@@ -77,6 +78,10 @@ export const useActivities = (filters?: ActivityFilters) => {
         `)
         .eq("published", true)
         .gte("availability_slots.start", CUTOFF_DATE);
+
+      if (filters?.searchQuery) {
+        query = query.ilike("title", `%${filters.searchQuery}%`);
+      }
 
       if (filters?.category) {
         query = query.contains("categories", [filters.category]);

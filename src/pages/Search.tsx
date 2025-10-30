@@ -16,6 +16,7 @@ const Search = () => {
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   
   // Get filters from URL params
+  const searchQuery = searchParams.get("q");
   const category = searchParams.get("category");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
@@ -26,12 +27,14 @@ const Search = () => {
 
   // Build filters object
   const filters: any = {};
+  if (searchQuery) filters.searchQuery = searchQuery;
   if (category) filters.category = category;
-  if (minAge) filters.age_min = parseInt(minAge);
-  if (maxAge) filters.age_max = parseInt(maxAge);
-  if (maxPrice) filters.price_base = `lte.${maxPrice}`;
-  if (isPMR) filters["accessibility_checklist->>wheelchair"] = "eq.true";
-  if (hasCovoiturage) filters.covoiturage_enabled = true;
+  if (minAge) filters.ageMin = parseInt(minAge);
+  if (maxAge) filters.ageMax = parseInt(maxAge);
+  if (maxPrice) filters.maxPrice = parseInt(maxPrice);
+  if (isPMR) filters.hasAccessibility = true;
+  if (hasCovoiturage) filters.hasCovoiturage = true;
+  if (hasAid) filters.hasFinancialAid = true;
 
   const { data: activities, isLoading, error } = useActivities(filters);
 
@@ -73,6 +76,15 @@ const Search = () => {
             Carte
           </Button>
         </div>
+
+        {/* Search query display */}
+        {searchQuery && (
+          <div className="mb-2">
+            <p className="text-lg font-semibold">
+              Résultats pour : <span className="text-primary">"{searchQuery}"</span>
+            </p>
+          </div>
+        )}
 
         {/* Results count */}
         <p className="text-sm text-muted-foreground">
