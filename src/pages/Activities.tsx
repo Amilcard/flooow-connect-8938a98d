@@ -78,25 +78,11 @@ const Activities = () => {
           </TabsList>
 
           <TabsContent value="all">
-            <div className="space-y-8">
-              <ActivitySection
-                title={getTitle()}
-                activities={activities}
-                onActivityClick={(id) => console.log("Activity clicked:", id)}
-              />
-              
-              <ActivitySection
-                title="Activités Saint-Étienne (Mocks)"
-                activities={mockActivities}
-                onActivityClick={(id) => console.log("Mock activity clicked:", id)}
-              />
-              
-              {mockError && (
-                <div className="p-4 bg-destructive/10 text-destructive rounded-md">
-                  Erreur lors du chargement des activités mock: {mockError.message}
-                </div>
-              )}
-            </div>
+            <ActivitySection
+              title={getTitle()}
+              activities={activities}
+              onActivityClick={(id) => console.log("Activity clicked:", id)}
+            />
           </TabsContent>
 
           {["Sport", "Culture", "Loisirs", "Vacances", "Scolarité"].map((cat) => (

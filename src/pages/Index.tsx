@@ -43,13 +43,11 @@ const Index = () => {
     };
   }, []);
 
-  // Ne plus rediriger automatiquement après connexion pour éviter les boucles
-  // L'utilisateur reste sur l'accueil par défaut
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigate("/dashboards", { replace: true });
-  //   }
-  // }, [isLoggedIn, navigate]);
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/dashboards", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
 
   // Fetch user profile to check postal code
   const { data: userProfile } = useQuery({
