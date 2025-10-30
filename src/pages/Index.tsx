@@ -178,11 +178,14 @@ const Index = () => {
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
 
-            <ActivitySection
-              title="Activités Saint-Étienne (Mocks)"
-              activities={filteredMockActivities}
-              onActivityClick={(id) => console.log("Mock activity clicked:", id)}
-            />
+            {/* Section mocks masquée si vide (edge function indisponible) */}
+            {filteredMockActivities.length > 0 && (
+              <ActivitySection
+                title="Activités Saint-Étienne (Mocks)"
+                activities={filteredMockActivities}
+                onActivityClick={(id) => console.log("Mock activity clicked:", id)}
+              />
+            )}
           </>
         )}
       </main>
