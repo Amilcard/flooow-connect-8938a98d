@@ -28,6 +28,14 @@ export const SearchBar = ({
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (searchQuery.trim()) {
+      // Navigate to search page with query
+      const params = new URLSearchParams();
+      params.append("query", searchQuery.trim());
+      navigate(`/search?${params.toString()}`);
+    }
+    
     onSearch?.(searchQuery);
   };
 

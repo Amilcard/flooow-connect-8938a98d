@@ -16,6 +16,7 @@ const Search = () => {
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   
   // Get filters from URL params
+  const query = searchParams.get("query");
   const category = searchParams.get("category");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
@@ -26,6 +27,7 @@ const Search = () => {
 
   // Build filters object
   const filters: any = {};
+  if (query) filters.search = query; // Recherche texte
   if (category) filters.category = category;
   if (minAge) filters.age_min = parseInt(minAge);
   if (maxAge) filters.age_max = parseInt(maxAge);

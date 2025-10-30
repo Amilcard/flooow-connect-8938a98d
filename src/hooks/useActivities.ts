@@ -20,6 +20,7 @@ export async function fetchMockActivities() {
 }
 
 interface ActivityFilters {
+  search?: string;
   category?: string;
   maxPrice?: number;
   hasAccessibility?: boolean;
@@ -82,6 +83,10 @@ export const useActivities = (filters?: ActivityFilters) => {
         `)
         .eq("published", true)
         .gte("availability_slots.start", CUTOFF_DATE);
+
+      if (filters?.search) {
+        query = query.ilike("title", `%${filters.search}%`);
+      }
 
       if (filters?.category) {
         query = query.contains("categories", [filters.category]);
