@@ -36,7 +36,8 @@ export const RoleProtectedRoute = ({
 
       if (error) throw error;
       
-      return data?.role as AppRole | null;
+      const role = (data?.role as AppRole | undefined) ?? 'family';
+      return role;
     }
   });
 

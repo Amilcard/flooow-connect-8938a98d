@@ -40,11 +40,8 @@ serve(async (req) => {
       );
     }
 
-    const url = new URL(req.url);
-    const pathParts = url.pathname.split('/').filter(p => p);
-    
-    // Route: POST /bookings - Create booking
-    if (req.method === 'POST' && pathParts.length === 0) {
+    // Route: POST - Create booking (default action)
+    if (req.method === 'POST') {
       const validationResult = await parseRequestBody(req, BookingSchema);
       
       if (!validationResult.success) {
@@ -217,9 +214,17 @@ serve(async (req) => {
       );
     }
 
-    // Route: GET /bookings/:id - Get booking by ID
-    if (req.method === 'GET' && pathParts.length === 1) {
-      const bookingId = pathParts[0];
+    // Route: GET - Get booking by ID (requires booking_id in query params)
+    if (req.method === 'GET') {
+      const url = new URL(req.url);
+      const bookingId = url.searchParams.get('booking_id');
+      
+      if (!bookingId) {
+        return new Response(
+          JSON.stringify({ error: "missing_booking_id" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
       const { data: booking, error } = await supabase
         .from('bookings')
@@ -246,23 +251,27 @@ serve(async (req) => {
       );
     }
 
-    // Route: PATCH /bookings/:id/validate - Validate/reject booking (structure role)
-    if (req.method === 'PATCH' && pathParts.length === 2 && pathParts[1] === 'validate') {
-      const bookingId = pathParts[0];
+    // Route: PATCH - Validate/reject booking (structure role, requires booking_id and action in body)
+    if (req.method === 'PATCH') {
+      const body = await req.json();
+      const bookingId = body.booking_id;
       
-      const validationResult = await parseRequestBody(req, BookingValidationSchema);
-      
-      if (!validationResult.success) {
+      if (!bookingId) {
         return new Response(
-          JSON.stringify({ 
-            error: validationResult.error,
-            details: validationResult.details 
-          }),
+          JSON.stringify({ error: "missing_booking_id" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-
-      const { action, reason_code } = validationResult.data;
+      
+      const action = body.action;
+      const reason_code = body.reason_code;
+      
+      if (!action || !['accept', 'reject'].includes(action)) {
+        return new Response(
+          JSON.stringify({ error: "invalid_action", message: "Action must be 'accept' or 'reject'" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
       // Verify user has structure role for this booking's activity
       const { data: booking } = await supabase

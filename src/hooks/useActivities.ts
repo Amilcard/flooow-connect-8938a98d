@@ -20,6 +20,7 @@ export async function fetchMockActivities() {
 }
 
 interface ActivityFilters {
+  search?: string;
   category?: string;
   maxPrice?: number;
   hasAccessibility?: boolean;
@@ -62,9 +63,14 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
 export const useActivities = (filters?: ActivityFilters) => {
   return useQuery({
     queryKey: ["activities", filters],
+    staleTime: 300000, // 5min
+    gcTime: 600000, // 10min
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: false,
     queryFn: async () => {
-      // Date limite : 01/11/2025
-      const CUTOFF_DATE = '2025-11-01';
+      // Date limite ajustée pour afficher toutes les activités
+      const CUTOFF_DATE = '2024-01-01';
       
       let query = supabase
         .from("activities")
@@ -79,9 +85,11 @@ export const useActivities = (filters?: ActivityFilters) => {
         .eq("published", true)
         .gte("availability_slots.start", CUTOFF_DATE);
 
-      if (filters?.searchQuery) {
-        // Recherche insensible aux accents et casse
-        query = query.or(`title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
+      // Support both search and searchQuery for compatibility
+      const searchTerm = filters?.searchQuery || filters?.search;
+      if (searchTerm) {
+        // Recherche insensible aux accents et casse dans title ET description
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
 
       if (filters?.category) {

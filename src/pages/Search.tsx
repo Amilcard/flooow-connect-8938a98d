@@ -16,7 +16,7 @@ const Search = () => {
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   
   // Get filters from URL params
-  const searchQuery = searchParams.get("q");
+  const searchQuery = searchParams.get("q") || searchParams.get("query"); // Support both q and query
   const category = searchParams.get("category");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
