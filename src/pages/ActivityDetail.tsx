@@ -64,6 +64,8 @@ const ActivityDetail = () => {
   const [showAidModal, setShowAidModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [adjustedPrice, setAdjustedPrice] = useState<number | null>(null);
+  const [calculatedAids, setCalculatedAids] = useState<any[]>([]);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
@@ -431,6 +433,8 @@ const ActivityDetail = () => {
               onBooking={handleBooking}
               calculateAge={calculateAge}
               calculateDurationDays={calculateDurationDays}
+              adjustedPrice={adjustedPrice}
+              calculatedAids={calculatedAids}
             />
           </div>
         </div>
@@ -443,6 +447,10 @@ const ActivityDetail = () => {
           activityPrice={activity.price_base || 0}
           activityCategories={[activity.category].filter(Boolean)}
           durationDays={calculateDurationDays(selectedSlot)}
+          onSimulationComplete={(finalPrice, aids) => {
+            setAdjustedPrice(finalPrice);
+            setCalculatedAids(aids);
+          }}
         />
       )}
 

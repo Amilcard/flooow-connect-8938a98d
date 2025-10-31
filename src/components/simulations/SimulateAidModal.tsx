@@ -33,6 +33,7 @@ interface SimulateAidModalProps {
   activityPrice: number;
   activityCategories: string[];
   durationDays?: number;
+  onSimulationComplete?: (finalPrice: number, aids: FinancialAid[]) => void;
 }
 
 interface FinancialAid {
@@ -81,7 +82,8 @@ export const SimulateAidModal = ({
   onOpenChange,
   activityPrice,
   activityCategories,
-  durationDays = 1
+  durationDays = 1,
+  onSimulationComplete
 }: SimulateAidModalProps) => {
   const { user } = useAuth();
 
@@ -200,6 +202,13 @@ export const SimulateAidModal = ({
       
       setAids(data || []);
       setHasSimulated(true);
+      
+      // Notify parent of simulation result
+      if (onSimulationComplete && data) {
+        const totalAid = data.reduce((sum: number, aid: FinancialAid) => sum + Number(aid.amount), 0);
+        const calculatedFinalPrice = Math.max(0, activityPrice - totalAid);
+        onSimulationComplete(calculatedFinalPrice, data);
+      }
     } catch (err) {
       console.error('Erreur lors de la simulation:', err);
       setError(err instanceof Error ? err.message : "Erreur lors du calcul des aides");

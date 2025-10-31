@@ -41,6 +41,8 @@ interface BookingCardProps {
   onBooking: () => void;
   calculateAge: (dob: string) => number;
   calculateDurationDays: (slot: any) => number;
+  adjustedPrice?: number | null;
+  calculatedAids?: any[];
 }
 
 export const BookingCard = ({
@@ -55,6 +57,8 @@ export const BookingCard = ({
   onBooking,
   calculateAge,
   calculateDurationDays,
+  adjustedPrice,
+  calculatedAids = [],
 }: BookingCardProps) => {
   const selectedSlot = slots.find((s) => s.id === selectedSlotId);
   const selectedChild = children.find((c) => c.id === selectedChildId);
@@ -72,11 +76,34 @@ export const BookingCard = ({
           {/* Price */}
           <div>
             <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-3xl font-bold text-foreground">
-                {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
-              </span>
-              {activity.price_base > 0 && (
-                <span className="text-sm text-muted-foreground">par enfant</span>
+              {adjustedPrice !== null && adjustedPrice !== undefined ? (
+                <div className="space-y-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-primary">
+                      {adjustedPrice === 0 ? "Gratuit" : `${adjustedPrice}€`}
+                    </span>
+                    {adjustedPrice > 0 && (
+                      <span className="text-sm text-muted-foreground">par enfant</span>
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm text-muted-foreground line-through">
+                      {activity.price_base}€
+                    </span>
+                    <Badge variant="secondary" className="text-xs">
+                      Avec aides: -{activity.price_base - adjustedPrice}€
+                    </Badge>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold text-foreground">
+                    {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
+                  </span>
+                  {activity.price_base > 0 && (
+                    <span className="text-sm text-muted-foreground">par enfant</span>
+                  )}
+                </>
               )}
             </div>
             {activity.price_note && (
