@@ -11,11 +11,6 @@ interface AuthUser {
   avatar?: string;
 }
 
-interface AuthSession {
-  access_token: string;
-  refresh_token: string;
-}
-
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
@@ -47,7 +42,6 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   
 
@@ -57,7 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          setSession(session);
           setUser({
             id: session.user.id,
             email: session.user.email || '',
@@ -80,7 +73,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setSession(session);
         setUser({
           id: session.user.id,
           email: session.user.email || '',
@@ -91,7 +83,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           )}&background=6366f1&color=fff`
         });
       } else {
-        setSession(null);
         setUser(null);
       }
     });
@@ -111,9 +102,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) throw error;
       
-      // Mise à jour immédiate de l'état si les données sont présentes
-      if (data.user && data.session) {
-        setSession(data.session);
+      if (data.user) {
         setUser({
           id: data.user.id,
           email: data.user.email || '',
@@ -152,8 +141,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) throw error;
       
-      if (data.user && data.session) {
-        setSession(data.session);
+      if (data.user) {
         setUser({
           id: data.user.id,
           email: data.user.email || '',
@@ -170,17 +158,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
-    // Nettoyer immédiatement l'état local AVANT l'appel API
+    // Nettoyer l'état AVANT l'appel API pour éviter boucle
     setUser(null);
-    setSession(null);
-    
+
     try {
       await supabase.auth.signOut();
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
+      console.error('Logout error:', error);
+      // Continue quand même, l'état est déjà nettoyé
     }
-    
-    // Redirection simple sans rechargement complet
+
+    // Redirection directe sans passer par routeur
     window.location.href = '/';
   };
 

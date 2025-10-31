@@ -16,7 +16,7 @@ const Search = () => {
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   
   // Get filters from URL params
-  const query = searchParams.get("query");
+  const searchQuery = searchParams.get("q") || searchParams.get("query"); // Support both q and query
   const category = searchParams.get("category");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
@@ -27,15 +27,20 @@ const Search = () => {
 
   // Build filters object
   const filters: any = {};
-  if (query) filters.search = query; // Recherche texte
+  if (searchQuery) filters.searchQuery = searchQuery;
   if (category) filters.category = category;
-  if (minAge) filters.age_min = parseInt(minAge);
-  if (maxAge) filters.age_max = parseInt(maxAge);
-  if (maxPrice) filters.price_base = `lte.${maxPrice}`;
-  if (isPMR) filters["accessibility_checklist->>wheelchair"] = "eq.true";
-  if (hasCovoiturage) filters.covoiturage_enabled = true;
+  if (minAge) filters.ageMin = parseInt(minAge);
+  if (maxAge) filters.ageMax = parseInt(maxAge);
+  if (maxPrice) filters.maxPrice = parseInt(maxPrice);
+  if (isPMR) filters.hasAccessibility = true;
+  if (hasCovoiturage) filters.hasCovoiturage = true;
+  if (hasAid) filters.hasFinancialAid = true;
 
   const { data: activities, isLoading, error } = useActivities(filters);
+
+  // Si recherche textuelle mais aucun résultat, afficher toutes les activités
+  const { data: allActivities } = useActivities({ limit: 20 });
+  const displayActivities = (activities && activities.length > 0) ? activities : (searchQuery ? allActivities : activities);
 
   // Logger la recherche quand les résultats changent
   useEffect(() => {
@@ -76,9 +81,18 @@ const Search = () => {
           </Button>
         </div>
 
+        {/* Search query display */}
+        {searchQuery && (
+          <div className="mb-2">
+            <p className="text-lg font-semibold">
+              Résultats pour : <span className="text-primary">"{searchQuery}"</span>
+            </p>
+          </div>
+        )}
+
         {/* Results count */}
         <p className="text-sm text-muted-foreground">
-          {activities?.length || 0} activité(s) trouvée(s)
+          {displayActivities?.length || 0} activité(s) trouvée(s)
         </p>
 
         {/* View content */}
@@ -88,7 +102,7 @@ const Search = () => {
           ) : (
             <ActivitySection
               title="Résultats de recherche"
-              activities={activities || []}
+              activities={displayActivities || []}
             />
           )
         ) : (

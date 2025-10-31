@@ -30,6 +30,7 @@ interface ActivityFilters {
   ageMax?: number;
   limit?: number;
   vacationPeriod?: string;
+  searchQuery?: string;
 }
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
@@ -74,7 +75,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       let query = supabase
         .from("activities")
         .select(`
-          id, title, category, categories, age_min, age_max, price_base,
+          id, title, description, category, categories, age_min, age_max, price_base,
           images, accessibility_checklist, accepts_aid_types,
           capacity_policy, covoiturage_enabled, structure_id, period_type,
           vacation_periods,
@@ -84,8 +85,11 @@ export const useActivities = (filters?: ActivityFilters) => {
         .eq("published", true)
         .gte("availability_slots.start", CUTOFF_DATE);
 
-      if (filters?.search) {
-        query = query.ilike("title", `%${filters.search}%`);
+      // Support both search and searchQuery for compatibility
+      const searchTerm = filters?.searchQuery || filters?.search;
+      if (searchTerm) {
+        // Recherche insensible aux accents et casse dans title ET description
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
 
       if (filters?.category) {

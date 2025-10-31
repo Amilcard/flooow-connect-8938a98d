@@ -8,20 +8,20 @@ export const useMockActivities = (limit?: number) => {
   return useQuery({
     queryKey: ["mock-activities", "b2ef1", limit],
     enabled: true,
-    staleTime: 300000, // 5 minutes
+    staleTime: 300000, // 5 minutes (cache plus long)
     gcTime: 600000, // 10 minutes
     refetchOnMount: false, // Pas de refetch automatique
     refetchOnWindowFocus: false,
-    retry: false, // Désactiver complètement les retry
+    retry: false, // Pas de retry automatique (évite saccades)
     queryFn: async () => {
       console.log("🔵 [D1] Fetching mock activities from Edge Function...");
-      
+
       const { data, error } = await supabase.functions.invoke('mock-activities', {
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store'
         },
-        body: { 
+        body: {
           _ts: Date.now(),
           _v: 'b2ef1' // Version parameter to bust CDN cache
         }
@@ -29,7 +29,7 @@ export const useMockActivities = (limit?: number) => {
 
       if (error) {
         console.error("❌ Error fetching mock activities:", error);
-        // Retourner tableau vide au lieu de throw pour éviter les saccades
+        // Fallback sur tableau vide au lieu d'erreur
         return [];
       }
 

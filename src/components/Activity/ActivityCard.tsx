@@ -1,5 +1,4 @@
-import React from "react";
-import { MapPin, Users, Accessibility, Heart } from "lucide-react";
+import { MapPin, Users, Accessibility, Heart, Bus, Bike, Car } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,7 +53,7 @@ const getCategoryImage = (category: string): string => {
   return categoryMap[category] || activityLoisirsImg;
 };
 
-export const ActivityCard = React.memo(({
+export const ActivityCard = ({
   title,
   image,
   distance,
@@ -90,9 +89,8 @@ export const ActivityCard = React.memo(({
         <img
           src={displayImage}
           alt={title}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover"
+          loading="eager"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
           onError={(e) => {
             e.currentTarget.src = fallbackImage;
           }}
@@ -112,9 +110,9 @@ export const ActivityCard = React.memo(({
               className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
               aria-label={`Période: ${periodType}`}
             >
-              {periodType === 'annual' && 'Année scolaire'}
-              {periodType === 'school_holidays' && 'Vacances'}
-              {periodType === 'trimester' && 'Trimestre'}
+              {periodType === 'annual' && '📅'}
+              {periodType === 'school_holidays' && '🏖️'}
+              {periodType === 'trimester' && '📆'}
             </Badge>
           )}
           {hasAccessibility && (
@@ -124,6 +122,24 @@ export const ActivityCard = React.memo(({
               aria-label="Accessible PMR"
             >
               <Accessibility size={12} />
+            </Badge>
+          )}
+          {isHealthFocused && (
+            <Badge
+              variant="secondary"
+              className="bg-green-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label="Activité santé/bien-être"
+            >
+              {isApa ? '⚕️ APA' : '💚 Santé'}
+            </Badge>
+          )}
+          {isInsertionPro && (
+            <Badge
+              variant="secondary"
+              className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label={`Insertion professionnelle: ${insertionType || ''}`}
+            >
+              💼 {insertionType === 'BAFA' ? 'BAFA' : insertionType === 'stage_decouverte' ? 'Stage' : 'Insertion pro'}
             </Badge>
           )}
         </div>
@@ -181,6 +197,29 @@ export const ActivityCard = React.memo(({
             )}
           </div>
 
+          {/* Mobilité */}
+          {mobility && (mobility.TC || mobility.velo || mobility.covoit) && (
+            <div className="flex items-center gap-2 text-xs">
+              {mobility.TC && (
+                <div className="flex items-center gap-1 text-primary" title={mobility.TC}>
+                  <Bus className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{mobility.TC.split(' ').slice(0, 2).join(' ')}</span>
+                </div>
+              )}
+              {mobility.velo && (
+                <div className="flex items-center gap-1 text-green-600" title="Vélo disponible">
+                  <Bike className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Vélo</span>
+                </div>
+              )}
+              {mobility.covoit && (
+                <div className="flex items-center gap-1 text-blue-600" title="Covoiturage">
+                  <Car className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Covoit</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Aides financières */}
           {aidesEligibles && aidesEligibles.length > 0 && (
@@ -247,6 +286,14 @@ export const ActivityCard = React.memo(({
                 Aides dispo
               </Badge>
             )}
+            {complexityScore && complexityScore >= 1 && complexityScore <= 5 && (
+              <div className="flex items-center gap-1 mt-1" title={`Complexité administrative: ${complexityScore}/5`}>
+                <span className="text-[10px] text-muted-foreground">Admin:</span>
+                {[...Array(complexityScore)].map((_, i) => (
+                  <span key={i} className="text-[10px] text-yellow-500">⭐</span>
+                ))}
+              </div>
+            )}
           </div>
 
           <Button
@@ -261,4 +308,4 @@ export const ActivityCard = React.memo(({
       </div>
     </Card>
   );
-});
+};
