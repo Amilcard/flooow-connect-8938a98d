@@ -25,6 +25,30 @@ const Booking = () => {
   const { draft, saveDraft, clearDraft, hasDraft } = useBookingDraft(id!, slotId!);
   const [selectedChildId, setSelectedChildId] = useState<string>(draft?.childId || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        toast({
+          title: "Authentification requise",
+          description: "Veuillez vous connecter pour effectuer une réservation",
+          variant: "destructive"
+        });
+        navigate("/login");
+        return;
+      }
+
+      setUserId(session.user.id);
+      setAuthChecked(true);
+    };
+
+    checkAuth();
+  }, [navigate, toast]);
 
   // Auto-save draft when child selection changes
   useEffect(() => {
@@ -62,17 +86,23 @@ const Booking = () => {
     enabled: !!slotId
   });
 
-  // Fetch user's children (mock for now - will need auth)
+  // Fetch user's children (only for authenticated user)
   const { data: children = [], isLoading: loadingChildren } = useQuery({
-    queryKey: ["children"],
+    queryKey: ["children", userId],
     queryFn: async () => {
-      // TODO: Replace with actual auth user ID
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
+
       const { data, error } = await supabase
         .from("children")
-        .select("*");
+        .select("*")
+        .eq("user_id", userId); // Filter by authenticated user's ID
+
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: authChecked && !!userId // Only run query after auth check and if user is logged in
   });
 
   const handleSubmit = async () => {
@@ -134,7 +164,7 @@ const Booking = () => {
     }
   };
 
-  if (loadingActivity || loadingSlot || loadingChildren) {
+  if (!authChecked || loadingActivity || loadingSlot || loadingChildren) {
     return <LoadingState />;
   }
 

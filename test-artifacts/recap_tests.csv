@@ -1,0 +1,16 @@
+Test_ID,Nom_Test,Statut,Severite,Corrige,Temps_Fix_Min,Impact_Metier,Conformite_RGPD,Reference_Doc
+1,Inscription/Réservations,FAIL→PASS,CRITIQUE,OUI,0,Fuite données personnelles enfants,NON_CONFORME→CONFORME,security_fix_booking.md
+2,Conflits Horaires,FAIL→PASS,CRITIQUE,OUI,0,Double réservation même créneau,OK,test_02_fix_validation.md
+3,Authentification,PASS,IMPORTANT,N/A,15,Email confirmation + reset password,OK,rapport_detaille.md
+4,Profils & Paramètres,PARTIEL,CRITIQUE,NON,30,Changement mot de passe factice,OK,tests_04_15_consolidated.md
+5,Recherche & Filtres,PASS,OK,N/A,0,Recherche activités fonctionnelle,OK,rapport_detaille.md
+6,Aide Financière CAF,N/A,OK,N/A,0,Calcul aides selon quotient familial,OK,tests_04_15_consolidated.md
+7,Accessibilité,PASS,OK,N/A,0,Filtrage activités handicap,OK,tests_04_15_consolidated.md
+8,Paiement Échelonné,N/A,OK,N/A,0,Paiement en plusieurs fois,OK,tests_04_15_consolidated.md
+9,Covoiturage,MOCK,MOYEN,NON,120,Proposition/demande trajet,OK,tests_04_15_consolidated.md
+10,Notifications Push,MOCK,MOYEN,NON,90,Envoi notifications utilisateur,OK,tests_04_15_consolidated.md
+11,Gestion Sessions,TODO,MOYEN,NON,60,Révocation sessions actives,OK,tests_04_15_consolidated.md
+12,Export Données RGPD,MOCK,CRITIQUE,NON,45,Téléchargement données utilisateur,NON_CONFORME,tests_04_15_consolidated.md
+13,Suppression Compte RGPD,MOCK,CRITIQUE,NON,60,Droit à l'oubli,NON_CONFORME,tests_04_15_consolidated.md
+14,Multilangue,PARTIEL,MOYEN,NON,180,Traduction FR/EN,OK,tests_04_15_consolidated.md
+15,Thème Sombre,PARTIEL,FAIBLE,NON,15,Mode clair/sombre/auto,OK,tests_04_15_consolidated.md

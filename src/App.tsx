@@ -51,6 +51,7 @@ import Itineraire from "./pages/Itineraire";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import MesInformations from "./pages/account/MesInformations";
 import MesEnfants from "./pages/account/kids/MesEnfants";
 import MesReservations from "./pages/account/MesReservations";
@@ -161,6 +162,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/mon-compte/informations" element={<MesInformations />} />
           <Route path="/mon-compte/enfants" element={<MesEnfants />} />
           <Route path="/mon-compte/reservations" element={<MesReservations />} />
