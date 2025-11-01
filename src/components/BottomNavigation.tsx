@@ -1,4 +1,4 @@
-import { Home, Search, DollarSign, User, MessageCircle, BarChart3 } from "lucide-react";
+import { Home, Search, Grid, User, MessageCircle, BarChart3 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,10 +13,11 @@ interface NavItem {
 }
 
 const baseNavItems: NavItem[] = [
-  { icon: Home, label: "Accueil", path: "/" },
+  { icon: Grid, label: "Univers", path: "/univers" },
   { icon: Search, label: "Recherche", path: "/activities" },
-  { icon: DollarSign, label: "Aides", path: "/aides" },
-  { icon: User, label: "Mon compte", path: "/mon-compte" },
+  { icon: Home, label: "Accueil", path: "/" },
+  { icon: MessageCircle, label: "Chat", path: "/chat" },
+  { icon: User, label: "Compte", path: "/mon-compte" },
 ];
 
 export const BottomNavigation = () => {

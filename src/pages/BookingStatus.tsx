@@ -147,6 +147,41 @@ const BookingStatus = () => {
               </div>
             )}
 
+            {/* Pricing section - only show if activity has a price */}
+            {booking.base_price_cents > 0 && (
+              <div className="border-t pt-4">
+                <p className="text-sm text-muted-foreground mb-2">Tarification</p>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>Prix initial</span>
+                    <span className="font-medium">{(booking.base_price_cents / 100).toFixed(2)}€</span>
+                  </div>
+                  {booking.aids_total_cents > 0 && (
+                    <>
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Aides financières</span>
+                        <span className="font-medium">- {(booking.aids_total_cents / 100).toFixed(2)}€</span>
+                      </div>
+                      {booking.aids_applied && booking.aids_applied.length > 0 && (
+                        <div className="ml-4 mt-1 space-y-0.5">
+                          {booking.aids_applied.map((aid: any, idx: number) => (
+                            <div key={idx} className="flex justify-between text-xs text-muted-foreground">
+                              <span>• {aid.aid_name}</span>
+                              <span>-{(aid.amount_cents / 100).toFixed(2)}€</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                  <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
+                    <span>Reste à payer</span>
+                    <span className="text-primary">{(booking.final_price_cents / 100).toFixed(2)}€</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div>
               <p className="text-sm text-muted-foreground mb-1">Numéro de réservation</p>
               <p className="text-xs font-mono">{booking.id}</p>

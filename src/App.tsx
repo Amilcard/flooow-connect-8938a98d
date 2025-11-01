@@ -26,6 +26,8 @@ import Booking from "./pages/Booking";
 import BookingStatus from "./pages/BookingStatus";
 import MonCompte from "./pages/MonCompte";
 import Aides from "./pages/Aides";
+import Univers from "./pages/Univers";
+import Chat from "./pages/Chat";
 import EcoMobilite from "./pages/EcoMobilite";
 import Inclusivite from "./pages/Inclusivite";
 import Support from "./pages/Support";
@@ -144,6 +146,8 @@ const App = () => (
           <Route path="/booking-status/:id" element={<BookingStatus />} />
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />
+          <Route path="/univers" element={<Univers />} />
+          <Route path="/chat" element={<Chat />} />
           <Route path="/eco-mobilite" element={<EcoMobilite />} />
           <Route path="/inclusivite" element={<Inclusivite />} />
           <Route path="/support" element={<Support />} />

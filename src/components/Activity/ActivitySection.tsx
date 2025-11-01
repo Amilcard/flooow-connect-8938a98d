@@ -1,4 +1,5 @@
 import { ActivityCard } from "./ActivityCard";
+import { ActivityCarousel } from "./ActivityCarousel";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -25,20 +26,22 @@ interface ActivitySectionProps {
   activities: Activity[];
   onSeeAll?: () => void;
   onActivityClick?: (id: string) => void;
+  layout?: 'grid' | 'carousel'; // New prop to choose layout type
 }
 
-export const ActivitySection = ({ 
-  title, 
-  activities, 
+export const ActivitySection = ({
+  title,
+  activities,
   onSeeAll,
-  onActivityClick 
+  onActivityClick,
+  layout = 'grid' // Default to grid for backward compatibility
 }: ActivitySectionProps) => {
   const navigate = useNavigate();
-  
+
   return (
     <section className="space-y-4" aria-labelledby={`section-${title.replace(/\s/g, '-')}`}>
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           id={`section-${title.replace(/\s/g, '-')}`}
           className="text-xl font-bold"
         >
@@ -56,19 +59,27 @@ export const ActivitySection = ({
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {activities.map((activity) => (
-          <ActivityCard
-            key={activity.id}
-            {...activity}
-            ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
-            periodType={activity.periodType}
-            structureName={activity.structureName}
-            structureAddress={activity.structureAddress}
-            onRequestClick={() => navigate(`/activity/${activity.id}`)}
-          />
-        ))}
-      </div>
+      {/* Conditional rendering based on layout prop */}
+      {layout === 'carousel' ? (
+        <ActivityCarousel
+          activities={activities}
+          onActivityClick={(id) => navigate(`/activity/${id}`)}
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {activities.map((activity) => (
+            <ActivityCard
+              key={activity.id}
+              {...activity}
+              ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
+              periodType={activity.periodType}
+              structureName={activity.structureName}
+              structureAddress={activity.structureAddress}
+              onRequestClick={() => navigate(`/activity/${activity.id}`)}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

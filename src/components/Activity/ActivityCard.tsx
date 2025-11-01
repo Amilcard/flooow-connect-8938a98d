@@ -46,7 +46,7 @@ const getCategoryImage = (category: string): string => {
     Sport: activitySportImg,
     Loisirs: activityLoisirsImg,
     Vacances: activityVacancesImg,
-    Scolarité: activityCultureImg,
+    Apprentissage: activityCultureImg, // Renamed from Scolarité
     Culture: activityCultureImg,
     "Activités Innovantes": activityCultureImg,
   };
