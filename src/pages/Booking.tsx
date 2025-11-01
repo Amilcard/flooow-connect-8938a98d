@@ -144,19 +144,37 @@ const Booking = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Parse error response for better messages
+        const errorData = error.context?.body;
+        throw new Error(errorData?.message || errorData?.error || error.message);
+      }
+
+      // Show success with pricing breakdown
+      const pricing = data.pricing;
+      let description = "Votre demande de réservation a bien été enregistrée";
+
+      if (pricing && pricing.aids_total_euros > 0) {
+        description = `Prix initial: ${pricing.base_price_euros}€ - Aides: ${pricing.aids_total_euros}€ = ${pricing.final_price_euros}€ à payer`;
+      } else if (pricing && pricing.base_price_euros > 0) {
+        description = `Montant: ${pricing.base_price_euros}€ (aucune aide applicable)`;
+      }
 
       toast({
         title: "Demande envoyée",
-        description: "Votre demande de réservation a bien été enregistrée"
+        description
       });
 
       navigate(`/booking-status/${data.id}`);
       clearDraft();
     } catch (error: any) {
+      // Extract structured error information
+      const errorMessage = error.message || "Une erreur est survenue";
+      const errorHint = error.hint || "";
+
       toast({
-        title: "Erreur",
-        description: error.message || "Une erreur est survenue",
+        title: "Erreur lors de la réservation",
+        description: errorHint ? `${errorMessage}. ${errorHint}` : errorMessage,
         variant: "destructive"
       });
     } finally {

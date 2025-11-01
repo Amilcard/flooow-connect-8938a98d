@@ -84,7 +84,11 @@ serve(async (req) => {
 
       if (childError || !child) {
         return new Response(
-          JSON.stringify({ error: "child_not_found_or_unauthorized" }),
+          JSON.stringify({
+            code: "CHILD_NOT_FOUND_OR_UNAUTHORIZED",
+            message: "L'enfant sélectionné est introuvable ou ne vous appartient pas",
+            hint: "Vérifiez que cet enfant est bien enregistré dans votre compte"
+          }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -100,7 +104,12 @@ serve(async (req) => {
       if (eligibilityError) {
         console.error('[bookings] Eligibility check failed:', eligibilityError);
         return new Response(
-          JSON.stringify({ error: "eligibility_check_failed", details: eligibilityError.message }),
+          JSON.stringify({
+            code: "ELIGIBILITY_CHECK_FAILED",
+            message: "Impossible de vérifier l'éligibilité pour cette réservation",
+            hint: "Veuillez réessayer ou contacter le support",
+            details: eligibilityError.message
+          }),
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -109,10 +118,11 @@ serve(async (req) => {
       if (eligibilityCheck && !eligibilityCheck.eligible) {
         console.log(`[bookings] Eligibility rejected: ${eligibilityCheck.reason}`);
         return new Response(
-          JSON.stringify({ 
-            error: "not_eligible",
+          JSON.stringify({
+            code: "NOT_ELIGIBLE",
+            message: eligibilityCheck.message || "Cette réservation n'est pas éligible",
+            hint: "Vérifiez l'âge de l'enfant, la période et les conflits horaires",
             reason: eligibilityCheck.reason,
-            message: eligibilityCheck.message,
             details: eligibilityCheck
           }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -128,17 +138,126 @@ serve(async (req) => {
 
       if (slotError || !slot) {
         return new Response(
-          JSON.stringify({ error: "slot_not_found" }),
+          JSON.stringify({
+            code: "SLOT_NOT_FOUND",
+            message: "Le créneau horaire sélectionné est introuvable",
+            hint: "Vérifiez que le créneau existe toujours"
+          }),
           { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
       if (slot.seats_remaining <= 0) {
         return new Response(
-          JSON.stringify({ error: "no_seats_available", seats_remaining: 0 }),
+          JSON.stringify({
+            code: "NO_SEATS_AVAILABLE",
+            message: "Aucune place disponible pour ce créneau",
+            hint: "Veuillez choisir un autre créneau ou vous inscrire sur liste d'attente",
+            seats_remaining: 0
+          }),
           { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      // ==========================================
+      // CALCULATE PRICING AND FINANCIAL AIDS
+      // ==========================================
+
+      // Get activity details (price, categories)
+      const { data: activity, error: activityError } = await supabase
+        .from('activities')
+        .select('price_base, category')
+        .eq('id', activity_id)
+        .single();
+
+      if (activityError || !activity) {
+        console.error('[bookings] Activity not found:', activityError);
+        return new Response(
+          JSON.stringify({
+            error: "activity_not_found",
+            code: "ACTIVITY_NOT_FOUND",
+            message: "L'activité demandée n'existe pas",
+            hint: "Vérifiez l'ID de l'activité"
+          }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const basePriceCents = Math.round((activity.price_base || 0) * 100);
+      let aidsTotalCents = 0;
+      let aidsApplied: any[] = [];
+
+      // Only calculate aids if activity has a price > 0
+      if (activity.price_base > 0) {
+        // Get child's age for aids calculation
+        const childAge = Math.floor(
+          (Date.now() - new Date(child.dob).getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+        );
+
+        // Get user profile for QF and city code
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('profile_json, city_insee')
+          .eq('id', user.id)
+          .single();
+
+        const quotientFamilial = profile?.profile_json?.quotient_familial || 0;
+        const cityCode = profile?.city_insee || profile?.profile_json?.city_code || '';
+
+        // Get slot duration for per-day aids calculation
+        const { data: slotDetails } = await supabase
+          .from('availability_slots')
+          .select('start, end')
+          .eq('id', slot_id)
+          .single();
+
+        const durationDays = slotDetails
+          ? Math.max(1, Math.ceil(
+              (new Date(slotDetails.end).getTime() - new Date(slotDetails.start).getTime())
+              / (24 * 60 * 60 * 1000)
+            ))
+          : 1;
+
+        // SERVER-SIDE AIDS CALCULATION (don't trust client)
+        const { data: eligibleAids, error: aidsError } = await supabase
+          .rpc('calculate_eligible_aids', {
+            p_age: childAge,
+            p_qf: quotientFamilial,
+            p_city_code: cityCode,
+            p_activity_price: activity.price_base,
+            p_duration_days: durationDays,
+            p_categories: [activity.category] // Convert single category to array
+          });
+
+        if (aidsError) {
+          console.error('[bookings] Aids calculation failed:', aidsError);
+          // Continue without aids rather than failing the booking
+        } else if (eligibleAids && eligibleAids.length > 0) {
+          // Convert aids to cents and build aids_applied array
+          aidsApplied = eligibleAids.map((aid: any) => ({
+            aid_name: aid.aid_name,
+            amount_cents: Math.round(aid.amount * 100),
+            territory_level: aid.territory_level
+          }));
+
+          // Calculate total aids in cents
+          aidsTotalCents = aidsApplied.reduce(
+            (sum, aid) => sum + aid.amount_cents,
+            0
+          );
+
+          // Ensure aids don't exceed base price
+          if (aidsTotalCents > basePriceCents) {
+            aidsTotalCents = basePriceCents;
+            console.warn('[bookings] Aids exceeded base price, capped at base price');
+          }
+        }
+      }
+
+      // Calculate final price (ensure it's not negative)
+      const finalPriceCents = Math.max(0, basePriceCents - aidsTotalCents);
+
+      console.log(`[bookings] Pricing: base=${basePriceCents}¢, aids=${aidsTotalCents}¢, final=${finalPriceCents}¢`);
 
       // ==========================================
       // V1 FLOW: Auto-validation si express_flag = true
@@ -157,6 +276,10 @@ serve(async (req) => {
           idempotency_key: idempotency_key || null,
           express_flag: express_flag || false,
           status: bookingStatus,
+          base_price_cents: basePriceCents,
+          aids_total_cents: aidsTotalCents,
+          final_price_cents: finalPriceCents,
+          aids_applied: aidsApplied,
           history: isV1AutoValidate ? [{
             timestamp: new Date().toISOString(),
             action: 'auto_validated_v1',
@@ -168,18 +291,57 @@ serve(async (req) => {
         .single();
 
       if (bookingError) {
-        console.error(`[bookings] Creation error:`, bookingError);
-        
+        console.error(`[bookings] Creation error:`, JSON.stringify({
+          path: 'create_reservation',
+          step: 'insert_booking',
+          err_code: bookingError.code,
+          detail: bookingError.message
+        }));
+
         // Check if it's a seat availability error from trigger
         if (bookingError.message?.includes('Aucune place disponible')) {
           return new Response(
-            JSON.stringify({ error: "no_seats_available", message: bookingError.message }),
+            JSON.stringify({
+              code: "NO_SEATS_AVAILABLE",
+              message: "Aucune place disponible pour ce créneau",
+              hint: "Veuillez choisir un autre créneau ou vous inscrire sur liste d'attente"
+            }),
             { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
+        // Check if it's an RLS error
+        if (bookingError.code === '42501' || bookingError.message?.includes('permission denied')) {
+          return new Response(
+            JSON.stringify({
+              code: "RLS_DENIED",
+              message: "Vous n'êtes pas autorisé à créer cette réservation",
+              hint: "Vérifiez que l'enfant vous appartient et que vous êtes connecté"
+            }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        // Check if it's a constraint violation
+        if (bookingError.code?.startsWith('23')) {
+          return new Response(
+            JSON.stringify({
+              code: "CONSTRAINT_VIOLATION",
+              message: "Les données de réservation ne respectent pas les contraintes",
+              hint: "Vérifiez que les montants sont valides (aides ≤ prix de base)",
+              details: bookingError.message
+            }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
         return new Response(
-          JSON.stringify({ error: "booking_creation_failed", details: bookingError.message }),
+          JSON.stringify({
+            code: "BOOKING_CREATION_FAILED",
+            message: "Impossible de créer la réservation",
+            hint: "Veuillez réessayer ou contacter le support",
+            details: bookingError.message
+          }),
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -203,12 +365,21 @@ serve(async (req) => {
         .eq('id', slot_id)
         .single();
 
-      console.log(`[bookings] Created: ${booking.id}, seats remaining: ${updatedSlot?.seats_remaining}`);
+      console.log(`[bookings] Created: ${booking.id}, seats remaining: ${updatedSlot?.seats_remaining}, pricing: ${basePriceCents}¢ - ${aidsTotalCents}¢ = ${finalPriceCents}¢`);
 
       return new Response(
         JSON.stringify({
           ...booking,
           seats_remaining_after: updatedSlot?.seats_remaining || 0,
+          pricing: {
+            base_price_cents: basePriceCents,
+            aids_total_cents: aidsTotalCents,
+            final_price_cents: finalPriceCents,
+            base_price_euros: basePriceCents / 100,
+            aids_total_euros: aidsTotalCents / 100,
+            final_price_euros: finalPriceCents / 100,
+            aids_applied: aidsApplied
+          }
         }),
         { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
