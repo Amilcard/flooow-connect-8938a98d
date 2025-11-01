@@ -124,3 +124,60 @@ All colors MUST be HSL.
     @apply text-2xl md:text-3xl;
   }
 }
+
+/* ============================================================
+   Mobile Carousel Utilities
+   Purpose: Smooth horizontal scrolling with snap points
+   Date: 2025-11-01
+   ============================================================ */
+
+@layer utilities {
+  /* Hide scrollbar across all browsers */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+
+  /* Horizontal scroll snap */
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+
+  /* Snap children to start position */
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  /* Snap children to center position */
+  .snap-center {
+    scroll-snap-align: center;
+  }
+
+  /* Smooth scrolling behavior */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  /* Prevent overscroll bounce on iOS */
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+
+  /* Touch-friendly carousel container */
+  .carousel-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .carousel-container::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
+import { UniversSection } from "@/components/UniversSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -150,20 +151,25 @@ const Index = () => {
           <>
             <InfoBlocks />
 
+            {/* Section Univers - Carousel horizontal */}
+            <UniversSection />
+
             {/* Filtres d'accessibilité discrets */}
               <div className="flex items-center gap-3 min-h-10">
                 <span className="text-sm text-muted-foreground">Accessibilité :</span>
                 <div className={mockActivities.length === 0 ? "opacity-50 pointer-events-none" : ""}>
-                  <AccessibilityFilters 
+                  <AccessibilityFilters
                     selectedFilters={accessibilityFilters}
                     onFilterChange={setAccessibilityFilters}
                   />
                 </div>
               </div>
 
+            {/* Activités à proximité - CAROUSEL MODE */}
             <ActivitySection
-              title="Activités à proximité"
+              title="Activités à la une"
               activities={nearbyActivities}
+              layout="carousel"
               onSeeAll={() => navigate("/activities?type=nearby")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
