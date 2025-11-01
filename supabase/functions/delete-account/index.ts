@@ -42,8 +42,111 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const action = body.action || 'schedule'; // 'schedule' or 'cancel'
+    const action = body.action || 'schedule'; // 'schedule', 'cancel', 'deactivate', 'reactivate'
 
+    // ===== DEACTIVATE ACCOUNT (Temporary suspension) =====
+    if (action === 'deactivate') {
+      console.log(`[delete-account] Deactivating account for user ${user.id}`);
+
+      // Get current profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_json')
+        .eq('id', user.id)
+        .single();
+
+      const updatedProfileJson = {
+        ...(profile?.profile_json || {}),
+        account_status: 'deactivated',
+        deactivated_at: new Date().toISOString(),
+        deactivation_reason: body.reason || 'user_request'
+      };
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ profile_json: updatedProfileJson })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Create notification
+      await supabase.from('notifications').insert({
+        user_id: user.id,
+        type: 'account_deactivated',
+        payload: {
+          deactivated_at: new Date().toISOString(),
+          reactivation_available: true
+        },
+        read: false
+      });
+
+      console.log(`[delete-account] Account deactivated for user ${user.id}`);
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Votre compte a été désactivé avec succès',
+          deactivation_info: {
+            deactivated_at: new Date().toISOString(),
+            status: 'deactivated',
+            reactivation_available: true,
+            note: 'Vous pouvez réactiver votre compte à tout moment en vous reconnectant.'
+          }
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ===== REACTIVATE ACCOUNT =====
+    if (action === 'reactivate') {
+      console.log(`[delete-account] Reactivating account for user ${user.id}`);
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_json')
+        .eq('id', user.id)
+        .single();
+
+      const profileJson = profile?.profile_json || {};
+
+      // Remove deactivation flags
+      delete profileJson.account_status;
+      delete profileJson.deactivated_at;
+      delete profileJson.deactivation_reason;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ profile_json: profileJson })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Create notification
+      await supabase.from('notifications').insert({
+        user_id: user.id,
+        type: 'account_reactivated',
+        payload: {
+          reactivated_at: new Date().toISOString()
+        },
+        read: false
+      });
+
+      console.log(`[delete-account] Account reactivated for user ${user.id}`);
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Votre compte a été réactivé avec succès',
+          reactivation_info: {
+            reactivated_at: new Date().toISOString(),
+            status: 'active'
+          }
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ===== CANCEL DELETION =====
     if (action === 'cancel') {
       // Cancel scheduled deletion
       const { error: cancelError } = await supabase

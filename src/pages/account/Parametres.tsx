@@ -39,6 +39,7 @@ const Parametres: React.FC = () => {
 
 	const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
 	const [passwordForm, setPasswordForm] = useState({
 		currentPassword: '',
 		newPassword: '',
@@ -224,6 +225,43 @@ const Parametres: React.FC = () => {
 		}
 	};
 
+	const deactivateAccount = async () => {
+		try {
+			const { data, error } = await supabase.functions.invoke('delete-account', {
+				method: 'POST',
+				body: {
+					action: 'deactivate',
+					reason: 'user_request'
+				}
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			// Success
+			setShowDeactivateDialog(false);
+			toast({
+				title: 'Compte désactivé',
+				description: data.message || 'Votre compte a été désactivé. Vous pouvez le réactiver en vous reconnectant.',
+				variant: 'default',
+			});
+
+			// Optionally logout user
+			setTimeout(() => {
+				navigate('/login');
+			}, 2000);
+		} catch (error: any) {
+			console.error('Deactivate account error:', error);
+			toast({
+				title: 'Erreur',
+				description: error.message || 'Impossible de désactiver votre compte.',
+				variant: 'destructive',
+			});
+			setShowDeactivateDialog(false);
+		}
+	};
+
 	return (
 		<PageLayout showHeader={false}>
 			<div className="bg-gradient-to-r from-primary to-accent text-white p-4">
@@ -248,7 +286,7 @@ const Parametres: React.FC = () => {
 					changePassword={changePassword}
 				/>
 				<PrivacySettings settings={settings} updateSetting={updateSetting} />
-				<DataManagement onExport={exportData} onDelete={deleteAccount} />
+				<DataManagement onExport={exportData} onDeactivate={deactivateAccount} onDelete={deleteAccount} />
 			</div>
 		</PageLayout>
 	);
