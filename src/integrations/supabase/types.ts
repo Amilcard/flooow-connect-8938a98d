@@ -495,6 +495,7 @@ export type Database = {
         Row: {
           abandon_raison_financiere: boolean | null
           activity_id: string
+          aids_applied: Json | null
           child_id: string
           created_at: string
           express_flag: boolean | null
@@ -517,6 +518,7 @@ export type Database = {
         Insert: {
           abandon_raison_financiere?: boolean | null
           activity_id: string
+          aids_applied?: Json | null
           child_id: string
           created_at?: string
           express_flag?: boolean | null
@@ -539,6 +541,7 @@ export type Database = {
         Update: {
           abandon_raison_financiere?: boolean | null
           activity_id?: string
+          aids_applied?: Json | null
           child_id?: string
           created_at?: string
           express_flag?: boolean | null
