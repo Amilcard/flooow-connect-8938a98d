@@ -130,8 +130,9 @@ const Booking = () => {
         return;
       }
 
-      // Generate idempotency key
-      const idempotencyKey = `booking_${id}_${slotId}_${selectedChildId}_${Date.now()}`;
+      // Generate compact idempotency key (<100 chars)
+      const compact = (s: string) => s.replace(/-/g, "").slice(0, 8);
+      const idempotencyKey = `bkg_${compact(id!)}_${compact(slotId!)}_${compact(selectedChildId)}_${Date.now().toString(36)}`;
 
       // Call edge function instead of direct insert
       const { data, error } = await supabase.functions.invoke("bookings", {
