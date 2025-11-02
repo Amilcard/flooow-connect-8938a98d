@@ -38,9 +38,8 @@ const Search = () => {
 
   const { data: activities, isLoading, error } = useActivities(filters);
 
-  // Si recherche textuelle mais aucun résultat, afficher toutes les activités
-  const { data: allActivities } = useActivities({ limit: 20 });
-  const displayActivities = (activities && activities.length > 0) ? activities : (searchQuery ? allActivities : activities);
+  // Ne pas afficher de fallback - montrer vraiment les résultats de recherche
+  const displayActivities = activities || [];
 
   // Logger la recherche quand les résultats changent
   useEffect(() => {

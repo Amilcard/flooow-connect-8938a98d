@@ -1,8 +1,9 @@
 import { ActivityCard } from "./ActivityCard";
 import { ActivityCarousel } from "./ActivityCarousel";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { EmptyState } from "@/components/EmptyState";
 
 interface Activity {
   id: string;
@@ -59,26 +60,37 @@ export const ActivitySection = ({
         </Button>
       </div>
 
-      {/* Conditional rendering based on layout prop */}
-      {layout === 'carousel' ? (
-        <ActivityCarousel
-          activities={activities}
-          onActivityClick={(id) => navigate(`/activity/${id}`)}
+      {/* Show empty state if no activities */}
+      {activities.length === 0 ? (
+        <EmptyState
+          icon={Search}
+          title="Aucune activité trouvée"
+          description="Aucune activité ne correspond aux critères sélectionnés pour le moment."
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {activities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              {...activity}
-              ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
-              periodType={activity.periodType}
-              structureName={activity.structureName}
-              structureAddress={activity.structureAddress}
-              onRequestClick={() => navigate(`/activity/${activity.id}`)}
+        <>
+          {/* Conditional rendering based on layout prop */}
+          {layout === 'carousel' ? (
+            <ActivityCarousel
+              activities={activities}
+              onActivityClick={(id) => navigate(`/activity/${id}`)}
             />
-          ))}
-        </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activities.map((activity) => (
+                <ActivityCard
+                  key={activity.id}
+                  {...activity}
+                  ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
+                  periodType={activity.periodType}
+                  structureName={activity.structureName}
+                  structureAddress={activity.structureAddress}
+                  onRequestClick={() => navigate(`/activity/${activity.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </section>
   );

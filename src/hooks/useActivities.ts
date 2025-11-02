@@ -93,7 +93,8 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.category) {
-        query = query.contains("categories", [filters.category]);
+        // Use overlaps for array intersection (at least one match)
+        query = query.overlaps("categories", [filters.category]);
       }
 
       if (filters?.maxPrice !== undefined) {
