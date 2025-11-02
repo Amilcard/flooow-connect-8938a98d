@@ -496,9 +496,12 @@ export type Database = {
           abandon_raison_financiere: boolean | null
           activity_id: string
           aids_applied: Json | null
+          aids_total_cents: number
+          base_price_cents: number
           child_id: string
           created_at: string
           express_flag: boolean | null
+          final_price_cents: number
           history: Json | null
           id: string
           idempotency_key: string | null
@@ -519,9 +522,12 @@ export type Database = {
           abandon_raison_financiere?: boolean | null
           activity_id: string
           aids_applied?: Json | null
+          aids_total_cents?: number
+          base_price_cents?: number
           child_id: string
           created_at?: string
           express_flag?: boolean | null
+          final_price_cents?: number
           history?: Json | null
           id?: string
           idempotency_key?: string | null
@@ -542,9 +548,12 @@ export type Database = {
           abandon_raison_financiere?: boolean | null
           activity_id?: string
           aids_applied?: Json | null
+          aids_total_cents?: number
+          base_price_cents?: number
           child_id?: string
           created_at?: string
           express_flag?: boolean | null
+          final_price_cents?: number
           history?: Json | null
           id?: string
           idempotency_key?: string | null
