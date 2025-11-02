@@ -134,6 +134,15 @@ const Booking = () => {
       const compact = (s: string) => s.replace(/-/g, "").slice(0, 8);
       const idempotencyKey = `bkg_${compact(id!)}_${compact(slotId!)}_${compact(selectedChildId)}_${Date.now().toString(36)}`;
 
+      // Log payload for debugging
+      console.log("[booking] invoke payload", {
+        activity_id: id,
+        slot_id: slotId,
+        child_id: selectedChildId,
+        idempotency_key: idempotencyKey,
+        idempotency_key_length: idempotencyKey.length
+      });
+
       // Call edge function instead of direct insert
       const { data, error } = await supabase.functions.invoke("bookings", {
         body: {
@@ -144,6 +153,18 @@ const Booking = () => {
           express_flag: false
         }
       });
+
+      // Handle domain errors returned as success=false
+      if (!error && data && (data as any).success === false) {
+        const err = (data as any).error || {};
+        toast({
+          title: "Réservation non éligible",
+          description: err.message || "Cette réservation n'est pas possible",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       if (error) {
         // Parse error response for better messages

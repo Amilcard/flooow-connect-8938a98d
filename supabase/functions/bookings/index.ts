@@ -85,11 +85,14 @@ serve(async (req) => {
       if (childError || !child) {
         return new Response(
           JSON.stringify({
-            code: "CHILD_NOT_FOUND_OR_UNAUTHORIZED",
-            message: "L'enfant sélectionné est introuvable ou ne vous appartient pas",
-            hint: "Vérifiez que cet enfant est bien enregistré dans votre compte"
+            success: false,
+            error: {
+              code: "CHILD_NOT_FOUND_OR_UNAUTHORIZED",
+              message: "L'enfant sélectionné est introuvable ou ne vous appartient pas",
+              hint: "Vérifiez que cet enfant est bien enregistré dans votre compte"
+            }
           }),
-          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -119,13 +122,16 @@ serve(async (req) => {
         console.log(`[bookings] Eligibility rejected: ${eligibilityCheck.reason}`);
         return new Response(
           JSON.stringify({
-            code: "NOT_ELIGIBLE",
-            message: eligibilityCheck.message || "Cette réservation n'est pas éligible",
-            hint: "Vérifiez l'âge de l'enfant, la période et les conflits horaires",
-            reason: eligibilityCheck.reason,
-            details: eligibilityCheck
+            success: false,
+            error: {
+              code: "NOT_ELIGIBLE",
+              message: eligibilityCheck.message || "Cette réservation n'est pas éligible",
+              hint: "Vérifiez l'âge de l'enfant, la période et les conflits horaires",
+              reason: eligibilityCheck.reason,
+              details: eligibilityCheck
+            }
           }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -139,23 +145,29 @@ serve(async (req) => {
       if (slotError || !slot) {
         return new Response(
           JSON.stringify({
-            code: "SLOT_NOT_FOUND",
-            message: "Le créneau horaire sélectionné est introuvable",
-            hint: "Vérifiez que le créneau existe toujours"
+            success: false,
+            error: {
+              code: "SLOT_NOT_FOUND",
+              message: "Le créneau horaire sélectionné est introuvable",
+              hint: "Vérifiez que le créneau existe toujours"
+            }
           }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
       if (slot.seats_remaining <= 0) {
         return new Response(
           JSON.stringify({
-            code: "NO_SEATS_AVAILABLE",
-            message: "Aucune place disponible pour ce créneau",
-            hint: "Veuillez choisir un autre créneau ou vous inscrire sur liste d'attente",
+            success: false,
+            error: {
+              code: "NO_SEATS_AVAILABLE",
+              message: "Aucune place disponible pour ce créneau",
+              hint: "Veuillez choisir un autre créneau ou vous inscrire sur liste d'attente"
+            },
             seats_remaining: 0
           }),
-          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -302,11 +314,14 @@ serve(async (req) => {
         if (bookingError.message?.includes('Aucune place disponible')) {
           return new Response(
             JSON.stringify({
-              code: "NO_SEATS_AVAILABLE",
-              message: "Aucune place disponible pour ce créneau",
-              hint: "Veuillez choisir un autre créneau ou vous inscrire sur liste d'attente"
+              success: false,
+              error: {
+                code: "NO_SEATS_AVAILABLE",
+                message: "Aucune place disponible pour ce créneau",
+                hint: "Veuillez choisir un autre créneau ou vous inscrire sur liste d'attente"
+              }
             }),
-            { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
@@ -314,11 +329,14 @@ serve(async (req) => {
         if (bookingError.code === '42501' || bookingError.message?.includes('permission denied')) {
           return new Response(
             JSON.stringify({
-              code: "RLS_DENIED",
-              message: "Vous n'êtes pas autorisé à créer cette réservation",
-              hint: "Vérifiez que l'enfant vous appartient et que vous êtes connecté"
+              success: false,
+              error: {
+                code: "RLS_DENIED",
+                message: "Vous n'êtes pas autorisé à créer cette réservation",
+                hint: "Vérifiez que l'enfant vous appartient et que vous êtes connecté"
+              }
             }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
@@ -326,23 +344,29 @@ serve(async (req) => {
         if (bookingError.code?.startsWith('23')) {
           return new Response(
             JSON.stringify({
-              code: "CONSTRAINT_VIOLATION",
-              message: "Les données de réservation ne respectent pas les contraintes",
-              hint: "Vérifiez que les montants sont valides (aides ≤ prix de base)",
-              details: bookingError.message
+              success: false,
+              error: {
+                code: "CONSTRAINT_VIOLATION",
+                message: "Les données de réservation ne respectent pas les contraintes",
+                hint: "Vérifiez que les montants sont valides (aides ≤ prix de base)",
+                details: bookingError.message
+              }
             }),
-            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
         return new Response(
           JSON.stringify({
-            code: "BOOKING_CREATION_FAILED",
-            message: "Impossible de créer la réservation",
-            hint: "Veuillez réessayer ou contacter le support",
-            details: bookingError.message
+            success: false,
+            error: {
+              code: "BOOKING_CREATION_FAILED",
+              message: "Impossible de créer la réservation",
+              hint: "Veuillez réessayer ou contacter le support",
+              details: bookingError.message
+            }
           }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -369,6 +393,7 @@ serve(async (req) => {
 
       return new Response(
         JSON.stringify({
+          success: true,
           ...booking,
           seats_remaining_after: updatedSlot?.seats_remaining || 0,
           pricing: {
