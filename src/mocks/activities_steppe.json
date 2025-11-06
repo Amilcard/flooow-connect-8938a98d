@@ -996,7 +996,7 @@
       "lat": 45.3823,
       "lon": 4.5234
     },
-    "cout": 380,
+    "cout": 680,
     "aidesEligibles": ["CAF", "ANCV", "JPA"],
     "mobilite": {
       "TC": ["Départ groupé depuis gare Châteaucreux"],
@@ -1029,7 +1029,7 @@
       "lat": 45.3445,
       "lon": 4.4678
     },
-    "cout": 250,
+    "cout": 550,
     "aidesEligibles": ["CAF", "ANCV"],
     "mobilite": {
       "TC": ["Départ groupé depuis Place Jean Jaurès"],
@@ -1062,7 +1062,7 @@
       "lat": 45.5234,
       "lon": 4.2678
     },
-    "cout": 420,
+    "cout": 990,
     "aidesEligibles": ["CAF", "ANCV", "PassSport"],
     "mobilite": {
       "TC": ["Départ groupé depuis gare Châteaucreux"],
@@ -1160,7 +1160,7 @@
       "lat": 45.5289,
       "lon": 4.2789
     },
-    "cout": 220,
+    "cout": 580,
     "aidesEligibles": ["CAF", "ANCV"],
     "mobilite": {
       "TC": ["Départ groupé depuis Place Jacquard"],
@@ -1223,7 +1223,7 @@
       "lat": 45.2989,
       "lon": 4.5567
     },
-    "cout": 320,
+    "cout": 520,
     "aidesEligibles": ["CAF", "ANCV", "PassSport"],
     "mobilite": {
       "TC": ["Départ groupé depuis Place Jean Jaurès"],
