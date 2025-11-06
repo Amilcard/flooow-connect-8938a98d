@@ -33,16 +33,28 @@ const Auth = () => {
   
   const [passwordStrength, setPasswordStrength] = useState(0);
 
-  // Check if already logged in
+  // Check if already logged in (exécuté une seule fois au montage)
   useEffect(() => {
+    let mounted = true;
+    
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/");
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && mounted) {
+          navigate("/", { replace: true });
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
       }
     };
+    
     checkAuth();
-  }, [navigate]);
+    
+    // Cleanup pour éviter les setState après unmount
+    return () => {
+      mounted = false;
+    };
+  }, []); // Pas de dépendances → exécuté UNE SEULE FOIS
 
   // Calculate password strength
   useEffect(() => {

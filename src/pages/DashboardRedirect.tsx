@@ -37,20 +37,23 @@ const DashboardRedirect = () => {
 
       if (error) throw error;
 
-      return data?.role as AppRole | null;
-    }
+      // CORRECTION : Toujours retourner une valeur définie (jamais null/undefined)
+      // Si pas de rôle → par défaut 'family'
+      return (data?.role as AppRole) || 'family';
+    },
+    // Éviter les re-fetches inutiles qui causent le clignotement
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (remplace cacheTime)
+    retry: 1, // Une seule tentative en cas d'erreur
+    refetchOnWindowFocus: false, // Ne pas refetch au focus
+    refetchOnMount: false, // Ne pas refetch au remount
   });
 
   useEffect(() => {
-    if (!isLoading) {
-      if (userRole) {
-        const dashboardPath = ROLE_DASHBOARD_MAP[userRole];
-        navigate(dashboardPath, { replace: true });
-      } else {
-        // Pas de rôle défini → nouveau compte ou en attente
-        // Rediriger vers page d'accueil
-        navigate("/", { replace: true });
-      }
+    if (!isLoading && userRole) {
+      const dashboardPath = ROLE_DASHBOARD_MAP[userRole];
+      // Utiliser replace: true pour éviter d'ajouter à l'historique
+      navigate(dashboardPath, { replace: true });
     }
   }, [userRole, isLoading, navigate]);
 
