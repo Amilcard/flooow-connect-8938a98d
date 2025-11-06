@@ -90,10 +90,7 @@ const Index = () => {
   // Redirect logged-in non-family users away from home
   useEffect(() => {
     if (isLoggedIn && userRole && userRole !== 'family') {
-      console.log('[Index] Redirecting non-family user to /dashboards (role=%s)', userRole);
       navigate("/dashboards", { replace: true });
-    } else {
-      console.log('[Index] No redirect from / for role=%s', userRole ?? 'anonymous');
     }
   }, [isLoggedIn, userRole, navigate]);
 

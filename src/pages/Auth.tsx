@@ -36,13 +36,11 @@ const Auth = () => {
   // Check if already logged in (exécuté une seule fois au montage)
   useEffect(() => {
     let mounted = true;
-    console.log('[Auth] mounted');
     
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session && mounted) {
-          console.log('[Auth] session found, redirecting to /');
           navigate("/", { replace: true });
         }
       } catch (error) {
