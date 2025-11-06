@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Menu } from "lucide-react";
+import { Heart, Menu, Presentation } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import AuthNavigation from "@/components/authentification/AuthNavigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,6 +41,39 @@ const Header = () => {
                 Dashboard
               </Link>
             )}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-sm font-medium text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                <Presentation className="w-4 h-4" />
+                Démos
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/demo/parent" className="w-full cursor-pointer">
+                    Démo Parent
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/demo/lemoine" className="w-full cursor-pointer">
+                    Démo Mme Lemoine
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/demo/collectivite" className="w-full cursor-pointer">
+                    Démo Collectivité
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/demo/financeur" className="w-full cursor-pointer">
+                    Démo Financeur
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/demo/structure" className="w-full cursor-pointer">
+                    Démo Structure
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <a href="#a-propos" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               À propos
             </a>
@@ -83,6 +122,27 @@ const Header = () => {
                   Dashboard
                 </Link>
               )}
+              <div className="flex flex-col gap-2 border-t border-border/40 pt-4">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                  <Presentation className="w-3 h-3" />
+                  Démos
+                </span>
+                <Link to="/demo/parent" className="text-sm font-medium text-foreground hover:text-primary transition-colors pl-4">
+                  Démo Parent
+                </Link>
+                <Link to="/demo/lemoine" className="text-sm font-medium text-foreground hover:text-primary transition-colors pl-4">
+                  Démo Mme Lemoine
+                </Link>
+                <Link to="/demo/collectivite" className="text-sm font-medium text-foreground hover:text-primary transition-colors pl-4">
+                  Démo Collectivité
+                </Link>
+                <Link to="/demo/financeur" className="text-sm font-medium text-foreground hover:text-primary transition-colors pl-4">
+                  Démo Financeur
+                </Link>
+                <Link to="/demo/structure" className="text-sm font-medium text-foreground hover:text-primary transition-colors pl-4">
+                  Démo Structure
+                </Link>
+              </div>
               <a href="#a-propos" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 À propos
               </a>
