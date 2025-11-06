@@ -1014,7 +1014,7 @@ const mockActivities = [
       "adresse": "Station du Bessat, 42660 Le Bessat",
       "transport": "Transport organisé depuis Saint-Étienne"
     },
-    "cout": 450,
+    "cout": 520,
     "aidesEligibles": ["caf-vacances", "bourse-collectivite", "pass-sport"],
     "mobilite": {
       "transportCommun": { "disponible": false },
@@ -1098,7 +1098,7 @@ const mockActivities = [
       "adresse": "Route du Pilat, 42410 Pélussin",
       "transport": "Transport organisé depuis Saint-Étienne"
     },
-    "cout": 280,
+    "cout": 580,
     "aidesEligibles": ["caf-vacances", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": false },
@@ -1210,7 +1210,7 @@ const mockActivities = [
       "adresse": "Colonie affiliée, 17000 La Rochelle",
       "transport": "Transport collectif bus depuis Saint-Étienne"
     },
-    "cout": 520,
+    "cout": 1050,
     "aidesEligibles": ["caf-vacances", "bourse-collectivite", "aides-depart-vacances"],
     "mobilite": {
       "transportCommun": { "disponible": false },
