@@ -14,6 +14,7 @@ import { BackButton } from "@/components/BackButton";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { 
   MapPin, 
@@ -39,6 +40,7 @@ import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
+import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -66,6 +68,10 @@ const ActivityDetail = () => {
   const [imgError, setImgError] = useState(false);
   const [adjustedPrice, setAdjustedPrice] = useState<number | null>(null);
   const [calculatedAids, setCalculatedAids] = useState<any[]>([]);
+  
+  // États pour le calculateur d'aides intégré
+  const [quotientFamilial, setQuotientFamilial] = useState<string>("");
+  const [cityCode, setCityCode] = useState<string>("");
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
@@ -131,6 +137,18 @@ const ActivityDetail = () => {
       return data;
     }
   });
+
+  // Pré-remplir le QF et le code postal depuis le profil utilisateur
+  useEffect(() => {
+    if (userProfile) {
+      if (userProfile.quotient_familial) {
+        setQuotientFamilial(String(userProfile.quotient_familial));
+      }
+      if (userProfile.postal_code) {
+        setCityCode(userProfile.postal_code);
+      }
+    }
+  }, [userProfile]);
 
   // Fetch user's children
   const { data: children = [] } = useQuery({
@@ -376,29 +394,121 @@ const ActivityDetail = () => {
               </div>
             </section>
 
-            {/* Financial Aids */}
+            {/* Financial Aids Section with integrated calculator */}
             {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
               <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">Aides financières acceptées</h2>
+                <h2 className="text-2xl font-bold text-foreground">💰 Évaluer ton aide</h2>
                 <Card>
-                  <CardContent className="p-6">
-                    <div className="flex flex-wrap gap-2">
-                      {activity.accepts_aid_types.map((aid: string) => (
-                        <Badge key={aid} variant="secondary" className="px-3 py-1">
-                          {aid}
-                        </Badge>
-                      ))}
+                  <CardContent className="p-6 space-y-4">
+                    {/* Aides acceptées */}
+                    <div>
+                      <p className="text-sm font-medium mb-2">Aides financières acceptées</p>
+                      <div className="flex flex-wrap gap-2">
+                        {activity.accepts_aid_types.map((aid: string) => (
+                          <Badge key={aid} variant="secondary" className="px-3 py-1">
+                            {aid}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowAidModal(true)}
-                      className="w-full mt-4"
-                    >
-                      <Euro size={16} className="mr-2" />
-                      Calculer mes aides personnalisées
-                    </Button>
+
+                    <Separator />
+
+                    {/* Formulaire de saisie QF et Ville */}
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Quotient Familial */}
+                        <div className="space-y-2">
+                          <Label htmlFor="qf">
+                            Quotient Familial CAF <span className="text-muted-foreground">(€/mois)</span>
+                          </Label>
+                          <Input
+                            id="qf"
+                            type="number"
+                            min="0"
+                            max="9999"
+                            placeholder="Ex: 800"
+                            value={quotientFamilial}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Validation: maximum 4 chiffres
+                              if (value === "" || (parseInt(value) >= 0 && parseInt(value) <= 9999)) {
+                                setQuotientFamilial(value);
+                              }
+                            }}
+                          />
+                          {userProfile?.quotient_familial && (
+                            <p className="text-xs text-muted-foreground">
+                              Pré-rempli depuis votre profil
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Code Postal / Ville */}
+                        <div className="space-y-2">
+                          <Label htmlFor="city">
+                            Ville de résidence <span className="text-muted-foreground">(code postal)</span>
+                          </Label>
+                          <Input
+                            id="city"
+                            type="text"
+                            maxLength={5}
+                            placeholder="Ex: 42000"
+                            value={cityCode}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Validation: seulement des chiffres, max 5
+                              if (/^\d{0,5}$/.test(value)) {
+                                setCityCode(value);
+                              }
+                            }}
+                          />
+                          {userProfile?.postal_code && (
+                            <p className="text-xs text-muted-foreground">
+                              Pré-rempli depuis votre profil
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Info message */}
+                      {(!quotientFamilial || !cityCode) && (
+                        <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                          <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-muted-foreground">
+                            Renseignez votre QF et votre ville pour voir les aides disponibles et votre reste à charge
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
+
+                {/* Financial Aids Calculator - Affichage des résultats */}
+                {quotientFamilial && cityCode && selectedChild && (
+                  <FinancialAidsCalculator
+                    activityPrice={activity.price_base || 0}
+                    activityCategories={activity.categories || [activity.category]}
+                    childAge={calculateAge(selectedChild.dob)}
+                    quotientFamilial={parseInt(quotientFamilial) || 0}
+                    cityCode={cityCode}
+                    durationDays={calculateDurationDays(selectedSlot)}
+                  />
+                )}
+
+                {/* Message si pas d'enfant sélectionné */}
+                {quotientFamilial && cityCode && !selectedChild && children.length > 0 && (
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-2">
+                        <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <p className="text-sm text-muted-foreground">
+                          Sélectionnez un enfant dans la carte de réservation à droite pour voir les aides disponibles
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </section>
             )}
 
