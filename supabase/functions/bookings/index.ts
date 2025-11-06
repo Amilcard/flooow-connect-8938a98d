@@ -33,6 +33,12 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
+    // Create user-context client for RPCs so auth.uid() is set in Postgres
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } }
+    });
+    
     if (authError || !user) {
       return new Response(
         JSON.stringify({ error: "invalid_token" }),
@@ -209,12 +215,12 @@ serve(async (req) => {
         // Get user profile for QF and city code
         const { data: profile } = await supabase
           .from('profiles')
-          .select('profile_json, city_insee')
+          .select('quotient_familial, postal_code, city_insee, profile_json')
           .eq('id', user.id)
           .single();
 
-        const quotientFamilial = profile?.profile_json?.quotient_familial || 0;
-        const cityCode = profile?.city_insee || profile?.profile_json?.city_code || '';
+        const quotientFamilial = profile?.quotient_familial ?? profile?.profile_json?.quotient_familial ?? 0;
+        const cityCode = profile?.city_insee ?? profile?.profile_json?.city_code ?? '';
 
         // Get slot duration for per-day aids calculation
         const { data: slotDetails } = await supabase
@@ -231,7 +237,7 @@ serve(async (req) => {
           : 1;
 
         // SERVER-SIDE AIDS CALCULATION (don't trust client)
-        const { data: eligibleAids, error: aidsError } = await supabase
+        const { data: eligibleAids, error: aidsError } = await userClient
           .rpc('calculate_eligible_aids', {
             p_age: childAge,
             p_qf: quotientFamilial,
