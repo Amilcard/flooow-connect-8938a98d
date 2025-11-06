@@ -7,9 +7,8 @@ interface VacationPeriodFilterProps {
 }
 
 const VACATION_PERIODS = [
-  { value: "février_2025", label: "Vacances Février 2025", emoji: "❄️" },
-  { value: "printemps_2025", label: "Vacances Printemps 2025", emoji: "🌸" },
-  { value: "été_2025", label: "Vacances Été 2025", emoji: "☀️" },
+  { value: "printemps_2026", label: "Vacances Printemps 2026", emoji: "🌸" },
+  { value: "été_2026", label: "Été 2026", emoji: "☀️" },
 ];
 
 export const VacationPeriodFilter = ({
@@ -17,7 +16,7 @@ export const VacationPeriodFilter = ({
   onPeriodChange,
 }: VacationPeriodFilterProps) => {
   return (
-    <div className="flex flex-wrap gap-2 mb-4">
+    <div className="flex flex-wrap gap-2 mb-4 justify-center">
       <Button
         variant={!selectedPeriod ? "default" : "outline"}
         size="sm"
