@@ -10,12 +10,12 @@ import { SimulateAidModal } from "@/components/simulations/SimulateAidModal";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { BackButton } from "@/components/BackButton";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  ArrowLeft, 
   MapPin, 
   Users, 
   Accessibility, 
@@ -208,15 +208,7 @@ const ActivityDetail = () => {
       {/* Minimalist Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-4 px-4 md:px-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Retour"
-            className="hover:bg-muted"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+          <BackButton fallback="/activities" variant="ghost" size="icon" className="hover:bg-muted" />
         </div>
       </div>
 
