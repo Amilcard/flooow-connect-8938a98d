@@ -53,6 +53,7 @@ const DashboardRedirect = () => {
     if (!isLoading && userRole) {
       const dashboardPath = ROLE_DASHBOARD_MAP[userRole];
       // Utiliser replace: true pour éviter d'ajouter à l'historique
+      console.log('[DashboardRedirect] role=%s -> %s', userRole, dashboardPath);
       navigate(dashboardPath, { replace: true });
     }
   }, [userRole, isLoading, navigate]);

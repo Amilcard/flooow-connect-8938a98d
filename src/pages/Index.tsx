@@ -44,11 +44,6 @@ const Index = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/dashboards", { replace: true });
-    }
-  }, [isLoggedIn, navigate]);
 
   // Fetch user profile to check postal code
   const { data: userProfile } = useQuery({
@@ -68,6 +63,39 @@ const Index = () => {
     },
     enabled: isLoggedIn
   });
+
+  // Fetch user role to control home redirect behavior
+  const { data: userRole } = useQuery({
+    queryKey: ["user-role-index"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 'family' as const;
+
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return (data?.role as 'structure' | 'territory_admin' | 'partner' | 'superadmin' | 'family') ?? 'family';
+    },
+    enabled: isLoggedIn,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false
+  });
+
+  // Redirect logged-in non-family users away from home
+  useEffect(() => {
+    if (isLoggedIn && userRole && userRole !== 'family') {
+      console.log('[Index] Redirecting non-family user to /dashboards (role=%s)', userRole);
+      navigate("/dashboards", { replace: true });
+    } else {
+      console.log('[Index] No redirect from / for role=%s', userRole ?? 'anonymous');
+    }
+  }, [isLoggedIn, userRole, navigate]);
 
   // Check territory access
   const { data: territoryAccess } = useTerritoryAccess(userProfile?.postal_code || null);
