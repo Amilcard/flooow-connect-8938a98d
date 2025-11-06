@@ -69,12 +69,10 @@ const TERRITORY_LABELS = {
   commune: "🏘️ Communal"
 } as const;
 
+// Villes limitées pour la démo (zone pilote uniquement)
 const SAMPLE_CITIES = [
-  { code: "42218", name: "Saint-Étienne" },
-  { code: "42095", name: "Firminy" },
-  { code: "42184", name: "La Ricamarie" },
-  { code: "69123", name: "Lyon" },
-  { code: "38185", name: "Grenoble" }
+  { code: "42000", name: "Saint-Étienne" },
+  { code: "42150", name: "La Ricamarie" }
 ];
 
 export const SimulateAidModal = ({
