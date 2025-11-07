@@ -374,79 +374,79 @@ const ActivityDetail = () => {
             </Badge>
           )}
         </div>
+        
+        {/* Bouton de partage en superposition - en haut à droite */}
+        <div className="absolute top-4 right-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={handleShare}
+                  className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-md"
+                >
+                  <Share2 size={18} className="text-foreground" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Partager</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Share menu for desktop */}
+          {showShareMenu && (
+            <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
+              <div className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm"
+                  onClick={shareViaWhatsApp}
+                >
+                  <MessageCircle size={16} className="mr-2" />
+                  WhatsApp
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm"
+                  onClick={shareViaEmail}
+                >
+                  <Mail size={16} className="mr-2" />
+                  E-mail
+                </Button>
+                <Separator className="my-1" />
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm"
+                  onClick={copyLink}
+                >
+                  {copied ? (
+                    <>
+                      <Check size={16} className="mr-2 text-green-600" />
+                      <span className="text-green-600">Lien copié !</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={16} className="mr-2" />
+                      Copier le lien
+                    </>
+                  )}
+                </Button>
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
 
       {/* Main Content Container - Airbnb Style with Grid */}
       <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
         {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
         <div className="space-y-4 pb-8 border-b mb-8">
-          {/* Titre H1 fort avec bouton partage */}
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground flex-1">
-              {activity.title}
-            </h1>
-            <div className="relative">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleShare}
-                      className="hover:bg-muted"
-                    >
-                      <Share2 size={20} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Partager</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              {/* Share menu for desktop */}
-              {showShareMenu && (
-                <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
-                  <div className="space-y-1">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-sm"
-                      onClick={shareViaWhatsApp}
-                    >
-                      <MessageCircle size={16} className="mr-2" />
-                      WhatsApp
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-sm"
-                      onClick={shareViaEmail}
-                    >
-                      <Mail size={16} className="mr-2" />
-                      E-mail
-                    </Button>
-                    <Separator className="my-1" />
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-sm"
-                      onClick={copyLink}
-                    >
-                      {copied ? (
-                        <>
-                          <Check size={16} className="mr-2 text-green-600" />
-                          <span className="text-green-600">Lien copié !</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={16} className="mr-2" />
-                          Copier le lien
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
+          {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            {activity.title}
+          </h1>
           
           {/* Méta informations (âge, durée, lieu) */}
           <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">

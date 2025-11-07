@@ -284,7 +284,18 @@ const MesEnfants = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1"
-                      onClick={() => navigate(`/activities?child=${child.id}`)}
+                      onClick={() => {
+                        const age = calculateAge(child.dob);
+                        const interests = child.needs_json?.interests || [];
+                        const params = new URLSearchParams();
+                        params.set('childId', child.id);
+                        params.set('ageMin', age.toString());
+                        params.set('ageMax', age.toString());
+                        if (interests.length > 0) {
+                          params.set('interests', interests.join(','));
+                        }
+                        navigate(`/activities?${params.toString()}`);
+                      }}
                     >
                       Voir les activités adaptées
                     </Button>

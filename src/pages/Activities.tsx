@@ -7,6 +7,8 @@ import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 
 // Mapping des IDs univers vers les catégories réelles
@@ -19,11 +21,18 @@ const UNIVERSE_TO_CATEGORY: Record<string, string> = {
 };
 
 const Activities = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const universeFromUrl = searchParams.get("universe");
   const category = searchParams.get("category");
   const type = searchParams.get("type");
   const periodFromUrl = searchParams.get("period") || undefined;
+  
+  // Paramètres de pré-filtrage par profil enfant
+  const childId = searchParams.get("childId");
+  const ageMin = searchParams.get("ageMin");
+  const ageMax = searchParams.get("ageMax");
+  const interests = searchParams.get("interests")?.split(',') || [];
+  
   const [selectedVacationPeriod, setSelectedVacationPeriod] = useState<string | undefined>(periodFromUrl);
   
   // Déterminer l'onglet actif initial basé sur le paramètre universe ou category
@@ -53,11 +62,28 @@ const Activities = () => {
     if (type === "budget") filters.maxPrice = 50;
     if (type === "health") filters.hasAccessibility = true;
     if (selectedVacationPeriod) filters.vacationPeriod = selectedVacationPeriod;
+    
+    // Pré-filtrage par profil enfant
+    if (ageMin && ageMax) {
+      filters.ageMin = parseInt(ageMin);
+      filters.ageMax = parseInt(ageMax);
+    }
+    
     return filters;
   };
 
   const { data: allActivities = [], isLoading, error } = useActivities(getAllFilters());
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(10);
+  
+  // Fonction pour retirer le filtre enfant
+  const clearChildFilter = () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('childId');
+    newParams.delete('ageMin');
+    newParams.delete('ageMax');
+    newParams.delete('interests');
+    setSearchParams(newParams);
+  };
 
   console.log("📊 Activities page state:", { 
     activitiesCount: allActivities.length, 
@@ -95,6 +121,30 @@ const Activities = () => {
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
       <main className="container px-4 py-6">
+        {/* Afficher le bandeau de filtre enfant si présent */}
+        {childId && ageMin && (
+          <div className="mb-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">
+                  Activités adaptées pour votre enfant
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Âge: {ageMin} ans
+                  {interests.length > 0 && ` • Centres d'intérêt: ${interests.join(', ')}`}
+                </p>
+              </div>
+              <button
+                onClick={clearChildFilter}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-background/50 rounded-md transition-colors"
+              >
+                <X size={14} />
+                Retirer le filtre
+              </button>
+            </div>
+          </div>
+        )}
+        
         <VacationPeriodFilter 
           selectedPeriod={selectedVacationPeriod}
           onPeriodChange={setSelectedVacationPeriod}
