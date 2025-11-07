@@ -33,7 +33,10 @@ import {
   Bus,
   Bike,
   CalendarRange,
-  CheckCircle2
+  CheckCircle2,
+  Share2,
+  Copy,
+  Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -66,6 +69,8 @@ const ActivityDetail = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
   
   // Hook pour la persistance des données d'aides et de transport
   const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id!);
@@ -249,6 +254,54 @@ const ActivityDetail = () => {
     saveTransportMode(mode);
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareTitle = activity.title;
+    const shareText = `Découvrez cette activité: ${activity.title}`;
+
+    // Try Web Share API (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Error sharing:', err);
+        }
+      }
+    } else {
+      // Desktop: toggle share menu
+      setShowShareMenu(!showShareMenu);
+    }
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+        setShowShareMenu(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const shareViaEmail = () => {
+    const subject = encodeURIComponent(`Découvrez cette activité: ${activity.title}`);
+    const body = encodeURIComponent(`Je pense que cette activité pourrait vous intéresser:\n\n${activity.title}\n${window.location.href}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  const shareViaWhatsApp = () => {
+    const text = encodeURIComponent(`Découvrez cette activité: ${activity.title}\n${window.location.href}`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
   // Calculate age from date of birth
   const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
@@ -327,10 +380,73 @@ const ActivityDetail = () => {
       <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
         {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
         <div className="space-y-4 pb-8 border-b mb-8">
-          {/* Titre H1 fort */}
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-            {activity.title}
-          </h1>
+          {/* Titre H1 fort avec bouton partage */}
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground flex-1">
+              {activity.title}
+            </h1>
+            <div className="relative">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleShare}
+                      className="hover:bg-muted"
+                    >
+                      <Share2 size={20} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Partager</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              {/* Share menu for desktop */}
+              {showShareMenu && (
+                <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
+                  <div className="space-y-1">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-sm"
+                      onClick={shareViaWhatsApp}
+                    >
+                      <MessageCircle size={16} className="mr-2" />
+                      WhatsApp
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-sm"
+                      onClick={shareViaEmail}
+                    >
+                      <Mail size={16} className="mr-2" />
+                      E-mail
+                    </Button>
+                    <Separator className="my-1" />
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-sm"
+                      onClick={copyLink}
+                    >
+                      {copied ? (
+                        <>
+                          <Check size={16} className="mr-2 text-green-600" />
+                          <span className="text-green-600">Lien copié !</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={16} className="mr-2" />
+                          Copier le lien
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
           
           {/* Méta informations (âge, durée, lieu) */}
           <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">

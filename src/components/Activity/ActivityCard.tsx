@@ -103,32 +103,24 @@ export const ActivityCard = ({
           }}
         />
         
-        {/* BADGES OVERLAY */}
+        {/* BADGES OVERLAY - Simplifiés */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
+          {/* Badge Univers */}
           <Badge
-            className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
+            className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs font-semibold"
             aria-label={`Catégorie: ${category}`}
           >
             {category}
           </Badge>
-          {periodType && (
-            <Badge
-              variant="secondary"
-              className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
-              aria-label={`Période: ${periodType}`}
-            >
-              {periodType === 'annual' && '📅'}
-              {periodType === 'school_holidays' && '🏖️'}
-              {periodType === 'trimester' && '📆'}
-            </Badge>
-          )}
+          
+          {/* Badge Type d'accueil (uniquement pour vacances) */}
           {vacationType === 'sejour_hebergement' && (
             <Badge
               variant="secondary"
               className="bg-purple-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
-              aria-label="Séjour avec hébergement"
+              aria-label="Séjour / Colonie"
             >
-              🏕️ Séjour
+              Séjour / Colonie
             </Badge>
           )}
           {vacationType === 'centre_loisirs' && (
@@ -137,34 +129,28 @@ export const ActivityCard = ({
               className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
               aria-label="Centre de loisirs"
             >
-              🎨 Centre de loisirs
+              Centre de loisirs
             </Badge>
           )}
+          {vacationType === 'stage_journee' && (
+            <Badge
+              variant="secondary"
+              className="bg-amber-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label="Stage"
+            >
+              Stage
+            </Badge>
+          )}
+          
+          {/* Badge Accessibilité PMR */}
           {hasAccessibility && (
             <Badge
               variant="secondary"
               className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
               aria-label="Accessible PMR"
             >
-              <Accessibility size={12} />
-            </Badge>
-          )}
-          {isHealthFocused && (
-            <Badge
-              variant="secondary"
-              className="bg-green-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
-              aria-label="Activité santé/bien-être"
-            >
-              {isApa ? '⚕️ APA' : '💚 Santé'}
-            </Badge>
-          )}
-          {isInsertionPro && (
-            <Badge
-              variant="secondary"
-              className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
-              aria-label={`Insertion professionnelle: ${insertionType || ''}`}
-            >
-              💼 {insertionType === 'BAFA' ? 'BAFA' : insertionType === 'stage_decouverte' ? 'Stage' : 'Insertion pro'}
+              <Accessibility size={12} className="mr-1" />
+              PMR
             </Badge>
           )}
         </div>
@@ -205,8 +191,8 @@ export const ActivityCard = ({
             </div>
           )}
 
-          {/* Ages + Distance */}
-          <div className="flex items-center gap-3 text-xs">
+          {/* Ages + Période + Distance */}
+          <div className="flex items-center gap-2 text-xs flex-wrap">
             {ageRange && (
               <div className="flex items-center gap-1">
                 <Users className="w-3.5 h-3.5" aria-hidden="true" />
@@ -214,57 +200,24 @@ export const ActivityCard = ({
               </div>
             )}
 
+            {periodType && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
+                <span className="text-muted-foreground">
+                  {periodType === 'annual' || periodType === 'trimester' 
+                    ? 'Année scolaire' 
+                    : 'Vacances'}
+                </span>
+              </>
+            )}
+
             {distance && (
-              <div className="flex items-center gap-1">
+              <>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
                 <span>{distance}</span>
-              </div>
+              </>
             )}
           </div>
-
-          {/* Mobilité */}
-          {mobility && (mobility.TC || mobility.velo || mobility.covoit) && (
-            <div className="flex items-center gap-2 text-xs">
-              {mobility.TC && (
-                <div className="flex items-center gap-1 text-primary" title={mobility.TC}>
-                  <Bus className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{mobility.TC.split(' ').slice(0, 2).join(' ')}</span>
-                </div>
-              )}
-              {mobility.velo && (
-                <div className="flex items-center gap-1 text-green-600" title="Vélo disponible">
-                  <Bike className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Vélo</span>
-                </div>
-              )}
-              {mobility.covoit && (
-                <div className="flex items-center gap-1 text-blue-600" title="Covoiturage">
-                  <Car className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Covoit</span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Aides financières */}
-          {aidesEligibles && aidesEligibles.length > 0 && (
-            <div className="flex flex-wrap gap-1 pt-1">
-              {aidesEligibles.slice(0, 3).map((aide) => (
-                <Badge
-                  key={aide}
-                  variant="secondary"
-                  className="text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
-                >
-                  {aide}
-                </Badge>
-              ))}
-              {aidesEligibles.length > 3 && (
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                  +{aidesEligibles.length - 3}
-                </Badge>
-              )}
-            </div>
-          )}
         </div>
 
         {/* PRICING + CTA */}
@@ -306,18 +259,10 @@ export const ActivityCard = ({
             <p className="text-[10px] text-muted-foreground">
               {priceUnit || (periodType === 'annual' ? 'par an' : periodType === 'trimester' ? 'par trimestre' : 'par période')}
             </p>
-            {hasFinancialAid && !estimatedAidAmount && !hasAids && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-1">
-                Aides dispo
+            {(hasFinancialAid || aidesEligibles.length > 0) && !estimatedAidAmount && !hasAids && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-1 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                💰 Aides dispo
               </Badge>
-            )}
-            {complexityScore && complexityScore >= 1 && complexityScore <= 5 && (
-              <div className="flex items-center gap-1 mt-1" title={`Complexité administrative: ${complexityScore}/5`}>
-                <span className="text-[10px] text-muted-foreground">Admin:</span>
-                {[...Array(complexityScore)].map((_, i) => (
-                  <span key={i} className="text-[10px] text-yellow-500">⭐</span>
-                ))}
-              </div>
             )}
           </div>
 
