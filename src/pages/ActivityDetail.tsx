@@ -286,8 +286,8 @@ const ActivityDetail = () => {
         </div>
       </div>
 
-      {/* Hero Image - Airbnb Style with Limited Height */}
-      <div className="relative w-full h-[48vh] md:h-[52vh] max-h-[560px] min-h-[280px] md:min-h-[420px] overflow-hidden">
+      {/* Hero Image - Optimisé avec hauteur raisonnable */}
+      <div className="relative w-full h-[40vh] md:h-[45vh] max-h-[480px] min-h-[240px] overflow-hidden">
         <img
           src={imgError ? fallbackImage : displayImage}
           alt={activity.title}
@@ -295,19 +295,19 @@ const ActivityDetail = () => {
           onError={() => setImgError(true)}
         />
         
-        {/* Bottom gradient overlay - 20-30% */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        {/* Gradient overlay subtil */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
         
-        {/* Floating badges */}
-        <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
+        {/* Badges flottants repositionnés */}
+        <div className="absolute top-4 left-4 flex gap-2 flex-wrap max-w-[80%]">
           {activity.categories && activity.categories.length > 0 ? (
-            activity.categories.map((cat: string) => (
-              <Badge key={cat} variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-lg">
+            activity.categories.slice(0, 2).map((cat: string) => (
+              <Badge key={cat} variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-md">
                 {cat}
               </Badge>
             ))
           ) : (
-            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-lg">
+            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-md">
               {activity.category}
             </Badge>
           )}
@@ -315,7 +315,7 @@ const ActivityDetail = () => {
            activity.accessibility_checklist !== null && 
            'wheelchair' in activity.accessibility_checklist &&
            activity.accessibility_checklist.wheelchair && (
-            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-lg">
+            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-md">
               <Accessibility size={14} className="mr-1" />
               PMR
             </Badge>
@@ -464,84 +464,7 @@ const ActivityDetail = () => {
               </section>
             )}
 
-            {/* Slot selection and booking */}
-            {slots.length > 0 && (
-              <section className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-foreground">Créneaux disponibles</h2>
-                  {periodFilter && (
-                    <Badge variant="secondary" className="text-xs">
-                      {periodFilter === "printemps_2026" ? "🌸 Printemps 2026" : "☀️ Été 2026"}
-                    </Badge>
-                  )}
-                </div>
-                <div className="space-y-3">
-                  {slots.map(slot => {
-                    const startDate = new Date(slot.start);
-                    const endDate = new Date(slot.end);
-                    return (
-                      <Card 
-                        key={slot.id}
-                        className={`p-4 cursor-pointer transition-all ${
-                          selectedSlotId === slot.id 
-                            ? 'ring-2 ring-primary bg-accent/50' 
-                            : 'hover:bg-accent/20'
-                        }`}
-                        onClick={() => setSelectedSlotId(slot.id)}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <Calendar size={16} className="text-primary" />
-                              <span className="font-medium">
-                                {startDate.toLocaleDateString('fr-FR', { 
-                                  weekday: 'long', 
-                                  day: 'numeric', 
-                                  month: 'long' 
-                                })}
-                              </span>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {startDate.toLocaleTimeString('fr-FR', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })} - {endDate.toLocaleTimeString('fr-FR', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </div>
-                          </div>
-                          <Badge variant="secondary">
-                            {slot.seats_remaining} places
-                          </Badge>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-
-                <Button
-                  onClick={handleBooking}
-                  disabled={!selectedSlotId || !aidsData}
-                  className="w-full h-14 text-lg"
-                  size="lg"
-                >
-                  {!aidsData 
-                    ? "Calculez d'abord vos aides" 
-                    : !selectedSlotId 
-                    ? "Sélectionnez un créneau"
-                    : "Demander une inscription"}
-                </Button>
-
-                {!aidsData && (
-                  <p className="text-xs text-center text-muted-foreground">
-                    Merci d'abord d'estimer vos aides pour un enfant
-                  </p>
-                )}
-              </section>
-            )}
-
-            {/* Eco Mobility Section - En bas de page */}
+            {/* Eco Mobility Section */}
             <EcoMobilitySection 
               activityId={activity.id}
               activityAddress={activity.structures?.address}
@@ -552,12 +475,13 @@ const ActivityDetail = () => {
             />
           </div>
 
-          {/* Right Column - Price Summary (4/12) */}
+          {/* Right Column - Sticky Booking Card (4/12) */}
           <div className="md:col-span-4">
-            <Card className="p-6 sticky top-24">
+            <Card className="p-6 md:sticky md:top-24 space-y-6">
+              {/* Prix et aides */}
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-2xl font-bold">
+                  <span className="text-3xl font-bold">
                     {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
                   </span>
                   {activity.price_note && (
@@ -584,18 +508,99 @@ const ActivityDetail = () => {
                     </div>
                   </>
                 )}
+              </div>
 
-                <Separator />
+              {/* Créneaux disponibles */}
+              {slots.length > 0 && (
+                <>
+                  <Separator />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg">Créneaux disponibles</h3>
+                      {periodFilter && (
+                        <Badge variant="secondary" className="text-xs">
+                          {periodFilter === "printemps_2026" ? "🌸 Printemps" : "☀️ Été"}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
+                      {slots.map(slot => {
+                        const startDate = new Date(slot.start);
+                        const endDate = new Date(slot.end);
+                        return (
+                          <Card 
+                            key={slot.id}
+                            className={`p-3 cursor-pointer transition-all ${
+                              selectedSlotId === slot.id 
+                                ? 'ring-2 ring-primary bg-accent' 
+                                : 'hover:bg-accent/50'
+                            }`}
+                            onClick={() => setSelectedSlotId(slot.id)}
+                          >
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <Calendar size={14} className="text-primary" />
+                                  <span className="text-sm font-medium">
+                                    {startDate.toLocaleDateString('fr-FR', { 
+                                      day: 'numeric', 
+                                      month: 'short' 
+                                    })}
+                                  </span>
+                                </div>
+                                <Badge variant="outline" className="text-xs">
+                                  {slot.seats_remaining} places
+                                </Badge>
+                              </div>
+                              <div className="text-xs text-muted-foreground ml-5">
+                                {startDate.toLocaleTimeString('fr-FR', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })} - {endDate.toLocaleTimeString('fr-FR', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
 
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-primary" />
-                    <span>Annulation gratuite</span>
+                    <Button
+                      onClick={handleBooking}
+                      disabled={!selectedSlotId || !aidsData}
+                      className="w-full h-12 text-base font-semibold"
+                      size="lg"
+                    >
+                      {!aidsData 
+                        ? "Calculez d'abord vos aides" 
+                        : !selectedSlotId 
+                        ? "Sélectionnez un créneau"
+                        : "Demander une inscription"}
+                    </Button>
+
+                    {!aidsData && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        Complétez la section "Évaluer ton aide" ci-dessous
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-primary" />
-                    <span>Confirmation immédiate</span>
-                  </div>
+                </>
+              )}
+
+              <Separator />
+
+              {/* Garanties */}
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-primary" />
+                  <span>Annulation gratuite</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-primary" />
+                  <span>Confirmation immédiate</span>
                 </div>
               </div>
             </Card>
