@@ -39,6 +39,10 @@ export const ActivityDomainSchema = z.object({
   }).optional(),
   description: z.string().optional(),
   aidesEligibles: z.array(z.string()).default([]),
+  vacationType: z.enum(['sejour_hebergement', 'centre_loisirs', 'stage_journee']).optional(),
+  priceUnit: z.string().optional(),
+  durationDays: z.number().optional(),
+  hasAccommodation: z.boolean().optional(),
 });
 
 /**
@@ -77,6 +81,20 @@ export function toActivity(raw: ActivityRaw): Activity {
     description: raw.description,
     aidesEligibles: raw.aidesEligibles || [],
   };
+
+  // Nouveaux champs tarification vacances
+  if ((raw as any).vacationType) {
+    activity.vacationType = (raw as any).vacationType;
+  }
+  if ((raw as any).priceUnit) {
+    activity.priceUnit = (raw as any).priceUnit;
+  }
+  if ((raw as any).durationDays) {
+    activity.durationDays = (raw as any).durationDays;
+  }
+  if ((raw as any).hasAccommodation !== undefined) {
+    activity.hasAccommodation = (raw as any).hasAccommodation;
+  }
 
   // Mobilité optionnelle
   if (raw.mobilite || raw.covoiturage_enabled) {
