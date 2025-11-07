@@ -39,6 +39,10 @@ interface ActivityCardProps {
   isInsertionPro?: boolean;
   insertionType?: string;
   complexityScore?: number;
+  // Nouveaux champs pour tarification vacances
+  vacationType?: 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
+  priceUnit?: string;
+  hasAccommodation?: boolean;
 }
 
 const getCategoryImage = (category: string): string => {
@@ -74,6 +78,9 @@ export const ActivityCard = ({
   isInsertionPro = false,
   insertionType,
   complexityScore,
+  vacationType,
+  priceUnit,
+  hasAccommodation,
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
   const displayImage = image || fallbackImage;
@@ -113,6 +120,24 @@ export const ActivityCard = ({
               {periodType === 'annual' && '📅'}
               {periodType === 'school_holidays' && '🏖️'}
               {periodType === 'trimester' && '📆'}
+            </Badge>
+          )}
+          {vacationType === 'sejour_hebergement' && (
+            <Badge
+              variant="secondary"
+              className="bg-purple-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label="Séjour avec hébergement"
+            >
+              🏕️ Séjour
+            </Badge>
+          )}
+          {vacationType === 'centre_loisirs' && (
+            <Badge
+              variant="secondary"
+              className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
+              aria-label="Centre de loisirs"
+            >
+              🎨 Centre de loisirs
             </Badge>
           )}
           {hasAccessibility && (
@@ -279,7 +304,7 @@ export const ActivityCard = ({
               </span>
             )}
             <p className="text-[10px] text-muted-foreground">
-              {periodType === 'annual' ? 'par an' : periodType === 'trimester' ? 'par trimestre' : 'par période'}
+              {priceUnit || (periodType === 'annual' ? 'par an' : periodType === 'trimester' ? 'par trimestre' : 'par période')}
             </p>
             {hasFinancialAid && !estimatedAidAmount && !hasAids && (
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-1">

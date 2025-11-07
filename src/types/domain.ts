@@ -7,6 +7,8 @@ export type ActivityCategory = 'Sport' | 'Culture' | 'Loisirs' | 'Scolarité' | 
 
 export type PeriodType = 'annual' | 'school_holidays' | 'trimester';
 
+export type VacationType = 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
+
 export type TransportMode = 'walking' | 'bus' | 'car' | 'bike' | 'covoiturage' | 'non_renseigne';
 
 export interface AccessibilityFlags {
@@ -55,6 +57,10 @@ export interface Activity {
   mobility?: Mobility;
   description?: string;
   aidesEligibles?: string[];  // Liste simplifiée des aides
+  vacationType?: VacationType; // Type d'accueil vacances
+  priceUnit?: string;          // Unité du prix (par semaine, par jour, par an, etc.)
+  durationDays?: number;       // Durée en jours pour les séjours/stages
+  hasAccommodation?: boolean;  // Hébergement inclus ou non
 }
 
 /**

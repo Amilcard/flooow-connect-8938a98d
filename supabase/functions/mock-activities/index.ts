@@ -1002,7 +1002,7 @@ const mockActivities = [
     "id": "vacances-sejour-montagne-11-17",
     "theme": "Vacances",
     "titre": "Séjour Montagne Hiver",
-    "description": "Séjour 5 jours à la montagne : ski, raquettes, veillées. Hébergement en chalet.",
+    "description": "Séjour 5 jours à la montagne : ski, raquettes, veillées. Hébergement en chalet. Les enfants dorment sur place avec encadrement 24h/24.",
     "ageMin": 11,
     "ageMax": 17,
     "accessibilite": [],
@@ -1015,6 +1015,10 @@ const mockActivities = [
       "transport": "Transport organisé depuis Saint-Étienne"
     },
     "cout": 520,
+    "vacationType": "sejour_hebergement",
+    "priceUnit": "par semaine de séjour",
+    "durationDays": 5,
+    "hasAccommodation": true,
     "aidesEligibles": ["caf-vacances", "bourse-collectivite", "pass-sport"],
     "mobilite": {
       "transportCommun": { "disponible": false },
@@ -1030,7 +1034,7 @@ const mockActivities = [
     "id": "vacances-centre-aere-6-10",
     "theme": "Vacances",
     "titre": "Centre Aéré Multithèmes",
-    "description": "Accueil journée complète avec activités variées : sport, arts, jeux, sorties.",
+    "description": "Accueil journée complète avec activités variées : sport, arts, jeux, sorties. Les enfants rentrent à la maison chaque soir.",
     "ageMin": 6,
     "ageMax": 10,
     "accessibilite": ["adapte-tous-handicaps"],
@@ -1043,6 +1047,10 @@ const mockActivities = [
       "transport": "STAS Ligne T3 - Arrêt Beaulieu"
     },
     "cout": 15,
+    "vacationType": "centre_loisirs",
+    "priceUnit": "par journée",
+    "durationDays": 1,
+    "hasAccommodation": false,
     "aidesEligibles": ["caf-vacances", "quotient-familial"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 9"] },
@@ -1058,7 +1066,7 @@ const mockActivities = [
     "id": "vacances-stage-theatre-7-12",
     "theme": "Vacances",
     "titre": "Stage Théâtre Intensif",
-    "description": "Stage 3 jours avec création et représentation d'une pièce courte.",
+    "description": "Stage 3 jours avec création et représentation d'une pièce courte. Accueil de jour uniquement, retour à la maison chaque soir.",
     "ageMin": 7,
     "ageMax": 12,
     "accessibilite": ["salle-accessible"],
@@ -1071,6 +1079,10 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Jaurès"
     },
     "cout": 90,
+    "vacationType": "stage_journee",
+    "priceUnit": "pour les 3 jours",
+    "durationDays": 3,
+    "hasAccommodation": false,
     "aidesEligibles": ["pass-culture", "caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 8"] },
@@ -1086,7 +1098,7 @@ const mockActivities = [
     "id": "vacances-camp-nature-7-12",
     "theme": "Vacances",
     "titre": "Camp Nature & Aventure",
-    "description": "Séjour 4 jours en pleine nature : randonnée, orientation, bivouac.",
+    "description": "Séjour 4 jours en pleine nature : randonnée, orientation, bivouac. Les enfants dorment sur place en tente avec encadrement diplômé.",
     "ageMin": 7,
     "ageMax": 12,
     "accessibilite": [],
@@ -1099,6 +1111,10 @@ const mockActivities = [
       "transport": "Transport organisé depuis Saint-Étienne"
     },
     "cout": 580,
+    "vacationType": "sejour_hebergement",
+    "priceUnit": "pour les 4 jours/3 nuits",
+    "durationDays": 4,
+    "hasAccommodation": true,
     "aidesEligibles": ["caf-vacances", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": false },
@@ -1114,7 +1130,7 @@ const mockActivities = [
     "id": "vacances-stage-arts-plastiques-11-17",
     "theme": "Vacances",
     "titre": "Stage Arts Plastiques Ados",
-    "description": "Stage 5 jours avec exposition finale : peinture, sculpture, photo.",
+    "description": "Stage 5 jours avec exposition finale : peinture, sculpture, photo. Accueil de jour, retour à la maison chaque soir.",
     "ageMin": 11,
     "ageMax": 17,
     "accessibilite": ["adapte-tous-handicaps"],
@@ -1127,6 +1143,10 @@ const mockActivities = [
       "transport": "STAS Bus 9 - Arrêt Arts"
     },
     "cout": 150,
+    "vacationType": "stage_journee",
+    "priceUnit": "pour la semaine de stage",
+    "durationDays": 5,
+    "hasAccommodation": false,
     "aidesEligibles": ["pass-culture"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 9"] },
@@ -1142,7 +1162,7 @@ const mockActivities = [
     "id": "vacances-sejour-linguistique-13-17",
     "theme": "Vacances",
     "titre": "Séjour Linguistique Anglais",
-    "description": "Séjour 7 jours immersion anglaise avec cours et activités culturelles.",
+    "description": "Séjour 7 jours immersion anglaise avec cours et activités culturelles. Hébergement en famille d'accueil, pension complète.",
     "ageMin": 13,
     "ageMax": 17,
     "accessibilite": [],
@@ -1155,6 +1175,10 @@ const mockActivities = [
       "transport": "Transport collectif organisé"
     },
     "cout": 680,
+    "vacationType": "sejour_hebergement",
+    "priceUnit": "par semaine de séjour",
+    "durationDays": 7,
+    "hasAccommodation": true,
     "aidesEligibles": ["bourse-scolaire"],
     "mobilite": {
       "transportCommun": { "disponible": false },
@@ -1170,7 +1194,7 @@ const mockActivities = [
     "id": "vacances-stage-escalade-11-17",
     "theme": "Vacances",
     "titre": "Stage Escalade Perfectionnement",
-    "description": "Stage 3 jours en salle + falaise naturelle avec progression technique.",
+    "description": "Stage 3 jours en salle + falaise naturelle avec progression technique. Accueil de jour, retour à la maison chaque soir.",
     "ageMin": 11,
     "ageMax": 17,
     "accessibilite": [],
@@ -1183,6 +1207,10 @@ const mockActivities = [
       "transport": "STAS Bus 10 + transport organisé pour falaise"
     },
     "cout": 180,
+    "vacationType": "stage_journee",
+    "priceUnit": "pour les 3 jours",
+    "durationDays": 3,
+    "hasAccommodation": false,
     "aidesEligibles": ["pass-sport"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 10"] },
@@ -1198,7 +1226,7 @@ const mockActivities = [
     "id": "vacances-colonie-mer-6-10",
     "theme": "Vacances",
     "titre": "Colonie Découverte de la Mer",
-    "description": "Séjour 10 jours en bord de mer : plage, activités nautiques, découverte marine.",
+    "description": "Séjour 10 jours en bord de mer : plage, activités nautiques, découverte marine. Les enfants dorment sur place en centre de vacances avec encadrement 24h/24.",
     "ageMin": 6,
     "ageMax": 10,
     "accessibilite": [],
@@ -1211,6 +1239,10 @@ const mockActivities = [
       "transport": "Transport collectif bus depuis Saint-Étienne"
     },
     "cout": 1050,
+    "vacationType": "sejour_hebergement",
+    "priceUnit": "pour les 10 jours de colonie",
+    "durationDays": 10,
+    "hasAccommodation": true,
     "aidesEligibles": ["caf-vacances", "bourse-collectivite", "aides-depart-vacances"],
     "mobilite": {
       "transportCommun": { "disponible": false },
