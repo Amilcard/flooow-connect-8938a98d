@@ -133,11 +133,10 @@ const Index = () => {
             {/* Section Univers - Carousel horizontal */}
             <UniversSection />
 
-            {/* Activités à proximité - CAROUSEL MODE */}
+            {/* Activités à la une - GRID MODE */}
             <ActivitySection
               title="Activités à la une"
               activities={nearbyActivities}
-              layout="carousel"
               onSeeAll={() => navigate("/activities?type=nearby")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
