@@ -62,20 +62,22 @@ export const ActivitySection = ({
       <div className="flex items-center justify-between">
         <h2
           id={`section-${title.replace(/\s/g, '-')}`}
-          className="text-xl font-bold"
+          className="text-2xl font-bold"
         >
           {title}
         </h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onSeeAll}
-          className="text-primary hover:text-primary/80"
-          aria-label={`Voir toutes les activités de ${title}`}
-        >
-          Voir tout
-          <ChevronRight size={16} className="ml-1" />
-        </Button>
+        {onSeeAll && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onSeeAll}
+            className="text-primary hover:text-primary/80"
+            aria-label={`Voir toutes les activités de ${title}`}
+          >
+            Voir tout
+            <ChevronRight size={16} className="ml-1" />
+          </Button>
+        )}
       </div>
 
       {/* Show empty state if no activities */}

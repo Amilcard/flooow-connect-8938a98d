@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
@@ -14,13 +14,11 @@ import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
 import Footer from "@/components/Footer";
 import FAQSection from "@/components/FAQSection";
-import { AccessibilityFilters, AccessibilityFilter } from "@/components/AccessibilityFilters";
 import type { Activity } from "@/types/domain";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [accessibilityFilters, setAccessibilityFilters] = useState<AccessibilityFilter[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -94,35 +92,12 @@ const Index = () => {
   // Check territory access
   const { data: territoryAccess } = useTerritoryAccess(userProfile?.postal_code || null);
   
-  // Charger les différentes catégories d'activités (limité à 3 par section)
   const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ limit: 3 });
   const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ maxPrice: 50, limit: 3 });
   const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ hasAccessibility: true, limit: 3 });
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(8);
 
   const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingMocks;
-
-  // Filtrage des activités selon les critères d'accessibilité
-  const filteredMockActivities = useMemo(() => {
-    if (accessibilityFilters.length === 0) return mockActivities;
-
-    return mockActivities.filter((activity: Activity) => {
-      if (!activity.accessibility) return false;
-
-      return accessibilityFilters.every(filter => {
-        switch (filter) {
-          case 'motor':
-            return activity.accessibility?.wheelchair || activity.accessibility?.mobility_impaired;
-          case 'cognitive':
-            return activity.accessibility?.hearing_impaired || activity.accessibility?.visual_impaired;
-          case 'developmental':
-            return activity.accessibility?.wheelchair || activity.accessibility?.mobility_impaired;
-          default:
-            return false;
-        }
-      });
-    });
-  }, [mockActivities, accessibilityFilters]);
 
 
   if (errorNearby) {
@@ -158,17 +133,6 @@ const Index = () => {
             {/* Section Univers - Carousel horizontal */}
             <UniversSection />
 
-            {/* Filtres d'accessibilité discrets */}
-              <div className="flex items-center gap-3 min-h-10">
-                <span className="text-sm text-muted-foreground">Accessibilité :</span>
-                <div className={mockActivities.length === 0 ? "opacity-50 pointer-events-none" : ""}>
-                  <AccessibilityFilters
-                    selectedFilters={accessibilityFilters}
-                    onFilterChange={setAccessibilityFilters}
-                  />
-                </div>
-              </div>
-
             {/* Activités à proximité - CAROUSEL MODE */}
             <ActivitySection
               title="Activités à la une"
@@ -193,10 +157,10 @@ const Index = () => {
             />
 
             {/* Section mocks masquée si vide (edge function indisponible) */}
-            {filteredMockActivities.length > 0 && (
+            {mockActivities.length > 0 && (
               <ActivitySection
                 title="Activités Saint-Étienne (Mocks)"
-                activities={filteredMockActivities}
+                activities={mockActivities}
                 onActivityClick={(id) => console.log("Mock activity clicked:", id)}
               />
             )}
