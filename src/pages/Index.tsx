@@ -6,13 +6,10 @@ import { UniversSection } from "@/components/UniversSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
-import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { ActivityCardSkeleton } from "@/components/Activity/ActivityCardSkeleton";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
 import Footer from "@/components/Footer";
@@ -144,24 +141,6 @@ const Index = () => {
   return (
     <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
-      
-      {/* Auth CTA for non-logged users */}
-      {!isLoggedIn && (
-        <div className="container px-4 pt-4">
-          <div className="bg-gradient-to-r from-primary to-primary-light text-white p-4 rounded-lg flex items-center justify-between">
-            <div className="flex-1">
-              <p className="font-semibold">Accédez aux aides financières</p>
-              <p className="text-sm text-white/90">Créez un compte pour calculer vos aides</p>
-            </div>
-            <Button
-              variant="secondary"
-              onClick={() => navigate("/auth")}
-            >
-              Se connecter
-            </Button>
-          </div>
-        </div>
-      )}
       
       <main className="container px-4 py-6 space-y-8">
         {/* Territory Check for logged-in users */}
