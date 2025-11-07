@@ -152,6 +152,11 @@ const Alternatives = () => {
                   ageRange={`${activity.age_min}-${activity.age_max} ans`}
                   hasAccessibility={activity.accessibility_checklist?.wheelchair}
                   hasFinancialAid={activity.accepts_aid_types?.length > 0}
+                  vacationType={activity.vacation_type}
+                  priceUnit={activity.price_unit}
+                  hasAccommodation={activity.has_accommodation}
+                  aidesEligibles={activity.aides_eligibles}
+                  mobility={activity.mobility}
                   onRequestClick={() => navigate(`/activity/${activity.id}`)}
                 />
               ))}

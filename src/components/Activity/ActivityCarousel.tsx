@@ -14,6 +14,15 @@ interface Activity {
   periodType?: string;
   structureName?: string;
   structureAddress?: string;
+  vacationType?: 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
+  priceUnit?: string;
+  hasAccommodation?: boolean;
+  aidesEligibles?: string[];
+  mobility?: {
+    TC?: string;
+    velo?: boolean;
+    covoit?: boolean;
+  };
 }
 
 interface ActivityCarouselProps {
@@ -41,6 +50,11 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
               periodType={activity.periodType}
               structureName={activity.structureName}
               structureAddress={activity.structureAddress}
+              vacationType={activity.vacationType}
+              priceUnit={activity.priceUnit}
+              hasAccommodation={activity.hasAccommodation}
+              aidesEligibles={activity.aidesEligibles}
+              mobility={activity.mobility}
               onRequestClick={() => onActivityClick?.(activity.id)}
             />
           </div>
