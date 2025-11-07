@@ -149,7 +149,7 @@ export const EcoMobilitySection = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || '')}&return=${encodeURIComponent(window.location.pathname)}`)}
+                  onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
                   className="mt-2"
                 >
                   Calculer mon itinéraire bus →
@@ -190,7 +190,7 @@ export const EcoMobilitySection = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || '')}&return=${encodeURIComponent(window.location.pathname)}`)}
+                  onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
                   className="mt-2"
                 >
                   Calculer mon itinéraire vélo →
@@ -220,7 +220,7 @@ export const EcoMobilitySection = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || '')}&return=${encodeURIComponent(window.location.pathname)}`)}
+                  onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
                   className="mt-2"
                 >
                   Calculer mon itinéraire à pied →

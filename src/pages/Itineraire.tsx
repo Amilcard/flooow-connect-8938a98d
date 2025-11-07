@@ -23,21 +23,6 @@ const Itineraire = () => {
   const transportType = searchParams.get('type') || 'bus';
   const destination = searchParams.get('destination') || '';
   const returnUrl = searchParams.get('return') || null;
-
-  const handleBack = () => {
-    // If we have a return URL, use it and replace history to avoid loop
-    if (returnUrl) {
-      navigate(returnUrl, { replace: true });
-    } 
-    // Otherwise, try to go back in history
-    else if (window.history.length > 1) {
-      navigate(-1);
-    } 
-    // Fallback to activities page
-    else {
-      navigate('/activities', { replace: true });
-    }
-  };
   
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
@@ -271,14 +256,11 @@ const Itineraire = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-4 px-4 md:px-6">
-          <Button
+          <BackButton 
+            fallback={returnUrl || `/activity/${searchParams.get('activityId') || ''}`}
             variant="ghost"
             size="icon"
-            onClick={handleBack}
-            aria-label="Retour"
-          >
-            <Bike className="w-5 h-5" />
-          </Button>
+          />
           <div className="flex items-center gap-2">
             {transportType === 'bike' ? (
               <Bike className="w-5 h-5 text-green-600" />
