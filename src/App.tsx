@@ -23,6 +23,7 @@ import Activities from "./pages/Activities";
 import Search from "./pages/Search";
 import ActivityDetail from "./pages/ActivityDetail";
 import Booking from "./pages/Booking";
+import BookingRecap from "./pages/BookingRecap";
 import BookingStatus from "./pages/BookingStatus";
 import MonCompte from "./pages/MonCompte";
 import Aides from "./pages/Aides";
@@ -145,6 +146,7 @@ const App = () => (
           <Route path="/search" element={<Search />} />
           <Route path="/activity/:id" element={<ActivityDetail />} />
           <Route path="/booking/:id" element={<Booking />} />
+          <Route path="/booking-recap/:id" element={<BookingRecap />} />
           <Route path="/booking-status/:id" element={<BookingStatus />} />
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />

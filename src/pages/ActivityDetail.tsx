@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BookingCard } from "@/components/BookingCard";
-import { SimulateAidModal } from "@/components/simulations/SimulateAidModal";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -40,7 +38,7 @@ import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
-import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
+import { EnhancedFinancialAidCalculator } from "@/components/activities/EnhancedFinancialAidCalculator";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -62,16 +60,16 @@ const ActivityDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
-  const [selectedChildId, setSelectedChildId] = useState<string>();
-  const [showAidModal, setShowAidModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [adjustedPrice, setAdjustedPrice] = useState<number | null>(null);
-  const [calculatedAids, setCalculatedAids] = useState<any[]>([]);
   
-  // États pour le calculateur d'aides intégré
-  const [quotientFamilial, setQuotientFamilial] = useState<string>("");
-  const [cityCode, setCityCode] = useState<string>("");
+  // États pour les aides calculées
+  const [aidsData, setAidsData] = useState<{
+    childId: string;
+    aids: any[];
+    totalAids: number;
+    remainingPrice: number;
+  } | null>(null);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
@@ -138,17 +136,6 @@ const ActivityDetail = () => {
     }
   });
 
-  // Pré-remplir le QF et le code postal depuis le profil utilisateur
-  useEffect(() => {
-    if (userProfile) {
-      if (userProfile.quotient_familial) {
-        setQuotientFamilial(String(userProfile.quotient_familial));
-      }
-      if (userProfile.postal_code) {
-        setCityCode(userProfile.postal_code);
-      }
-    }
-  }, [userProfile]);
 
   // Fetch user's children
   const { data: children = [] } = useQuery({
@@ -188,7 +175,34 @@ const ActivityDetail = () => {
       });
       return;
     }
-    navigate(`/booking/${id}?slotId=${selectedSlotId}`);
+
+    if (!aidsData) {
+      toast({
+        title: "Évaluation requise",
+        description: "Veuillez d'abord calculer vos aides pour cet enfant",
+        variant: "destructive"
+      });
+      // Scroll vers la section aides
+      const aidsSection = document.getElementById("aides-section");
+      if (aidsSection) {
+        aidsSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
+    // Rediriger vers le récap avec les données d'aides
+    navigate(`/booking-recap/${id}?slotId=${selectedSlotId}`, {
+      state: aidsData
+    });
+  };
+
+  const handleAidsCalculated = (data: {
+    childId: string;
+    aids: any[];
+    totalAids: number;
+    remainingPrice: number;
+  }) => {
+    setAidsData(data);
   };
 
   // Calculate age from date of birth
@@ -213,8 +227,6 @@ const ActivityDetail = () => {
       return Math.max(1, diffDays);
     };
 
-  // Get selected child details
-  const selectedChild = children.find(c => c.id === selectedChildId);
   const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
@@ -396,118 +408,83 @@ const ActivityDetail = () => {
 
             {/* Financial Aids Section with integrated calculator */}
             {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+              <section id="aides-section" className="space-y-4">
+                <EnhancedFinancialAidCalculator
+                  activityPrice={activity.price_base || 0}
+                  activityCategories={activity.categories || [activity.category]}
+                  userProfile={userProfile}
+                  children={children}
+                  onAidsCalculated={handleAidsCalculated}
+                />
+              </section>
+            )}
+
+            {/* Slot selection and booking */}
+            {slots.length > 0 && (
               <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">💰 Évaluer ton aide</h2>
-                <Card>
-                  <CardContent className="p-6 space-y-4">
-                    {/* Aides acceptées */}
-                    <div>
-                      <p className="text-sm font-medium mb-2">Aides financières acceptées</p>
-                      <div className="flex flex-wrap gap-2">
-                        {activity.accepts_aid_types.map((aid: string) => (
-                          <Badge key={aid} variant="secondary" className="px-3 py-1">
-                            {aid}
+                <h2 className="text-2xl font-bold text-foreground">Créneaux disponibles</h2>
+                <div className="space-y-3">
+                  {slots.map(slot => {
+                    const startDate = new Date(slot.start);
+                    const endDate = new Date(slot.end);
+                    return (
+                      <Card 
+                        key={slot.id}
+                        className={`p-4 cursor-pointer transition-all ${
+                          selectedSlotId === slot.id 
+                            ? 'ring-2 ring-primary bg-accent/50' 
+                            : 'hover:bg-accent/20'
+                        }`}
+                        onClick={() => setSelectedSlotId(slot.id)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Calendar size={16} className="text-primary" />
+                              <span className="font-medium">
+                                {startDate.toLocaleDateString('fr-FR', { 
+                                  weekday: 'long', 
+                                  day: 'numeric', 
+                                  month: 'long' 
+                                })}
+                              </span>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {startDate.toLocaleTimeString('fr-FR', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })} - {endDate.toLocaleTimeString('fr-FR', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </div>
+                          </div>
+                          <Badge variant="secondary">
+                            {slot.seats_remaining} places
                           </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Formulaire de saisie QF et Ville */}
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Quotient Familial */}
-                        <div className="space-y-2">
-                          <Label htmlFor="qf">
-                            Quotient Familial CAF <span className="text-muted-foreground">(€/mois)</span>
-                          </Label>
-                          <Input
-                            id="qf"
-                            type="number"
-                            min="0"
-                            max="9999"
-                            placeholder="Ex: 800"
-                            value={quotientFamilial}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Validation: maximum 4 chiffres
-                              if (value === "" || (parseInt(value) >= 0 && parseInt(value) <= 9999)) {
-                                setQuotientFamilial(value);
-                              }
-                            }}
-                          />
-                          {userProfile?.quotient_familial && (
-                            <p className="text-xs text-muted-foreground">
-                              Pré-rempli depuis votre profil
-                            </p>
-                          )}
                         </div>
+                      </Card>
+                    );
+                  })}
+                </div>
 
-                        {/* Code Postal / Ville */}
-                        <div className="space-y-2">
-                          <Label htmlFor="city">
-                            Ville de résidence <span className="text-muted-foreground">(code postal)</span>
-                          </Label>
-                          <Input
-                            id="city"
-                            type="text"
-                            maxLength={5}
-                            placeholder="Ex: 42000"
-                            value={cityCode}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Validation: seulement des chiffres, max 5
-                              if (/^\d{0,5}$/.test(value)) {
-                                setCityCode(value);
-                              }
-                            }}
-                          />
-                          {userProfile?.postal_code && (
-                            <p className="text-xs text-muted-foreground">
-                              Pré-rempli depuis votre profil
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                <Button
+                  onClick={handleBooking}
+                  disabled={!selectedSlotId || !aidsData}
+                  className="w-full h-14 text-lg"
+                  size="lg"
+                >
+                  {!aidsData 
+                    ? "Calculez d'abord vos aides" 
+                    : !selectedSlotId 
+                    ? "Sélectionnez un créneau"
+                    : "Demander une inscription"}
+                </Button>
 
-                      {/* Info message */}
-                      {(!quotientFamilial || !cityCode) && (
-                        <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                          <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-xs text-muted-foreground">
-                            Renseignez votre QF et votre ville pour voir les aides disponibles et votre reste à charge
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Financial Aids Calculator - Affichage des résultats */}
-                {quotientFamilial && cityCode && selectedChild && (
-                  <FinancialAidsCalculator
-                    activityPrice={activity.price_base || 0}
-                    activityCategories={activity.categories || [activity.category]}
-                    childAge={calculateAge(selectedChild.dob)}
-                    quotientFamilial={parseInt(quotientFamilial) || 0}
-                    cityCode={cityCode}
-                    durationDays={calculateDurationDays(selectedSlot)}
-                  />
-                )}
-
-                {/* Message si pas d'enfant sélectionné */}
-                {quotientFamilial && cityCode && !selectedChild && children.length > 0 && (
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-2">
-                        <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-muted-foreground">
-                          Sélectionnez un enfant dans la carte de réservation à droite pour voir les aides disponibles
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                {!aidsData && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    Merci d'abord d'estimer vos aides pour un enfant
+                  </p>
                 )}
               </section>
             )}
@@ -521,40 +498,57 @@ const ActivityDetail = () => {
             />
           </div>
 
-          {/* Right Column - Booking Card Sticky (4/12) */}
+          {/* Right Column - Price Summary (4/12) */}
           <div className="md:col-span-4">
-            <BookingCard
-              activity={activity}
-              slots={slots}
-              children={children}
-              userProfile={userProfile}
-              selectedSlotId={selectedSlotId}
-              selectedChildId={selectedChildId}
-              onSelectSlot={setSelectedSlotId}
-              onSelectChild={setSelectedChildId}
-              onBooking={handleBooking}
-              calculateAge={calculateAge}
-              calculateDurationDays={calculateDurationDays}
-              adjustedPrice={adjustedPrice}
-              calculatedAids={calculatedAids}
-            />
+            <Card className="p-6 sticky top-24">
+              <div className="space-y-4">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-2xl font-bold">
+                    {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
+                  </span>
+                  {activity.price_note && (
+                    <span className="text-sm text-muted-foreground">{activity.price_note}</span>
+                  )}
+                </div>
+
+                {aidsData && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Prix initial</span>
+                        <span className="font-medium">{activity.price_base.toFixed(2)}€</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-primary">
+                        <span>Aides appliquées</span>
+                        <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
+                      </div>
+                      <div className="flex justify-between text-lg font-bold border-t pt-2">
+                        <span>Reste à charge</span>
+                        <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <Separator />
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-primary" />
+                    <span>Annulation gratuite</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-primary" />
+                    <span>Confirmation immédiate</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
 
-      {showAidModal && (
-        <SimulateAidModal
-          open={showAidModal}
-          onOpenChange={setShowAidModal}
-          activityPrice={activity.price_base || 0}
-          activityCategories={[activity.category].filter(Boolean)}
-          durationDays={calculateDurationDays(selectedSlot)}
-          onSimulationComplete={(finalPrice, aids) => {
-            setAdjustedPrice(finalPrice);
-            setCalculatedAids(aids);
-          }}
-        />
-      )}
 
       {activity.structures && typeof activity.structures.contact_json === 'object' && activity.structures.contact_json !== null && (
         <ContactOrganizerModal
