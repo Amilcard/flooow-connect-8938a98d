@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { VacationPeriodFilter } from "@/components/VacationPeriodFilter";
@@ -9,35 +9,67 @@ import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageLayout from "@/components/PageLayout";
 
+// Mapping des IDs univers vers les catégories réelles
+const UNIVERSE_TO_CATEGORY: Record<string, string> = {
+  'sport': 'Sport',
+  'culture': 'Culture',
+  'apprentissage': 'Scolarité',
+  'loisirs': 'Loisirs',
+  'vacances': 'Vacances'
+};
+
 const Activities = () => {
   const [searchParams] = useSearchParams();
+  const universeFromUrl = searchParams.get("universe");
   const category = searchParams.get("category");
   const type = searchParams.get("type");
   const periodFromUrl = searchParams.get("period") || undefined;
   const [selectedVacationPeriod, setSelectedVacationPeriod] = useState<string | undefined>(periodFromUrl);
+  
+  // Déterminer l'onglet actif initial basé sur le paramètre universe ou category
+  const getInitialTab = () => {
+    if (universeFromUrl && UNIVERSE_TO_CATEGORY[universeFromUrl]) {
+      return UNIVERSE_TO_CATEGORY[universeFromUrl];
+    }
+    if (category) {
+      return category;
+    }
+    return "all";
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab());
 
-  // Déterminer les filtres selon le type de section
-  const getFilters = () => {
+  // Mettre à jour l'onglet actif si les paramètres URL changent
+  useEffect(() => {
+    const newTab = getInitialTab();
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+    }
+  }, [universeFromUrl, category]);
+
+  // Filtres pour l'onglet "Toutes" - sans filtrage par catégorie
+  const getAllFilters = () => {
     const filters: any = {};
-    if (category) filters.category = category;
     if (type === "budget") filters.maxPrice = 50;
     if (type === "health") filters.hasAccessibility = true;
     if (selectedVacationPeriod) filters.vacationPeriod = selectedVacationPeriod;
     return filters;
   };
 
-  const { data: activities = [], isLoading, error } = useActivities(getFilters());
+  const { data: allActivities = [], isLoading, error } = useActivities(getAllFilters());
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(10);
 
   console.log("📊 Activities page state:", { 
-    activitiesCount: activities.length, 
+    activitiesCount: allActivities.length, 
     mockActivitiesCount: mockActivities.length,
     loadingMocks,
-    mockError 
+    mockError,
+    activeTab,
+    universeFromUrl
   });
 
   const getTitle = () => {
-    if (category) return `Activités ${category}`;
+    if (activeTab !== "all") return `Activités ${activeTab}`;
     if (type === "budget") return "Activités Petits budgets";
     if (type === "health") return "Activités Innovantes";
     if (type === "nearby") return "Activités à proximité";
@@ -68,7 +100,7 @@ const Activities = () => {
           onPeriodChange={setSelectedVacationPeriod}
         />
         
-        <Tabs defaultValue="all" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full mb-6 grid grid-cols-3 sm:grid-cols-6">
             <TabsTrigger value="all" className="flex-1">Toutes</TabsTrigger>
             <TabsTrigger value="Sport" className="flex-1">Sport</TabsTrigger>
@@ -81,7 +113,7 @@ const Activities = () => {
           <TabsContent value="all">
             <ActivitySection
               title={getTitle()}
-              activities={activities}
+              activities={allActivities}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
           </TabsContent>

@@ -51,8 +51,8 @@ export const UniversSection = () => {
   const navigate = useNavigate();
 
   const handleUniversClick = (universId: string) => {
-    // Navigate to activities page with category filter
-    navigate(`/activities?category=${universId}`);
+    // Navigate to activities page with universe filter
+    navigate(`/activities?universe=${universId}`);
   };
 
   return (
