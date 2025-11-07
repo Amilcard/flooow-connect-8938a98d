@@ -1,8 +1,8 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { ActivityCard } from "./ActivityCard";
 import { ActivityCarousel } from "./ActivityCarousel";
 import { ChevronRight, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { EmptyState } from "@/components/EmptyState";
 
 interface Activity {
@@ -38,6 +38,15 @@ export const ActivitySection = ({
   layout = 'grid' // Default to grid for backward compatibility
 }: ActivitySectionProps) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const periodParam = searchParams.get("period");
+
+  const handleActivityClick = (activityId: string) => {
+    const url = periodParam 
+      ? `/activity/${activityId}?period=${periodParam}`
+      : `/activity/${activityId}`;
+    navigate(url);
+  };
 
   return (
     <section className="space-y-4" aria-labelledby={`section-${title.replace(/\s/g, '-')}`}>
@@ -73,7 +82,7 @@ export const ActivitySection = ({
           {layout === 'carousel' ? (
             <ActivityCarousel
               activities={activities}
-              onActivityClick={(id) => navigate(`/activity/${id}`)}
+              onActivityClick={handleActivityClick}
             />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -85,7 +94,7 @@ export const ActivitySection = ({
                   periodType={activity.periodType}
                   structureName={activity.structureName}
                   structureAddress={activity.structureAddress}
-                  onRequestClick={() => navigate(`/activity/${activity.id}`)}
+                  onRequestClick={() => handleActivityClick(activity.id)}
                 />
               ))}
             </div>

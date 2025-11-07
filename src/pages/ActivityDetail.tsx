@@ -1,6 +1,7 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { VACATION_PERIOD_DATES } from "@/components/VacationPeriodFilter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,6 +60,8 @@ const ActivityDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const periodFilter = searchParams.get("period") || undefined;
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -102,7 +105,7 @@ const ActivityDetail = () => {
   });
 
   // Fetch availability slots
-  const { data: slots = [] } = useQuery({
+  const { data: allSlots = [] } = useQuery({
     queryKey: ["slots", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -116,6 +119,20 @@ const ActivityDetail = () => {
       return data;
     },
     enabled: !!id
+  });
+
+  // Filtrer les créneaux selon la période sélectionnée
+  const slots = allSlots.filter(slot => {
+    if (!periodFilter) return true; // Pas de filtre, on affiche tout
+    
+    const periodDates = VACATION_PERIOD_DATES[periodFilter as keyof typeof VACATION_PERIOD_DATES];
+    if (!periodDates) return true;
+
+    const slotStart = new Date(slot.start);
+    const periodStart = new Date(periodDates.start);
+    const periodEnd = new Date(periodDates.end);
+
+    return slotStart >= periodStart && slotStart <= periodEnd;
   });
 
   // Fetch user profile
@@ -422,7 +439,14 @@ const ActivityDetail = () => {
             {/* Slot selection and booking */}
             {slots.length > 0 && (
               <section className="space-y-4">
-                <h2 className="text-2xl font-bold text-foreground">Créneaux disponibles</h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-foreground">Créneaux disponibles</h2>
+                  {periodFilter && (
+                    <Badge variant="secondary" className="text-xs">
+                      {periodFilter === "printemps_2026" ? "🌸 Printemps 2026" : "☀️ Été 2026"}
+                    </Badge>
+                  )}
+                </div>
                 <div className="space-y-3">
                   {slots.map(slot => {
                     const startDate = new Date(slot.start);

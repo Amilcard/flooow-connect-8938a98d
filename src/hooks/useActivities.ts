@@ -109,8 +109,19 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
       }
 
+      // Filtrer par période selon les DATES réelles des sessions
       if (filters?.vacationPeriod) {
-        query = query.contains("vacation_periods", [filters.vacationPeriod]);
+        const periodDates = {
+          printemps_2026: { start: "2026-04-04", end: "2026-04-20" },
+          été_2026: { start: "2026-07-04", end: "2026-08-31" },
+        }[filters.vacationPeriod];
+
+        if (periodDates) {
+          // Filtrer les activités qui ont au moins une session dans la période
+          query = query
+            .gte("availability_slots.start", periodDates.start)
+            .lte("availability_slots.start", periodDates.end);
+        }
       }
 
       if (filters?.hasCovoiturage) {

@@ -13,7 +13,8 @@ const Activities = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
   const type = searchParams.get("type");
-  const [selectedVacationPeriod, setSelectedVacationPeriod] = useState<string | undefined>();
+  const periodFromUrl = searchParams.get("period") || undefined;
+  const [selectedVacationPeriod, setSelectedVacationPeriod] = useState<string | undefined>(periodFromUrl);
 
   // Déterminer les filtres selon le type de section
   const getFilters = () => {
