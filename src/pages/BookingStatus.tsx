@@ -206,7 +206,7 @@ const BookingStatus = () => {
 
             {booking.status === "en_attente" && (
               <Button
-                onClick={() => navigate("/mes-reservations")}
+                onClick={() => navigate("/mon-compte/reservations")}
                 variant="outline"
                 className="w-full h-12"
               >
