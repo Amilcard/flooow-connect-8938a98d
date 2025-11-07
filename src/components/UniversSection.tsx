@@ -56,59 +56,51 @@ export const UniversSection = () => {
   };
 
   return (
-    <section className="w-full" aria-labelledby="univers-title">
-      <div className="mb-4">
-        <h2 id="univers-title" className="text-xl font-bold">
+    <section className="w-full mt-12" aria-labelledby="univers-title">
+      {/* Titre de section avec séparateur visuel */}
+      <div className="mb-6 pb-3 border-b border-border">
+        <h2 id="univers-title" className="text-2xl font-bold text-foreground">
           Découvrir nos univers
         </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Explorez nos catégories d'activités
+        </p>
       </div>
 
-      <div className="carousel-container scroll-smooth pb-4 -mx-4 px-4">
-        <div
-          className="flex gap-4"
-          style={{ width: "max-content" }}
-          role="list"
-          aria-label="Univers d'activités"
-        >
-          {univers.map((item) => (
-            <Card
-              key={item.id}
-              onClick={() => handleUniversClick(item.id)}
-              className="relative w-[200px] h-[140px] flex-shrink-0 snap-start overflow-hidden
-                         cursor-pointer group hover:scale-105 transition-all duration-300
-                         border-0 shadow-md hover:shadow-xl"
-              role="listitem"
-            >
-              {/* Background Image */}
-              <img
-                src={item.image}
-                alt={item.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                loading="lazy"
-              />
+      {/* Grille responsive : 5 colonnes desktop, 3 tablette, 2 mobile */}
+      <div 
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
+        role="list"
+        aria-label="Univers d'activités"
+      >
+        {univers.map((item) => (
+          <Card
+            key={item.id}
+            onClick={() => handleUniversClick(item.id)}
+            className="group relative overflow-hidden cursor-pointer
+                       h-32 flex flex-col items-center justify-center
+                       bg-card border border-border/50
+                       hover:border-primary/50 hover:shadow-lg
+                       transition-all duration-300 hover:scale-[1.02]"
+            role="listitem"
+          >
+            {/* Fond subtil avec l'icône emoji */}
+            <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            
+            {/* Contenu de la carte */}
+            <div className="relative z-10 flex flex-col items-center justify-center gap-2 p-4">
+              <span className="text-4xl group-hover:scale-110 transition-transform duration-300">
+                {item.icon}
+              </span>
+              <h3 className="text-base font-semibold text-foreground text-center">
+                {item.name}
+              </h3>
+            </div>
 
-              {/* Gradient Overlay */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-t ${item.gradient} to-transparent opacity-70
-                           group-hover:opacity-80 transition-opacity`}
-              />
-
-              {/* Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
-                <span className="text-4xl mb-2 drop-shadow-lg group-hover:scale-110 transition-transform">
-                  {item.icon}
-                </span>
-                <h3 className="text-xl font-bold drop-shadow-lg text-center">
-                  {item.name}
-                </h3>
-              </div>
-
-              {/* Shine effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent
-                            translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-            </Card>
-          ))}
-        </div>
+            {/* Indicateur visuel au survol */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+          </Card>
+        ))}
       </div>
     </section>
   );
