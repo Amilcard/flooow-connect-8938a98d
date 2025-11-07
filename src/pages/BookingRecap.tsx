@@ -9,14 +9,22 @@ import { Separator } from "@/components/ui/separator";
 import { LoadingState } from "@/components/LoadingState";
 import { BackButton } from "@/components/BackButton";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, MapPin, User, Euro, CheckCircle2, AlertCircle } from "lucide-react";
+import { Calendar, MapPin, User, Euro, CheckCircle2, AlertCircle, Bus, Bike } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface LocationState {
   childId: string;
+  quotientFamilial: string;
+  cityCode: string;
   aids: any[];
   totalAids: number;
   remainingPrice: number;
+  transportMode?: {
+    type: "bus" | "bike" | "walk";
+    label: string;
+    duration: number;
+    details?: string;
+  };
 }
 
 const BookingRecap = () => {
@@ -312,6 +320,29 @@ const BookingRecap = () => {
             </div>
           </div>
         </Card>
+
+        {/* Transport Mode (if selected) */}
+        {state.transportMode && (
+          <Card className="p-6 space-y-4">
+            <h2 className="font-semibold text-lg flex items-center gap-2">
+              {state.transportMode.type === 'bus' ? <Bus size={20} className="text-primary" /> :
+               state.transportMode.type === 'bike' ? <Bike size={20} className="text-primary" /> :
+               <span className="text-xl">🚶</span>}
+              Mode de transport
+            </h2>
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="font-medium">{state.transportMode.label}</p>
+                {state.transportMode.details && (
+                  <p className="text-sm text-muted-foreground">{state.transportMode.details}</p>
+                )}
+              </div>
+              <Badge variant="secondary" className="text-sm">
+                ⏱️ {state.transportMode.duration} min
+              </Badge>
+            </div>
+          </Card>
+        )}
 
         {/* Buttons */}
         <div className="space-y-3">

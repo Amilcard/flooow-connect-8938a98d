@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Loader2, CheckCircle2, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 
 interface Child {
   id: string;
@@ -24,6 +25,7 @@ interface FinancialAid {
 }
 
 interface Props {
+  activityId: string;
   activityPrice: number;
   activityCategories: string[];
   userProfile?: {
@@ -33,6 +35,8 @@ interface Props {
   children: Child[];
   onAidsCalculated: (data: {
     childId: string;
+    quotientFamilial: string;
+    cityCode: string;
     aids: FinancialAid[];
     totalAids: number;
     remainingPrice: number;
@@ -47,6 +51,7 @@ const TERRITORY_ICONS = {
 } as const;
 
 export const EnhancedFinancialAidCalculator = ({
+  activityId,
   activityPrice,
   activityCategories,
   userProfile,
@@ -54,6 +59,8 @@ export const EnhancedFinancialAidCalculator = ({
   onAidsCalculated
 }: Props) => {
   const { toast } = useToast();
+  const { state: savedState, saveAidCalculation } = useActivityBookingState(activityId);
+  
   const [loading, setLoading] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string>("");
   const [quotientFamilial, setQuotientFamilial] = useState<string>("");
@@ -61,17 +68,28 @@ export const EnhancedFinancialAidCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
 
-  // Pré-remplir depuis le profil
+  // Restaurer depuis le state persisté
   useEffect(() => {
-    if (userProfile) {
-      if (userProfile.quotient_familial) {
+    if (savedState?.calculated) {
+      setSelectedChildId(savedState.childId);
+      setQuotientFamilial(savedState.quotientFamilial);
+      setCityCode(savedState.cityCode);
+      setAids(savedState.aids);
+      setCalculated(true);
+    }
+  }, [savedState?.calculated]);
+
+  // Pré-remplir depuis le profil si pas de state sauvegardé
+  useEffect(() => {
+    if (!savedState?.calculated && userProfile) {
+      if (userProfile.quotient_familial && !quotientFamilial) {
         setQuotientFamilial(String(userProfile.quotient_familial));
       }
-      if (userProfile.postal_code) {
+      if (userProfile.postal_code && !cityCode) {
         setCityCode(userProfile.postal_code);
       }
     }
-  }, [userProfile]);
+  }, [userProfile, savedState?.calculated, quotientFamilial, cityCode]);
 
   const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
@@ -128,12 +146,19 @@ export const EnhancedFinancialAidCalculator = ({
       const totalAids = calculatedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
 
-      onAidsCalculated({
+      const aidData = {
         childId: selectedChildId,
+        quotientFamilial,
+        cityCode,
         aids: calculatedAids,
         totalAids,
         remainingPrice
-      });
+      };
+
+      // Save to persistent state
+      saveAidCalculation(aidData);
+
+      onAidsCalculated(aidData);
 
       toast({
         title: "Aides calculées",

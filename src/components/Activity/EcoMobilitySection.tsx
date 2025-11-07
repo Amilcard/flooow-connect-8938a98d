@@ -17,25 +17,44 @@ import {
   Mail,
   Phone,
   User,
-  Clock
+  Clock,
+  CheckCircle2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Mock coherent durations for eco-mobility (12-45 min range)
+// Rule: Walk > Bike ≈ Bus
+const getCoherentDurations = (activityId: string) => {
+  // Generate consistent durations based on activity ID for demo
+  const hash = activityId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const baseDuration = 18 + (hash % 18); // 18-35 min base
+  
+  return {
+    walk: baseDuration + 8, // Longest: +8 to +26 min → 26-43 min
+    bike: baseDuration - 4, // Shorter: -4 to +14 min → 14-31 min
+    bus: baseDuration // Middle: +0 to +18 min → 18-35 min
+  };
+};
+
 interface EcoMobilitySectionProps {
   activityId: string;
   activityAddress?: string;
   structureName?: string;
   structureContactJson?: any;
+  onTransportModeSelected?: (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => void;
+  selectedTransportMode?: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string } | null;
 }
 
 export const EcoMobilitySection = ({ 
   activityId, 
   activityAddress,
   structureName,
-  structureContactJson
+  structureContactJson,
+  onTransportModeSelected,
+  selectedTransportMode
 }: EcoMobilitySectionProps) => {
   const navigate = useNavigate();
   const [showCarpoolForm, setShowCarpoolForm] = useState(false);
@@ -49,6 +68,8 @@ export const EcoMobilitySection = ({
     departureTime: "",
     message: ""
   });
+
+  const durations = getCoherentDurations(activityId);
 
   // Fetch nearest STAS stop
   const { data: nearestStop } = useQuery({
@@ -81,6 +102,13 @@ export const EcoMobilitySection = ({
     },
     enabled: !!activityAddress
   });
+
+  const handleSelectTransport = (type: "bus" | "bike" | "walk", label: string, details?: string) => {
+    const duration = type === "bus" ? durations.bus : type === "bike" ? durations.bike : durations.walk;
+    const mode = { type, label, duration, details };
+    onTransportModeSelected?.(mode);
+    toast.success(`Mode de transport sélectionné : ${label}`);
+  };
 
   const handleCarpoolSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +143,7 @@ export const EcoMobilitySection = ({
 
       <div className="grid gap-4">
         {/* 1. Transport en commun STAS */}
-        <Card className="border-2 hover:border-primary/50 transition-colors">
+        <Card className={`border-2 transition-colors ${selectedTransportMode?.type === 'bus' ? 'border-primary bg-primary/5' : 'hover:border-primary/50'}`}>
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-950">
@@ -124,9 +152,17 @@ export const EcoMobilitySection = ({
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-lg">Transport en commun STAS</h3>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    Éco-responsable
-                  </Badge>
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" className="bg-green-100 text-green-700">
+                      Éco-responsable
+                    </Badge>
+                    {selectedTransportMode?.type === 'bus' && (
+                      <Badge variant="default" className="gap-1">
+                        <CheckCircle2 size={14} />
+                        Choisi
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 
                 {nearestStop && (
@@ -143,24 +179,38 @@ export const EcoMobilitySection = ({
                         </Badge>
                       ))}
                     </div>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Clock size={14} />
+                      <span>Temps estimé : {durations.bus} min</span>
+                    </div>
                   </div>
                 )}
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
-                  className="mt-2"
-                >
-                  Calculer mon itinéraire bus →
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
+                    className="mt-2"
+                  >
+                    Calculer mon itinéraire →
+                  </Button>
+                  <Button
+                    variant={selectedTransportMode?.type === 'bus' ? 'default' : 'secondary'}
+                    size="sm"
+                    onClick={() => handleSelectTransport('bus', 'STAS', nearestStop?.name)}
+                    className="mt-2"
+                  >
+                    {selectedTransportMode?.type === 'bus' ? 'Sélectionné' : 'Choisir ce mode'}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* 2. Vélivert */}
-        <Card className="border-2 hover:border-primary/50 transition-colors">
+        <Card className={`border-2 transition-colors ${selectedTransportMode?.type === 'bike' ? 'border-primary bg-primary/5' : 'hover:border-primary/50'}`}>
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-950">
@@ -169,9 +219,17 @@ export const EcoMobilitySection = ({
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-lg">Vélivert</h3>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    Zéro émission
-                  </Badge>
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" className="bg-green-100 text-green-700">
+                      Zéro émission
+                    </Badge>
+                    {selectedTransportMode?.type === 'bike' && (
+                      <Badge variant="default" className="gap-1">
+                        <CheckCircle2 size={14} />
+                        Choisi
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 
                 {nearestStation && (
@@ -184,24 +242,38 @@ export const EcoMobilitySection = ({
                     <p className="text-sm text-muted-foreground">
                       {nearestStation.available_bikes} vélos disponibles
                     </p>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Clock size={14} />
+                      <span>Temps estimé : {durations.bike} min</span>
+                    </div>
                   </div>
                 )}
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
-                  className="mt-2"
-                >
-                  Calculer mon itinéraire vélo →
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
+                    className="mt-2"
+                  >
+                    Calculer mon itinéraire →
+                  </Button>
+                  <Button
+                    variant={selectedTransportMode?.type === 'bike' ? 'default' : 'secondary'}
+                    size="sm"
+                    onClick={() => handleSelectTransport('bike', 'Vélivert', nearestStation?.name)}
+                    className="mt-2"
+                  >
+                    {selectedTransportMode?.type === 'bike' ? 'Sélectionné' : 'Choisir ce mode'}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* 3. Marche santé */}
-        <Card className="border-2 hover:border-primary/50 transition-colors">
+        <Card className={`border-2 transition-colors ${selectedTransportMode?.type === 'walk' ? 'border-primary bg-primary/5' : 'hover:border-primary/50'}`}>
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-950">
@@ -210,21 +282,43 @@ export const EcoMobilitySection = ({
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-lg">Marche santé</h3>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    100% nature
-                  </Badge>
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" className="bg-green-100 text-green-700">
+                      100% nature
+                    </Badge>
+                    {selectedTransportMode?.type === 'walk' && (
+                      <Badge variant="default" className="gap-1">
+                        <CheckCircle2 size={14} />
+                        Choisi
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Idéal pour les enfants et adolescents ! Profitez d'une balade active.
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
-                  className="mt-2"
-                >
-                  Calculer mon itinéraire à pied →
-                </Button>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Clock size={14} />
+                  <span>Temps estimé : {durations.walk} min</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname)}`)}
+                    className="mt-2"
+                  >
+                    Calculer mon itinéraire →
+                  </Button>
+                  <Button
+                    variant={selectedTransportMode?.type === 'walk' ? 'default' : 'secondary'}
+                    size="sm"
+                    onClick={() => handleSelectTransport('walk', 'Marche santé')}
+                    className="mt-2"
+                  >
+                    {selectedTransportMode?.type === 'walk' ? 'Sélectionné' : 'Choisir ce mode'}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>

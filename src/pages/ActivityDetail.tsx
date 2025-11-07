@@ -40,6 +40,7 @@ import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
 import { EnhancedFinancialAidCalculator } from "@/components/activities/EnhancedFinancialAidCalculator";
+import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -66,13 +67,32 @@ const ActivityDetail = () => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
   
+  // Hook pour la persistance des données d'aides et de transport
+  const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id!);
+  
   // États pour les aides calculées
   const [aidsData, setAidsData] = useState<{
     childId: string;
+    quotientFamilial: string;
+    cityCode: string;
     aids: any[];
     totalAids: number;
     remainingPrice: number;
   } | null>(null);
+
+  // Restaurer les données d'aides depuis le state persisté
+  useEffect(() => {
+    if (bookingState?.calculated) {
+      setAidsData({
+        childId: bookingState.childId,
+        quotientFamilial: bookingState.quotientFamilial,
+        cityCode: bookingState.cityCode,
+        aids: bookingState.aids,
+        totalAids: bookingState.totalAids,
+        remainingPrice: bookingState.remainingPrice
+      });
+    }
+  }, [bookingState?.calculated]);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
@@ -215,11 +235,18 @@ const ActivityDetail = () => {
 
   const handleAidsCalculated = (data: {
     childId: string;
+    quotientFamilial: string;
+    cityCode: string;
     aids: any[];
     totalAids: number;
     remainingPrice: number;
   }) => {
     setAidsData(data);
+    saveAidCalculation(data); // Sauvegarder dans le state persisté
+  };
+
+  const handleTransportModeSelected = (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => {
+    saveTransportMode(mode);
   };
 
   // Calculate age from date of birth
@@ -427,6 +454,7 @@ const ActivityDetail = () => {
             {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
               <section id="aides-section" className="space-y-4">
                 <EnhancedFinancialAidCalculator
+                  activityId={id!}
                   activityPrice={activity.price_base || 0}
                   activityCategories={activity.categories || [activity.category]}
                   userProfile={userProfile}
@@ -519,6 +547,8 @@ const ActivityDetail = () => {
               activityAddress={activity.structures?.address}
               structureName={activity.structures?.name}
               structureContactJson={activity.structures?.contact_json}
+              onTransportModeSelected={handleTransportModeSelected}
+              selectedTransportMode={bookingState?.transportMode}
             />
           </div>
 
