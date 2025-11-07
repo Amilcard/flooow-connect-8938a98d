@@ -5,6 +5,7 @@
 
 import { z } from 'zod';
 import type { Activity, ActivityRaw, ActivityCategory } from './domain';
+import { getActivityImage } from '@/lib/imageMapping';
 
 /**
  * Schema Zod pour validation des activités
@@ -57,13 +58,16 @@ export function toActivity(raw: ActivityRaw): Activity {
   const price = raw.cout ?? raw.price ?? raw.price_base ?? 0;
   const category = raw.theme || raw.category || 'Loisirs';
   
+  // Attribution intelligente de l'image selon thématique et âge
+  const activityImage = (raw.images && raw.images.length > 0) 
+    ? raw.images[0] 
+    : getActivityImage(title, category, ageMin, ageMax);
+  
   // Construction objet avec valeurs par défaut
   const activity: Activity = {
     id: raw.id,
     title,
-    image: (raw.images && raw.images.length > 0) 
-      ? raw.images[0] 
-      : 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop',
+    image: activityImage,
     ageRange: `${ageMin}-${ageMax} ans`,
     ageMin,
     ageMax,
