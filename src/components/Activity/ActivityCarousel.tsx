@@ -32,9 +32,9 @@ interface ActivityCarouselProps {
 
 export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarouselProps) => {
   return (
-    <div className="w-full overflow-x-auto carousel-container scroll-smooth pb-4">
+    <div className="w-full overflow-x-auto carousel-container scroll-smooth pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
       <div
-        className="flex gap-4"
+        className="flex gap-4 sm:gap-4"
         style={{ width: "max-content" }}
         role="list"
         aria-label="Activités en vedette"
@@ -42,7 +42,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
         {activities.map((activity) => (
           <div
             key={activity.id}
-            className="w-[85vw] max-w-[400px] flex-shrink-0 snap-start"
+            className="w-[85vw] sm:w-[calc(33.333%-1rem)] max-w-[400px] flex-shrink-0 snap-start first:ml-0"
             role="listitem"
           >
             <ActivityCard
