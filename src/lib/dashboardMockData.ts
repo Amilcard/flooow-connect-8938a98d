@@ -271,142 +271,151 @@ export const territoriesData: Record<string, TerritoryData> = {
   }
 };
 
-// DONNÉES D'ÉVOLUTION SUR 12 MOIS (cohérent avec les totaux)
+// DONNÉES D'ÉVOLUTION SUR 12 MOIS JUIN 2026 → JUIN 2027 (cohérent avec les totaux)
 export const evolutionData: EvolutionData[] = [
-  { mois: "Nov 2024", la_ricamarie: 142, grand_clos: 198, cret_de_roch: 121, total: 461 },
-  { mois: "Déc 2024", la_ricamarie: 145, grand_clos: 201, cret_de_roch: 124, total: 470 },
-  { mois: "Jan 2025", la_ricamarie: 148, grand_clos: 205, cret_de_roch: 127, total: 480 },
-  { mois: "Fév 2025", la_ricamarie: 150, grand_clos: 208, cret_de_roch: 129, total: 487 },
-  { mois: "Mar 2025", la_ricamarie: 152, grand_clos: 211, cret_de_roch: 131, total: 494 },
-  { mois: "Avr 2025", la_ricamarie: 154, grand_clos: 214, cret_de_roch: 132, total: 500 },
-  { mois: "Mai 2025", la_ricamarie: 155, grand_clos: 216, cret_de_roch: 133, total: 504 },
-  { mois: "Juin 2025", la_ricamarie: 156, grand_clos: 217, cret_de_roch: 133, total: 506 },
-  { mois: "Juil 2025", la_ricamarie: 156, grand_clos: 218, cret_de_roch: 134, total: 508 },
-  { mois: "Août 2025", la_ricamarie: 156, grand_clos: 218, cret_de_roch: 134, total: 508 },
-  { mois: "Sep 2025", la_ricamarie: 156, grand_clos: 218, cret_de_roch: 134, total: 508 },
-  { mois: "Oct 2025", la_ricamarie: 156, grand_clos: 218, cret_de_roch: 134, total: 508 }
+  { mois: "Juin 2026", la_ricamarie: 142, grand_clos: 198, cret_de_roch: 121, total: 461 },
+  { mois: "Juil 2026", la_ricamarie: 148, grand_clos: 206, cret_de_roch: 126, total: 480 }, // hausse vacances été
+  { mois: "Août 2026", la_ricamarie: 150, grand_clos: 209, cret_de_roch: 128, total: 487 }, // hausse vacances été
+  { mois: "Sep 2026", la_ricamarie: 149, grand_clos: 207, cret_de_roch: 127, total: 483 }, // rentrée
+  { mois: "Oct 2026", la_ricamarie: 151, grand_clos: 210, cret_de_roch: 129, total: 490 }, // léger rebond vacances automne
+  { mois: "Nov 2026", la_ricamarie: 150, grand_clos: 209, cret_de_roch: 128, total: 487 },
+  { mois: "Déc 2026", la_ricamarie: 148, grand_clos: 206, cret_de_roch: 126, total: 480 },
+  { mois: "Jan 2027", la_ricamarie: 144, grand_clos: 201, cret_de_roch: 123, total: 468 }, // baisse hivernale
+  { mois: "Fév 2027", la_ricamarie: 147, grand_clos: 205, cret_de_roch: 125, total: 477 }, // léger rebond vacances hiver
+  { mois: "Mar 2027", la_ricamarie: 150, grand_clos: 209, cret_de_roch: 128, total: 487 }, // reprise
+  { mois: "Avr 2027", la_ricamarie: 154, grand_clos: 214, cret_de_roch: 131, total: 499 }, // hausse vacances printemps
+  { mois: "Mai 2027", la_ricamarie: 155, grand_clos: 216, cret_de_roch: 132, total: 503 },
+  { mois: "Juin 2027", la_ricamarie: 156, grand_clos: 218, cret_de_roch: 134, total: 508 }
 ];
 
-// ÉVOLUTION PAR ACTIVITÉ (dynamique réaliste avec hausses vacances et baisse hivernale)
+// ÉVOLUTION PAR ACTIVITÉ JUIN 2026 → JUIN 2027 (dynamique réaliste avec hausses vacances et baisse hivernale)
 export const evolutionByActivityMetropole: EvolutionByActivityData[] = [
-  { mois: "Sep 2024", sport: 195, culture: 110, loisirs: 75, vacances: 35, scolaire: 18 },
-  { mois: "Oct 2024", sport: 200, culture: 112, loisirs: 78, vacances: 38, scolaire: 19 },
-  { mois: "Nov 2024", sport: 205, culture: 115, loisirs: 80, vacances: 40, scolaire: 19 },
-  { mois: "Déc 2024", sport: 203, culture: 117, loisirs: 82, vacances: 42, scolaire: 20 },
-  { mois: "Jan 2025", sport: 198, culture: 113, loisirs: 79, vacances: 39, scolaire: 19 }, // baisse hivernale
-  { mois: "Fév 2025", sport: 202, culture: 116, loisirs: 81, vacances: 45, scolaire: 20 }, // rebond vacances hiver
-  { mois: "Mar 2025", sport: 207, culture: 118, loisirs: 83, vacances: 43, scolaire: 20 },
-  { mois: "Avr 2025", sport: 210, culture: 120, loisirs: 85, vacances: 46, scolaire: 21 }, // hausse vacances printemps
-  { mois: "Mai 2025", sport: 213, culture: 122, loisirs: 87, vacances: 44, scolaire: 21 },
-  { mois: "Juin 2025", sport: 216, culture: 124, loisirs: 88, vacances: 45, scolaire: 21 },
-  { mois: "Juil 2025", sport: 220, culture: 126, loisirs: 89, vacances: 48, scolaire: 21 }, // hausse vacances été
-  { mois: "Août 2025", sport: 223, culture: 127, loisirs: 90, vacances: 47, scolaire: 21 }
+  { mois: "Juin 2026", sport: 195, culture: 110, loisirs: 75, vacances: 35, scolaire: 18 },
+  { mois: "Juil 2026", sport: 205, culture: 115, loisirs: 80, vacances: 48, scolaire: 18 }, // hausse vacances été
+  { mois: "Août 2026", sport: 208, culture: 117, loisirs: 82, vacances: 50, scolaire: 18 }, // hausse vacances été
+  { mois: "Sep 2026", sport: 203, culture: 115, loisirs: 79, vacances: 38, scolaire: 19 }, // rentrée
+  { mois: "Oct 2026", sport: 206, culture: 117, loisirs: 81, vacances: 42, scolaire: 20 }, // vacances automne
+  { mois: "Nov 2026", sport: 204, culture: 116, loisirs: 80, vacances: 39, scolaire: 19 },
+  { mois: "Déc 2026", sport: 202, culture: 115, loisirs: 79, vacances: 38, scolaire: 19 },
+  { mois: "Jan 2027", sport: 195, culture: 110, loisirs: 75, vacances: 36, scolaire: 18 }, // baisse hivernale
+  { mois: "Fév 2027", sport: 200, culture: 113, loisirs: 78, vacances: 44, scolaire: 19 }, // vacances hiver
+  { mois: "Mar 2027", sport: 207, culture: 118, loisirs: 82, vacances: 40, scolaire: 20 }, // reprise
+  { mois: "Avr 2027", sport: 212, culture: 121, loisirs: 85, vacances: 46, scolaire: 21 }, // vacances printemps
+  { mois: "Mai 2027", sport: 216, culture: 123, loisirs: 87, vacances: 44, scolaire: 21 },
+  { mois: "Juin 2027", sport: 223, culture: 127, loisirs: 90, vacances: 47, scolaire: 21 }
 ];
 
 export const evolutionByActivityLaRicamarie: EvolutionByActivityData[] = [
-  { mois: "Sep 2024", sport: 60, culture: 34, loisirs: 23, vacances: 12, scolaire: 5 },
-  { mois: "Oct 2024", sport: 62, culture: 35, loisirs: 24, vacances: 13, scolaire: 5 },
-  { mois: "Nov 2024", sport: 64, culture: 36, loisirs: 25, vacances: 13, scolaire: 5 },
-  { mois: "Déc 2024", sport: 63, culture: 37, loisirs: 26, vacances: 14, scolaire: 6 },
-  { mois: "Jan 2025", sport: 61, culture: 35, loisirs: 24, vacances: 13, scolaire: 5 },
-  { mois: "Fév 2025", sport: 63, culture: 36, loisirs: 25, vacances: 15, scolaire: 6 },
-  { mois: "Mar 2025", sport: 65, culture: 37, loisirs: 26, vacances: 14, scolaire: 6 },
-  { mois: "Avr 2025", sport: 66, culture: 38, loisirs: 27, vacances: 15, scolaire: 6 },
-  { mois: "Mai 2025", sport: 67, culture: 38, loisirs: 27, vacances: 14, scolaire: 6 },
-  { mois: "Juin 2025", sport: 68, culture: 39, loisirs: 28, vacances: 15, scolaire: 6 },
-  { mois: "Juil 2025", sport: 68, culture: 39, loisirs: 28, vacances: 15, scolaire: 6 },
-  { mois: "Août 2025", sport: 68, culture: 39, loisirs: 28, vacances: 15, scolaire: 6 }
+  { mois: "Juin 2026", sport: 60, culture: 34, loisirs: 23, vacances: 12, scolaire: 5 },
+  { mois: "Juil 2026", sport: 64, culture: 36, loisirs: 25, vacances: 16, scolaire: 5 },
+  { mois: "Août 2026", sport: 65, culture: 37, loisirs: 26, vacances: 17, scolaire: 5 },
+  { mois: "Sep 2026", sport: 63, culture: 36, loisirs: 25, vacances: 13, scolaire: 5 },
+  { mois: "Oct 2026", sport: 64, culture: 37, loisirs: 26, vacances: 14, scolaire: 6 },
+  { mois: "Nov 2026", sport: 63, culture: 36, loisirs: 25, vacances: 13, scolaire: 5 },
+  { mois: "Déc 2026", sport: 62, culture: 36, loisirs: 25, vacances: 13, scolaire: 5 },
+  { mois: "Jan 2027", sport: 60, culture: 34, loisirs: 23, vacances: 12, scolaire: 5 },
+  { mois: "Fév 2027", sport: 62, culture: 35, loisirs: 24, vacances: 15, scolaire: 5 },
+  { mois: "Mar 2027", sport: 65, culture: 37, loisirs: 26, vacances: 14, scolaire: 6 },
+  { mois: "Avr 2027", sport: 67, culture: 38, loisirs: 27, vacances: 15, scolaire: 6 },
+  { mois: "Mai 2027", sport: 68, culture: 39, loisirs: 28, vacances: 14, scolaire: 6 },
+  { mois: "Juin 2027", sport: 68, culture: 39, loisirs: 28, vacances: 15, scolaire: 6 }
 ];
 
 export const evolutionByActivityGrandClos: EvolutionByActivityData[] = [
-  { mois: "Sep 2024", sport: 86, culture: 45, loisirs: 32, vacances: 15, scolaire: 8 },
-  { mois: "Oct 2024", sport: 88, culture: 46, loisirs: 34, vacances: 16, scolaire: 8 },
-  { mois: "Nov 2024", sport: 90, culture: 47, loisirs: 35, vacances: 17, scolaire: 8 },
-  { mois: "Déc 2024", sport: 89, culture: 48, loisirs: 36, vacances: 18, scolaire: 9 },
-  { mois: "Jan 2025", sport: 87, culture: 46, loisirs: 34, vacances: 16, scolaire: 8 },
-  { mois: "Fév 2025", sport: 90, culture: 48, loisirs: 36, vacances: 19, scolaire: 9 },
-  { mois: "Mar 2025", sport: 92, culture: 49, loisirs: 37, vacances: 18, scolaire: 9 },
-  { mois: "Avr 2025", sport: 94, culture: 50, loisirs: 38, vacances: 20, scolaire: 9 },
-  { mois: "Mai 2025", sport: 96, culture: 51, loisirs: 38, vacances: 19, scolaire: 9 },
-  { mois: "Juin 2025", sport: 97, culture: 51, loisirs: 39, vacances: 19, scolaire: 9 },
-  { mois: "Juil 2025", sport: 98, culture: 52, loisirs: 39, vacances: 20, scolaire: 9 },
-  { mois: "Août 2025", sport: 98, culture: 52, loisirs: 39, vacances: 20, scolaire: 9 }
+  { mois: "Juin 2026", sport: 86, culture: 45, loisirs: 32, vacances: 15, scolaire: 8 },
+  { mois: "Juil 2026", sport: 91, culture: 48, loisirs: 35, vacances: 22, scolaire: 8 },
+  { mois: "Août 2026", sport: 93, culture: 49, loisirs: 36, vacances: 23, scolaire: 8 },
+  { mois: "Sep 2026", sport: 90, culture: 47, loisirs: 34, vacances: 16, scolaire: 8 },
+  { mois: "Oct 2026", sport: 92, culture: 48, loisirs: 36, vacances: 19, scolaire: 9 },
+  { mois: "Nov 2026", sport: 90, culture: 48, loisirs: 35, vacances: 17, scolaire: 8 },
+  { mois: "Déc 2026", sport: 89, culture: 47, loisirs: 35, vacances: 16, scolaire: 8 },
+  { mois: "Jan 2027", sport: 86, culture: 45, loisirs: 32, vacances: 15, scolaire: 8 },
+  { mois: "Fév 2027", sport: 89, culture: 46, loisirs: 34, vacances: 20, scolaire: 8 },
+  { mois: "Mar 2027", sport: 92, culture: 49, loisirs: 36, vacances: 18, scolaire: 9 },
+  { mois: "Avr 2027", sport: 95, culture: 51, loisirs: 38, vacances: 21, scolaire: 9 },
+  { mois: "Mai 2027", sport: 97, culture: 51, loisirs: 39, vacances: 19, scolaire: 9 },
+  { mois: "Juin 2027", sport: 98, culture: 52, loisirs: 39, vacances: 20, scolaire: 9 }
 ];
 
 export const evolutionByActivityCretDeRoch: EvolutionByActivityData[] = [
-  { mois: "Sep 2024", sport: 49, culture: 31, loisirs: 20, vacances: 8, scolaire: 5 },
-  { mois: "Oct 2024", sport: 50, culture: 31, loisirs: 20, vacances: 9, scolaire: 6 },
-  { mois: "Nov 2024", sport: 51, culture: 32, loisirs: 20, vacances: 10, scolaire: 6 },
-  { mois: "Déc 2024", sport: 51, culture: 32, loisirs: 20, vacances: 10, scolaire: 5 },
-  { mois: "Jan 2025", sport: 50, culture: 32, loisirs: 21, vacances: 10, scolaire: 6 },
-  { mois: "Fév 2025", sport: 49, culture: 32, loisirs: 20, vacances: 11, scolaire: 5 },
-  { mois: "Mar 2025", sport: 50, culture: 32, loisirs: 20, vacances: 11, scolaire: 5 },
-  { mois: "Avr 2025", sport: 50, culture: 32, loisirs: 20, vacances: 11, scolaire: 6 },
-  { mois: "Mai 2025", sport: 50, culture: 33, loisirs: 22, vacances: 11, scolaire: 6 },
-  { mois: "Juin 2025", sport: 51, culture: 34, loisirs: 21, vacances: 11, scolaire: 6 },
-  { mois: "Juil 2025", sport: 54, culture: 35, loisirs: 22, vacances: 13, scolaire: 6 },
-  { mois: "Août 2025", sport: 57, culture: 36, loisirs: 23, vacances: 12, scolaire: 6 }
+  { mois: "Juin 2026", sport: 49, culture: 31, loisirs: 20, vacances: 8, scolaire: 5 },
+  { mois: "Juil 2026", sport: 50, culture: 31, loisirs: 20, vacances: 10, scolaire: 5 },
+  { mois: "Août 2026", sport: 50, culture: 31, loisirs: 20, vacances: 10, scolaire: 5 },
+  { mois: "Sep 2026", sport: 50, culture: 32, loisirs: 20, vacances: 9, scolaire: 6 },
+  { mois: "Oct 2026", sport: 50, culture: 32, loisirs: 20, vacances: 9, scolaire: 5 },
+  { mois: "Nov 2026", sport: 51, culture: 32, loisirs: 20, vacances: 9, scolaire: 6 },
+  { mois: "Déc 2026", sport: 51, culture: 32, loisirs: 19, vacances: 9, scolaire: 6 },
+  { mois: "Jan 2027", sport: 49, culture: 31, loisirs: 20, vacances: 9, scolaire: 5 },
+  { mois: "Fév 2027", sport: 49, culture: 32, loisirs: 20, vacances: 9, scolaire: 6 },
+  { mois: "Mar 2027", sport: 50, culture: 32, loisirs: 20, vacances: 8, scolaire: 5 },
+  { mois: "Avr 2027", sport: 50, culture: 32, loisirs: 20, vacances: 10, scolaire: 6 },
+  { mois: "Mai 2027", sport: 51, culture: 33, loisirs: 22, vacances: 11, scolaire: 6 },
+  { mois: "Juin 2027", sport: 57, culture: 36, loisirs: 23, vacances: 12, scolaire: 6 }
 ];
 
-// ÉVOLUTION FILLES/GARÇONS (avec baisse hivernale pour les filles)
+// ÉVOLUTION FILLES/GARÇONS JUIN 2026 → JUIN 2027 (avec baisse hivernale pour les filles)
 export const genderEvolutionMetropole: GenderEvolutionData[] = [
-  { mois: "Sep 2024", filles: 210, garcons: 223 },
-  { mois: "Oct 2024", filles: 215, garcons: 232 },
-  { mois: "Nov 2024", filles: 218, garcons: 241 }, // début baisse filles
-  { mois: "Déc 2024", filles: 214, garcons: 246 },
-  { mois: "Jan 2025", filles: 208, garcons: 241 }, // creux hivernal filles
-  { mois: "Fév 2025", filles: 211, garcons: 246 }, // rebond léger
-  { mois: "Mar 2025", filles: 218, garcons: 256 },
-  { mois: "Avr 2025", filles: 223, garcons: 262 },
-  { mois: "Mai 2025", filles: 226, garcons: 268 },
-  { mois: "Juin 2025", filles: 228, garcons: 272 },
-  { mois: "Juil 2025", filles: 230, garcons: 275 },
-  { mois: "Août 2025", filles: 231, garcons: 277 }
+  { mois: "Juin 2026", filles: 210, garcons: 251 },
+  { mois: "Juil 2026", filles: 218, garcons: 262 }, // hausse vacances
+  { mois: "Août 2026", filles: 221, garcons: 266 },
+  { mois: "Sep 2026", filles: 219, garcons: 264 },
+  { mois: "Oct 2026", filles: 222, garcons: 268 },
+  { mois: "Nov 2026", filles: 218, garcons: 269 }, // début baisse filles
+  { mois: "Déc 2026", filles: 214, garcons: 266 },
+  { mois: "Jan 2027", filles: 206, garcons: 262 }, // creux hivernal filles
+  { mois: "Fév 2027", filles: 211, garcons: 266 }, // rebond léger
+  { mois: "Mar 2027", filles: 220, garcons: 267 },
+  { mois: "Avr 2027", filles: 226, garcons: 273 }, // rebond printemps
+  { mois: "Mai 2027", filles: 228, garcons: 275 },
+  { mois: "Juin 2027", filles: 231, garcons: 277 }
 ];
 
 export const genderEvolutionLaRicamarie: GenderEvolutionData[] = [
-  { mois: "Sep 2024", filles: 64, garcons: 70 },
-  { mois: "Oct 2024", filles: 66, garcons: 73 },
-  { mois: "Nov 2024", filles: 67, garcons: 76 },
-  { mois: "Déc 2024", filles: 65, garcons: 78 },
-  { mois: "Jan 2025", filles: 63, garcons: 76 },
-  { mois: "Fév 2025", filles: 65, garcons: 78 },
-  { mois: "Mar 2025", filles: 67, garcons: 80 },
-  { mois: "Avr 2025", filles: 68, garcons: 82 },
-  { mois: "Mai 2025", filles: 69, garcons: 83 },
-  { mois: "Juin 2025", filles: 70, garcons: 84 },
-  { mois: "Juil 2025", filles: 71, garcons: 85 },
-  { mois: "Août 2025", filles: 71, garcons: 85 }
+  { mois: "Juin 2026", filles: 64, garcons: 78 },
+  { mois: "Juil 2026", filles: 67, garcons: 81 },
+  { mois: "Août 2026", filles: 68, garcons: 82 },
+  { mois: "Sep 2026", filles: 67, garcons: 82 },
+  { mois: "Oct 2026", filles: 68, garcons: 83 },
+  { mois: "Nov 2026", filles: 67, garcons: 83 },
+  { mois: "Déc 2026", filles: 65, garcons: 83 },
+  { mois: "Jan 2027", filles: 63, garcons: 81 },
+  { mois: "Fév 2027", filles: 65, garcons: 82 },
+  { mois: "Mar 2027", filles: 68, garcons: 82 },
+  { mois: "Avr 2027", filles: 70, garcons: 84 },
+  { mois: "Mai 2027", filles: 70, garcons: 85 },
+  { mois: "Juin 2027", filles: 71, garcons: 85 }
 ];
 
 export const genderEvolutionGrandClos: GenderEvolutionData[] = [
-  { mois: "Sep 2024", filles: 82, garcons: 104 },
-  { mois: "Oct 2024", filles: 85, garcons: 108 },
-  { mois: "Nov 2024", filles: 87, garcons: 112 },
-  { mois: "Déc 2024", filles: 84, garcons: 115 },
-  { mois: "Jan 2025", filles: 81, garcons: 112 },
-  { mois: "Fév 2025", filles: 84, garcons: 115 },
-  { mois: "Mar 2025", filles: 88, garcons: 118 },
-  { mois: "Avr 2025", filles: 91, garcons: 121 },
-  { mois: "Mai 2025", filles: 93, garcons: 123 },
-  { mois: "Juin 2025", filles: 94, garcons: 124 },
-  { mois: "Juil 2025", filles: 95, garcons: 122 },
-  { mois: "Août 2025", filles: 96, garcons: 122 }
+  { mois: "Juin 2026", filles: 82, garcons: 116 },
+  { mois: "Juil 2026", filles: 88, garcons: 118 },
+  { mois: "Août 2026", filles: 90, garcons: 119 },
+  { mois: "Sep 2026", filles: 88, garcons: 119 },
+  { mois: "Oct 2026", filles: 90, garcons: 120 },
+  { mois: "Nov 2026", filles: 88, garcons: 121 },
+  { mois: "Déc 2026", filles: 85, garcons: 121 },
+  { mois: "Jan 2027", filles: 81, garcons: 120 },
+  { mois: "Fév 2027", filles: 84, garcons: 121 },
+  { mois: "Mar 2027", filles: 89, garcons: 120 },
+  { mois: "Avr 2027", filles: 92, garcons: 122 },
+  { mois: "Mai 2027", filles: 94, garcons: 122 },
+  { mois: "Juin 2027", filles: 96, garcons: 122 }
 ];
 
 export const genderEvolutionCretDeRoch: GenderEvolutionData[] = [
-  { mois: "Sep 2024", filles: 64, garcons: 49 },
-  { mois: "Oct 2024", filles: 64, garcons: 51 },
-  { mois: "Nov 2024", filles: 64, garcons: 53 },
-  { mois: "Déc 2024", filles: 65, garcons: 53 },
-  { mois: "Jan 2025", filles: 64, garcons: 53 },
-  { mois: "Fév 2025", filles: 62, garcons: 53 },
-  { mois: "Mar 2025", filles: 63, garcons: 58 },
-  { mois: "Avr 2025", filles: 64, garcons: 59 },
-  { mois: "Mai 2025", filles: 64, garcons: 64 },
-  { mois: "Juin 2025", filles: 64, garcons: 64 },
-  { mois: "Juil 2025", filles: 64, garcons: 68 },
-  { mois: "Août 2025", filles: 64, garcons: 70 }
+  { mois: "Juin 2026", filles: 64, garcons: 57 },
+  { mois: "Juil 2026", filles: 63, garcons: 63 },
+  { mois: "Août 2026", filles: 63, garcons: 65 },
+  { mois: "Sep 2026", filles: 64, garcons: 63 },
+  { mois: "Oct 2026", filles: 64, garcons: 65 },
+  { mois: "Nov 2026", filles: 63, garcons: 65 },
+  { mois: "Déc 2026", filles: 64, garcons: 62 },
+  { mois: "Jan 2027", filles: 62, garcons: 61 },
+  { mois: "Fév 2027", filles: 62, garcons: 63 },
+  { mois: "Mar 2027", filles: 63, garcons: 65 },
+  { mois: "Avr 2027", filles: 64, garcons: 67 },
+  { mois: "Mai 2027", filles: 64, garcons: 68 },
+  { mois: "Juin 2027", filles: 64, garcons: 70 }
 ];
 
 // STRUCTURES PAR TERRITOIRE
@@ -527,3 +536,48 @@ export const metropoleData: TerritoryData = {
   transport_marche: 14, // 6 + 4 + 4
   abandons_mobilite: 33 // 8 + 14 + 11
 };
+
+// DONNÉES COMPARATIVES NATIONALES ET MÉTROPOLE TYPE
+export interface ComparisonData {
+  entity: string;
+  taux_participation: number; // %
+  nb_moyen_activites: number;
+  taux_recours_aides: number; // %
+  part_qpv: number; // %
+  part_handicap: number; // %
+  taux_abandon: number; // %
+  part_mobilite_eco: number; // %
+}
+
+export const comparisonData: ComparisonData[] = [
+  {
+    entity: "Saint-Étienne Métropole",
+    taux_participation: 32.5,
+    nb_moyen_activites: 1.4,
+    taux_recours_aides: 67.7,
+    part_qpv: 74.6,
+    part_handicap: 12.4,
+    taux_abandon: 10.0,
+    part_mobilite_eco: 75.2
+  },
+  {
+    entity: "Moyenne Nationale",
+    taux_participation: 28.3,
+    nb_moyen_activites: 1.2,
+    taux_recours_aides: 54.2,
+    part_qpv: 22.5,
+    part_handicap: 8.7,
+    taux_abandon: 12.5,
+    part_mobilite_eco: 42.8
+  },
+  {
+    entity: "Métropole Type",
+    taux_participation: 35.1,
+    nb_moyen_activites: 1.5,
+    taux_recours_aides: 61.3,
+    part_qpv: 28.9,
+    part_handicap: 10.2,
+    taux_abandon: 11.2,
+    part_mobilite_eco: 58.4
+  }
+];

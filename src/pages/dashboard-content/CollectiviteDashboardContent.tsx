@@ -1,9 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Users, Building2, TrendingUp, AlertCircle, Heart, Bus, DollarSign, GraduationCap, Activity, UserMinus, CheckCircle, AlertTriangle, MapPin, Car } from "lucide-react";
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
+import { Users, Building2, TrendingUp, AlertCircle, Heart, Bus, DollarSign, GraduationCap, Activity, UserMinus, CheckCircle, AlertTriangle, MapPin, Car, Target } from "lucide-react";
 import { useState } from "react";
 import { 
   territoriesData, 
@@ -22,6 +22,7 @@ import {
   ageGroupsLaRicamarie,
   ageGroupsGrandClos,
   ageGroupsCretDeRoch,
+  comparisonData,
   type TerritoryData
 } from "@/lib/dashboardMockData";
 
@@ -122,51 +123,90 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
     remplissage_pct: t.taux_remplissage_moyen
   }));
 
+  // Données pour le graphique radar comparatif
+  const radarData = [
+    {
+      indicator: "Participation",
+      "Saint-Étienne Métropole": comparisonData[0].taux_participation,
+      "Moyenne Nationale": comparisonData[1].taux_participation,
+      "Métropole Type": comparisonData[2].taux_participation
+    },
+    {
+      indicator: "Recours aides",
+      "Saint-Étienne Métropole": comparisonData[0].taux_recours_aides,
+      "Moyenne Nationale": comparisonData[1].taux_recours_aides,
+      "Métropole Type": comparisonData[2].taux_recours_aides
+    },
+    {
+      indicator: "QPV",
+      "Saint-Étienne Métropole": comparisonData[0].part_qpv,
+      "Moyenne Nationale": comparisonData[1].part_qpv,
+      "Métropole Type": comparisonData[2].part_qpv
+    },
+    {
+      indicator: "Handicap",
+      "Saint-Étienne Métropole": comparisonData[0].part_handicap,
+      "Moyenne Nationale": comparisonData[1].part_handicap,
+      "Métropole Type": comparisonData[2].part_handicap
+    },
+    {
+      indicator: "Mobilité éco",
+      "Saint-Étienne Métropole": comparisonData[0].part_mobilite_eco,
+      "Moyenne Nationale": comparisonData[1].part_mobilite_eco,
+      "Métropole Type": comparisonData[2].part_mobilite_eco
+    }
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Titre et sélecteur de territoire */}
+    <div className="space-y-6 pb-8">
+      {/* En-tête */}
       <div className="space-y-4">
         <div>
           <h1 className="text-3xl font-bold mb-2">Tableau de bord Collectivité</h1>
-          <p className="text-muted-foreground">Pilotage territorial des activités jeunesse - Saint-Étienne Métropole</p>
+          <p className="text-muted-foreground">Pilotage territorial des activités jeunesse - Période : Juin 2026 → Juin 2027</p>
         </div>
         
-        {/* Sélecteur de territoire */}
-        <div className="flex gap-2 flex-wrap">
-          <Badge 
+        {/* Barre d'onglets TERRITOIRES centrée en haut */}
+        <div className="flex justify-center gap-3 py-4">
+          <Button
             variant={selectedTerritory === "metropole" ? "default" : "outline"}
-            className="cursor-pointer px-4 py-2"
+            size="lg"
+            className="rounded-full px-6"
             onClick={() => setSelectedTerritory("metropole")}
           >
-            Vue Métropole
-          </Badge>
-          <Badge 
+            <MapPin className="w-4 h-4 mr-2" />
+            Agglomération
+          </Button>
+          <Button
             variant={selectedTerritory === "la_ricamarie" ? "default" : "outline"}
-            className="cursor-pointer px-4 py-2"
+            size="lg"
+            className="rounded-full px-6"
             onClick={() => setSelectedTerritory("la_ricamarie")}
           >
             La Ricamarie
-          </Badge>
-          <Badge 
+          </Button>
+          <Button
             variant={selectedTerritory === "grand_clos" ? "default" : "outline"}
-            className="cursor-pointer px-4 py-2"
+            size="lg"
+            className="rounded-full px-6"
             onClick={() => setSelectedTerritory("grand_clos")}
           >
             Grand Clos / Côte-Chaude
-          </Badge>
-          <Badge 
+          </Button>
+          <Button
             variant={selectedTerritory === "cret_de_roch" ? "default" : "outline"}
-            className="cursor-pointer px-4 py-2"
+            size="lg"
+            className="rounded-full px-6"
             onClick={() => setSelectedTerritory("cret_de_roch")}
           >
             Crêt de Roch
-          </Badge>
+          </Button>
         </div>
       </div>
 
-      {/* Onglets */}
+      {/* Onglets thématiques */}
       <Tabs defaultValue="synthese" className="w-full">
-        <TabsList className="grid w-full grid-cols-7 mb-6">
+        <TabsList className="grid w-full grid-cols-8 mb-6 sticky top-0 z-10 bg-background">
           <TabsTrigger value="synthese">Synthèse</TabsTrigger>
           <TabsTrigger value="acces">Accès & Équité</TabsTrigger>
           <TabsTrigger value="parcours">Parcours</TabsTrigger>
@@ -174,6 +214,7 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           <TabsTrigger value="mobilite">Mobilité</TabsTrigger>
           <TabsTrigger value="evolutions">Évolutions</TabsTrigger>
           <TabsTrigger value="structures">Structures</TabsTrigger>
+          <TabsTrigger value="comparaisons">Comparaisons</TabsTrigger>
         </TabsList>
 
         {/* ONGLET 1: SYNTHÈSE */}
@@ -185,60 +226,88 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="text-center">
+                <div className="text-center p-4 bg-muted/30 rounded-lg">
                   <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
                   <div className="text-3xl font-bold">{data.total_inscrits}</div>
                   <p className="text-xs text-muted-foreground">Enfants inscrits</p>
                 </div>
-                <div className="text-center">
-                  <Activity className="w-6 h-6 mx-auto mb-2 text-primary" />
+                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                  <Building2 className="w-6 h-6 mx-auto mb-2 text-primary" />
                   <div className="text-3xl font-bold">{data.total_structures}</div>
                   <p className="text-xs text-muted-foreground">Structures</p>
                 </div>
-                <div className="text-center">
-                  <CheckCircle className="w-6 h-6 mx-auto mb-2 text-primary" />
-                  <div className="text-3xl font-bold">{data.taux_remplissage_moyen}%</div>
+                <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                  <CheckCircle className="w-6 h-6 mx-auto mb-2 text-green-600" />
+                  <div className="text-3xl font-bold text-green-600">{data.taux_remplissage_moyen}%</div>
                   <p className="text-xs text-muted-foreground">Taux remplissage</p>
                 </div>
-                <div className="text-center">
-                  <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-orange-500" />
-                  <div className="text-3xl font-bold">{data.taux_non_recours_estime}%</div>
+                <div className="text-center p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                  <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-orange-600" />
+                  <div className="text-3xl font-bold text-orange-600">{data.taux_non_recours_estime}%</div>
                   <p className="text-xs text-muted-foreground">Non-recours estimé</p>
                 </div>
-                <div className="text-center">
-                  <UserMinus className="w-6 h-6 mx-auto mb-2 text-red-500" />
-                  <div className="text-3xl font-bold">{data.taux_abandon.toFixed(1)}%</div>
+                <div className="text-center p-4 bg-red-50 dark:bg-red-950/20 rounded-lg">
+                  <UserMinus className="w-6 h-6 mx-auto mb-2 text-red-600" />
+                  <div className="text-3xl font-bold text-red-600">{data.taux_abandon.toFixed(1)}%</div>
                   <p className="text-xs text-muted-foreground">Taux d'abandon</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>🎯 Vue d'ensemble rapide</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">{data.taux_qpv.toFixed(1)}%</div>
-                  <p className="text-sm text-muted-foreground">QPV ({data.enfants_qpv} enfants)</p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>🎯 Inclusion & Équité</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">{data.taux_qpv.toFixed(1)}%</div>
+                    <p className="text-sm text-muted-foreground">QPV ({data.enfants_qpv})</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">{data.taux_handicap.toFixed(1)}%</div>
+                    <p className="text-sm text-muted-foreground">Handicap ({data.enfants_handicap})</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold text-pink-600">{data.taux_filles.toFixed(1)}%</div>
+                    <p className="text-sm text-muted-foreground">Filles ({data.filles})</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold">{data.nb_moyen_activites_par_enfant.toFixed(1)}</div>
+                    <p className="text-sm text-muted-foreground">Activités/enfant</p>
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{data.taux_handicap.toFixed(1)}%</div>
-                  <p className="text-sm text-muted-foreground">Handicap ({data.enfants_handicap} enfants)</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>💰 Aides & Finances</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold">{data.familles_aidees}</div>
+                    <p className="text-sm text-muted-foreground">Familles aidées</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold">{data.familles_eligibles}</div>
+                    <p className="text-sm text-muted-foreground">Familles éligibles</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold">{data.aide_moyenne}€</div>
+                    <p className="text-sm text-muted-foreground">Aide moyenne</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted/30 rounded-lg">
+                    <div className="text-2xl font-bold">{data.reste_a_charge_moyen}€</div>
+                    <p className="text-sm text-muted-foreground">Reste à charge</p>
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold text-pink-600">{data.taux_filles.toFixed(1)}%</div>
-                  <p className="text-sm text-muted-foreground">Filles ({data.filles})</p>
-                </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold">{data.nb_moyen_activites_par_enfant.toFixed(1)}</div>
-                  <p className="text-sm text-muted-foreground">Activités/enfant</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* ONGLET 2: ACCÈS & ÉQUITÉ */}
@@ -250,19 +319,19 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-center p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border-2 border-orange-200 dark:border-orange-800">
                   <div className="text-2xl font-bold text-orange-600">{data.taux_qpv.toFixed(1)}%</div>
                   <p className="text-sm text-muted-foreground">QPV ({data.enfants_qpv} enfants)</p>
                 </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
                   <div className="text-2xl font-bold text-blue-600">{data.taux_handicap.toFixed(1)}%</div>
                   <p className="text-sm text-muted-foreground">Handicap ({data.enfants_handicap} enfants)</p>
                 </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-center p-4 bg-pink-50 dark:bg-pink-950/20 rounded-lg border-2 border-pink-200 dark:border-pink-800">
                   <div className="text-2xl font-bold text-pink-600">{data.taux_filles.toFixed(1)}%</div>
                   <p className="text-sm text-muted-foreground">Filles ({data.filles})</p>
                 </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-center p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border-2 border-red-200 dark:border-red-800">
                   <div className="text-2xl font-bold text-red-600">{data.taux_non_recours_estime}%</div>
                   <p className="text-sm text-muted-foreground">Non-recours estimé</p>
                 </div>
@@ -367,35 +436,52 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
               <CardTitle>💰 Aides & Finances - {data.name}</CardTitle>
               <CardDescription>Recours aux aides et reste à charge</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold">{data.familles_aidees}</div>
+                <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border-2 border-green-200 dark:border-green-800">
+                  <CheckCircle className="w-6 h-6 mx-auto mb-2 text-green-600" />
+                  <div className="text-2xl font-bold text-green-600">{data.familles_aidees}</div>
                   <p className="text-sm text-muted-foreground">Familles aidées</p>
                 </div>
                 <div className="text-center p-4 bg-muted/30 rounded-lg">
+                  <Users className="w-6 h-6 mx-auto mb-2 text-primary" />
                   <div className="text-2xl font-bold">{data.familles_eligibles}</div>
                   <p className="text-sm text-muted-foreground">Familles éligibles</p>
                 </div>
-                <div className="text-center p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{data.aide_moyenne}€</div>
+                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                  <DollarSign className="w-6 h-6 mx-auto mb-2 text-primary" />
+                  <div className="text-2xl font-bold">{data.aide_moyenne}€</div>
                   <p className="text-sm text-muted-foreground">Aide moyenne</p>
                 </div>
-                <div className="text-center p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg">
+                <div className="text-center p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                  <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-orange-600" />
                   <div className="text-2xl font-bold text-orange-600">{data.reste_a_charge_moyen}€</div>
-                  <p className="text-sm text-muted-foreground">Reste à charge moyen</p>
+                  <p className="text-sm text-muted-foreground">Reste à charge</p>
                 </div>
               </div>
 
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm font-semibold flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                  Taux de non-recours: {data.taux_non_recours_estime}%
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {(data.familles_eligibles - data.familles_aidees)} familles éligibles n'ont pas bénéficié d'aides
-                </p>
-              </div>
+              <Card className="bg-muted/50">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Taux de recours aux aides
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    {((data.familles_aidees / data.familles_eligibles) * 100).toFixed(1)}%
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {data.familles_aidees} familles aidées sur {data.familles_eligibles} éligibles
+                  </p>
+                  {data.familles_aidees < data.familles_eligibles && (
+                    <p className="text-sm text-orange-600 mt-2 flex items-center gap-1">
+                      <AlertTriangle className="w-4 h-4" />
+                      {data.familles_eligibles - data.familles_aidees} familles éligibles non aidées
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
         </TabsContent>
@@ -404,32 +490,56 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
         <TabsContent value="mobilite" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Car className="w-5 h-5" />
-                Mobilité & Transport - {data.name}
-              </CardTitle>
-              <CardDescription>Modes de transport et abandons liés</CardDescription>
+              <CardTitle>🚴 Mobilité & Transport - {data.name}</CardTitle>
+              <CardDescription>Modes de déplacement vers les activités</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={mobilityData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="mode" />
-                  <YAxis label={{ value: "Nombre d'usagers", angle: -90, position: 'insideLeft' }} />
-                  <Tooltip formatter={(value) => `${value} enfants`} />
-                  <Bar dataKey="count" fill="#10b981" />
-                </BarChart>
-              </ResponsiveContainer>
-
-              <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
-                <p className="text-sm font-semibold flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-red-600" />
-                  Abandons pour raison de mobilité: {data.abandons_mobilite}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {((data.abandons_mobilite / data.total_inscrits) * 100).toFixed(1)}% des inscrits
-                </p>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-5 gap-4">
+                {mobilityData.map((item, idx) => (
+                  <div key={idx} className="text-center p-4 bg-muted/30 rounded-lg">
+                    {item.mode === "Bus" && <Bus className="w-6 h-6 mx-auto mb-2 text-primary" />}
+                    {item.mode === "Vélo" && <Activity className="w-6 h-6 mx-auto mb-2 text-green-600" />}
+                    {item.mode === "Voiture" && <Car className="w-6 h-6 mx-auto mb-2 text-orange-600" />}
+                    {item.mode === "Covoiturage" && <Users className="w-6 h-6 mx-auto mb-2 text-blue-600" />}
+                    {item.mode === "Marche" && <Activity className="w-6 h-6 mx-auto mb-2 text-purple-600" />}
+                    <div className="text-2xl font-bold">{item.count}</div>
+                    <p className="text-xs text-muted-foreground">{item.mode}</p>
+                    <p className="text-xs text-muted-foreground">({item.percentage}%)</p>
+                  </div>
+                ))}
               </div>
+
+              <div>
+                <h4 className="font-semibold mb-3">Répartition des modes de transport</h4>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={mobilityData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="mode" />
+                    <YAxis label={{ value: "Nombre d'utilisateurs", angle: -90, position: 'insideLeft' }} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#6366f1" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {data.abandons_mobilite > 0 && (
+                <Card className="bg-orange-50 dark:bg-orange-950/20 border-2 border-orange-200 dark:border-orange-800">
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                      <AlertTriangle className="w-5 h-5" />
+                      Abandons liés à la mobilité
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
+                      {data.abandons_mobilite} abandons
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      soit {((data.abandons_mobilite / data.nb_abandons) * 100).toFixed(1)}% des abandons totaux
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -438,72 +548,49 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
         <TabsContent value="evolutions" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>📊 Évolutions temporelles - {data.name}</CardTitle>
-              <CardDescription>Dynamiques sur 12 mois (Sept 2024 - Août 2025)</CardDescription>
+              <CardTitle>📈 Évolutions - {data.name}</CardTitle>
+              <CardDescription>Période : Juin 2026 → Juin 2027</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Évolution par activité */}
               <div>
-                <h4 className="font-semibold mb-3">Évolution par univers d'activités</h4>
+                <h4 className="font-semibold mb-3">Évolution des inscriptions par univers d'activité</h4>
                 <ResponsiveContainer width="100%" height={350}>
                   <LineChart data={activityEvolution}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="mois" />
-                    <YAxis label={{ value: 'Inscriptions', angle: -90, position: 'insideLeft' }} />
+                    <XAxis dataKey="mois" angle={-45} textAnchor="end" height={80} />
+                    <YAxis label={{ value: "Nombre d'inscrits", angle: -90, position: 'insideLeft' }} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="sport" stroke="#3b82f6" name="Sport" strokeWidth={2} />
-                    <Line type="monotone" dataKey="culture" stroke="#ec4899" name="Culture" strokeWidth={2} />
-                    <Line type="monotone" dataKey="loisirs" stroke="#f59e0b" name="Loisirs" strokeWidth={2} />
-                    <Line type="monotone" dataKey="vacances" stroke="#10b981" name="Vacances" strokeWidth={2} />
-                    <Line type="monotone" dataKey="scolaire" stroke="#8b5cf6" name="Scolaire" strokeWidth={2} />
+                    <Line type="monotone" dataKey="sport" stroke="#6366f1" name="Sport" strokeWidth={2} />
+                    <Line type="monotone" dataKey="culture" stroke="#8b5cf6" name="Culture" strokeWidth={2} />
+                    <Line type="monotone" dataKey="loisirs" stroke="#ec4899" name="Loisirs" strokeWidth={2} />
+                    <Line type="monotone" dataKey="vacances" stroke="#f59e0b" name="Vacances" strokeWidth={2} />
+                    <Line type="monotone" dataKey="scolaire" stroke="#10b981" name="Scolaire" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
-                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <p className="text-xs text-muted-foreground">
-                    ✓ Hausses visibles pendant les vacances (février, avril, juillet-août) • Baisse hivernale en janvier • Progression globale modérée
-                  </p>
-                </div>
               </div>
 
-              {/* Évolution filles/garçons */}
               <div>
                 <h4 className="font-semibold mb-3">Évolution de la participation Filles/Garçons</h4>
                 <ResponsiveContainer width="100%" height={350}>
                   <LineChart data={genderEvolution}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="mois" />
-                    <YAxis label={{ value: 'Nombre', angle: -90, position: 'insideLeft' }} />
+                    <XAxis dataKey="mois" angle={-45} textAnchor="end" height={80} />
+                    <YAxis label={{ value: "Nombre de participants", angle: -90, position: 'insideLeft' }} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="filles" stroke="#ec4899" name="Filles" strokeWidth={3} />
-                    <Line type="monotone" dataKey="garcons" stroke="#3b82f6" name="Garçons" strokeWidth={3} />
+                    <Line type="monotone" dataKey="filles" stroke="#ec4899" name="Filles" strokeWidth={2} />
+                    <Line type="monotone" dataKey="garcons" stroke="#3b82f6" name="Garçons" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
-                <div className="mt-2 p-3 bg-pink-50 dark:bg-pink-950/20 rounded-lg border border-pink-200 dark:border-pink-800">
-                  <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-pink-600" />
-                    Signal faible détecté: baisse de la participation filles entre novembre et janvier (hiver). Rebond progressif à partir de mars.
-                  </p>
-                </div>
-              </div>
-
-              {/* Comparaison des 3 territoires */}
-              <div>
-                <h4 className="font-semibold mb-3">Comparaison des 3 territoires</h4>
-                <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={evolutionData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="mois" />
-                    <YAxis label={{ value: 'Inscriptions', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="la_ricamarie" stroke="#3b82f6" name="La Ricamarie" strokeWidth={2} />
-                    <Line type="monotone" dataKey="grand_clos" stroke="#ec4899" name="Grand Clos" strokeWidth={2} />
-                    <Line type="monotone" dataKey="cret_de_roch" stroke="#f59e0b" name="Crêt de Roch" strokeWidth={2} />
-                    <Line type="monotone" dataKey="total" stroke="#10b981" strokeWidth={3} name="Total Métropole" />
-                  </LineChart>
-                </ResponsiveContainer>
+                <Card className="bg-orange-50 dark:bg-orange-950/20 border-2 border-orange-200 dark:border-orange-800 mt-4">
+                  <CardContent className="pt-4">
+                    <p className="text-sm flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                      <AlertTriangle className="w-4 h-4" />
+                      <strong>Signal faible détecté :</strong> Baisse de la participation des filles entre novembre 2026 et février 2027 (-5.5%)
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
@@ -513,14 +600,10 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
         <TabsContent value="structures" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="w-5 h-5" />
-                Structures & Publics - {data.name}
-              </CardTitle>
-              <CardDescription>Répartition par structures, types et tranches d'âge</CardDescription>
+              <CardTitle>🏢 Structures & Publics - {data.name}</CardTitle>
+              <CardDescription>Répartition par structures et tranches d'âge</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Répartition par tranches d'âge */}
               <div>
                 <h4 className="font-semibold mb-3">Répartition par tranches d'âge</h4>
                 <ResponsiveContainer width="100%" height={300}>
@@ -529,40 +612,39 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
                     <XAxis dataKey="tranche" />
                     <YAxis label={{ value: "Nombre d'enfants", angle: -90, position: 'insideLeft' }} />
                     <Tooltip />
-                    <Bar dataKey="nombre" fill="#8b5cf6" />
+                    <Bar dataKey="nombre" fill="#6366f1" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Tableau des structures */}
               <div>
-                <h4 className="font-semibold mb-3">Liste des structures ({structures.length})</h4>
-                <div className="border rounded-lg overflow-hidden">
+                <h4 className="font-semibold mb-3">Liste des structures</h4>
+                <div className="border rounded-lg overflow-auto max-h-[400px]">
                   <Table>
-                    <TableHeader>
+                    <TableHeader className="sticky top-0 bg-background">
                       <TableRow>
-                        <TableHead>Nom</TableHead>
+                        <TableHead>Structure</TableHead>
+                        <TableHead>Territoire</TableHead>
                         <TableHead>Type</TableHead>
-                        <TableHead className="text-right">3-10 ans</TableHead>
-                        <TableHead className="text-right">11-17 ans</TableHead>
+                        <TableHead className="text-right">Enfants 3-10</TableHead>
+                        <TableHead className="text-right">Ados 11-17</TableHead>
                         <TableHead className="text-right">Capacité</TableHead>
                         <TableHead className="text-right">Remplissage</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {structures.map((structure, index) => (
-                        <TableRow key={index}>
+                      {structures.map((structure, idx) => (
+                        <TableRow key={idx}>
                           <TableCell className="font-medium">{structure.nom}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{structure.type}</Badge>
-                          </TableCell>
+                          <TableCell>{structure.territoire}</TableCell>
+                          <TableCell>{structure.type}</TableCell>
                           <TableCell className="text-right">{structure.enfants_3_10}</TableCell>
                           <TableCell className="text-right">{structure.ados_11_17}</TableCell>
                           <TableCell className="text-right">{structure.capacite_totale}</TableCell>
                           <TableCell className="text-right">
-                            <Badge variant={structure.taux_remplissage >= 85 ? "default" : "secondary"}>
+                            <span className={structure.taux_remplissage > 90 ? "text-red-600 font-bold" : ""}>
                               {structure.taux_remplissage}%
-                            </Badge>
+                            </span>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -570,92 +652,134 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
                   </Table>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-              {/* Statistiques structures */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold">{structures.length}</div>
-                  <p className="text-sm text-muted-foreground">Structures totales</p>
-                </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold">
-                    {structures.reduce((sum, s) => sum + s.enfants_3_10 + s.ados_11_17, 0)}
-                  </div>
-                  <p className="text-sm text-muted-foreground">Places occupées</p>
-                </div>
-                <div className="text-center p-4 bg-muted/30 rounded-lg">
-                  <div className="text-2xl font-bold">
-                    {Math.round((structures.reduce((sum, s) => sum + s.taux_remplissage, 0) / structures.length))}%
-                  </div>
-                  <p className="text-sm text-muted-foreground">Remplissage moyen</p>
-                </div>
+        {/* ONGLET 8: COMPARAISONS */}
+        <TabsContent value="comparaisons" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>📊 Comparaisons - Saint-Étienne Métropole vs Moyennes</CardTitle>
+              <CardDescription>Positionnement par rapport aux références nationales et inter-métropoles</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-3 gap-4">
+                {comparisonData.map((entity, idx) => (
+                  <Card key={idx} className={idx === 0 ? "border-2 border-primary" : ""}>
+                    <CardHeader>
+                      <CardTitle className="text-base">{entity.entity}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span>Taux participation:</span>
+                        <span className="font-bold">{entity.taux_participation}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Nb activités/enfant:</span>
+                        <span className="font-bold">{entity.nb_moyen_activites}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Recours aides:</span>
+                        <span className="font-bold">{entity.taux_recours_aides}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Part QPV:</span>
+                        <span className="font-bold">{entity.part_qpv}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Part handicap:</span>
+                        <span className="font-bold">{entity.part_handicap}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Taux abandon:</span>
+                        <span className="font-bold">{entity.taux_abandon}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Mobilité éco:</span>
+                        <span className="font-bold">{entity.part_mobilite_eco}%</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
+
+              <div>
+                <h4 className="font-semibold mb-3">Radar comparatif - Positionnement multi-critères</h4>
+                <ResponsiveContainer width="100%" height={400}>
+                  <RadarChart data={radarData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="indicator" />
+                    <PolarRadiusAxis angle={90} domain={[0, 100]} />
+                    <Radar name="Saint-Étienne Métropole" dataKey="Saint-Étienne Métropole" stroke="#6366f1" fill="#6366f1" fillOpacity={0.6} />
+                    <Radar name="Moyenne Nationale" dataKey="Moyenne Nationale" stroke="#ec4899" fill="#ec4899" fillOpacity={0.3} />
+                    <Radar name="Métropole Type" dataKey="Métropole Type" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+                    <Legend />
+                    <Tooltip />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <Card className="bg-muted/50">
+                <CardHeader>
+                  <CardTitle className="text-base">📌 Points clés du positionnement</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 text-green-600 flex-shrink-0" />
+                    <span><strong>Recours aux aides :</strong> Saint-Étienne Métropole (+13.5 pts vs nationale) - Excellente mobilisation</span>
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 text-green-600 flex-shrink-0" />
+                    <span><strong>Mobilité éco-responsable :</strong> +32.4 pts vs nationale - Leadership en éco-mobilité</span>
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-600 flex-shrink-0" />
+                    <span><strong>Taux d'abandon :</strong> 10% (légèrement inférieur à la moyenne nationale)</span>
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 text-blue-600 flex-shrink-0" />
+                    <span><strong>Part QPV :</strong> 74.6% (concentration élevée de publics prioritaires)</span>
+                  </p>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
 
-          {/* Comparaison des 3 quartiers */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
-                Comparaison des 3 Quartiers
-              </CardTitle>
-              <CardDescription>Vue comparative des indicateurs clés par territoire</CardDescription>
+              <CardTitle>🏘️ Comparaison des 3 territoires vs Métropole</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Territoire</TableHead>
-                    <TableHead className="text-right">Inscrits</TableHead>
-                    <TableHead className="text-right">QPV %</TableHead>
-                    <TableHead className="text-right">Handicap</TableHead>
-                    <TableHead className="text-right">Abandon %</TableHead>
-                    <TableHead className="text-right">Non-recours %</TableHead>
-                    <TableHead className="text-right">Remplissage %</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {compareData.map((terr, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{terr.name}</TableCell>
-                      <TableCell className="text-right">{terr.inscrits}</TableCell>
-                      <TableCell className="text-right">{terr.qpv_pct.toFixed(1)}%</TableCell>
-                      <TableCell className="text-right">{terr.handicap}</TableCell>
-                      <TableCell className="text-right">{terr.abandon_pct.toFixed(1)}%</TableCell>
-                      <TableCell className="text-right">{terr.non_recours_pct}%</TableCell>
-                      <TableCell className="text-right">{terr.remplissage_pct}%</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div>
+                <h4 className="font-semibold mb-3">Comparatif multi-indicateurs</h4>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={compareData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="inscrits" fill="#6366f1" name="Inscrits" />
+                    <Bar dataKey="handicap" fill="#8b5cf6" name="Enfants handicap" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-semibold mb-3">Inscrits par territoire</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={compareData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="inscrits" fill="#6366f1" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-3">Taux de remplissage</h4>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={compareData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="remplissage_pct" fill="#10b981" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+              <div>
+                <h4 className="font-semibold mb-3">Taux comparés (%)</h4>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={compareData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="qpv_pct" fill="#f59e0b" name="% QPV" />
+                    <Bar dataKey="remplissage_pct" fill="#10b981" name="% Remplissage" />
+                    <Bar dataKey="abandon_pct" fill="#ef4444" name="% Abandon" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
