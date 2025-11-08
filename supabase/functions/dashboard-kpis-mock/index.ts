@@ -13,34 +13,35 @@ serve(async (req) => {
   try {
     console.log('📊 Fetching MOCK dashboard KPIs for demo...');
 
-    // Données mock réalistes pour Saint-Étienne Métropole
+    // Données mock cohérentes pour Saint-Étienne Métropole
+    // TOTAUX COHÉRENTS: 508 inscrits (156 + 218 + 134)
     const mockResponse = {
       kpis: {
         inscriptions: {
-          total: 347,
-          source: "MOCK - Données démo",
-          description: "Nombre total de réservations validées"
+          total: 508,
+          source: "MOCK - Somme cohérente des 3 quartiers",
+          description: "Nombre total de réservations validées (La Ricamarie: 156, Grand Clos: 218, Crêt de Roch: 134)"
         },
         handicap: {
-          percentage: "12.5",
-          count: 43,
-          total: 347,
+          percentage: "12.4",
+          count: 63,
+          total: 508,
           source: "MOCK - children.accessibility_flags",
-          description: "Pourcentage d'enfants avec handicap déclaré parmi les inscrits"
+          description: "Pourcentage d'enfants avec handicap déclaré parmi les inscrits (19+28+16)"
         },
         qpv: {
-          percentage: "18.3",
-          note: "64 profils en QPV sur 350 (basé sur codes postaux)",
+          percentage: "74.6",
+          note: "379 profils en QPV sur 508 (117+172+90)",
           source: "MOCK - profiles.city_insee QPV",
           description: "Pourcentage d'habitants en Quartier Prioritaire de la Ville"
         },
         mobilite: {
           distribution: [
-            { mode: "bus", count: 142, percentage: "40.9" },
-            { mode: "car", count: 98, percentage: "28.2" },
-            { mode: "bike", count: 67, percentage: "19.3" },
-            { mode: "covoiturage", count: 28, percentage: "8.1" },
-            { mode: "walking", count: 12, percentage: "3.5" }
+            { mode: "bus", count: 312, percentage: "61.4" },
+            { mode: "voiture", count: 94, percentage: "18.5" },
+            { mode: "velo", count: 60, percentage: "11.8" },
+            { mode: "covoiturage", count: 28, percentage: "5.5" },
+            { mode: "marche", count: 14, percentage: "2.8" }
           ],
           source: "MOCK - bookings.transport_mode",
           description: "Répartition des modes de transport utilisés"
@@ -53,6 +54,7 @@ serve(async (req) => {
         }
       },
       _demo: true,
+      _note: "Données mock cohérentes avec territoriesData dans dashboardMockData.ts",
       timestamp: new Date().toISOString()
     };
 
