@@ -54,6 +54,7 @@ const mockActivities = [
       "transport": "STAS Ligne T3 - Arrêt Beaulieu"
     },
     "cout": 180,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-sport", "pass-sport", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 9"] },
@@ -83,6 +84,7 @@ const mockActivities = [
       "transport": "STAS Bus 10 - Arrêt Rochetaillée"
     },
     "cout": 280,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-sport", "aide-jeune-actif"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 10", "Bus 16"] },
@@ -113,6 +115,7 @@ const mockActivities = [
       "transport": "STAS T2 - Arrêt Métare"
     },
     "cout": 220,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-sport", "pass-sport", "coupon-sport"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T2", "Bus 7"] },
@@ -141,6 +144,7 @@ const mockActivities = [
       "transport": "STAS Bus 3 - Arrêt Stade"
     },
     "cout": 120,
+    "priceUnit": "pour la semaine de stage",
     "aidesEligibles": ["pass-sport", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 3", "Bus 11"] },
@@ -169,6 +173,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Fauriel"
     },
     "cout": 150,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-sport", "pass-sport"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 4"] },
@@ -198,6 +203,7 @@ const mockActivities = [
       "transport": "STAS Bus 5 - Arrêt Libération"
     },
     "cout": 320,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-sport"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 5"] },
@@ -227,6 +233,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Michelet"
     },
     "cout": 200,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture-sport", "aide-jeune-actif"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 12"] },
@@ -255,6 +262,7 @@ const mockActivities = [
       "transport": "STAS Bus 5 - Arrêt Parc"
     },
     "cout": 80,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 5", "T1"] },
@@ -283,6 +291,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Jaurès"
     },
     "cout": 160,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture", "caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 8"] },
@@ -312,6 +321,7 @@ const mockActivities = [
       "transport": "STAS T2 - Arrêt Blanqui"
     },
     "cout": 240,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T2", "Bus 6"] },
@@ -340,6 +350,7 @@ const mockActivities = [
       "transport": "STAS Bus 9 - Arrêt Arts"
     },
     "cout": 120,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture", "caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 9"] },
@@ -368,6 +379,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Carnot"
     },
     "cout": 180,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture", "aide-jeune-actif"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "T3"] },
@@ -396,6 +408,7 @@ const mockActivities = [
       "transport": "STAS Bus 10 - Arrêt Tarentaize"
     },
     "cout": 140,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 10", "T2"] },
@@ -424,6 +437,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Beaulieu"
     },
     "cout": 200,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture", "aide-jeune-actif"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 9"] },
@@ -453,6 +467,7 @@ const mockActivities = [
       "transport": "STAS Bus 4 - Arrêt Bergson"
     },
     "cout": 190,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs", "pass-culture-sport"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 4"] },
@@ -481,6 +496,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Fauriel"
     },
     "cout": 100,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 4"] },
@@ -509,6 +525,7 @@ const mockActivities = [
       "transport": "STAS Bus 10 - Arrêt Tarentaize"
     },
     "cout": 130,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-culture"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 10", "T2"] },
@@ -537,6 +554,7 @@ const mockActivities = [
       "transport": "STAS Bus 7 - Arrêt Beaubrun"
     },
     "cout": 90,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 7", "T2"] },
@@ -565,6 +583,7 @@ const mockActivities = [
       "transport": "STAS Bus 11 - Arrêt La Palle"
     },
     "cout": 110,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs", "bourse-collectivite"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 11"] },
@@ -593,6 +612,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Montat"
     },
     "cout": 250,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-numerique"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 15"] },
@@ -621,6 +641,7 @@ const mockActivities = [
       "transport": "STAS Bus 12 - Arrêt Montreynaud"
     },
     "cout": 70,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 12"] },
@@ -649,6 +670,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Foy"
     },
     "cout": 60,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 5"] },
@@ -677,6 +699,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Châteaucreux"
     },
     "cout": 140,
+    "priceUnit": "par an",
     "aidesEligibles": [],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "T2", "T3"] },
@@ -705,6 +728,7 @@ const mockActivities = [
       "transport": "STAS Bus 7 - Arrêt Beaubrun"
     },
     "cout": 80,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 7", "T2"] },
@@ -733,6 +757,7 @@ const mockActivities = [
       "transport": "STAS T2 - Arrêt Gambetta"
     },
     "cout": 130,
+    "priceUnit": "par an",
     "aidesEligibles": ["caf-loisirs"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T2", "Bus 6"] },
@@ -761,6 +786,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Fourneyron"
     },
     "cout": 100,
+    "priceUnit": "par an",
     "aidesEligibles": [],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 8"] },
@@ -790,6 +816,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Michelet"
     },
     "cout": 200,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-scolaire", "caf-education"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 12"] },
@@ -818,6 +845,7 @@ const mockActivities = [
       "transport": "STAS Bus 10 - Arrêt Tarentaize"
     },
     "cout": 150,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-scolaire", "caf-education"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 10", "T2"] },
@@ -847,6 +875,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Dorian"
     },
     "cout": 280,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-scolaire"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 5"] },
@@ -875,6 +904,7 @@ const mockActivities = [
       "transport": "STAS Bus 9 - Arrêt Bernard"
     },
     "cout": 160,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-scolaire", "pass-culture"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["Bus 9"] },
@@ -903,6 +933,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Jaurès"
     },
     "cout": 0,
+    "priceUnit": "gratuit",
     "aidesEligibles": [],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 8"] },
@@ -931,6 +962,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Montat"
     },
     "cout": 220,
+    "priceUnit": "par an",
     "aidesEligibles": ["pass-numerique", "bourse-scolaire"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 15"] },
@@ -959,6 +991,7 @@ const mockActivities = [
       "transport": "STAS T1 - Arrêt Fauriel"
     },
     "cout": 140,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-scolaire", "caf-education"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T1", "Bus 4"] },
@@ -987,6 +1020,7 @@ const mockActivities = [
       "transport": "STAS T3 - Arrêt Michelet"
     },
     "cout": 190,
+    "priceUnit": "par an",
     "aidesEligibles": ["bourse-scolaire"],
     "mobilite": {
       "transportCommun": { "disponible": true, "lignes": ["T3", "Bus 12"] },

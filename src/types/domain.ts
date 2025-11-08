@@ -100,4 +100,8 @@ export interface ActivityRaw {
     address?: string;
   };
   covoiturage_enabled?: boolean;
+  vacationType?: VacationType;
+  priceUnit?: string;
+  durationDays?: number;
+  hasAccommodation?: boolean;
 }

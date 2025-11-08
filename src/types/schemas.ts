@@ -87,17 +87,17 @@ export function toActivity(raw: ActivityRaw): Activity {
   };
 
   // Nouveaux champs tarification vacances
-  if ((raw as any).vacationType) {
-    activity.vacationType = (raw as any).vacationType;
+  if (raw.vacationType) {
+    activity.vacationType = raw.vacationType;
   }
-  if ((raw as any).priceUnit) {
-    activity.priceUnit = (raw as any).priceUnit;
+  if (raw.priceUnit) {
+    activity.priceUnit = raw.priceUnit;
   }
-  if ((raw as any).durationDays) {
-    activity.durationDays = (raw as any).durationDays;
+  if (raw.durationDays) {
+    activity.durationDays = raw.durationDays;
   }
-  if ((raw as any).hasAccommodation !== undefined) {
-    activity.hasAccommodation = (raw as any).hasAccommodation;
+  if (raw.hasAccommodation !== undefined) {
+    activity.hasAccommodation = raw.hasAccommodation;
   }
 
   // Mobilité optionnelle
