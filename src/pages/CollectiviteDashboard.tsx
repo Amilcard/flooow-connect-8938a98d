@@ -208,7 +208,68 @@ export default function CollectiviteDashboard() {
     })
   });
 
-  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis || loadingEducation || loadingHealth || loadingSafety || loadingGender || loadingMobility || loadingAccessibility) {
+  // DONNÉES PAR QUARTIER (MOCK for demo - La Ricamarie, Grand Clos/Côte-Chaude, Crêt de Roch)
+  const { data: neighborhoodData, isLoading: loadingNeighborhoods } = useQuery({
+    queryKey: ['collectivite-neighborhoods-mock'],
+    queryFn: async () => [
+      {
+        name: "La Ricamarie",
+        inscriptions_totales: 89,
+        enfants_qpv: 67,
+        taux_qpv_pct: 75.3,
+        activites_disponibles: 24,
+        taux_remplissage_pct: 82,
+        aide_moyenne_euros: 145,
+        reste_charge_moyen: 68,
+        transport_bus_pct: 58,
+        transport_velo_pct: 12,
+        abandon_mobilite: 8,
+        enfants_handicap: 14,
+        soutien_scolaire_demandes: 32,
+        soutien_scolaire_places: 24,
+        activites_sante: 28,
+        jeunes_temps_sensibles: 45
+      },
+      {
+        name: "Grand Clos / Côte-Chaude",
+        inscriptions_totales: 124,
+        enfants_qpv: 98,
+        taux_qpv_pct: 79.0,
+        activites_disponibles: 18,
+        taux_remplissage_pct: 94,
+        aide_moyenne_euros: 168,
+        reste_charge_moyen: 52,
+        transport_bus_pct: 72,
+        transport_velo_pct: 8,
+        abandon_mobilite: 14,
+        enfants_handicap: 19,
+        soutien_scolaire_demandes: 48,
+        soutien_scolaire_places: 31,
+        activites_sante: 42,
+        jeunes_temps_sensibles: 67
+      },
+      {
+        name: "Crêt de Roch",
+        inscriptions_totales: 76,
+        enfants_qpv: 51,
+        taux_qpv_pct: 67.1,
+        activites_disponibles: 21,
+        taux_remplissage_pct: 71,
+        aide_moyenne_euros: 132,
+        reste_charge_moyen: 78,
+        transport_bus_pct: 48,
+        transport_velo_pct: 18,
+        abandon_mobilite: 11,
+        enfants_handicap: 10,
+        soutien_scolaire_demandes: 28,
+        soutien_scolaire_places: 22,
+        activites_sante: 31,
+        jeunes_temps_sensibles: 38
+      }
+    ]
+  });
+
+  if (loadingOverview || loadingActivities || loadingAidsByQF || loadingTransport || loadingDemographics || loadingKpis || loadingEducation || loadingHealth || loadingSafety || loadingGender || loadingMobility || loadingAccessibility || loadingNeighborhoods) {
     return <LoadingState />;
   }
 
@@ -408,8 +469,12 @@ export default function CollectiviteDashboard() {
           </div>
 
           {/* Analyses détaillées par thématique */}
-          <Tabs defaultValue="activities" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-1">
+          <Tabs defaultValue="neighborhoods" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-11 gap-1">
+              <TabsTrigger value="neighborhoods">
+                <MapPin className="h-4 w-4 mr-1" />
+                Quartiers
+              </TabsTrigger>
               <TabsTrigger value="activities">
                 <Activity className="h-4 w-4 mr-1" />
                 Activités
@@ -451,6 +516,134 @@ export default function CollectiviteDashboard() {
                 Handicap
               </TabsTrigger>
             </TabsList>
+
+            {/* NOUVEAU TAB: Quartiers prioritaires */}
+            <TabsContent value="neighborhoods" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Vue d'ensemble par quartier
+                  </CardTitle>
+                  <CardDescription>
+                    Comparaison des indicateurs clés sur les 3 quartiers prioritaires
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Graphique: Inscriptions par quartier */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Inscriptions totales</h4>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <BarChart data={neighborhoodData || []}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="inscriptions_totales" fill={COLORS[0]} name="Inscriptions" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Graphique: Taux QPV */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Proportion QPV (%)</h4>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <BarChart data={neighborhoodData || []}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="taux_qpv_pct" fill={COLORS[2]} name="% QPV" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Graphique: Aide moyenne vs Reste à charge */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Aide moyenne et reste à charge (€)</h4>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={neighborhoodData || []}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="aide_moyenne_euros" fill={COLORS[4]} name="Aide moyenne" />
+                        <Bar dataKey="reste_charge_moyen" fill={COLORS[3]} name="Reste à charge" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Graphique: Mobilité par quartier */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Modes de transport principaux (%)</h4>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={neighborhoodData || []}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="transport_bus_pct" fill={COLORS[5]} name="Bus" />
+                        <Bar dataKey="transport_velo_pct" fill={COLORS[1]} name="Vélo" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Tableau récapitulatif */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Tableau de synthèse</h4>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Quartier</TableHead>
+                          <TableHead className="text-right">Inscriptions</TableHead>
+                          <TableHead className="text-right">% QPV</TableHead>
+                          <TableHead className="text-right">Activités dispo</TableHead>
+                          <TableHead className="text-right">Taux remplissage</TableHead>
+                          <TableHead className="text-right">Handicap</TableHead>
+                          <TableHead className="text-right">Abandon mobilité</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {neighborhoodData?.map((neighborhood, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell className="font-semibold">{neighborhood.name}</TableCell>
+                            <TableCell className="text-right">{neighborhood.inscriptions_totales}</TableCell>
+                            <TableCell className="text-right">{neighborhood.taux_qpv_pct.toFixed(1)}%</TableCell>
+                            <TableCell className="text-right">{neighborhood.activites_disponibles}</TableCell>
+                            <TableCell className="text-right">
+                              <Badge variant={neighborhood.taux_remplissage_pct >= 85 ? "destructive" : "secondary"}>
+                                {neighborhood.taux_remplissage_pct}%
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">{neighborhood.enfants_handicap}</TableCell>
+                            <TableCell className="text-right">
+                              <Badge variant={neighborhood.abandon_mobilite >= 12 ? "destructive" : "outline"}>
+                                {neighborhood.abandon_mobilite}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Points d'attention */}
+                  <Card className="bg-muted/30 border-l-4 border-l-orange-500">
+                    <CardContent className="pt-6">
+                      <h4 className="font-semibold mb-2">🎯 Points d'attention</h4>
+                      <ul className="text-sm space-y-1 text-muted-foreground">
+                        <li>• <strong>Grand Clos/Côte-Chaude</strong>: Forte demande (94% remplissage) avec 79% QPV → Besoin d'augmenter l'offre</li>
+                        <li>• <strong>Grand Clos/Côte-Chaude</strong>: 17 demandes de soutien scolaire sans solution → Créer créneaux</li>
+                        <li>• <strong>La Ricamarie</strong>: 8 abandons pour raisons de mobilité → Renforcer transport</li>
+                        <li>• <strong>Crêt de Roch</strong>: Reste à charge moyen élevé (78€) → Vérifier recours aux aides</li>
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* TAB 1: ACTIVITÉS */}
             <TabsContent value="activities" className="space-y-4">
