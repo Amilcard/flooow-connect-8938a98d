@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
+import { BackButton } from "@/components/BackButton";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { VacationPeriodFilter } from "@/components/VacationPeriodFilter";
 import { useActivities } from "@/hooks/useActivities";
@@ -118,7 +119,12 @@ const Activities = () => {
 
   return (
     <PageLayout>
-      <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+      <div className="sticky top-0 z-10 bg-background">
+        <div className="container px-4 pt-2">
+          <BackButton />
+        </div>
+        <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+      </div>
       
       <main className="container px-4 py-6">
         {/* Afficher le bandeau de filtre enfant si présent */}

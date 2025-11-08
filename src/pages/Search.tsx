@@ -1,15 +1,86 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { BackButton } from "@/components/BackButton";
 import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { MapPin, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logSearch } from "@/lib/tracking";
+import type { Activity } from "@/types/domain";
+
+const MapView = ({ activities }: { activities: Activity[] }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="space-y-4">
+      {/* Map placeholder with activity count */}
+      <div className="relative h-[400px] bg-muted rounded-lg overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Card className="p-6 text-center max-w-sm mx-4">
+            <MapPin className="w-12 h-12 mx-auto mb-4 text-primary" />
+            <h2 className="font-semibold text-lg mb-2">Vue carte interactive</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              {activities.length} activité{activities.length > 1 ? "s" : ""} disponible{activities.length > 1 ? "s" : ""}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              La carte interactive sera disponible prochainement
+            </p>
+          </Card>
+        </div>
+      </div>
+
+      {/* Activities list in card format */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold">Liste des activités</h3>
+        {activities.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Aucune activité trouvée
+          </div>
+        ) : (
+          activities.map((activity) => (
+            <Card
+              key={activity.id}
+              className="p-4 cursor-pointer hover:bg-accent transition-colors"
+              onClick={() => navigate(`/activity/${activity.id}`)}
+            >
+              <div className="flex gap-4">
+                {activity.image && (
+                  <img
+                    src={activity.image}
+                    alt={activity.title}
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium mb-1 truncate">{activity.title}</h4>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {activity.ageRange}
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {activity.categories?.slice(0, 2).map((cat: string) => (
+                      <Badge key={cat} variant="secondary" className="text-xs">
+                        {cat}
+                      </Badge>
+                    ))}
+                    <span className="text-sm font-semibold text-primary ml-auto">
+                      {activity.price}€
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -57,7 +128,12 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <SearchBar />
+      <div className="sticky top-0 z-10 bg-background border-b">
+        <div className="container py-2">
+          <BackButton />
+        </div>
+        <SearchBar />
+      </div>
       
       <div className="container py-4 space-y-4">
         {/* View toggle */}
@@ -95,20 +171,15 @@ const Search = () => {
         </p>
 
         {/* View content */}
-        {viewMode === "list" ? (
-          isLoading ? (
-            <LoadingState />
-          ) : (
-            <ActivitySection
-              title="Résultats de recherche"
-              activities={displayActivities || []}
-            />
-          )
+        {isLoading ? (
+          <LoadingState />
+        ) : viewMode === "list" ? (
+          <ActivitySection
+            title="Résultats de recherche"
+            activities={displayActivities || []}
+          />
         ) : (
-          <div className="bg-muted rounded-lg p-8 text-center">
-            <MapPin className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">Vue carte à venir</p>
-          </div>
+          <MapView activities={displayActivities || []} />
         )}
       </div>
 
