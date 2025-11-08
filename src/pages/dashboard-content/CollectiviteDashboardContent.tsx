@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Activity, Heart, TrendingUp, Calendar, DollarSign, Car, User } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Users, Activity, Heart, TrendingUp, Calendar, DollarSign, Car, User, MapPin } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
@@ -48,6 +48,51 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
     { name: "Centre Culturel", count: 8 },
     { name: "Association Arts & Loisirs", count: 6 },
     { name: "Espace Jeunesse", count: 5 }
+  ];
+
+  const neighborhoodData = [
+    {
+      name: "La Ricamarie",
+      inscriptions_totales: 89,
+      enfants_qpv: 67,
+      taux_qpv_pct: 75.3,
+      activites_disponibles: 24,
+      taux_remplissage_pct: 82,
+      aide_moyenne_euros: 145,
+      reste_charge_moyen: 68,
+      transport_bus_pct: 58,
+      transport_velo_pct: 12,
+      abandon_mobilite: 8,
+      enfants_handicap: 14,
+    },
+    {
+      name: "Grand Clos / Côte-Chaude",
+      inscriptions_totales: 124,
+      enfants_qpv: 98,
+      taux_qpv_pct: 79.0,
+      activites_disponibles: 18,
+      taux_remplissage_pct: 94,
+      aide_moyenne_euros: 168,
+      reste_charge_moyen: 52,
+      transport_bus_pct: 72,
+      transport_velo_pct: 8,
+      abandon_mobilite: 14,
+      enfants_handicap: 19,
+    },
+    {
+      name: "Crêt de Roch",
+      inscriptions_totales: 76,
+      enfants_qpv: 51,
+      taux_qpv_pct: 67.1,
+      activites_disponibles: 21,
+      taux_remplissage_pct: 71,
+      aide_moyenne_euros: 132,
+      reste_charge_moyen: 78,
+      transport_bus_pct: 48,
+      transport_velo_pct: 18,
+      abandon_mobilite: 11,
+      enfants_handicap: 10,
+    }
   ];
 
   return (
@@ -181,11 +226,141 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
       </Card>
 
       {/* Analyses détaillées */}
-      <Tabs defaultValue="activities" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="neighborhoods" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="neighborhoods">
+            <MapPin className="w-4 h-4 mr-1" />
+            Quartiers
+          </TabsTrigger>
           <TabsTrigger value="activities">Activités</TabsTrigger>
           <TabsTrigger value="structures">Structures</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="neighborhoods" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Vue par quartier prioritaire
+              </CardTitle>
+              <CardDescription>
+                Comparaison des 3 quartiers : La Ricamarie, Grand Clos/Côte-Chaude, Crêt de Roch
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Graphique: Inscriptions */}
+              <div>
+                <h4 className="font-semibold mb-3">Inscriptions totales</h4>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={neighborhoodData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="inscriptions_totales" fill={COLORS[0]} name="Inscriptions" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Graphique: Taux QPV */}
+              <div>
+                <h4 className="font-semibold mb-3">Proportion QPV (%)</h4>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={neighborhoodData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="taux_qpv_pct" fill={COLORS[2]} name="% QPV" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Graphique: Aides vs RAC */}
+              <div>
+                <h4 className="font-semibold mb-3">Aide moyenne et reste à charge (€)</h4>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={neighborhoodData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="aide_moyenne_euros" fill={COLORS[4]} name="Aide moyenne" />
+                    <Bar dataKey="reste_charge_moyen" fill={COLORS[3]} name="Reste à charge" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Graphique: Transport */}
+              <div>
+                <h4 className="font-semibold mb-3">Modes de transport (%)</h4>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={neighborhoodData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="transport_bus_pct" fill={COLORS[5]} name="Bus" />
+                    <Bar dataKey="transport_velo_pct" fill={COLORS[1]} name="Vélo" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Tableau récapitulatif */}
+              <div>
+                <h4 className="font-semibold mb-3">Tableau de synthèse</h4>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Quartier</TableHead>
+                      <TableHead className="text-right">Inscriptions</TableHead>
+                      <TableHead className="text-right">% QPV</TableHead>
+                      <TableHead className="text-right">Activités</TableHead>
+                      <TableHead className="text-right">Taux remplissage</TableHead>
+                      <TableHead className="text-right">Handicap</TableHead>
+                      <TableHead className="text-right">Abandon mobilité</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {neighborhoodData.map((neighborhood, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="font-semibold">{neighborhood.name}</TableCell>
+                        <TableCell className="text-right">{neighborhood.inscriptions_totales}</TableCell>
+                        <TableCell className="text-right">{neighborhood.taux_qpv_pct.toFixed(1)}%</TableCell>
+                        <TableCell className="text-right">{neighborhood.activites_disponibles}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={neighborhood.taux_remplissage_pct >= 85 ? "destructive" : "secondary"}>
+                            {neighborhood.taux_remplissage_pct}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">{neighborhood.enfants_handicap}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={neighborhood.abandon_mobilite >= 12 ? "destructive" : "outline"}>
+                            {neighborhood.abandon_mobilite}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Points d'attention */}
+              <Card className="bg-muted/30 border-l-4 border-l-orange-500">
+                <CardContent className="pt-6">
+                  <h4 className="font-semibold mb-2">🎯 Points d'attention</h4>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• <strong>Grand Clos/Côte-Chaude</strong>: Saturation à 94% avec 79% QPV → Besoin urgent d'augmenter l'offre</li>
+                    <li>• <strong>La Ricamarie</strong>: 8 abandons pour mobilité → Renforcer les transports en commun</li>
+                    <li>• <strong>Crêt de Roch</strong>: Reste à charge élevé (78€) → Vérifier recours aux aides disponibles</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="activities" className="space-y-4">
           <Card>
