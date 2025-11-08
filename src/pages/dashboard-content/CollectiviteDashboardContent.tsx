@@ -549,7 +549,7 @@ export default function CollectiviteDashboardContent({ territoryId }: Collectivi
           <Card>
             <CardHeader>
               <CardTitle>📈 Évolutions - {data.name}</CardTitle>
-              <CardDescription>Période : Juin 2026 → Juin 2027</CardDescription>
+              <CardDescription>Période : Janvier 2026 → Décembre 2026</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>

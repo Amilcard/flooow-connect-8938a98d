@@ -69,8 +69,8 @@ export const useActivities = (filters?: ActivityFilters) => {
     refetchOnMount: false,
     retry: false,
     queryFn: async () => {
-      // Date limite ajustée pour afficher toutes les activités
-      const CUTOFF_DATE = '2024-01-01';
+      // Date limite 2026 - Année de référence pour la démo
+      const CUTOFF_DATE = '2026-01-01';
       
       let query = supabase
         .from("activities")
