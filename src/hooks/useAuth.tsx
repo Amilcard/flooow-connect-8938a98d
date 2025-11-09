@@ -161,6 +161,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Nettoyer l'état AVANT l'appel API pour éviter boucle
     setUser(null);
 
+    // Nettoyer TOUS les états persistés dans localStorage
+    try {
+      // 1. Nettoyer toutes les données de réservation d'activités
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('activity_booking_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // 2. Nettoyer toutes les données de profil utilisateur en cache
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('user') || key.includes('profile') || key.includes('child')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // 3. Nettoyer sessionStorage
+      sessionStorage.clear();
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+    }
+
     try {
       await supabase.auth.signOut();
     } catch (error) {

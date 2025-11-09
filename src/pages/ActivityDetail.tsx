@@ -196,6 +196,22 @@ const ActivityDetail = () => {
     }
   });
 
+  // Nettoyer les données persistées si l'utilisateur n'est pas connecté
+  useEffect(() => {
+    const checkAndCleanState = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Si pas d'utilisateur connecté et qu'il y a des données persistées
+      if (!user && (bookingState?.calculated || aidsData)) {
+        setAidsData(null);
+        // Ne pas appeler saveAidCalculation ici pour éviter de persister des données vides
+        // Le localStorage sera nettoyé au prochain logout
+      }
+    };
+    
+    checkAndCleanState();
+  }, [userProfile]);
+
   if (isLoading) return <LoadingState />;
   if (error || !activity) {
     return (
