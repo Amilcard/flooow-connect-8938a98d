@@ -55,6 +55,11 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     structures: dbActivity.structures,
     vacation_periods: dbActivity.vacation_periods,
     covoiturage_enabled: dbActivity.covoiturage_enabled,
+    // Nouveaux champs pour tarification vacances
+    priceUnit: dbActivity.price_unit,
+    vacationType: dbActivity.vacation_type,
+    durationDays: dbActivity.duration_days,
+    hasAccommodation: dbActivity.has_accommodation,
   };
 
   return toActivity(raw);
@@ -78,7 +83,7 @@ export const useActivities = (filters?: ActivityFilters) => {
           id, title, description, category, categories, age_min, age_max, price_base,
           images, accessibility_checklist, accepts_aid_types,
           capacity_policy, covoiturage_enabled, structure_id, period_type,
-          vacation_periods,
+          vacation_periods, price_unit, vacation_type, duration_days, has_accommodation,
           structures:structure_id (name, address),
           availability_slots!inner(start)
         `)

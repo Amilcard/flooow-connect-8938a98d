@@ -94,7 +94,9 @@ export type Database = {
           created_at: string
           description: string | null
           documents_required: Json | null
+          duration_days: number | null
           external_portal_url: string | null
+          has_accommodation: boolean | null
           id: string
           images: string[] | null
           is_apa: boolean | null
@@ -104,6 +106,7 @@ export type Database = {
           period_type: string | null
           price_base: number | null
           price_note: string | null
+          price_unit: string | null
           published: boolean | null
           rules_acceptance_json: Json | null
           structure_id: string
@@ -113,6 +116,7 @@ export type Database = {
           transport_options: Json | null
           updated_at: string
           vacation_periods: string[] | null
+          vacation_type: string | null
           video_url: string | null
           webhook_url_for_docs: string | null
         }
@@ -129,7 +133,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           documents_required?: Json | null
+          duration_days?: number | null
           external_portal_url?: string | null
+          has_accommodation?: boolean | null
           id?: string
           images?: string[] | null
           is_apa?: boolean | null
@@ -139,6 +145,7 @@ export type Database = {
           period_type?: string | null
           price_base?: number | null
           price_note?: string | null
+          price_unit?: string | null
           published?: boolean | null
           rules_acceptance_json?: Json | null
           structure_id: string
@@ -148,6 +155,7 @@ export type Database = {
           transport_options?: Json | null
           updated_at?: string
           vacation_periods?: string[] | null
+          vacation_type?: string | null
           video_url?: string | null
           webhook_url_for_docs?: string | null
         }
@@ -164,7 +172,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           documents_required?: Json | null
+          duration_days?: number | null
           external_portal_url?: string | null
+          has_accommodation?: boolean | null
           id?: string
           images?: string[] | null
           is_apa?: boolean | null
@@ -174,6 +184,7 @@ export type Database = {
           period_type?: string | null
           price_base?: number | null
           price_note?: string | null
+          price_unit?: string | null
           published?: boolean | null
           rules_acceptance_json?: Json | null
           structure_id?: string
@@ -183,6 +194,7 @@ export type Database = {
           transport_options?: Json | null
           updated_at?: string
           vacation_periods?: string[] | null
+          vacation_type?: string | null
           video_url?: string | null
           webhook_url_for_docs?: string | null
         }

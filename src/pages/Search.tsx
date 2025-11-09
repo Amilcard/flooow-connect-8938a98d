@@ -37,7 +37,7 @@ const MapView = ({ activities }: { activities: Activity[] }) => {
 
       {/* Activities list in card format */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold">Liste des activités</h3>
+        <h3 className="text-lg font-semibold">Liste des activités sur la carte</h3>
         {activities.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             Aucune activité trouvée
@@ -68,9 +68,16 @@ const MapView = ({ activities }: { activities: Activity[] }) => {
                         {cat}
                       </Badge>
                     ))}
-                    <span className="text-sm font-semibold text-primary ml-auto">
-                      {activity.price}€
-                    </span>
+                    <div className="flex flex-col items-end ml-auto">
+                      <span className="text-sm font-semibold text-primary">
+                        {activity.price}€
+                      </span>
+                      {activity.priceUnit && (
+                        <span className="text-xs text-muted-foreground">
+                          {activity.priceUnit}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
