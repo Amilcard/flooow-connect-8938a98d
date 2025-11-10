@@ -741,6 +741,41 @@ export type Database = {
           },
         ]
       }
+      event_reminders_sent: {
+        Row: {
+          days_before: number
+          event_id: string
+          id: string
+          reminder_type: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          days_before: number
+          event_id: string
+          id?: string
+          reminder_type: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          days_before?: number
+          event_id?: string
+          id?: string
+          reminder_type?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_reminders_sent_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "territory_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorite_events: {
         Row: {
           created_at: string
@@ -864,6 +899,48 @@ export type Database = {
           id?: string
           mfa_enabled?: boolean | null
           mfa_method?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_notifications: boolean | null
+          event_reminder_days_before: number | null
+          event_reminder_email: boolean | null
+          event_reminders_enabled: boolean | null
+          id: string
+          interested_categories: string[] | null
+          notify_favorite_categories: boolean | null
+          notify_territory_events: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_notifications?: boolean | null
+          event_reminder_days_before?: number | null
+          event_reminder_email?: boolean | null
+          event_reminders_enabled?: boolean | null
+          id?: string
+          interested_categories?: string[] | null
+          notify_favorite_categories?: boolean | null
+          notify_territory_events?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_notifications?: boolean | null
+          event_reminder_days_before?: number | null
+          event_reminder_email?: boolean | null
+          event_reminders_enabled?: boolean | null
+          id?: string
+          interested_categories?: string[] | null
+          notify_favorite_categories?: boolean | null
+          notify_territory_events?: boolean | null
           updated_at?: string
           user_id?: string
         }

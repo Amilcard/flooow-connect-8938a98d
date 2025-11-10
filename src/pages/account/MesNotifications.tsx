@@ -20,7 +20,8 @@ import {
   Trash2,
   Heart,
   MapPin,
-  Mail
+  Mail,
+  Clock
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -47,6 +48,7 @@ const MesNotifications = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'event': return <Calendar className="w-5 h-5 text-green-600" />;
+      case 'event_reminder': return <Clock className="w-5 h-5 text-orange-600" />;
       case 'favorite': return <Heart className="w-5 h-5 text-pink-600" />;
       case 'booking': return <CheckCircle className="w-5 h-5 text-blue-600" />;
       case 'system': return <Info className="w-5 h-5 text-gray-600" />;
@@ -57,6 +59,7 @@ const MesNotifications = () => {
   const getNotificationTypeLabel = (type: string) => {
     switch (type) {
       case 'event': return 'Événement du territoire';
+      case 'event_reminder': return 'Rappel d\'événement';
       case 'favorite': return 'Centre d\'intérêt';
       case 'booking': return 'Réservation';
       case 'system': return 'Système';
@@ -204,11 +207,11 @@ const MesNotifications = () => {
                         </div>
                         
                         <p className="text-sm text-muted-foreground mb-3">
-                          {notification.message}
+                          {notification.payload?.event_title || notification.message}
                         </p>
                         
                         <div className="flex space-x-2">
-                          {notification.related_event_id && (
+                          {(notification.related_event_id || notification.payload?.event_id) && (
                             <Button 
                               variant="outline" 
                               size="sm"
@@ -216,7 +219,7 @@ const MesNotifications = () => {
                                 if (!notification.read) {
                                   markAsRead.mutate(notification.id);
                                 }
-                                handleViewEvent(notification.related_event_id);
+                                handleViewEvent(notification.related_event_id || notification.payload?.event_id);
                               }}
                             >
                               <MapPin className="w-3 h-3 mr-1" />
@@ -373,6 +376,80 @@ const MesNotifications = () => {
                         }
                       />
                     </div>
+                  </CardContent>
+                </Card>
+
+                {/* Rappels d'événements favoris */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Clock className="w-5 h-5" />
+                      <span>Rappels d'événements favoris</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="event_reminders_enabled" className="flex-1">
+                        <div>
+                          <p className="font-medium">Activer les rappels</p>
+                          <p className="text-sm text-muted-foreground">
+                            Recevoir des rappels pour vos événements favoris avant qu'ils ne commencent
+                          </p>
+                        </div>
+                      </Label>
+                      <Switch
+                        id="event_reminders_enabled"
+                        checked={preferences && 'event_reminders_enabled' in preferences ? preferences.event_reminders_enabled : true}
+                        onCheckedChange={(checked) => 
+                          updatePreferences.mutate({ event_reminders_enabled: checked })
+                        }
+                      />
+                    </div>
+
+                    {preferences && 'event_reminders_enabled' in preferences && preferences.event_reminders_enabled && (
+                      <>
+                        <div className="space-y-3 pt-4 border-t">
+                          <Label htmlFor="event_reminder_days_before">
+                            <p className="font-medium mb-2">Nombre de jours avant l'événement</p>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              Vous serez notifié {preferences.event_reminder_days_before || 3} jour{(preferences.event_reminder_days_before || 3) > 1 ? 's' : ''} avant chaque événement favori
+                            </p>
+                          </Label>
+                          <select
+                            id="event_reminder_days_before"
+                            value={preferences.event_reminder_days_before || 3}
+                            onChange={(e) => 
+                              updatePreferences.mutate({ event_reminder_days_before: parseInt(e.target.value) })
+                            }
+                            className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                          >
+                            <option value="1">1 jour avant</option>
+                            <option value="2">2 jours avant</option>
+                            <option value="3">3 jours avant</option>
+                            <option value="5">5 jours avant</option>
+                            <option value="7">7 jours avant</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t">
+                          <Label htmlFor="event_reminder_email" className="flex-1">
+                            <div>
+                              <p className="font-medium">Recevoir aussi par e-mail</p>
+                              <p className="text-sm text-muted-foreground">
+                                Recevoir les rappels par e-mail en plus de la notification in-app
+                              </p>
+                            </div>
+                          </Label>
+                          <Switch
+                            id="event_reminder_email"
+                            checked={preferences && 'event_reminder_email' in preferences ? preferences.event_reminder_email : true}
+                            onCheckedChange={(checked) => 
+                              updatePreferences.mutate({ event_reminder_email: checked })
+                            }
+                          />
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </>

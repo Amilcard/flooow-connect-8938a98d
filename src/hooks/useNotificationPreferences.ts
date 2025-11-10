@@ -9,6 +9,9 @@ interface NotificationPreferences {
   notify_territory_events: boolean;
   notify_favorite_categories: boolean;
   email_notifications: boolean;
+  event_reminders_enabled: boolean;
+  event_reminder_days_before: number;
+  event_reminder_email: boolean;
 }
 
 export const useNotificationPreferences = (userId: string | undefined) => {
@@ -33,6 +36,9 @@ export const useNotificationPreferences = (userId: string | undefined) => {
           notify_territory_events: true,
           notify_favorite_categories: false,
           email_notifications: false,
+          event_reminders_enabled: true,
+          event_reminder_days_before: 3,
+          event_reminder_email: true,
         };
       }
 
