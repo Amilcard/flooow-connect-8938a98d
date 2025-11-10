@@ -52,6 +52,8 @@ import DemoFinanceur from "./pages/demo/DemoFinanceur";
 import DemoStructure from "./pages/demo/DemoStructure";
 import DemoLemoine from "./pages/demo/DemoLemoine";
 import Itineraire from "./pages/Itineraire";
+import Agenda from "./pages/Agenda";
+import Community from "./pages/Community";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -183,6 +185,8 @@ const App = () => (
           <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
           <Route path="/mon-compte/parametres" element={<Parametres />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/agenda" element={<Agenda />} />
+          <Route path="/community" element={<Community />} />
           <Route path="/legal/privacy" element={<PrivacyPolicy />} />
           <Route path="/legal/rgpd" element={<RGPD />} />
           <Route path="/legal/cookies" element={<Cookies />} />

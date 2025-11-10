@@ -1399,6 +1399,75 @@ export type Database = {
           },
         ]
       }
+      territory_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string
+          event_type: string
+          external_link: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          organizer_contact: string | null
+          organizer_name: string | null
+          published: boolean | null
+          start_date: string
+          territory_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date: string
+          event_type: string
+          external_link?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          organizer_contact?: string | null
+          organizer_name?: string | null
+          published?: boolean | null
+          start_date: string
+          territory_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string
+          event_type?: string
+          external_link?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          organizer_contact?: string | null
+          organizer_name?: string | null
+          published?: boolean | null
+          start_date?: string
+          territory_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "territory_events_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "territories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "territory_events_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
+          },
+        ]
+      }
       transport_offers: {
         Row: {
           activity_id: string
