@@ -7,10 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { Calendar, MapPin, Clock, User, ExternalLink, MessageSquare, Users, Lightbulb } from "lucide-react";
-import { format } from "date-fns";
+import { format, isWithinInterval, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -37,11 +38,29 @@ const HEARTBEAT_LINKS = {
   collectivites: "https://heartbeat.com/collectivites"
 };
 
+// Périodes de vacances scolaires 2025-2026 Zone A
+const VACATION_PERIODS = [
+  { start: "2025-10-18", end: "2025-11-03", name: "Toussaint 2025" },
+  { start: "2025-12-20", end: "2026-01-05", name: "Noël 2025" },
+  { start: "2026-02-07", end: "2026-02-23", name: "Hiver 2026" },
+  { start: "2026-04-04", end: "2026-04-20", name: "Printemps 2026" },
+  { start: "2026-07-04", end: "2026-08-31", name: "Été 2026" },
+];
+
+const isEventInVacation = (eventDate: string) => {
+  const date = parseISO(eventDate);
+  return VACATION_PERIODS.some(period => 
+    isWithinInterval(date, { start: parseISO(period.start), end: parseISO(period.end) })
+  );
+};
+
 const AgendaCommunity = () => {
   const { isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("agenda");
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
+  const [selectedTerritory, setSelectedTerritory] = useState<string>("all");
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -68,9 +87,23 @@ const AgendaCommunity = () => {
     enabled: isAuthenticated,
   });
 
+  // Fetch territories
+  const { data: territories } = useQuery({
+    queryKey: ["territories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("territories")
+        .select("id, name")
+        .eq("active", true)
+        .order("name");
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Fetch events
   const { data: events, isLoading, error, refetch } = useQuery({
-    queryKey: ["territory-events", selectedType],
+    queryKey: ["territory-events", selectedType, selectedTerritory],
     queryFn: async () => {
       let query = supabase
         .from("territory_events")
@@ -83,10 +116,22 @@ const AgendaCommunity = () => {
         query = query.eq("event_type", selectedType);
       }
 
+      if (selectedTerritory !== "all") {
+        query = query.eq("territory_id", selectedTerritory);
+      }
+
       const { data, error } = await query;
       if (error) throw error;
       return data;
     }
+  });
+
+  // Filter events by period (client-side filtering)
+  const filteredEvents = events?.filter(event => {
+    if (selectedPeriod === "all") return true;
+    if (selectedPeriod === "vacation") return isEventInVacation(event.start_date);
+    if (selectedPeriod === "school") return !isEventInVacation(event.start_date);
+    return true;
   });
 
   const communitySpaces = [
@@ -153,21 +198,58 @@ const AgendaCommunity = () => {
             {!isLoading && !error && (
               <>
                 {/* Filtres */}
-                <Tabs value={selectedType} onValueChange={setSelectedType}>
-                  <TabsList className="w-full justify-start flex-wrap h-auto">
-                    <TabsTrigger value="all">Tous</TabsTrigger>
-                    <TabsTrigger value="workshop">Ateliers</TabsTrigger>
-                    <TabsTrigger value="vacation_camp">Séjours</TabsTrigger>
-                    <TabsTrigger value="parent_meeting">Réunions</TabsTrigger>
-                    <TabsTrigger value="community_info">Actualités</TabsTrigger>
-                    <TabsTrigger value="cultural_event">Culture</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <div className="space-y-4">
+                  {/* Filtres de type */}
+                  <Tabs value={selectedType} onValueChange={setSelectedType}>
+                    <TabsList className="w-full justify-start flex-wrap h-auto">
+                      <TabsTrigger value="all">Tous</TabsTrigger>
+                      <TabsTrigger value="workshop">Ateliers</TabsTrigger>
+                      <TabsTrigger value="vacation_camp">Séjours</TabsTrigger>
+                      <TabsTrigger value="parent_meeting">Réunions</TabsTrigger>
+                      <TabsTrigger value="community_info">Actualités</TabsTrigger>
+                      <TabsTrigger value="cultural_event">Culture</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+
+                  {/* Filtres de période et territoire */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Période</label>
+                      <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Toutes les périodes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Toutes les périodes</SelectItem>
+                          <SelectItem value="vacation">🌴 Vacances scolaires</SelectItem>
+                          <SelectItem value="school">📚 Temps scolaire</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Territoire</label>
+                      <Select value={selectedTerritory} onValueChange={setSelectedTerritory}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tous les territoires" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Tous les territoires</SelectItem>
+                          {territories?.map((territory) => (
+                            <SelectItem key={territory.id} value={territory.id}>
+                              {territory.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Liste des événements */}
                 <div className="space-y-4">
-                  {events && events.length > 0 ? (
-                    events.map((event) => (
+                  {filteredEvents && filteredEvents.length > 0 ? (
+                    filteredEvents.map((event) => (
                       <Card key={event.id} className="hover:shadow-lg transition-shadow">
                         <CardHeader>
                           <div className="flex items-start justify-between gap-4">
