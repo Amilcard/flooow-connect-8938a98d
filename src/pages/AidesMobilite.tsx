@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,16 @@ import { GeneralSimulateAidModal } from "@/components/simulations/GeneralSimulat
 import { HelpCircle, Calculator, ExternalLink, Bus, Bike, Car, MapPin } from "lucide-react";
 
 const AidesMobilite = () => {
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState("aides");
   const [showSimulator, setShowSimulator] = useState(false);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "mobilite") {
+      setActiveTab("mobilite");
+    }
+  }, [searchParams]);
 
   const aides = [
     {
@@ -121,7 +131,7 @@ const AidesMobilite = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="aides" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="aides">Aides financières</TabsTrigger>
             <TabsTrigger value="mobilite">Éco-mobilité</TabsTrigger>

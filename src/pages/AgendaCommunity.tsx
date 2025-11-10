@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,7 +39,16 @@ const HEARTBEAT_LINKS = {
 
 const AgendaCommunity = () => {
   const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState("agenda");
   const [selectedType, setSelectedType] = useState<string>("all");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "community") {
+      setActiveTab("community");
+    }
+  }, [searchParams]);
 
   // Fetch user role
   const { data: userRole } = useQuery({
@@ -122,7 +132,7 @@ const AgendaCommunity = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="agenda" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="agenda">Agenda du territoire</TabsTrigger>
             <TabsTrigger value="community">Échanges & communauté</TabsTrigger>
