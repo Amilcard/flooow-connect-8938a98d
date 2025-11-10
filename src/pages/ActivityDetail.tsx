@@ -67,6 +67,12 @@ const ActivityDetail = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const periodFilter = searchParams.get("period") || undefined;
+  const tabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<string>(
+    ["infos", "tarifs", "mobilite", "echanges"].includes(tabParam || "") 
+      ? tabParam! 
+      : "infos"
+  );
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -517,7 +523,7 @@ const ActivityDetail = () => {
         <div className="grid md:grid-cols-12 gap-8">
           {/* Left Column - Main content with Tabs (8/12) */}
           <div className="md:col-span-8">
-            <Tabs defaultValue="infos" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
                 <TabsTrigger value="tarifs" className="text-xs md:text-sm">Tarifs & aides</TabsTrigger>
