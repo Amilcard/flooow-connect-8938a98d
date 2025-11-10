@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 export const useNotifications = (userId: string | undefined) => {
   const queryClient = useQueryClient();
@@ -11,7 +12,7 @@ export const useNotifications = (userId: string | undefined) => {
       if (!userId) return [];
       
       const { data, error } = await supabase
-        .from("notifications" as any)
+        .from("notifications")
         .select("*, territory_events(*)")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
@@ -23,13 +24,39 @@ export const useNotifications = (userId: string | undefined) => {
     enabled: !!userId,
   });
 
+  // Real-time updates
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel('notifications-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["notifications", userId] });
+          queryClient.invalidateQueries({ queryKey: ["notifications-unread-count", userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient]);
+
   const { data: unreadCount = 0 } = useQuery({
     queryKey: ["notifications-unread-count", userId],
     queryFn: async () => {
       if (!userId) return 0;
       
       const { count, error } = await supabase
-        .from("notifications" as any)
+        .from("notifications")
         .select("*", { count: 'exact', head: true })
         .eq("user_id", userId)
         .eq("read", false);
@@ -43,7 +70,7 @@ export const useNotifications = (userId: string | undefined) => {
   const markAsRead = useMutation({
     mutationFn: async (notificationId: string) => {
       const { error } = await supabase
-        .from("notifications" as any)
+        .from("notifications")
         .update({ read: true })
         .eq("id", notificationId);
 
@@ -60,7 +87,7 @@ export const useNotifications = (userId: string | undefined) => {
       if (!userId) throw new Error("User must be logged in");
 
       const { error } = await supabase
-        .from("notifications" as any)
+        .from("notifications")
         .update({ read: true })
         .eq("user_id", userId)
         .eq("read", false);
@@ -80,7 +107,7 @@ export const useNotifications = (userId: string | undefined) => {
   const deleteNotification = useMutation({
     mutationFn: async (notificationId: string) => {
       const { error } = await supabase
-        .from("notifications" as any)
+        .from("notifications")
         .delete()
         .eq("id", notificationId);
 

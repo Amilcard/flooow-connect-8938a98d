@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Menu, Presentation } from "lucide-react";
+import { Heart, Menu, Presentation, Bell } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import AuthNavigation from "@/components/authentification/AuthNavigation";
+import { NotificationBadge } from "@/components/NotificationBadge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,7 @@ import {
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/80 backdrop-blur-lg">
@@ -80,7 +82,7 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {!isAuthenticated ? (
               <>
                 <Button variant="ghost" className="hidden md:inline-flex" asChild>
@@ -91,7 +93,19 @@ const Header = () => {
                 </Button>
               </>
             ) : (
-              <AuthNavigation />
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  onClick={() => navigate("/account/mes-notifications")}
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5" />
+                  <NotificationBadge />
+                </Button>
+                <AuthNavigation />
+              </>
             )}
             <Button
               variant="ghost"
