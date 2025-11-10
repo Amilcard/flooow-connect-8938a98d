@@ -10,10 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { Calendar, MapPin, Clock, User, ExternalLink, MessageSquare, Users, Lightbulb } from "lucide-react";
+import { Calendar, MapPin, Clock, User, ExternalLink, MessageSquare, Users, Lightbulb, Heart } from "lucide-react";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
+import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 
 const EVENT_TYPE_LABELS: Record<string, string> = {
   all: "Tous les événements",
@@ -55,7 +56,8 @@ const isEventInVacation = (eventDate: string) => {
 };
 
 const AgendaCommunity = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const { toggleFavorite, isFavorite } = useFavoriteEvents(user?.id);
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("agenda");
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -253,7 +255,7 @@ const AgendaCommunity = () => {
                       <Card key={event.id} className="hover:shadow-lg transition-shadow">
                         <CardHeader>
                           <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
+                            <div className="flex-1 mr-2">
                               <div className="flex items-center gap-2 mb-2">
                                 <Badge className={EVENT_TYPE_COLORS[event.event_type]}>
                                   {EVENT_TYPE_LABELS[event.event_type]}
@@ -264,13 +266,30 @@ const AgendaCommunity = () => {
                                 {event.description}
                               </CardDescription>
                             </div>
-                            {event.image_url && (
-                              <img
-                                src={event.image_url}
-                                alt={event.title}
-                                className="w-24 h-24 object-cover rounded-lg"
-                              />
-                            )}
+                            <div className="flex gap-2 shrink-0">
+                              {user && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => toggleFavorite.mutate(event.id)}
+                                >
+                                  <Heart
+                                    className={`h-5 w-5 ${
+                                      isFavorite(event.id)
+                                        ? "fill-primary text-primary"
+                                        : "text-muted-foreground"
+                                    }`}
+                                  />
+                                </Button>
+                              )}
+                              {event.image_url && (
+                                <img
+                                  src={event.image_url}
+                                  alt={event.title}
+                                  className="w-24 h-24 object-cover rounded-lg"
+                                />
+                              )}
+                            </div>
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3">

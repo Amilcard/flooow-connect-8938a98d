@@ -56,6 +56,7 @@ import Agenda from "./pages/Agenda";
 import Community from "./pages/Community";
 import AgendaCommunity from "./pages/AgendaCommunity";
 import AidesMobilite from "./pages/AidesMobilite";
+import MesEvenementsFavoris from "./pages/MesEvenementsFavoris";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -158,6 +159,7 @@ const App = () => (
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/community" element={<Community />} />
           <Route path="/agenda-community" element={<AgendaCommunity />} />
+          <Route path="/mes-evenements-favoris" element={<MesEvenementsFavoris />} />
           <Route path="/univers" element={<Univers />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/eco-mobilite" element={<EcoMobilite />} />

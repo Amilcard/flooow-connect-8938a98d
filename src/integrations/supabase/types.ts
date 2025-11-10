@@ -741,6 +741,35 @@ export type Database = {
           },
         ]
       }
+      favorite_events: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "territory_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_aids: {
         Row: {
           active: boolean

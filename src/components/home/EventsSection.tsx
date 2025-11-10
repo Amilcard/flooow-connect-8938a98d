@@ -1,12 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
+import { useAuth } from "@/hooks/useAuth";
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   children_activity: "bg-accent/10 text-accent-foreground",
@@ -17,6 +19,8 @@ const EVENT_TYPE_COLORS: Record<string, string> = {
 
 export const EventsSection = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toggleFavorite, isFavorite } = useFavoriteEvents(user?.id);
 
   const { data: events, isLoading } = useQuery({
     queryKey: ["upcoming-events"],
@@ -80,9 +84,28 @@ export const EventsSection = () => {
         {events.map((event) => (
           <Card
             key={event.id}
-            className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group"
+            className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group relative"
             onClick={() => navigate("/agenda-community")}
           >
+            {user && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 left-2 z-10 bg-background/80 backdrop-blur-sm hover:bg-background"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite.mutate(event.id);
+                }}
+              >
+                <Heart
+                  className={`h-5 w-5 ${
+                    isFavorite(event.id)
+                      ? "fill-primary text-primary"
+                      : "text-muted-foreground"
+                  }`}
+                />
+              </Button>
+            )}
             {event.image_url && (
               <div className="relative h-48 w-full overflow-hidden">
                 <img
