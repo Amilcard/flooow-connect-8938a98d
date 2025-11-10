@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BackButton } from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
@@ -7,151 +6,62 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import PageLayout from '@/components/PageLayout';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { 
-   
   Bell, 
   Calendar, 
-  Mail, 
-  MessageSquare, 
-  Settings, 
-  Star,
   CheckCircle,
-  AlertCircle,
   Info,
   Gift,
   Trash2,
-  Volume2,
-  VolumeX
+  Heart,
+  MapPin,
+  Mail
 } from 'lucide-react';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'booking' | 'reminder' | 'promotion' | 'system' | 'review';
-  read: boolean;
-  createdAt: string;
-  actionUrl?: string;
-}
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const MesNotifications = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      title: 'Réservation confirmée',
-      message: 'Votre réservation pour "Cours de natation adaptée" a été confirmée pour le 20 octobre à 14h00.',
-      type: 'booking',
-      read: false,
-      createdAt: '2024-10-15T09:30:00Z',
-      actionUrl: '/mon-compte/reservations'
-    },
-    {
-      id: '2',
-      title: 'Rappel d\'activité',
-      message: 'N\'oubliez pas votre activité "Atelier créatif inclusif" demain à 10h00.',
-      type: 'reminder',
-      read: false,
-      createdAt: '2024-10-17T18:00:00Z'
-    },
-    {
-      id: '3',
-      title: 'Nouvelle activité disponible',
-      message: 'Découvrez notre nouveau cours de danse adaptée pour les 8-12 ans !',
-      type: 'promotion',
-      read: true,
-      createdAt: '2024-10-14T15:20:00Z',
-      actionUrl: '/activities'
-    },
-    {
-      id: '4',
-      title: 'Évaluez votre expérience',
-      message: 'Comment s\'est passée la "Sortie au zoo pédagogique" ? Partagez votre avis !',
-      type: 'review',
-      read: true,
-      createdAt: '2024-10-15T20:00:00Z'
-    },
-    {
-      id: '5',
-      title: 'Mise à jour système',
-      message: 'Nous avons amélioré l\'application avec de nouvelles fonctionnalités d\'accessibilité.',
-      type: 'system',
-      read: true,
-      createdAt: '2024-10-12T10:00:00Z'
-    }
-  ]);
+  const { user } = useAuth();
+  const { 
+    notifications, 
+    unreadCount, 
+    isLoading: notificationsLoading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification 
+  } = useNotifications(user?.id);
 
-  const [preferences, setPreferences] = useState({
-    emailBooking: true,
-    emailReminders: true,
-    emailPromotions: false,
-    pushBooking: true,
-    pushReminders: true,
-    pushPromotions: true,
-    smsReminders: false,
-    soundEnabled: true
-  });
+  const {
+    preferences,
+    isLoading: preferencesLoading,
+    updatePreferences
+  } = useNotificationPreferences(user?.id);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'booking': return <Calendar className="w-5 h-5 text-green-600" />;
-      case 'reminder': return <Bell className="w-5 h-5 text-orange-600" />;
-      case 'promotion': return <Gift className="w-5 h-5 text-purple-600" />;
-      case 'review': return <Star className="w-5 h-5 text-yellow-600" />;
-      case 'system': return <Info className="w-5 h-5 text-blue-600" />;
+      case 'event': return <Calendar className="w-5 h-5 text-green-600" />;
+      case 'favorite': return <Heart className="w-5 h-5 text-pink-600" />;
+      case 'booking': return <CheckCircle className="w-5 h-5 text-blue-600" />;
+      case 'system': return <Info className="w-5 h-5 text-gray-600" />;
       default: return <Bell className="w-5 h-5 text-gray-600" />;
     }
   };
 
   const getNotificationTypeLabel = (type: string) => {
     switch (type) {
+      case 'event': return 'Événement du territoire';
+      case 'favorite': return 'Centre d\'intérêt';
       case 'booking': return 'Réservation';
-      case 'reminder': return 'Rappel';
-      case 'promotion': return 'Promotion';
-      case 'review': return 'Évaluation';
       case 'system': return 'Système';
       default: return 'Notification';
     }
-  };
-
-  const markAsRead = (notificationId: string) => {
-    setNotifications(notifications.map(notif => 
-      notif.id === notificationId ? { ...notif, read: true } : notif
-    ));
-  };
-
-  const markAsUnread = (notificationId: string) => {
-    setNotifications(notifications.map(notif => 
-      notif.id === notificationId ? { ...notif, read: false } : notif
-    ));
-  };
-
-  const deleteNotification = (notificationId: string) => {
-    setNotifications(notifications.filter(notif => notif.id !== notificationId));
-    toast({
-      title: "Notification supprimée",
-      description: "La notification a été supprimée avec succès.",
-    });
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(notif => ({ ...notif, read: true })));
-    toast({
-      title: "Toutes les notifications ont été lues",
-      description: "Toutes vos notifications ont été marquées comme lues.",
-    });
-  };
-
-  const updatePreference = (key: string, value: boolean) => {
-    setPreferences({ ...preferences, [key]: value });
-    toast({
-      title: "Préférences mises à jour",
-      description: "Vos préférences de notification ont été sauvegardées.",
-    });
   };
 
   const formatDate = (dateString: string) => {
@@ -166,14 +76,35 @@ const MesNotifications = () => {
     } else if (diffInHours < 48) {
       return 'Hier';
     } else {
-      return date.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'short'
-      });
+      return format(date, 'd MMM', { locale: fr });
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const handleViewEvent = (eventId: string) => {
+    navigate(`/agenda-community`);
+  };
+
+  const categoryOptions = [
+    { value: 'sport', label: 'Sport' },
+    { value: 'culture', label: 'Culture' },
+    { value: 'loisirs', label: 'Loisirs' },
+    { value: 'education', label: 'Éducation' },
+    { value: 'sante', label: 'Santé' },
+    { value: 'social', label: 'Social' },
+  ];
+
+  const toggleCategory = (category: string) => {
+    if (!preferences || !('interested_categories' in preferences)) return;
+    
+    const currentCategories = preferences.interested_categories || [];
+    const newCategories = currentCategories.includes(category)
+      ? currentCategories.filter(c => c !== category)
+      : [...currentCategories, category];
+    
+    updatePreferences.mutate({
+      interested_categories: newCategories
+    });
+  };
 
   return (
     <PageLayout showHeader={false}>
@@ -191,7 +122,12 @@ const MesNotifications = () => {
           </div>
           
           {unreadCount > 0 && (
-            <Button variant="secondary" size="sm" onClick={markAllAsRead}>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => markAllAsRead.mutate()}
+              disabled={markAllAsRead.isPending}
+            >
               <CheckCircle className="w-4 h-4 mr-2" />
               Tout lire
             </Button>
@@ -211,18 +147,28 @@ const MesNotifications = () => {
           </TabsList>
 
           <TabsContent value="notifications" className="space-y-4">
-            {notifications.length === 0 ? (
+            {notificationsLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i} className="p-4">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2 mb-2" />
+                    <Skeleton className="h-4 w-full" />
+                  </Card>
+                ))}
+              </div>
+            ) : notifications.length === 0 ? (
               <Card className="text-center py-12">
                 <CardContent>
                   <Bell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-lg font-semibold mb-2">Aucune notification</h3>
                   <p className="text-muted-foreground">
-                    Vous n'avez pas encore de notifications
+                    Vous serez notifié des nouveaux événements dans votre territoire ou correspondant à vos centres d'intérêt
                   </p>
                 </CardContent>
               </Card>
             ) : (
-              notifications.map((notification) => (
+              notifications.map((notification: any) => (
                 <Card 
                   key={notification.id} 
                   className={`cursor-pointer hover:shadow-md transition-all ${
@@ -246,7 +192,7 @@ const MesNotifications = () => {
                                 {getNotificationTypeLabel(notification.type)}
                               </Badge>
                               <span className="text-xs text-muted-foreground">
-                                {formatDate(notification.createdAt)}
+                                {formatDate(notification.created_at)}
                               </span>
                               {!notification.read && (
                                 <Badge variant="default" className="text-xs">
@@ -262,16 +208,19 @@ const MesNotifications = () => {
                         </p>
                         
                         <div className="flex space-x-2">
-                          {notification.actionUrl && (
+                          {notification.related_event_id && (
                             <Button 
                               variant="outline" 
                               size="sm"
                               onClick={() => {
-                                markAsRead(notification.id);
-                                navigate(notification.actionUrl!);
+                                if (!notification.read) {
+                                  markAsRead.mutate(notification.id);
+                                }
+                                handleViewEvent(notification.related_event_id);
                               }}
                             >
-                              Voir détails
+                              <MapPin className="w-3 h-3 mr-1" />
+                              Voir l'événement
                             </Button>
                           )}
                           
@@ -279,31 +228,22 @@ const MesNotifications = () => {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              onClick={() => markAsRead(notification.id)}
+                              onClick={() => markAsRead.mutate(notification.id)}
+                              disabled={markAsRead.isPending}
                             >
                               <CheckCircle className="w-4 h-4 mr-1" />
                               Marquer comme lu
                             </Button>
                           ) : (
-                            <>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => markAsUnread(notification.id)}
-                              >
-                                <Mail className="w-4 h-4 mr-1" />
-                                Marquer comme non lu
-                              </Button>
-                          
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => deleteNotification(notification.id)}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => deleteNotification.mutate(notification.id)}
+                              disabled={deleteNotification.isPending}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -315,172 +255,128 @@ const MesNotifications = () => {
           </TabsContent>
 
           <TabsContent value="preferences" className="space-y-6">
-            {/* Préférences Email */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Mail className="w-5 h-5" />
-                  <span>Notifications par e-mail</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailBooking" className="flex-1">
-                    <div>
-                      <p className="font-medium">Confirmations de réservation</p>
-                      <p className="text-sm text-muted-foreground">
-                        Recevoir les confirmations et modifications de réservations
-                      </p>
+            {preferencesLoading ? (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <Skeleton className="h-6 w-48" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-20 w-full" />
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <>
+                {/* Notifications d'événements du territoire */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <MapPin className="w-5 h-5" />
+                      <span>Événements de mon territoire</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="notify_territory_events" className="flex-1">
+                        <div>
+                          <p className="font-medium">Recevoir les notifications</p>
+                          <p className="text-sm text-muted-foreground">
+                            Être notifié des nouveaux événements dans votre territoire
+                          </p>
+                        </div>
+                      </Label>
+                      <Switch
+                        id="notify_territory_events"
+                        checked={preferences && 'notify_territory_events' in preferences ? preferences.notify_territory_events : true}
+                        onCheckedChange={(checked) => 
+                          updatePreferences.mutate({ notify_territory_events: checked })
+                        }
+                      />
                     </div>
-                  </Label>
-                  <Switch
-                    id="emailBooking"
-                    checked={preferences.emailBooking}
-                    onCheckedChange={(checked) => updatePreference('emailBooking', checked)}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailReminders" className="flex-1">
-                    <div>
-                      <p className="font-medium">Rappels d'activités</p>
-                      <p className="text-sm text-muted-foreground">
-                        Recevoir des rappels avant vos activités
-                      </p>
-                    </div>
-                  </Label>
-                  <Switch
-                    id="emailReminders"
-                    checked={preferences.emailReminders}
-                    onCheckedChange={(checked) => updatePreference('emailReminders', checked)}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailPromotions" className="flex-1">
-                    <div>
-                      <p className="font-medium">Offres promotionnelles</p>
-                      <p className="text-sm text-muted-foreground">
-                        Recevoir les nouvelles activités et offres spéciales
-                      </p>
-                    </div>
-                  </Label>
-                  <Switch
-                    id="emailPromotions"
-                    checked={preferences.emailPromotions}
-                    onCheckedChange={(checked) => updatePreference('emailPromotions', checked)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
 
-            {/* Préférences Push */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Bell className="w-5 h-5" />
-                  <span>Notifications push</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="pushBooking" className="flex-1">
-                    <div>
-                      <p className="font-medium">Réservations</p>
-                      <p className="text-sm text-muted-foreground">
-                        Notifications instantanées pour les réservations
-                      </p>
+                {/* Centres d'intérêt */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Heart className="w-5 h-5" />
+                      <span>Mes centres d'intérêt</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <Label htmlFor="notify_favorite_categories" className="flex-1">
+                        <div>
+                          <p className="font-medium">Activer les notifications</p>
+                          <p className="text-sm text-muted-foreground">
+                            Recevoir des notifications pour les événements correspondant à vos centres d'intérêt
+                          </p>
+                        </div>
+                      </Label>
+                      <Switch
+                        id="notify_favorite_categories"
+                        checked={preferences && 'notify_favorite_categories' in preferences ? preferences.notify_favorite_categories : false}
+                        onCheckedChange={(checked) => 
+                          updatePreferences.mutate({ notify_favorite_categories: checked })
+                        }
+                      />
                     </div>
-                  </Label>
-                  <Switch
-                    id="pushBooking"
-                    checked={preferences.pushBooking}
-                    onCheckedChange={(checked) => updatePreference('pushBooking', checked)}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="pushReminders" className="flex-1">
-                    <div>
-                      <p className="font-medium">Rappels</p>
-                      <p className="text-sm text-muted-foreground">
-                        Rappels push pour vos activités
-                      </p>
-                    </div>
-                  </Label>
-                  <Switch
-                    id="pushReminders"
-                    checked={preferences.pushReminders}
-                    onCheckedChange={(checked) => updatePreference('pushReminders', checked)}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="pushPromotions" className="flex-1">
-                    <div>
-                      <p className="font-medium">Promotions</p>
-                      <p className="text-sm text-muted-foreground">
-                        Nouvelles activités et offres spéciales
-                      </p>
-                    </div>
-                  </Label>
-                  <Switch
-                    id="pushPromotions"
-                    checked={preferences.pushPromotions}
-                    onCheckedChange={(checked) => updatePreference('pushPromotions', checked)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Autres préférences */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="w-5 h-5" />
-                  <span>Autres préférences</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="smsReminders" className="flex-1">
-                    <div>
-                      <p className="font-medium">Rappels SMS</p>
-                      <p className="text-sm text-muted-foreground">
-                        Recevoir des SMS de rappel (facturable selon votre opérateur)
-                      </p>
-                    </div>
-                  </Label>
-                  <Switch
-                    id="smsReminders"
-                    checked={preferences.smsReminders}
-                    onCheckedChange={(checked) => updatePreference('smsReminders', checked)}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="soundEnabled" className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      {preferences.soundEnabled ? 
-                        <Volume2 className="w-4 h-4" /> : 
-                        <VolumeX className="w-4 h-4" />
-                      }
-                      <div>
-                        <p className="font-medium">Sons des notifications</p>
-                        <p className="text-sm text-muted-foreground">
-                          Activer les sons pour les notifications push
-                        </p>
+                    <div className="space-y-3 pt-4 border-t">
+                      <p className="text-sm font-medium">Sélectionnez vos catégories préférées :</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {categoryOptions.map((category) => (
+                          <div key={category.value} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`category-${category.value}`}
+                              checked={preferences && 'interested_categories' in preferences ? preferences.interested_categories?.includes(category.value) ?? false : false}
+                              onCheckedChange={() => toggleCategory(category.value)}
+                            />
+                            <Label
+                              htmlFor={`category-${category.value}`}
+                              className="text-sm font-normal cursor-pointer"
+                            >
+                              {category.label}
+                            </Label>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  </Label>
-                  <Switch
-                    id="soundEnabled"
-                    checked={preferences.soundEnabled}
-                    onCheckedChange={(checked) => updatePreference('soundEnabled', checked)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+
+                {/* Notifications par email */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Mail className="w-5 h-5" />
+                      <span>Notifications par e-mail</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="email_notifications" className="flex-1">
+                        <div>
+                          <p className="font-medium">Recevoir par e-mail</p>
+                          <p className="text-sm text-muted-foreground">
+                            Recevoir également les notifications par e-mail
+                          </p>
+                        </div>
+                      </Label>
+                      <Switch
+                        id="email_notifications"
+                        checked={preferences && 'email_notifications' in preferences ? preferences.email_notifications : false}
+                        onCheckedChange={(checked) => 
+                          updatePreferences.mutate({ email_notifications: checked })
+                        }
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </TabsContent>
         </Tabs>
       </div>

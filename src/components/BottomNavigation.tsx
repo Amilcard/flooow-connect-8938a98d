@@ -1,6 +1,8 @@
 import { Grid3x3, Calendar, User, Calculator } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { NotificationBadge } from "./NotificationBadge";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NavItem {
   icon: typeof Grid3x3;
@@ -18,6 +20,7 @@ const navItems: NavItem[] = [
 export const BottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav 
@@ -36,7 +39,7 @@ export const BottomNavigation = () => {
                 <button
                   onClick={() => navigate(item.path)}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[48px] min-h-[48px] rounded-lg transition-colors",
+                    "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[48px] min-h-[48px] rounded-lg transition-colors relative",
                     isActive 
                       ? "text-primary" 
                       : "text-muted-foreground hover:text-foreground"
@@ -46,6 +49,8 @@ export const BottomNavigation = () => {
                 >
                   <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   <span className="text-xs font-medium">{item.label}</span>
+                  {/* Badge de notification pour Mon espace */}
+                  {item.path === "/mon-compte" && isAuthenticated && <NotificationBadge />}
                 </button>
               </li>
             );

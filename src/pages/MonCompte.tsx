@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageLayout from "@/components/PageLayout";
 import { useAuth } from "@/hooks/useAuth";
-import { 
+import { useNotifications } from "@/hooks/useNotifications";
+import {
   User, 
   Users, 
   FileText, 
@@ -33,6 +34,7 @@ const MonCompte = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications(user?.id);
 
   // Données simulées pour la démonstration
   const userStats = {
@@ -123,8 +125,8 @@ const MonCompte = () => {
     {
       icon: <Bell size={20} />,
       title: "Mes notifications",
-      subtitle: "Gérer vos préférences de notification",
-      badge: userStats.notifications > 0 ? userStats.notifications : null,
+      subtitle: "Événements et préférences",
+      badge: unreadCount > 0 ? unreadCount : null,
       onClick: () => navigate("/mon-compte/notifications"),
     },
     {
