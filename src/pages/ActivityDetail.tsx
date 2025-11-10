@@ -355,8 +355,8 @@ const ActivityDetail = () => {
         </div>
       </div>
 
-      {/* Hero Image - Optimisé avec hauteur raisonnable */}
-      <div className="relative w-full h-[40vh] md:h-[45vh] max-h-[480px] min-h-[240px] overflow-hidden">
+      {/* Hero Image - Optimisé avec hauteur raisonnable selon breakpoints responsive */}
+      <div className="relative w-full h-[40vh] md:h-[45vh] lg:h-[480px] min-h-[240px] overflow-hidden">
         <img
           src={imgError ? fallbackImage : displayImage}
           alt={activity.title}
