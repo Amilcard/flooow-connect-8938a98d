@@ -10,6 +10,7 @@ import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { exportToICal, exportToGoogleCalendar } from "@/lib/calendar";
+import { EventShareButton } from "@/components/EventShareButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,6 +99,18 @@ const MesEvenementsFavoris = () => {
                   </div>
 
                   <div className="flex gap-2 shrink-0">
+                    <EventShareButton
+                      event={{
+                        id: event.id,
+                        title: event.title,
+                        description: event.description,
+                        startDate: event.start_date,
+                        location: event.location,
+                      }}
+                      variant="outline"
+                      size="icon"
+                    />
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="icon">

@@ -9,6 +9,7 @@ import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 import { useAuth } from "@/hooks/useAuth";
+import { EventShareButton } from "@/components/EventShareButton";
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   children_activity: "bg-accent/10 text-accent-foreground",
@@ -154,6 +155,21 @@ export const EventsSection = () => {
                   <span className="truncate">{event.organizer_name}</span>
                 </div>
               )}
+
+              <div className="pt-2" onClick={(e) => e.stopPropagation()}>
+                <EventShareButton
+                  event={{
+                    id: event.id,
+                    title: event.title,
+                    description: event.description,
+                    startDate: event.start_date,
+                    location: event.location,
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                />
+              </div>
             </CardContent>
           </Card>
         ))}
