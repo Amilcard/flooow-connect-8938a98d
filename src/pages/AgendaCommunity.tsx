@@ -10,7 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { Calendar, MapPin, Clock, User, ExternalLink, MessageSquare, Users, Lightbulb, Heart } from "lucide-react";
+import { Calendar, MapPin, Clock, User, ExternalLink, MessageSquare, Users, Lightbulb, Heart, Download } from "lucide-react";
+import { exportToICal, exportToGoogleCalendar } from "@/lib/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
@@ -267,6 +274,24 @@ const AgendaCommunity = () => {
                               </CardDescription>
                             </div>
                             <div className="flex gap-2 shrink-0">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="outline" size="icon">
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => exportToICal(event)}>
+                                    <Calendar className="h-4 w-4 mr-2" />
+                                    Télécharger iCal
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => exportToGoogleCalendar(event)}>
+                                    <Calendar className="h-4 w-4 mr-2" />
+                                    Google Calendar
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+
                               {user && (
                                 <Button
                                   variant="ghost"

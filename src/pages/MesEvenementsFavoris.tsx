@@ -3,12 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import PageLayout from "@/components/PageLayout";
 import { Card } from "@/components/ui/card";
-import { Calendar, MapPin, Heart } from "lucide-react";
+import { Calendar, MapPin, Heart, Download } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { exportToICal, exportToGoogleCalendar } from "@/lib/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MesEvenementsFavoris = () => {
   const { user } = useAuth();
@@ -90,20 +97,39 @@ const MesEvenementsFavoris = () => {
                     )}
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => toggleFavorite.mutate(event.id)}
-                    className="shrink-0"
-                  >
-                    <Heart
-                      className={`h-5 w-5 ${
-                        isFavorite(event.id)
-                          ? "fill-primary text-primary"
-                          : "text-muted-foreground"
-                      }`}
-                    />
-                  </Button>
+                  <div className="flex gap-2 shrink-0">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => exportToICal(event)}>
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Télécharger iCal
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => exportToGoogleCalendar(event)}>
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Google Calendar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => toggleFavorite.mutate(event.id)}
+                    >
+                      <Heart
+                        className={`h-5 w-5 ${
+                          isFavorite(event.id)
+                            ? "fill-primary text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
