@@ -1,55 +1,24 @@
-import { Home, Search, Grid, User, MessageCircle, BarChart3 } from "lucide-react";
+import { Home, Grid3x3, Calendar, MessageSquare, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 interface NavItem {
   icon: typeof Home;
   label: string;
   path: string;
-  requiresRole?: boolean;
 }
 
-const baseNavItems: NavItem[] = [
-  { icon: Grid, label: "Univers", path: "/univers" },
-  { icon: Search, label: "Recherche", path: "/activities" },
+const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/" },
-  { icon: MessageCircle, label: "Chat", path: "/chat" },
-  { icon: User, label: "Compte", path: "/mon-compte" },
+  { icon: Grid3x3, label: "Activités", path: "/activities" },
+  { icon: Calendar, label: "Agenda", path: "/agenda" },
+  { icon: MessageSquare, label: "Échanges", path: "/community" },
+  { icon: User, label: "Mon espace", path: "/mon-compte" },
 ];
 
 export const BottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
-
-  // Check if user has admin/structure role
-  const { data: hasAdminRole } = useQuery({
-    queryKey: ["has-admin-role"],
-    queryFn: async () => {
-      if (!isAuthenticated) return false;
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .in("role", ["structure", "territory_admin", "partner", "superadmin"])
-        .maybeSingle();
-
-      return !!data;
-    },
-    enabled: isAuthenticated,
-  });
-
-  // Add dashboard item if user has admin role
-  const navItems = hasAdminRole 
-    ? [...baseNavItems.slice(0, 3), { icon: BarChart3, label: "Dashboard", path: "/dashboards" }, baseNavItems[3]]
-    : baseNavItems;
 
   return (
     <nav 
