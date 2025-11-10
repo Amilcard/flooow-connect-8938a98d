@@ -2146,6 +2146,26 @@ export type Database = {
         Returns: Json
       }
       get_child_age: { Args: { birth_date: string }; Returns: number }
+      get_recommended_events: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          description: string
+          end_date: string
+          event_type: string
+          external_link: string
+          id: string
+          image_url: string
+          location: string
+          organizer_contact: string
+          organizer_name: string
+          recommendation_reason: string
+          relevance_score: number
+          start_date: string
+          territory_id: string
+          territory_name: string
+          title: string
+        }[]
+      }
       get_territories_from_postal: {
         Args: { postal_code: string }
         Returns: {

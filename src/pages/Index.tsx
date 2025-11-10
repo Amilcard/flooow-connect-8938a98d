@@ -5,6 +5,7 @@ import { UniversSection } from "@/components/UniversSection";
 import { AidesMobiliteBlock } from "@/components/home/AidesMobiliteBlock";
 import { TerritoireBlock } from "@/components/home/TerritoireBlock";
 import { EventsSection } from "@/components/home/EventsSection";
+import RecommendedEventsSection from "@/components/home/RecommendedEventsSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -153,6 +154,9 @@ const Index = () => {
 
             {/* Événements à venir */}
             <EventsSection />
+
+            {/* Recommandations personnalisées */}
+            <RecommendedEventsSection />
 
             {/* Vivre mon territoire */}
             <TerritoireBlock />
