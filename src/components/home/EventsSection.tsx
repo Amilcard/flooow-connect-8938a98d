@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { EventShareButton } from "@/components/EventShareButton";
+import { EventRegistrationButton } from "@/components/EventRegistrationButton";
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   children_activity: "bg-accent/10 text-accent-foreground",
@@ -156,7 +157,15 @@ export const EventsSection = () => {
                 </div>
               )}
 
-              <div className="pt-2" onClick={(e) => e.stopPropagation()}>
+              <div className="pt-2 space-y-2" onClick={(e) => e.stopPropagation()}>
+                <EventRegistrationButton
+                  eventId={event.id}
+                  userId={user?.id}
+                  variant="default"
+                  size="sm"
+                  showCount={true}
+                  className="w-full"
+                />
                 <EventShareButton
                   event={{
                     id: event.id,

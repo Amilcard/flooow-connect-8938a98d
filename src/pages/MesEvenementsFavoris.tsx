@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { exportToICal, exportToGoogleCalendar } from "@/lib/calendar";
 import { EventShareButton } from "@/components/EventShareButton";
+import { EventRegistrationButton } from "@/components/EventRegistrationButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,10 +93,21 @@ const MesEvenementsFavoris = () => {
                     )}
 
                     {event.territories && (
-                      <span className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                      <span className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded-full mb-3">
                         {event.territories.name}
                       </span>
                     )}
+
+                    <div className="pt-2">
+                      <EventRegistrationButton
+                        eventId={event.id}
+                        userId={user?.id}
+                        variant="default"
+                        size="sm"
+                        showCount={true}
+                        className="w-full"
+                      />
+                    </div>
                   </div>
 
                   <div className="flex gap-2 shrink-0">

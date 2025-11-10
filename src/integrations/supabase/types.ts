@@ -741,6 +741,48 @@ export type Database = {
           },
         ]
       }
+      event_registrations: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "event_stats"
+            referencedColumns: ["event_id"]
+          },
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "territory_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_reminders_sent: {
         Row: {
           days_before: number
@@ -771,6 +813,13 @@ export type Database = {
             foreignKeyName: "event_reminders_sent_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
+            referencedRelation: "event_stats"
+            referencedColumns: ["event_id"]
+          },
+          {
+            foreignKeyName: "event_reminders_sent_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
             referencedRelation: "territory_events"
             referencedColumns: ["id"]
           },
@@ -796,6 +845,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "favorite_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "event_stats"
+            referencedColumns: ["event_id"]
+          },
           {
             foreignKeyName: "favorite_events_event_id_fkey"
             columns: ["event_id"]
@@ -1866,6 +1922,17 @@ export type Database = {
       }
     }
     Views: {
+      event_stats: {
+        Row: {
+          confirmed_count: number | null
+          event_id: string | null
+          interested_count: number | null
+          participants_count: number | null
+          start_date: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       territory_user_stats: {
         Row: {
           avg_quotient_familial: number | null

@@ -13,6 +13,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { Calendar, MapPin, Clock, User, ExternalLink, MessageSquare, Users, Lightbulb, Heart, Download } from "lucide-react";
 import { exportToICal, exportToGoogleCalendar } from "@/lib/calendar";
 import { EventShareButton } from "@/components/EventShareButton";
+import { EventRegistrationButton } from "@/components/EventRegistrationButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -350,6 +351,16 @@ const AgendaCommunity = () => {
                               <span>{event.organizer_name}</span>
                             </div>
                           )}
+                          <div className="pt-2 space-y-2">
+                            <EventRegistrationButton
+                              eventId={event.id}
+                              userId={user?.id}
+                              variant="default"
+                              size="sm"
+                              showCount={true}
+                              className="w-full"
+                            />
+                          </div>
                           {event.external_link && (
                             <Button
                               variant="outline"
