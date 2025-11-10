@@ -25,7 +25,8 @@ import {
   Edit,
   ArrowLeft,
   Car,
-  Euro
+  Euro,
+  Heart
 } from "lucide-react";
 
 const MonCompte = () => {
@@ -97,6 +98,13 @@ const MonCompte = () => {
       subtitle: "Historique et réservations en cours",
       badge: userStats.reservations,
       onClick: () => navigate("/mon-compte/reservations"),
+    },
+    {
+      icon: <Heart size={20} />,
+      title: "Mes événements favoris",
+      subtitle: "Événements sauvegardés",
+      badge: null,
+      onClick: () => navigate("/mes-evenements-favoris"),
     },
     {
       icon: <FileText size={20} />,
