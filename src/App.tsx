@@ -54,6 +54,8 @@ import DemoLemoine from "./pages/demo/DemoLemoine";
 import Itineraire from "./pages/Itineraire";
 import Agenda from "./pages/Agenda";
 import Community from "./pages/Community";
+import AgendaCommunity from "./pages/AgendaCommunity";
+import AidesMobilite from "./pages/AidesMobilite";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -152,6 +154,10 @@ const App = () => (
           <Route path="/booking-status/:id" element={<BookingStatus />} />
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />
+          <Route path="/aides-mobilite" element={<AidesMobilite />} />
+          <Route path="/agenda" element={<Agenda />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/agenda-community" element={<AgendaCommunity />} />
           <Route path="/univers" element={<Univers />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/eco-mobilite" element={<EcoMobilite />} />

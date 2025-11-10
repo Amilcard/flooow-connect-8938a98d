@@ -16,7 +16,7 @@ export const TerritoireBlock = () => {
         {/* Card Agenda du territoire */}
         <Card 
           className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/agenda")}
+          onClick={() => navigate("/agenda-community")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ export const TerritoireBlock = () => {
         {/* Card Échanges & communauté */}
         <Card 
           className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/community")}
+          onClick={() => navigate("/agenda-community?tab=community")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">

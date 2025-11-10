@@ -1,18 +1,17 @@
-import { Home, Grid3x3, Calendar, MessageSquare, User } from "lucide-react";
+import { Grid3x3, Calendar, User, Calculator } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
-  icon: typeof Home;
+  icon: typeof Grid3x3;
   label: string;
   path: string;
 }
 
 const navItems: NavItem[] = [
-  { icon: Home, label: "Accueil", path: "/" },
   { icon: Grid3x3, label: "Activités", path: "/activities" },
-  { icon: Calendar, label: "Agenda", path: "/agenda" },
-  { icon: MessageSquare, label: "Échanges", path: "/community" },
+  { icon: Calculator, label: "Aides & Mobilité", path: "/aides-mobilite" },
+  { icon: Calendar, label: "Agenda & Échanges", path: "/agenda-community" },
   { icon: User, label: "Mon espace", path: "/mon-compte" },
 ];
 

@@ -16,7 +16,7 @@ export const AidesMobiliteBlock = () => {
         {/* Card Calculer mes aides */}
         <Card 
           className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/aides")}
+          onClick={() => navigate("/aides-mobilite")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ export const AidesMobiliteBlock = () => {
         {/* Card Éco-mobilité */}
         <Card 
           className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/eco-mobilite")}
+          onClick={() => navigate("/aides-mobilite?tab=mobilite")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
