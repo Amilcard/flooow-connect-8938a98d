@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { InfoBlocks } from "@/components/InfoBlocks";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { UniversSection } from "@/components/UniversSection";
+import { AidesMobiliteBlock } from "@/components/home/AidesMobiliteBlock";
+import { TerritoireBlock } from "@/components/home/TerritoireBlock";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -128,8 +129,6 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            <InfoBlocks />
-
             {/* Section Univers - Carousel horizontal */}
             <UniversSection />
 
@@ -141,12 +140,18 @@ const Index = () => {
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
 
+            {/* Mes aides & mobilités */}
+            <AidesMobiliteBlock />
+
             <ActivitySection
               title="Activités Petits budgets"
               activities={budgetActivities}
               onSeeAll={() => navigate("/activities?type=budget")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
+
+            {/* Vivre mon territoire */}
+            <TerritoireBlock />
 
             <ActivitySection
               title="Activités Innovantes"
