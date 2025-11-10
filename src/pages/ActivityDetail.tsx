@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
   Users, 
@@ -514,97 +515,205 @@ const ActivityDetail = () => {
 
         {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
         <div className="grid md:grid-cols-12 gap-8">
-          {/* Left Column - Main content (8/12) */}
-          <div className="md:col-span-8 space-y-8">
-            {activity.description && (
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold text-foreground">À propos de cette activité</h2>
-                <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {activity.description}
-                </p>
-              </section>
-            )}
+          {/* Left Column - Main content with Tabs (8/12) */}
+          <div className="md:col-span-8">
+            <Tabs defaultValue="infos" className="w-full">
+              <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1 mb-6">
+                <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
+                <TabsTrigger value="tarifs" className="text-xs md:text-sm">Tarifs & aides</TabsTrigger>
+                <TabsTrigger value="mobilite" className="text-xs md:text-sm">Mobilité</TabsTrigger>
+                <TabsTrigger value="echanges" className="text-xs md:text-sm">Échanges</TabsTrigger>
+              </TabsList>
 
-            {/* Informations pratiques - Airbnb style */}
-            <section className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                  <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm">Tranche d'âge</p>
-                    <p className="text-sm text-muted-foreground">{ageRange}</p>
-                  </div>
-                </div>
-                
-                {activity.structures?.address && (
-                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                    <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm">Lieu</p>
-                      <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
-                    </div>
-                  </div>
+              {/* Onglet Infos */}
+              <TabsContent value="infos" className="space-y-8 mt-0">
+                {activity.description && (
+                  <section className="space-y-3">
+                    <h2 className="text-2xl font-bold text-foreground">À propos de cette activité</h2>
+                    <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {activity.description}
+                    </p>
+                  </section>
                 )}
 
-                {activity.covoiturage_enabled && (
-                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm">Covoiturage</p>
-                      <p className="text-sm text-muted-foreground">Service disponible</p>
+                {/* Informations pratiques - Airbnb style */}
+                <section className="space-y-4">
+                  <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                      <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-sm">Tranche d'âge</p>
+                        <p className="text-sm text-muted-foreground">{ageRange}</p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                    
+                    {activity.structures?.address && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                        <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Lieu</p>
+                          <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
+                        </div>
+                      </div>
+                    )}
 
-                {typeof activity.accessibility_checklist === 'object' && 
-                 activity.accessibility_checklist !== null && 
-                 'wheelchair' in activity.accessibility_checklist &&
-                 activity.accessibility_checklist.wheelchair && (
-                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                    <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm">Accessibilité PMR</p>
-                      <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
-                    </div>
-                  </div>
-                )}
+                    {activity.covoiturage_enabled && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                        <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Covoiturage</p>
+                          <p className="text-sm text-muted-foreground">Service disponible</p>
+                        </div>
+                      </div>
+                    )}
 
-                {activity.payment_echelonned && (
-                  <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                    <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm">Paiement échelonné</p>
-                      <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
+                    {typeof activity.accessibility_checklist === 'object' && 
+                     activity.accessibility_checklist !== null && 
+                     'wheelchair' in activity.accessibility_checklist &&
+                     activity.accessibility_checklist.wheelchair && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                        <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Accessibilité PMR</p>
+                          <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
+                        </div>
+                      </div>
+                    )}
 
-            {/* Financial Aids Section with integrated calculator */}
-            {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-              <section id="aides-section" className="space-y-4">
-                <EnhancedFinancialAidCalculator
-                  activityId={id!}
-                  activityPrice={activity.price_base || 0}
-                  activityCategories={activity.categories || [activity.category]}
-                  userProfile={userProfile}
-                  children={children}
-                  onAidsCalculated={handleAidsCalculated}
+                    {activity.payment_echelonned && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                        <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Paiement échelonné</p>
+                          <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </TabsContent>
+
+              {/* Onglet Tarifs & aides */}
+              <TabsContent value="tarifs" className="space-y-8 mt-0">
+                <section className="space-y-4">
+                  <div className="flex items-baseline gap-4 mb-6">
+                    <h2 className="text-2xl font-bold text-foreground">Tarifs</h2>
+                    <span className="text-3xl font-bold text-primary">
+                      {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
+                    </span>
+                    {activity.price_note && (
+                      <span className="text-sm text-muted-foreground">{activity.price_note}</span>
+                    )}
+                  </div>
+
+                  {aidsData && (
+                    <Card className="p-4 bg-accent/50">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Prix initial</span>
+                          <span className="font-medium">{activity.price_base.toFixed(2)}€</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-primary">
+                          <span>Aides appliquées</span>
+                          <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between text-lg font-bold">
+                          <span>Reste à charge</span>
+                          <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+                </section>
+
+                {/* Financial Aids Section with integrated calculator */}
+                {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
+                  <section id="aides-section" className="space-y-4">
+                    <EnhancedFinancialAidCalculator
+                      activityId={id!}
+                      activityPrice={activity.price_base || 0}
+                      activityCategories={activity.categories || [activity.category]}
+                      userProfile={userProfile}
+                      children={children}
+                      onAidsCalculated={handleAidsCalculated}
+                    />
+                  </section>
+                )}
+              </TabsContent>
+
+              {/* Onglet Mobilité */}
+              <TabsContent value="mobilite" className="mt-0">
+                <EcoMobilitySection 
+                  activityId={activity.id}
+                  activityAddress={activity.structures?.address}
+                  structureName={activity.structures?.name}
+                  structureContactJson={activity.structures?.contact_json}
+                  onTransportModeSelected={handleTransportModeSelected}
+                  selectedTransportMode={bookingState?.transportMode}
                 />
-              </section>
-            )}
+              </TabsContent>
 
-            {/* Eco Mobility Section */}
-            <EcoMobilitySection 
-              activityId={activity.id}
-              activityAddress={activity.structures?.address}
-              structureName={activity.structures?.name}
-              structureContactJson={activity.structures?.contact_json}
-              onTransportModeSelected={handleTransportModeSelected}
-              selectedTransportMode={bookingState?.transportMode}
-            />
+              {/* Onglet Échanges */}
+              <TabsContent value="echanges" className="mt-0">
+                <section className="space-y-6">
+                  <div className="space-y-3">
+                    <h2 className="text-2xl font-bold text-foreground">Rejoignez la communauté</h2>
+                    <p className="text-base text-muted-foreground leading-relaxed">
+                      Échangez avec d'autres parents, posez vos questions et partagez vos expériences sur cette activité et bien d'autres.
+                    </p>
+                  </div>
+
+                  <Card className="p-6 bg-accent/30">
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <MessageCircle size={24} className="text-primary mt-1" />
+                        <div className="space-y-2">
+                          <h3 className="font-semibold text-lg">Communauté Parents</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Retrouvez des retours d'expérience, des conseils pratiques et des réponses à vos questions.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        onClick={() => navigate('/agenda-community?tab=community')}
+                        className="w-full"
+                        size="lg"
+                      >
+                        <MessageCircle className="mr-2" size={18} />
+                        Accéder aux échanges
+                      </Button>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <Info size={24} className="text-primary mt-1" />
+                        <div className="space-y-2">
+                          <h3 className="font-semibold text-lg">Contactez l'organisateur</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Pour des questions spécifiques sur cette activité, contactez directement {activity.structures?.name}.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        onClick={() => setShowContactModal(true)}
+                        variant="outline"
+                        className="w-full"
+                        size="lg"
+                      >
+                        <Mail className="mr-2" size={18} />
+                        Contacter l'organisateur
+                      </Button>
+                    </div>
+                  </Card>
+                </section>
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Right Column - Sticky Booking Card (4/12) */}
