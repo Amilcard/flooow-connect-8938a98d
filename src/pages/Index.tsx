@@ -4,6 +4,7 @@ import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { UniversSection } from "@/components/UniversSection";
 import { AidesMobiliteBlock } from "@/components/home/AidesMobiliteBlock";
 import { TerritoireBlock } from "@/components/home/TerritoireBlock";
+import { EventsSection } from "@/components/home/EventsSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -149,6 +150,9 @@ const Index = () => {
               onSeeAll={() => navigate("/activities?type=budget")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
             />
+
+            {/* Événements à venir */}
+            <EventsSection />
 
             {/* Vivre mon territoire */}
             <TerritoireBlock />
