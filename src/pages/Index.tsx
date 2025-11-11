@@ -134,16 +134,17 @@ const Index = () => {
             {/* Section Univers - Carousel horizontal */}
             <UniversSection />
 
-            {/* Activités à la une - GRID MODE */}
+            {/* MES AIDES & MOBILITÉS - Position 3 (remontée) ⭐ */}
+            <AidesMobiliteBlock />
+
+            {/* Activités recommandées - Carousel horizontal fusionné */}
             <ActivitySection
-              title="Activités à la une"
+              title="Activités recommandées pour vous"
               activities={nearbyActivities}
               onSeeAll={() => navigate("/activities?type=nearby")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
+              layout="carousel"
             />
-
-            {/* Mes aides & mobilités */}
-            <AidesMobiliteBlock />
 
             <ActivitySection
               title="Activités Petits budgets"
