@@ -45,8 +45,13 @@ export const AidesMobiliteBlock = () => {
           </CardHeader>
           <CardContent className="pt-0">
             <Button 
-              className="w-full text-white font-semibold hover:opacity-90 shadow-md border-0 h-11"
-              style={{ background: 'var(--gradient-orange)' }}
+              className="w-full text-white font-semibold shadow-md border-0 h-11 transition-all duration-300 hover:-translate-y-0.5"
+              style={{ 
+                background: 'var(--gradient-orange)',
+                boxShadow: '0 4px 12px rgba(255, 184, 77, 0.25)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 184, 77, 0.35)'}
+              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 184, 77, 0.25)'}
             >
               Accéder au calculateur
             </Button>
@@ -73,8 +78,13 @@ export const AidesMobiliteBlock = () => {
           </CardHeader>
           <CardContent className="pt-0">
             <Button 
-              className="w-full text-white font-semibold hover:opacity-90 shadow-md border-0 h-11"
-              style={{ background: 'var(--gradient-green)' }}
+              className="w-full text-white font-semibold shadow-md border-0 h-11 transition-all duration-300 hover:-translate-y-0.5"
+              style={{ 
+                background: 'var(--gradient-green)',
+                boxShadow: '0 4px 12px rgba(78, 205, 196, 0.25)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 6px 16px rgba(78, 205, 196, 0.35)'}
+              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(78, 205, 196, 0.25)'}
             >
               Voir les options
             </Button>
