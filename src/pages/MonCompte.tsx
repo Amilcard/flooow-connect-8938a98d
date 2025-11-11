@@ -65,34 +65,14 @@ const MonCompte = () => {
     }
   };
 
-  const menuItems = [
-    {
-      icon: <User size={20} />,
-      title: "Mes informations personnelles",
-      subtitle: "Email, téléphone, adresse",
-      badge: null,
-      onClick: () => navigate("/mon-compte/informations"),
-    },
+  // Cards principales (fréquemment utilisées)
+  const primaryMenuItems = [
     {
       icon: <Users size={20} />,
       title: "Mes enfants",
       subtitle: "Gérer les profils de vos enfants",
       badge: userStats.enfants,
       onClick: () => navigate("/mon-compte/enfants"),
-    },
-    {
-      icon: <Euro size={20} />,
-      title: "Profil d'éligibilité",
-      subtitle: "Estimer mes aides potentielles",
-      badge: null,
-      onClick: () => navigate("/mon-compte/eligibilite"),
-    },
-    {
-      icon: <FileText size={20} />,
-      title: "Mes justificatifs",
-      subtitle: "Télécharger mes documents",
-      badge: null,
-      onClick: () => navigate("/mon-compte/justificatifs"),
     },
     {
       icon: <Calendar size={20} />,
@@ -109,20 +89,6 @@ const MonCompte = () => {
       onClick: () => navigate("/mes-evenements-favoris"),
     },
     {
-      icon: <FileText size={20} />,
-      title: "Demandes d'inscription",
-      subtitle: "Valider les demandes de vos enfants",
-      badge: null,
-      onClick: () => navigate("/mon-compte/validations"),
-    },
-    {
-      icon: <Shield size={20} />,
-      title: "Mes sessions",
-      subtitle: "Gérer vos connexions actives",
-      badge: userStats.sessions,
-      onClick: () => navigate("/mon-compte/sessions"),
-    },
-    {
       icon: <Bell size={20} />,
       title: "Mes notifications",
       subtitle: "Événements et préférences",
@@ -137,17 +103,44 @@ const MonCompte = () => {
       onClick: () => navigate("/mon-compte/covoiturage"),
     },
     {
-      icon: <Settings size={20} />,
-      title: "Paramètres",
-      subtitle: "Langue, confidentialité, sécurité",
+      icon: <Euro size={20} />,
+      title: "Mes justificatifs",
+      subtitle: "Télécharger mes documents",
       badge: null,
+      onClick: () => navigate("/mon-compte/justificatifs"),
+    },
+  ];
+
+  // Menu secondaire (options moins fréquentes)
+  const secondaryMenuItems = [
+    {
+      icon: <User size={18} />,
+      label: "Mes informations personnelles",
+      onClick: () => navigate("/mon-compte/informations"),
+    },
+    {
+      icon: <Euro size={18} />,
+      label: "Profil d'éligibilité",
+      onClick: () => navigate("/mon-compte/eligibilite"),
+    },
+    {
+      icon: <FileText size={18} />,
+      label: "Demandes d'inscription",
+      onClick: () => navigate("/mon-compte/validations"),
+    },
+    {
+      icon: <Shield size={18} />,
+      label: "Mes sessions",
+      onClick: () => navigate("/mon-compte/sessions"),
+    },
+    {
+      icon: <Settings size={18} />,
+      label: "Paramètres",
       onClick: () => navigate("/mon-compte/parametres"),
     },
     {
-      icon: <HelpCircle size={20} />,
-      title: "Aide & Support",
-      subtitle: "FAQ, contact, assistance",
-      badge: null,
+      icon: <HelpCircle size={18} />,
+      label: "Aide & Support",
       onClick: () => navigate("/support"),
     },
   ];
@@ -199,9 +192,9 @@ const MonCompte = () => {
         </div>
       </div>
 
-      {/* Menu principal */}
+      {/* Menu principal - Cards */}
       <div className="container px-4 pt-6 pb-6 space-y-3">
-        {menuItems.map((item, index) => (
+        {primaryMenuItems.map((item, index) => (
           <Card
             key={index}
             className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
@@ -231,16 +224,39 @@ const MonCompte = () => {
           </Card>
         ))}
 
-        <Button
-          variant="outline"
-          className="w-full h-12 text-red-600 hover:text-red-700 hover:bg-red-50"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2" size={20} />
-          Se déconnecter
-        </Button>
+        {/* Menu secondaire - Autres options */}
+        <div className="mt-10 mb-6">
+          <div className="max-w-[600px] mx-auto bg-muted/30 rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 px-2">
+              Autres options
+            </h3>
+            <div className="space-y-1">
+              {secondaryMenuItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={item.onClick}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-all duration-200"
+                >
+                  <div className="text-muted-foreground">
+                    {item.icon}
+                  </div>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        <div className="text-center text-sm text-muted-foreground">
+        {/* Bouton déconnexion discret */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full py-4 text-sm text-muted-foreground hover:text-destructive transition-colors duration-200 underline"
+        >
+          <LogOut size={16} />
+          <span>Se déconnecter</span>
+        </button>
+
+        <div className="text-center text-sm text-muted-foreground pt-2">
           Version 1.0.0 • InKlusif
         </div>
       </div>
