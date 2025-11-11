@@ -2141,6 +2141,7 @@ export type Database = {
         Args: { p_price_base: number; p_simulated_aids: Json }
         Returns: number
       }
+      check_slot_availability: { Args: { slot_id: string }; Returns: boolean }
       cleanup_expired_sessions: { Args: never; Returns: number }
       cleanup_expired_sessions_and_tokens: { Args: never; Returns: number }
       cleanup_old_sessions: { Args: never; Returns: number }
@@ -2148,6 +2149,7 @@ export type Database = {
         Args: { _booking_id: string; _slot_id: string }
         Returns: Json
       }
+      decrement_slot_seats: { Args: { slot_id: string }; Returns: undefined }
       get_child_age: { Args: { birth_date: string }; Returns: number }
       get_recommended_events: {
         Args: { p_limit?: number; p_user_id: string }
@@ -2167,6 +2169,15 @@ export type Database = {
           territory_id: string
           territory_name: string
           title: string
+        }[]
+      }
+      get_slot_availability: {
+        Args: { slot_id: string }
+        Returns: {
+          availability_percentage: number
+          booked_seats: number
+          remaining_seats: number
+          total_seats: number
         }[]
       }
       get_territories_from_postal: {
@@ -2195,6 +2206,7 @@ export type Database = {
         Returns: boolean
       }
       hash_backup_code: { Args: { plain_code: string }; Returns: string }
+      increment_slot_seats: { Args: { slot_id: string }; Returns: undefined }
       is_profile_in_qpv: { Args: { p_profile_id: string }; Returns: boolean }
       log_audit_event: {
         Args: {
