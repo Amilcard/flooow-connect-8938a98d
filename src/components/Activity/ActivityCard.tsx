@@ -103,6 +103,16 @@ export const ActivityCard = ({
           }}
         />
         
+        {/* Badge GRATUIT - Position top right */}
+        {price === 0 && (
+          <div 
+            className="absolute top-3 right-3 text-white font-bold text-xs uppercase px-3 py-1 rounded-full shadow-lg z-10"
+            style={{ background: 'var(--gradient-pink)' }}
+          >
+            Gratuit
+          </div>
+        )}
+        
         {/* BADGES OVERLAY - Simplifiés */}
         <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
           {/* Badge Univers */}
@@ -171,7 +181,7 @@ export const ActivityCard = ({
       </div>
 
       {/* CONTENT CONTAINER - 70% */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 mb-2">
         
         {/* TITLE */}
         <h3 className="font-semibold text-base leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">

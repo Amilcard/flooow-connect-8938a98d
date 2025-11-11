@@ -41,6 +41,15 @@ All colors MUST be HSL.
     --badge-loisir: 142 76% 36%;
     --badge-distance: 25 95% 53%;
     --badge-age: 280 65% 60%;
+    
+    /* Phase 1 Optimization - New Colors */
+    --primary-orange: 35 100% 65%; /* #FFB84D */
+    --primary-orange-dark: 32 100% 58%; /* #FFA726 */
+    --success-green: 175 65% 60%; /* #4ECDC4 */
+    --success-green-dark: 175 50% 50%; /* #44B3A8 */
+    --accent-pink: 342 100% 70%; /* #FF6B9D */
+    --accent-pink-light: 344 100% 77%; /* #FF8FA3 */
+    --background-warm: 45 100% 96%; /* #FFF9E6 */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -56,10 +65,15 @@ All colors MUST be HSL.
     --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 8px 20px 0 rgba(0, 0, 0, 0.12);
+    --shadow-elegant: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
 
     /* Gradient overlays */
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-light)) 100%);
+    --gradient-orange: linear-gradient(135deg, hsl(var(--primary-orange)) 0%, hsl(var(--primary-orange-dark)) 100%);
+    --gradient-green: linear-gradient(135deg, hsl(var(--success-green)) 0%, hsl(var(--success-green-dark)) 100%);
+    --gradient-pink: linear-gradient(135deg, hsl(var(--accent-pink)) 0%, hsl(var(--accent-pink-light)) 100%);
 
     /* Animation */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

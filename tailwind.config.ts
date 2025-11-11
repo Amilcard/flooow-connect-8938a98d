@@ -47,6 +47,18 @@ export default {
           distance: "hsl(var(--badge-distance))",
           age: "hsl(var(--badge-age))",
         },
+        orange: {
+          DEFAULT: "hsl(var(--primary-orange))",
+          dark: "hsl(var(--primary-orange-dark))",
+        },
+        green: {
+          success: "hsl(var(--success-green))",
+          'success-dark': "hsl(var(--success-green-dark))",
+        },
+        pink: {
+          accent: "hsl(var(--accent-pink))",
+          'accent-light': "hsl(var(--accent-pink-light))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -63,6 +75,9 @@ export default {
       backgroundImage: {
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-accent': 'var(--gradient-accent)',
+        'gradient-orange': 'var(--gradient-orange)',
+        'gradient-green': 'var(--gradient-green)',
+        'gradient-pink': 'var(--gradient-pink)',
       },
       transitionTimingFunction: {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',

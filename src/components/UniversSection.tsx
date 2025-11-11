@@ -78,21 +78,26 @@ export const UniversSection = () => {
             key={item.id}
             onClick={() => handleUniversClick(item.id)}
             className="group relative overflow-hidden cursor-pointer
-                       h-32 flex flex-col items-center justify-center
+                       h-40 flex flex-col items-center justify-center
                        bg-card border border-border/50
-                       hover:border-primary/50 hover:shadow-lg
-                       transition-all duration-300 hover:scale-[1.02]"
+                       hover:border-primary/50
+                       transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
+            style={{ boxShadow: 'var(--shadow-elegant)' }}
+            onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-elegant)'}
             role="listitem"
           >
             {/* Fond subtil avec l'icône emoji */}
-            <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             
-            {/* Contenu de la carte */}
-            <div className="relative z-10 flex flex-col items-center justify-center gap-2 p-4">
-              <span className="text-4xl group-hover:scale-110 transition-transform duration-300">
-                {item.icon}
-              </span>
-              <h3 className="text-base font-semibold text-foreground text-center">
+            {/* Contenu de la carte - Icône agrandie */}
+            <div className="relative z-10 flex flex-col items-center justify-center gap-3 p-4">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center transition-all duration-300 group-hover:scale-105">
+                <span className="text-5xl">
+                  {item.icon}
+                </span>
+              </div>
+              <h3 className="text-sm font-semibold text-foreground text-center group-hover:text-primary transition-colors">
                 {item.name}
               </h3>
             </div>

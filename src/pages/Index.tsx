@@ -120,7 +120,7 @@ const Index = () => {
     <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
-      <main className="container px-4 py-6 space-y-8">
+      <main className="container px-4 py-6 space-y-12">
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
           <TerritoryCheck 
