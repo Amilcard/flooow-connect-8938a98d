@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
 import Footer from "@/components/Footer";
-import FAQSection from "@/components/FAQSection";
+import HelpFloatingButton from "@/components/HelpFloatingButton";
 import type { Activity } from "@/types/domain";
 
 const Index = () => {
@@ -180,8 +180,8 @@ const Index = () => {
           </>
         )}
       </main>
-  <FAQSection limit={4} />
       <Footer />
+      <HelpFloatingButton />
     </PageLayout>
   );
 };
