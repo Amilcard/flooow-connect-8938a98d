@@ -110,12 +110,14 @@ const handler = async (req: Request): Promise<Response> => {
 
           console.log(`Sending reminder for event "${event.title}" to user ${userPref.user_id}`);
 
-          // Créer une notification in-app
-          const { error: notifError } = await supabase
+          // Créer la notification in-app d'abord pour obtenir l'ID
+          const { data: notificationData, error: notificationError } = await supabase
             .from("notifications")
             .insert({
               user_id: userPref.user_id,
               type: "event_reminder",
+              title: `Rappel : ${event.title}`,
+              message: `L'événement "${event.title}" commence dans ${userPref.event_reminder_days_before} jour${userPref.event_reminder_days_before > 1 ? "s" : ""}`,
               payload: {
                 event_id: event.id,
                 event_title: event.title,
@@ -124,9 +126,11 @@ const handler = async (req: Request): Promise<Response> => {
                 days_before: userPref.event_reminder_days_before,
               },
               read: false,
-            });
+            })
+            .select()
+            .single();
 
-          if (!notifError) {
+          if (!notificationError) {
             notificationsCreated++;
             
             // Marquer comme envoyé
@@ -141,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
           }
 
           // Envoyer un email si demandé
-          if (userPref.event_reminder_email) {
+          if (userPref.event_reminder_email && notificationData) {
             try {
               const eventDateFormatted = new Date(event.start_date).toLocaleDateString("fr-FR", {
                 weekday: "long",
@@ -152,31 +156,67 @@ const handler = async (req: Request): Promise<Response> => {
                 minute: "2-digit",
               });
 
+              // Générer les URLs de tracking
+              const trackingPixelUrl = `${supabaseUrl}/functions/v1/track-email?action=opened&event_id=${event.id}&user_id=${userPref.user_id}&notification_id=${notificationData.id}`;
+              const trackingLinkUrl = `${supabaseUrl}/functions/v1/track-email?action=clicked&event_id=${event.id}&user_id=${userPref.user_id}&notification_id=${notificationData.id}&redirect=${supabaseUrl.replace("supabase.co", "flooow-connect.fr")}/agenda-community`;
+
               await resend.emails.send({
-                from: "Lovable <onboarding@resend.dev>",
+                from: "Flooow Connect <notifications@flooow-connect.fr>",
                 to: [profile.email],
                 subject: `Rappel : ${event.title} dans ${userPref.event_reminder_days_before} jour${userPref.event_reminder_days_before > 1 ? "s" : ""}`,
                 html: `
-                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h1 style="color: #333;">Rappel d'événement</h1>
-                    <p>Bonjour,</p>
-                    <p>Vous avez marqué cet événement comme favori et il commence dans <strong>${userPref.event_reminder_days_before} jour${userPref.event_reminder_days_before > 1 ? "s" : ""}</strong> !</p>
-                    
-                    <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                      <h2 style="color: #333; margin-top: 0;">${event.title}</h2>
-                      <p style="color: #666; margin: 10px 0;">
-                        <strong>📅 Date :</strong> ${eventDateFormatted}
-                      </p>
-                      ${event.location ? `
-                        <p style="color: #666; margin: 10px 0;">
-                          <strong>📍 Lieu :</strong> ${event.location}
-                        </p>
-                      ` : ""}
-                    </div>
-                    
-                    <p>N'oubliez pas de vous préparer !</p>
-                    <p>À bientôt,<br>L'équipe Lovable</p>
-                  </div>
+                  <!DOCTYPE html>
+                  <html>
+                    <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    </head>
+                    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+                      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                          <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Rappel d'événement</h1>
+                        </div>
+                        
+                        <div style="padding: 30px; background-color: #ffffff;">
+                          <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+                            Bonjour,<br><br>
+                            Vous avez marqué cet événement comme favori et il commence dans <strong>${userPref.event_reminder_days_before} jour${userPref.event_reminder_days_before > 1 ? "s" : ""}</strong> !
+                          </p>
+                          
+                          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <h2 style="color: #333; margin-top: 0;">${event.title}</h2>
+                            <p style="color: #666; margin: 10px 0;">
+                              <strong>📅 Date :</strong> ${eventDateFormatted}
+                            </p>
+                            ${event.location ? `
+                              <p style="color: #666; margin: 10px 0;">
+                                <strong>📍 Lieu :</strong> ${event.location}
+                              </p>
+                            ` : ""}
+                          </div>
+                          
+                          <div style="text-align: center; margin-top: 30px;">
+                            <a href="${trackingLinkUrl}" 
+                               style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 15px 40px; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 16px;">
+                              Voir l'événement
+                            </a>
+                          </div>
+                          
+                          <p style="margin-top: 30px;">N'oubliez pas de vous préparer !</p>
+                          <p>À bientôt,<br>L'équipe Flooow Connect</p>
+                        </div>
+
+                        <div style="padding: 20px; text-align: center; background-color: #f9f9f9; border-radius: 0 0 10px 10px;">
+                          <p style="margin: 0; color: #666; font-size: 12px;">
+                            Vous recevez cet email car vous avez activé les rappels par email.<br>
+                            <a href="${supabaseUrl.replace("supabase.co", "flooow-connect.fr")}/account/mes-notifications" style="color: #667eea;">Gérer mes préférences</a>
+                          </p>
+                        </div>
+                      </div>
+                      <!-- Pixel de tracking invisible -->
+                      <img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" alt="" />
+                    </body>
+                  </html>
                 `,
               });
 

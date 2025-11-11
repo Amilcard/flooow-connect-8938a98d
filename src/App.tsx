@@ -17,6 +17,7 @@ import StructureActivityForm from "./pages/StructureActivityForm";
 import CollectiviteDashboard from "./pages/CollectiviteDashboard";
 import FinanceurDashboard from "./pages/FinanceurDashboard";
 import SuperadminDashboard from "./pages/SuperadminDashboard";
+import EventStatistics from "./pages/EventStatistics";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import Activities from "./pages/Activities";
@@ -128,6 +129,13 @@ const App = () => (
           <Route path="/dashboard/collectivite" element={
             <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
               <CollectiviteDashboard />
+            </RoleProtectedRoute>
+          } />
+          
+          {/* Event Statistics - Protected */}
+          <Route path="/event-statistics" element={
+            <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
+              <EventStatistics />
             </RoleProtectedRoute>
           } />
           

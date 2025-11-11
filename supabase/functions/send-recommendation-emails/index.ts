@@ -111,10 +111,34 @@ const handler = async (req: Request): Promise<Response> => {
           continue;
         }
 
+        // Créer la notification in-app d'abord pour obtenir l'ID
+        const { data: notificationData, error: notificationError } = await supabase
+          .from("notifications")
+          .insert({
+            user_id: user.user_id,
+            type: "recommendation_email",
+            title: "Nouvelles recommandations",
+            message: `${recommendations.length} nouveaux événements recommandés vous ont été envoyés par email`,
+            payload: { recommendations_count: recommendations.length },
+            read: true, // Marqué comme lu car c'est juste un tracker
+          })
+          .select()
+          .single();
+
+        if (notificationError) {
+          console.error(`Error creating notification for user ${user.user_id}:`, notificationError);
+          continue;
+        }
+
+        // Générer les URLs de tracking
+        const trackingPixelUrl = `${supabaseUrl}/functions/v1/track-email?action=opened&event_id=${(recommendations as RecommendedEvent[])[0]?.id}&user_id=${user.user_id}&notification_id=${notificationData.id}`;
+
         // Formater les recommandations pour l'email
         const eventsHtml = (recommendations as RecommendedEvent[])
           .map(
-            (event) => `
+            (event) => {
+              const eventTrackingUrl = `${supabaseUrl}/functions/v1/track-email?action=clicked&event_id=${event.id}&user_id=${user.user_id}&notification_id=${notificationData.id}&redirect=${supabaseUrl.replace("supabase.co", "flooow-connect.fr")}/agenda-community`;
+              return `
           <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
             <h3 style="margin: 0 0 10px 0; color: #333;">${event.title}</h3>
             <p style="margin: 5px 0; color: #666; font-size: 14px;">
@@ -131,8 +155,14 @@ const handler = async (req: Request): Promise<Response> => {
               💡 ${event.recommendation_reason}
             </p>
             ${event.description ? `<p style="margin: 10px 0 0 0; color: #555; font-size: 14px;">${event.description}</p>` : ""}
+            <div style="margin-top: 10px;">
+              <a href="${eventTrackingUrl}" style="display: inline-block; background-color: #667eea; color: white; padding: 8px 16px; text-decoration: none; border-radius: 5px; font-size: 14px;">
+                Voir l'événement
+              </a>
+            </div>
           </div>
-        `
+        `;
+            }
           )
           .join("");
 
@@ -178,23 +208,14 @@ const handler = async (req: Request): Promise<Response> => {
                     </p>
                   </div>
                 </div>
+                <!-- Pixel de tracking invisible -->
+                <img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" alt="" />
               </body>
             </html>
           `,
         });
 
         console.log(`Email sent to ${profile.email}:`, emailResponse);
-
-        // Créer une notification in-app pour tracer l'envoi
-        await supabase.from("notifications").insert({
-          user_id: user.user_id,
-          type: "recommendation_email",
-          title: "Nouvelles recommandations",
-          message: `${recommendations.length} nouveaux événements recommandés vous ont été envoyés par email`,
-          payload: { recommendations_count: recommendations.length },
-          read: true, // Marqué comme lu car c'est juste un tracker
-        });
-
         emailsSent++;
       } catch (error) {
         console.error(`Failed to send email to user ${user.user_id}:`, error);
