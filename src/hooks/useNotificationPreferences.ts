@@ -12,6 +12,7 @@ interface NotificationPreferences {
   event_reminders_enabled: boolean;
   event_reminder_days_before: number;
   event_reminder_email: boolean;
+  recommendation_emails: boolean;
 }
 
 export const useNotificationPreferences = (userId: string | undefined) => {
@@ -39,6 +40,7 @@ export const useNotificationPreferences = (userId: string | undefined) => {
           event_reminders_enabled: true,
           event_reminder_days_before: 3,
           event_reminder_email: true,
+          recommendation_emails: false,
         };
       }
 

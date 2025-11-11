@@ -358,13 +358,13 @@ const MesNotifications = () => {
                       <span>Notifications par e-mail</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="email_notifications" className="flex-1">
                         <div>
-                          <p className="font-medium">Recevoir par e-mail</p>
+                          <p className="font-medium">Nouveaux événements</p>
                           <p className="text-sm text-muted-foreground">
-                            Recevoir également les notifications par e-mail
+                            Recevoir les notifications de nouveaux événements par e-mail
                           </p>
                         </div>
                       </Label>
@@ -373,6 +373,24 @@ const MesNotifications = () => {
                         checked={preferences && 'email_notifications' in preferences ? preferences.email_notifications : false}
                         onCheckedChange={(checked) => 
                           updatePreferences.mutate({ email_notifications: checked })
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t">
+                      <Label htmlFor="recommendation_emails" className="flex-1">
+                        <div>
+                          <p className="font-medium">Recommandations personnalisées</p>
+                          <p className="text-sm text-muted-foreground">
+                            Recevoir par e-mail les événements recommandés pour vous
+                          </p>
+                        </div>
+                      </Label>
+                      <Switch
+                        id="recommendation_emails"
+                        checked={preferences && 'recommendation_emails' in preferences ? preferences.recommendation_emails : false}
+                        onCheckedChange={(checked) => 
+                          updatePreferences.mutate({ recommendation_emails: checked })
                         }
                       />
                     </div>

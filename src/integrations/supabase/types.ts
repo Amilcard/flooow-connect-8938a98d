@@ -971,6 +971,7 @@ export type Database = {
           interested_categories: string[] | null
           notify_favorite_categories: boolean | null
           notify_territory_events: boolean | null
+          recommendation_emails: boolean | null
           updated_at: string
           user_id: string
         }
@@ -984,6 +985,7 @@ export type Database = {
           interested_categories?: string[] | null
           notify_favorite_categories?: boolean | null
           notify_territory_events?: boolean | null
+          recommendation_emails?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -997,6 +999,7 @@ export type Database = {
           interested_categories?: string[] | null
           notify_favorite_categories?: boolean | null
           notify_territory_events?: boolean | null
+          recommendation_emails?: boolean | null
           updated_at?: string
           user_id?: string
         }
