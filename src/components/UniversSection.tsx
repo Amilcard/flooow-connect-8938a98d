@@ -81,10 +81,8 @@ export const UniversSection = () => {
                        h-40 flex flex-col items-center justify-center
                        bg-card border border-border/50
                        hover:border-primary/50
-                       transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
-            style={{ boxShadow: 'var(--shadow-elegant)' }}
-            onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-hover)'}
-            onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-elegant)'}
+                       transition-all duration-300 ease-out hover:-translate-y-1
+                       shadow-md hover:shadow-xl"
             role="listitem"
           >
             {/* Fond subtil avec l'icône emoji */}
@@ -92,12 +90,15 @@ export const UniversSection = () => {
             
             {/* Contenu de la carte - Icône agrandie */}
             <div className="relative z-10 flex flex-col items-center justify-center gap-3 p-4">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center transition-all duration-300 group-hover:scale-105">
-                <span className="text-5xl">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 
+                            flex items-center justify-center 
+                            shadow-sm group-hover:shadow-md
+                            transition-all duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-1">
+                <span className="text-6xl">
                   {item.icon}
                 </span>
               </div>
-              <h3 className="text-sm font-semibold text-foreground text-center group-hover:text-primary transition-colors">
+              <h3 className="text-base font-semibold text-foreground text-center group-hover:text-primary transition-colors">
                 {item.name}
               </h3>
             </div>
