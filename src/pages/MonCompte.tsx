@@ -154,83 +154,53 @@ const MonCompte = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header avec profil utilisateur */}
-      <div className="bg-gradient-to-br from-primary to-accent text-white">
-        <div className="container p-6">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Avatar className="w-16 h-16 border-4 border-white/20">
+      {/* Header simplifié */}
+      <div className="bg-white border-b border-border">
+        <div className="container px-5 py-4 flex items-center justify-between">
+          {/* Partie gauche: Avatar + Bonjour */}
+          <div className="flex items-center gap-3">
+            <Avatar className="w-10 h-10">
               <AvatarImage src={user?.avatar} alt={user?.firstName} />
-              <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
+              <AvatarFallback className="bg-primary text-white text-sm font-semibold">
                 {user?.firstName?.[0]}
                 {user?.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">
-                {user?.firstName} {user?.lastName}
-              </h1>
-              <p className="text-white/90 text-sm">{user?.email}</p>
-              <div className="flex items-center mt-2 space-x-4">
-                <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                  <Users className="w-3 h-3 mr-1" />
-                  {userStats.enfants} enfant{userStats.enfants > 1 ? "s" : ""}
-                </Badge>
-                <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                  <Calendar className="w-3 h-3 mr-1" />
-                  {userStats.reservations} réservation{userStats.reservations > 1 ? "s" : ""}
-                </Badge>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/mon-compte/informations")}
-              className="text-white hover:bg-white/20"
+            <span className="text-base font-semibold text-foreground">
+              Bonjour {user?.firstName}
+            </span>
+          </div>
+
+          {/* Partie droite: Icons notifications + settings */}
+          <div className="flex items-center gap-4">
+            {/* Icon notifications avec badge */}
+            <button 
+              onClick={() => navigate("/mon-compte/notifications")}
+              className="relative p-2 hover:bg-muted/50 rounded-lg transition-colors"
+              aria-label="Notifications"
             >
-              <Edit className="w-4 h-4" />
-            </Button>
+              <Bell className="w-5 h-5 text-muted-foreground" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white text-xs font-semibold rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Icon settings */}
+            <button 
+              onClick={() => navigate("/mon-compte/parametres")}
+              className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+              aria-label="Paramètres"
+            >
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Actions rapides */}
-      <div className="container px-4 py-4">
-        <div className="grid grid-cols-2 gap-3">
-          <Card
-            className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 border-l-primary"
-            onClick={() => navigate("/activities")}
-          >
-            <div className="text-center">
-              <Calendar className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <p className="font-medium text-sm">Réserver</p>
-              <p className="text-xs text-muted-foreground">Nouvelle activité</p>
-            </div>
-          </Card>
-          <Card
-            className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 border-l-accent"
-            onClick={() => navigate("/mon-compte/reservations")}
-          >
-            <div className="text-center">
-              <FileText className="w-6 h-6 mx-auto mb-2 text-accent" />
-              <p className="font-medium text-sm">Mes réservations</p>
-              <p className="text-xs text-muted-foreground">{userStats.reservations} en cours</p>
-            </div>
-          </Card>
-        </div>
-      </div>
-
       {/* Menu principal */}
-      <div className="container px-4 pb-6 space-y-3">
+      <div className="container px-4 pt-6 pb-6 space-y-3">
         {menuItems.map((item, index) => (
           <Card
             key={index}

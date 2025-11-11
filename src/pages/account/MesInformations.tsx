@@ -68,22 +68,26 @@ const MesInformations = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center space-x-4">
-          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-          <div className="flex-1">
-            <h1 className="text-xl font-bold">Mes informations</h1>
-            <p className="text-white/90 text-sm">Gérer mon profil personnel</p>
+      {/* Header simplifié */}
+      <div className="bg-white border-b border-border">
+        <div className="container px-5 py-4 flex items-center justify-between">
+          {/* Partie gauche: Back + Titre */}
+          <div className="flex items-center gap-3">
+            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="hover:bg-muted/50" />
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Mes informations</h1>
+              <p className="text-xs text-muted-foreground">Gérer mon profil personnel</p>
+            </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
+
+          {/* Partie droite: Icon edit/save */}
+          <button
             onClick={() => setIsEditing(!isEditing)}
-            className="text-white hover:bg-white/20"
+            className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+            aria-label={isEditing ? "Enregistrer" : "Modifier"}
           >
-            {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
-          </Button>
+            {isEditing ? <Save className="w-5 h-5 text-muted-foreground" /> : <Edit className="w-5 h-5 text-muted-foreground" />}
+          </button>
         </div>
       </div>
 
