@@ -32,7 +32,7 @@ interface ActivityCarouselProps {
 
 export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarouselProps) => {
   return (
-    <div className="w-full overflow-x-auto carousel-container scroll-smooth pb-4">
+    <div className="w-full overflow-x-auto carousel-container scroll-smooth pb-4 -mx-4 px-4">
       <div
         className="flex gap-4"
         style={{ width: "max-content" }}
