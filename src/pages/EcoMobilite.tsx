@@ -8,7 +8,7 @@ import { Bus, Bike, Car, Calculator, MapPin, ExternalLink, HelpCircle } from "lu
 import { BackButton } from "@/components/BackButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
+import { useUserTerritory } from "@/hooks/useUserTerritory";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Types
@@ -289,57 +289,11 @@ const getModeColor = (mode: string) => {
 const EcoMobilite = () => {
   const navigate = useNavigate();
 
-  // Fetch user profile
-  const { data: userProfile, isLoading: loadingProfile } = useQuery({
-    queryKey: ["user-profile-mobility"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  // Récupérer le territoire de l'utilisateur (avec mapping automatique)
+  const { data: userTerritory, isLoading } = useUserTerritory();
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*, territories(name)")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  // Detect territory
-  const { data: territoryAccess, isLoading: loadingTerritory } = useTerritoryAccess(
-    userProfile?.postal_code || null
-  );
-
-  const isLoading = loadingProfile || loadingTerritory;
-
-  // Determine which territory mobility to show
-  const getTerritoryKey = (): string | null => {
-    if (!territoryAccess?.territory) return null;
-    
-    const territoryName = territoryAccess.territory.name?.toLowerCase() || "";
-    
-    if (territoryName.includes("saint-étienne") || territoryName.includes("saint-etienne")) {
-      return "saint-etienne";
-    }
-    if (territoryName.includes("grenoble")) {
-      return "grenoble";
-    }
-    if (territoryName.includes("lyon")) {
-      return "lyon";
-    }
-    if (territoryName.includes("marseille")) {
-      return "marseille";
-    }
-    if (territoryName.includes("paris")) {
-      return "paris";
-    }
-    
-    return null;
-  };
-
-  const territoryKey = getTerritoryKey();
+  // Sélectionner les options de mobilité du territoire ou null si non configuré
+  const territoryKey = userTerritory?.key;
   const territoryMobility = territoryKey ? TERRITORY_MOBILITY[territoryKey] : null;
 
   return (

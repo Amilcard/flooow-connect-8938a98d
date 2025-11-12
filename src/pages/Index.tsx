@@ -9,6 +9,7 @@ import RecommendedEventsSection from "@/components/home/RecommendedEventsSection
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
+import { useUserTerritory } from "@/hooks/useUserTerritory";
 import { ErrorState } from "@/components/ErrorState";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -95,9 +96,23 @@ const Index = () => {
   // Check territory access
   const { data: territoryAccess } = useTerritoryAccess(userProfile?.postal_code || null);
   
-  const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ limit: 3 });
-  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ maxPrice: 50, limit: 3 });
-  const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ hasAccessibility: true, limit: 3 });
+  // Récupérer le territoire de l'utilisateur pour filtrer les activités
+  const { data: userTerritory } = useUserTerritory();
+  
+  const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ 
+    limit: 3, 
+    territoryId: userTerritory?.id // Filtre par territoire
+  });
+  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
+    maxPrice: 50, 
+    limit: 3,
+    territoryId: userTerritory?.id
+  });
+  const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ 
+    hasAccessibility: true, 
+    limit: 3,
+    territoryId: userTerritory?.id
+  });
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(8);
 
   const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingMocks;

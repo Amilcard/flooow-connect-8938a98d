@@ -31,6 +31,7 @@ interface ActivityFilters {
   limit?: number;
   vacationPeriod?: string;
   searchQuery?: string;
+  territoryId?: string; // Nouveau: filtre par territoire
 }
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
@@ -84,11 +85,16 @@ export const useActivities = (filters?: ActivityFilters) => {
           images, accessibility_checklist, accepts_aid_types,
           capacity_policy, covoiturage_enabled, structure_id, period_type,
           vacation_periods, price_unit, vacation_type, duration_days, has_accommodation,
-          structures:structure_id (name, address),
+          structures:structure_id (name, address, territory_id),
           availability_slots!inner(start)
         `)
         .eq("published", true)
         .gte("availability_slots.start", CUTOFF_DATE);
+
+      // Filtrer par territoire si spécifié
+      if (filters?.territoryId) {
+        query = query.eq("structures.territory_id", filters.territoryId);
+      }
 
       // Support both search and searchQuery for compatibility
       const searchTerm = filters?.searchQuery || filters?.search;
