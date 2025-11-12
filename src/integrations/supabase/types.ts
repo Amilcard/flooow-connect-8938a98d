@@ -2228,6 +2228,15 @@ export type Database = {
           territory_type: string
         }[]
       }
+      get_territory_by_postal_code: {
+        Args: { p_postal_code: string }
+        Returns: {
+          city_name: string
+          postal_code: string
+          territory_id: string
+          territory_name: string
+        }[]
+      }
       get_territory_from_postal: {
         Args: { postal_code: string }
         Returns: {
