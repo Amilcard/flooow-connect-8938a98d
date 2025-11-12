@@ -56,20 +56,20 @@ export const UniversSection = () => {
   };
 
   return (
-    <section className="w-full mt-12" aria-labelledby="univers-title">
-      {/* Titre de section avec séparateur visuel */}
-      <div className="mb-6 pb-3 border-b border-border">
-        <h2 id="univers-title" className="text-2xl font-bold text-foreground">
+    <section className="w-full mt-16" aria-labelledby="univers-title">
+      {/* Titre de section WeTransfer style - Police display serif */}
+      <div className="mb-8">
+        <h2 id="univers-title" className="font-display text-4xl md:text-5xl text-foreground mb-3">
           Découvrir nos univers
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-base text-text-muted font-light">
           Explorez nos catégories d'activités
         </p>
       </div>
 
-      {/* Grille responsive : 5 colonnes desktop, 3 tablette, 2 mobile */}
+      {/* Grille responsive WeTransfer style - Plus d'espace, cartes plus grandes */}
       <div 
-        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5"
         role="list"
         aria-label="Univers d'activités"
       >
@@ -78,33 +78,32 @@ export const UniversSection = () => {
             key={item.id}
             onClick={() => handleUniversClick(item.id)}
             className="group relative overflow-hidden cursor-pointer
-                       h-40 flex flex-col items-center justify-center
-                       bg-card border border-border/50
-                       hover:border-primary/50
-                       transition-all duration-300 ease-out hover:-translate-y-1
-                       shadow-md hover:shadow-xl"
+                       h-44 flex flex-col items-center justify-center
+                       bg-white border-0
+                       transition-all duration-300 ease-out hover:-translate-y-2
+                       shadow-md hover:shadow-2xl rounded-3xl"
             role="listitem"
           >
-            {/* Fond subtil avec l'icône emoji */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* Fond coloré au survol - Style WeTransfer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-soft to-accent-soft opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
-            {/* Contenu de la carte - Icône agrandie */}
-            <div className="relative z-10 flex flex-col items-center justify-center gap-3 p-4">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 
+            {/* Contenu de la carte - Icône agrandie style WeTransfer */}
+            <div className="relative z-10 flex flex-col items-center justify-center gap-4 p-5">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-accent/15
                             flex items-center justify-center 
-                            shadow-sm group-hover:shadow-md
-                            transition-all duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-1">
-                <span className="text-6xl">
+                            shadow-sm group-hover:shadow-lg
+                            transition-all duration-300 ease-out group-hover:scale-110">
+                <span className="text-7xl filter drop-shadow-sm">
                   {item.icon}
                 </span>
               </div>
-              <h3 className="text-base font-semibold text-foreground text-center group-hover:text-primary transition-colors">
+              <h3 className="text-base font-semibold text-text-main text-center group-hover:text-primary transition-colors">
                 {item.name}
               </h3>
             </div>
 
-            {/* Indicateur visuel au survol */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+            {/* Indicateur visuel au survol - Plus épais */}
+            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary to-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-b-3xl" />
           </Card>
         ))}
       </div>

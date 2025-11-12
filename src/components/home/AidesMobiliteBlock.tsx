@@ -8,83 +8,71 @@ export const AidesMobiliteBlock = () => {
 
   return (
     <section 
-      className="space-y-6 p-8 rounded-2xl border-2 my-10"
+      className="space-y-8 p-10 rounded-3xl border-2 my-12 shadow-lg"
       style={{ 
-        background: 'linear-gradient(135deg, hsl(var(--background-warm)) 0%, hsl(45 100% 94%) 100%)',
+        background: 'var(--card-gradient-1)',
         borderColor: 'hsl(var(--primary-orange))'
       }}
     >
-      {/* Accroche principale */}
+      {/* Accroche principale - Style WeTransfer avec police display */}
       <div className="text-center mb-2">
-        <p className="text-2xl font-bold mb-2" style={{ color: 'hsl(var(--primary-orange-dark))' }}>
+        <p className="text-2xl font-bold mb-3 text-white drop-shadow-sm">
           💰 Jusqu'à 80% de réduction sur vos activités
         </p>
-        <h2 className="text-3xl font-bold text-foreground">
+        <h2 className="font-display text-4xl md:text-5xl text-foreground">
           Mes aides & mobilités
         </h2>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Calculer mes aides - Orange gradient */}
+        {/* Calculer mes aides - Orange gradient WeTransfer style */}
         <Card 
-          className="group cursor-pointer transition-all hover:shadow-xl border-border bg-white min-h-[180px] flex flex-col"
+          className="group cursor-pointer transition-all hover:shadow-2xl hover:-translate-y-1 border-0 bg-white min-h-[200px] flex flex-col rounded-2xl overflow-hidden"
           onClick={() => navigate('/aides-mobilite')}
         >
-          <CardHeader className="flex-1">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 rounded-xl" style={{ background: 'var(--gradient-orange)' }}>
-                <Calculator className="h-7 w-7 text-white" />
+          <CardHeader className="flex-1 pb-3">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-4 rounded-2xl bg-gradient-orange shadow-md">
+                <Calculator className="h-8 w-8 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl">Calculer mes aides</CardTitle>
-                <CardDescription className="text-sm">
+                <CardTitle className="text-xl font-display">Calculer mes aides</CardTitle>
+                <CardDescription className="text-sm mt-1">
                   Découvrez vos aides financières
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 pb-6">
             <Button 
-              className="w-full text-white font-semibold shadow-md border-0 h-11 transition-all duration-300 hover:-translate-y-0.5"
-              style={{ 
-                background: 'var(--gradient-orange)',
-                boxShadow: '0 4px 12px rgba(255, 184, 77, 0.25)'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 184, 77, 0.35)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 184, 77, 0.25)'}
+              className="w-full text-white font-semibold border-0 h-12 rounded-xl bg-gradient-orange shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
             >
               Accéder au calculateur
             </Button>
           </CardContent>
         </Card>
 
-        {/* Éco-mobilité - Green gradient */}
+        {/* Éco-mobilité - Green gradient WeTransfer style */}
         <Card 
-          className="group cursor-pointer transition-all hover:shadow-xl border-border bg-white min-h-[180px] flex flex-col"
+          className="group cursor-pointer transition-all hover:shadow-2xl hover:-translate-y-1 border-0 bg-white min-h-[200px] flex flex-col rounded-2xl overflow-hidden"
           onClick={() => navigate('/aides-mobilite?tab=mobilite')}
         >
-          <CardHeader className="flex-1">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 rounded-xl" style={{ background: 'var(--gradient-green)' }}>
-                <Train className="h-7 w-7 text-white" />
+          <CardHeader className="flex-1 pb-3">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-4 rounded-2xl bg-gradient-green shadow-md">
+                <Train className="h-8 w-8 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl">Éco-mobilité</CardTitle>
-                <CardDescription className="text-sm">
+                <CardTitle className="text-xl font-display">Éco-mobilité</CardTitle>
+                <CardDescription className="text-sm mt-1">
                   Transport écologique et économique
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 pb-6">
             <Button 
-              className="w-full text-white font-semibold shadow-md border-0 h-11 transition-all duration-300 hover:-translate-y-0.5"
-              style={{ 
-                background: 'var(--gradient-green)',
-                boxShadow: '0 4px 12px rgba(78, 205, 196, 0.25)'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 6px 16px rgba(78, 205, 196, 0.35)'}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(78, 205, 196, 0.25)'}
+              className="w-full text-white font-semibold border-0 h-12 rounded-xl bg-gradient-green shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
             >
               Voir les options
             </Button>
