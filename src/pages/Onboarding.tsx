@@ -5,7 +5,6 @@ import { BetaContextScreen } from "@/components/onboarding/BetaContextScreen";
 import { TerritoryChoiceScreen } from "@/components/onboarding/TerritoryChoiceScreen";
 import { TerritoryCoveredScreen } from "@/components/onboarding/TerritoryCoveredScreen";
 import { TerritoryNotCoveredScreen } from "@/components/onboarding/TerritoryNotCoveredScreen";
-import { PrivacyConsentScreen } from "@/components/onboarding/PrivacyConsentScreen";
 import { toast } from "sonner";
 
 type OnboardingStep = 
@@ -13,8 +12,7 @@ type OnboardingStep =
   | "beta-context" 
   | "territory-choice" 
   | "territory-covered" 
-  | "territory-not-covered"
-  | "privacy-consent";
+  | "territory-not-covered";
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
@@ -41,32 +39,29 @@ const Onboarding = () => {
 
   const handleTerritorySkip = () => {
     localStorage.setItem("userTerritoryMode", "discovery");
-    setCurrentStep("privacy-consent");
+    localStorage.setItem("hasSeenOnboarding", "true");
+    navigate("/home");
   };
 
   const handleTerritoryCoveredNext = () => {
-    setCurrentStep("privacy-consent");
+    // Consentement intégré dans l'écran final
+    localStorage.setItem("hasSeenOnboarding", "true");
+    if (territoryId) {
+      localStorage.setItem("userTerritoryId", territoryId);
+    }
+    navigate("/home");
   };
 
   const handleDiscoverDemo = () => {
     localStorage.setItem("userTerritoryMode", "demo");
-    setCurrentStep("privacy-consent");
+    localStorage.setItem("hasSeenOnboarding", "true");
+    navigate("/home");
   };
 
   const handleNotifyMe = () => {
     // TODO: Implémenter l'inscription à la liste d'attente
     toast.success("Nous te préviendrons dès que Flooow arrive dans ton territoire !");
     handleDiscoverDemo();
-  };
-
-  const handleComplete = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
-    
-    if (territoryId) {
-      localStorage.setItem("userTerritoryId", territoryId);
-    }
-    
-    navigate("/home");
   };
 
   const renderStep = () => {
@@ -95,9 +90,6 @@ const Onboarding = () => {
             onNotifyMe={handleNotifyMe}
           />
         );
-      
-      case "privacy-consent":
-        return <PrivacyConsentScreen onComplete={handleComplete} />;
       
       default:
         return <WelcomeScreen onNext={handleWelcomeNext} />;
