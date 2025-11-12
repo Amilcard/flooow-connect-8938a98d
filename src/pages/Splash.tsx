@@ -11,7 +11,7 @@ const Splash = () => {
     
     setTimeout(() => {
       if (hasSeenOnboarding) {
-        navigate("/");
+        navigate("/home");
       } else {
         navigate("/onboarding");
       }

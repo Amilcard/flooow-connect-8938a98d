@@ -90,7 +90,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-          <Route path="/splash" element={<Splash />} />
+          <Route path="/" element={<Splash />} />
+          <Route path="/home" element={<Index />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile-completion" element={<ProfileCompletion />} />
@@ -154,7 +155,6 @@ const App = () => (
           <Route path="/demo/structure" element={<DemoStructure />} />
           <Route path="/demo/lemoine" element={<DemoLemoine />} />
 
-          <Route path="/" element={<Index />} />
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
           <Route path="/activity/:id" element={<ActivityDetail />} />
