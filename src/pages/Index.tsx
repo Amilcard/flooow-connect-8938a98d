@@ -100,22 +100,27 @@ const Index = () => {
   const { data: userTerritory } = useUserTerritory();
   
   const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ 
-    limit: 3, 
+    limit: 6, 
     territoryId: userTerritory?.id // Filtre par territoire
   });
   const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
     maxPrice: 50, 
-    limit: 3,
+    limit: 6,
     territoryId: userTerritory?.id
   });
   const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ 
     hasAccessibility: true, 
-    limit: 3,
+    limit: 6,
+    territoryId: userTerritory?.id
+  });
+  const { data: sportActivities = [], isLoading: loadingSport } = useActivities({ 
+    category: 'sport', 
+    limit: 6,
     territoryId: userTerritory?.id
   });
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(8);
 
-  const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingMocks;
+  const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingSport || loadingMocks;
 
 
   if (errorNearby) {
@@ -152,7 +157,7 @@ const Index = () => {
             {/* MES AIDES & MOBILITÉS - Position 3 (remontée) ⭐ */}
             <AidesMobiliteBlock />
 
-            {/* Activités recommandées - Carousel horizontal fusionné */}
+            {/* Activités recommandées - Carousel horizontal */}
             <ActivitySection
               title="Activités recommandées pour vous"
               activities={nearbyActivities}
@@ -161,15 +166,26 @@ const Index = () => {
               layout="carousel"
             />
 
+            {/* Petits budgets - Carousel horizontal */}
             <ActivitySection
               title="Activités Petits budgets"
               activities={budgetActivities}
               onSeeAll={() => navigate("/activities?type=budget")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
+              layout="carousel"
             />
 
             {/* Événements à venir */}
             <EventsSection />
+
+            {/* Activités Sport - Carousel horizontal */}
+            <ActivitySection
+              title="Activités Sport & Bien-être"
+              activities={sportActivities}
+              onSeeAll={() => navigate("/activities?category=sport")}
+              onActivityClick={(id) => console.log("Activity clicked:", id)}
+              layout="carousel"
+            />
 
             {/* Recommandations personnalisées */}
             <RecommendedEventsSection />
@@ -177,11 +193,13 @@ const Index = () => {
             {/* Vivre mon territoire */}
             <TerritoireBlock />
 
+            {/* Activités Innovantes - Carousel horizontal */}
             <ActivitySection
               title="Activités Innovantes"
               activities={healthActivities}
               onSeeAll={() => navigate("/activities?type=health")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
+              layout="carousel"
             />
 
             {/* Section mocks masquée si vide (edge function indisponible) */}
