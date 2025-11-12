@@ -66,7 +66,7 @@ const Onboarding = () => {
       localStorage.setItem("userTerritoryId", territoryId);
     }
     
-    navigate("/");
+    navigate("/home");
   };
 
   const renderStep = () => {
