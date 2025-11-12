@@ -1,89 +1,112 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ChevronRight, MapPin, Euro, Heart } from "lucide-react";
+import { WelcomeScreen } from "@/components/onboarding/WelcomeScreen";
+import { BetaContextScreen } from "@/components/onboarding/BetaContextScreen";
+import { TerritoryChoiceScreen } from "@/components/onboarding/TerritoryChoiceScreen";
+import { TerritoryCoveredScreen } from "@/components/onboarding/TerritoryCoveredScreen";
+import { TerritoryNotCoveredScreen } from "@/components/onboarding/TerritoryNotCoveredScreen";
+import { PrivacyConsentScreen } from "@/components/onboarding/PrivacyConsentScreen";
+import { toast } from "sonner";
 
-const onboardingSteps = [
-  {
-    icon: <MapPin className="w-20 h-20 text-primary" />,
-    title: "Trouvez des activités à proximité",
-    description: "Découvrez des activités adaptées à vos enfants près de chez vous"
-  },
-  {
-    icon: <Euro className="w-20 h-20 text-accent" />,
-    title: "Bénéficiez d'aides financières",
-    description: "Accédez aux aides CAF, PassSport et autres dispositifs disponibles"
-  },
-  {
-    icon: <Heart className="w-20 h-20 text-primary" />,
-    title: "Accessibilité pour tous",
-    description: "Des activités adaptées pour tous les enfants, avec ou sans handicap"
-  }
-];
+type OnboardingStep = 
+  | "welcome" 
+  | "beta-context" 
+  | "territory-choice" 
+  | "territory-covered" 
+  | "territory-not-covered"
+  | "privacy-consent";
 
 const Onboarding = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
+  const [territoryId, setTerritoryId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleNext = () => {
-    if (currentStep < onboardingSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
+  const handleWelcomeNext = () => {
+    setCurrentStep("beta-context");
+  };
+
+  const handleBetaContextNext = () => {
+    setCurrentStep("territory-choice");
+  };
+
+  const handleTerritoryChoice = (selectedTerritoryId: string | null, isCovered: boolean) => {
+    setTerritoryId(selectedTerritoryId);
+    
+    if (isCovered) {
+      setCurrentStep("territory-covered");
     } else {
-      localStorage.setItem("hasSeenOnboarding", "true");
-      navigate("/");
+      setCurrentStep("territory-not-covered");
     }
   };
 
-  const handleSkip = () => {
+  const handleTerritorySkip = () => {
+    localStorage.setItem("userTerritoryMode", "discovery");
+    setCurrentStep("privacy-consent");
+  };
+
+  const handleTerritoryCoveredNext = () => {
+    setCurrentStep("privacy-consent");
+  };
+
+  const handleDiscoverDemo = () => {
+    localStorage.setItem("userTerritoryMode", "demo");
+    setCurrentStep("privacy-consent");
+  };
+
+  const handleNotifyMe = () => {
+    // TODO: Implémenter l'inscription à la liste d'attente
+    toast.success("Nous te préviendrons dès que Flooow arrive dans ton territoire !");
+    handleDiscoverDemo();
+  };
+
+  const handleComplete = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
+    
+    if (territoryId) {
+      localStorage.setItem("userTerritoryId", territoryId);
+    }
+    
     navigate("/");
   };
 
-  const step = onboardingSteps[currentStep];
+  const renderStep = () => {
+    switch (currentStep) {
+      case "welcome":
+        return <WelcomeScreen onNext={handleWelcomeNext} />;
+      
+      case "beta-context":
+        return <BetaContextScreen onNext={handleBetaContextNext} />;
+      
+      case "territory-choice":
+        return (
+          <TerritoryChoiceScreen 
+            onNext={handleTerritoryChoice}
+            onSkip={handleTerritorySkip}
+          />
+        );
+      
+      case "territory-covered":
+        return <TerritoryCoveredScreen onNext={handleTerritoryCoveredNext} />;
+      
+      case "territory-not-covered":
+        return (
+          <TerritoryNotCoveredScreen 
+            onDiscoverDemo={handleDiscoverDemo}
+            onNotifyMe={handleNotifyMe}
+          />
+        );
+      
+      case "privacy-consent":
+        return <PrivacyConsentScreen onComplete={handleComplete} />;
+      
+      default:
+        return <WelcomeScreen onNext={handleWelcomeNext} />;
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-8">
-        <div className="space-y-6">
-          {step.icon}
-          <h2 className="text-2xl font-bold">{step.title}</h2>
-          <p className="text-muted-foreground text-lg">{step.description}</p>
-        </div>
-
-        <div className="flex gap-2">
-          {onboardingSteps.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all ${
-                index === currentStep
-                  ? "w-8 bg-primary"
-                  : "w-2 bg-muted"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="p-6 space-y-3">
-        <Button
-          onClick={handleNext}
-          className="w-full h-14"
-          size="lg"
-        >
-          {currentStep < onboardingSteps.length - 1 ? "Suivant" : "Commencer"}
-          <ChevronRight className="ml-2" />
-        </Button>
-        
-        {currentStep < onboardingSteps.length - 1 && (
-          <Button
-            onClick={handleSkip}
-            variant="ghost"
-            className="w-full"
-          >
-            Passer
-          </Button>
-        )}
-      </div>
+      {renderStep()}
     </div>
   );
 };
