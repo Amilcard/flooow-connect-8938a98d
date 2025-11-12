@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Activity, Euro, MessageSquare } from "lucide-react";
+import { CheckCircle2, Activity, Euro, Shield } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface TerritoryCoveredScreenProps {
   onNext: () => void;
@@ -7,67 +8,73 @@ interface TerritoryCoveredScreenProps {
 
 export const TerritoryCoveredScreen = ({ onNext }: TerritoryCoveredScreenProps) => {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gradient-to-b from-green-success/5 to-background">
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Success icon animé */}
         <div className="flex justify-center">
-          <CheckCircle2 className="w-24 h-24 text-primary" />
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full bg-gradient-green flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
+              <CheckCircle2 className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute inset-0 w-24 h-24 rounded-full bg-green-success/20 animate-ping" />
+          </div>
         </div>
 
-        <div className="text-center space-y-3">
-          <h2 className="text-3xl font-bold text-foreground">
-            Bonne nouvelle, ton territoire est en zone de test
+        {/* Titre */}
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            C'est parti ! 🎉
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Tu vas pouvoir tester Flooow en conditions presque réelles
+          <p className="text-base text-muted-foreground max-w-sm mx-auto">
+            Ton territoire est en zone de test, tu peux explorer toutes les fonctionnalités
           </p>
         </div>
 
-        <div className="space-y-4 text-left">
-          <p className="text-base text-foreground">
-            Nous avons déjà des activités et des aides configurées pour ton territoire.
-          </p>
-          <p className="text-base text-foreground">
-            Tu pourras : rechercher des activités, simuler des aides nationales et locales, et nous donner ton avis.
-          </p>
-          <p className="text-base text-foreground">
-            N'oublie pas : cette version est en construction. Tes retours nous aideront à améliorer l'outil.
-          </p>
+        {/* Ce que tu peux faire - version visuelle */}
+        <div className="space-y-3 max-w-md mx-auto">
+          <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
+                <Activity className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Activités près de toi</p>
+                <p className="text-sm text-muted-foreground">Sport, culture, loisirs...</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-r from-accent/5 to-accent/10 border-accent/20">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center flex-shrink-0">
+                <Euro className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Calcul des aides</p>
+                <p className="text-sm text-muted-foreground">Nationales et locales</p>
+              </div>
+            </div>
+          </Card>
         </div>
 
-        <div className="space-y-3 bg-primary/5 p-4 rounded-lg">
+        {/* Note confidentialité intégrée */}
+        <Card className="p-4 bg-muted/30 border-muted max-w-md mx-auto">
           <div className="flex items-start gap-3">
-            <Activity className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-foreground">Activités adaptées à ton territoire</p>
-              <p className="text-sm text-muted-foreground">Découvre les activités disponibles près de chez toi</p>
-            </div>
+            <Shield className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Tes données sont protégées.</span> On ne les revend pas et tu peux les supprimer à tout moment.
+            </p>
           </div>
-          
-          <div className="flex items-start gap-3">
-            <Euro className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-foreground">Première estimation des aides financières</p>
-              <p className="text-sm text-muted-foreground">Calcule les aides auxquelles tu as droit</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start gap-3">
-            <MessageSquare className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-foreground">Amélioration continue grâce à ton feedback</p>
-              <p className="text-sm text-muted-foreground">Aide-nous à améliorer la plateforme</p>
-            </div>
-          </div>
-        </div>
+        </Card>
       </div>
 
-      <div className="p-6 border-t">
+      <div className="p-6 border-t bg-card">
         <Button
           onClick={onNext}
-          className="w-full h-14"
+          className="w-full h-14 text-base font-semibold shadow-lg"
           size="lg"
         >
-          Commencer à explorer les activités
+          Explorer les activités
         </Button>
       </div>
     </div>

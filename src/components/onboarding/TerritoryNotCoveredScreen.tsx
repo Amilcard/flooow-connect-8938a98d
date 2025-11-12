@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { MapPinOff, Eye, Bell, Sparkles } from "lucide-react";
+import { MapPin, Eye, Euro, Bell, Shield } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface TerritoryNotCoveredScreenProps {
   onDiscoverDemo: () => void;
@@ -8,76 +9,100 @@ interface TerritoryNotCoveredScreenProps {
 
 export const TerritoryNotCoveredScreen = ({ onDiscoverDemo, onNotifyMe }: TerritoryNotCoveredScreenProps) => {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gradient-to-b from-accent/5 to-background">
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Icon avec style positif */}
         <div className="flex justify-center">
-          <MapPinOff className="w-24 h-24 text-muted-foreground" />
+          <div className="w-24 h-24 rounded-2xl bg-gradient-accent flex items-center justify-center shadow-lg">
+            <MapPin className="w-14 h-14 text-white" />
+          </div>
         </div>
 
-        <div className="text-center space-y-3">
-          <h2 className="text-3xl font-bold text-foreground">
-            Ton territoire n'est pas encore en zone de test
+        {/* Titre positif */}
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            Bientôt disponible ! 🚀
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Mais tu peux déjà participer à l'aventure
+          <p className="text-base text-muted-foreground max-w-sm mx-auto">
+            Ton territoire n'est pas encore connecté, mais tu peux déjà participer
           </p>
         </div>
 
-        <div className="space-y-4 text-left">
-          <p className="text-base text-foreground">
-            Nous n'avons pas encore connecté les activités locales et les aides de ton territoire.
+        {/* Message positif court */}
+        <Card className="p-4 bg-card border-accent/20 max-w-md mx-auto">
+          <p className="text-sm text-foreground text-center">
+            Flooow se déploie progressivement. Tu es en avance, c'est une bonne nouvelle ! 
+            <span className="font-semibold text-accent"> Aide-nous à préparer l'arrivée dans ta région.</span>
           </p>
-          <p className="text-base text-foreground">
-            Flooow se construit pas à pas avec des territoires pilotes. Tu es en avance sur nous, et c'est une bonne nouvelle.
-          </p>
-          <p className="text-base text-foreground">
-            Tu peux : découvrir le fonctionnement avec des exemples, accéder aux aides nationales, et t'inscrire pour être averti dès que ton territoire sera ouvert.
-          </p>
+        </Card>
+
+        {/* Ce que tu peux faire maintenant */}
+        <div className="space-y-3 max-w-md mx-auto">
+          <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                <Eye className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Explorer en mode démo</p>
+                <p className="text-xs text-muted-foreground">Découvre toutes les fonctionnalités</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-r from-accent/5 to-accent/10 border-accent/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
+                <Euro className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Aides nationales</p>
+                <p className="text-xs text-muted-foreground">Simulations disponibles partout</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-r from-green-success/5 to-green-success/10 border-green-success/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-success flex items-center justify-center flex-shrink-0">
+                <Bell className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Être averti en premier</p>
+                <p className="text-xs text-muted-foreground">Inscription à la liste d'attente</p>
+              </div>
+            </div>
+          </Card>
         </div>
 
-        <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
+        {/* Note confidentialité intégrée */}
+        <Card className="p-4 bg-muted/30 border-muted max-w-md mx-auto">
           <div className="flex items-start gap-3">
-            <Eye className="w-5 h-5 text-foreground mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-foreground">Accès aux explications et aux écrans de démo</p>
-              <p className="text-sm text-muted-foreground">Découvre comment fonctionne Flooow</p>
-            </div>
+            <Shield className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Tes données sont protégées.</span> On ne les revend pas et tu peux les supprimer à tout moment.
+            </p>
           </div>
-          
-          <div className="flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-foreground mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-foreground">Simulations d'aides nationales possibles</p>
-              <p className="text-sm text-muted-foreground">Calcule les aides nationales comme le PassSport</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start gap-3">
-            <Bell className="w-5 h-5 text-foreground mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-foreground">Inscription à une liste d'attente pour ton territoire</p>
-              <p className="text-sm text-muted-foreground">Sois le premier informé quand nous arrivons chez toi</p>
-            </div>
-          </div>
-        </div>
+        </Card>
       </div>
 
-      <div className="p-6 space-y-3 border-t">
+      <div className="p-6 border-t bg-card space-y-3">
         <Button
           onClick={onDiscoverDemo}
-          className="w-full h-14"
+          className="w-full h-14 text-base font-semibold shadow-lg"
           size="lg"
         >
-          Découvrir l'application en mode démo
+          Explorer en mode démo
         </Button>
         
         <Button
           onClick={onNotifyMe}
           variant="outline"
           className="w-full h-12"
+          size="lg"
         >
-          <Bell className="mr-2 h-4 w-4" />
-          Être prévenu quand Flooow arrive chez moi
+          <Bell className="mr-2 h-5 w-5" />
+          M'avertir de l'ouverture
         </Button>
       </div>
     </div>
