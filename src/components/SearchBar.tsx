@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SearchFilterModal, SearchFilters } from "./SearchFilterModal";
 
 interface SearchBarProps {
   onFilterClick?: () => void;
@@ -18,13 +17,6 @@ export const SearchBar = ({
 }: SearchBarProps) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>({
-    categories: [],
-    hasAccessibility: false,
-    hasFinancialAid: false,
-    hasCovoiturage: false
-  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,40 +32,6 @@ export const SearchBar = ({
     }
   };
 
-  const handleApplyFilters = (newFilters: SearchFilters) => {
-    setFilters(newFilters);
-    
-    // Build search params
-    const params = new URLSearchParams();
-    if (newFilters.categories.length > 0) {
-      params.append("category", newFilters.categories[0]);
-    }
-    if (newFilters.ageMin) params.append("minAge", newFilters.ageMin.toString());
-    if (newFilters.ageMax) params.append("maxAge", newFilters.ageMax.toString());
-    if (newFilters.maxPrice) params.append("maxPrice", newFilters.maxPrice.toString());
-    if (newFilters.hasFinancialAid) params.append("hasAid", "true");
-    if (newFilters.hasAccessibility) params.append("isPMR", "true");
-    if (newFilters.hasCovoiturage) params.append("hasCovoiturage", "true");
-    
-    // Navigate to search page with filters
-    navigate(`/search?${params.toString()}`);
-    setShowFilters(false);
-  };
-
-  const handleResetFilters = () => {
-    setFilters({
-      categories: [],
-      hasAccessibility: false,
-      hasFinancialAid: false,
-      hasCovoiturage: false
-    });
-  };
-
-  const activeFiltersCount = 
-    filters.categories.length +
-    (filters.hasAccessibility ? 1 : 0) +
-    (filters.hasFinancialAid ? 1 : 0) +
-    (filters.hasCovoiturage ? 1 : 0);
 
   return (
     <>
@@ -105,31 +63,18 @@ export const SearchBar = ({
               type="button"
               variant="outline"
               size="icon"
-              className="h-14 w-14 rounded-full border-0 bg-secondary/50 relative"
+              className="h-14 w-14 rounded-full border-0 bg-secondary/50"
               onClick={() => {
-                setShowFilters(true);
+                navigate('/search/filters');
                 onFilterClick?.();
               }}
               aria-label="Filtrer les résultats"
             >
               <SlidersHorizontal size={20} />
-              {activeFiltersCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
             </Button>
           </form>
         </div>
       </header>
-
-      <SearchFilterModal
-        open={showFilters}
-        onOpenChange={setShowFilters}
-        filters={filters}
-        onApplyFilters={handleApplyFilters}
-        onResetFilters={handleResetFilters}
-      />
     </>
   );
 };

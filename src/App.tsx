@@ -80,6 +80,7 @@ import Cookies from "./pages/legal/Cookies";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CGU from "./pages/legal/CGU";
 import Simulateur from "./pages/aides/Simulateur";
+import SearchFilters from "./pages/SearchFilters";
 
 const queryClient = new QueryClient();
 
@@ -158,6 +159,7 @@ const App = () => (
 
           <Route path="/activities" element={<Activities />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/search/filters" element={<SearchFilters />} />
           <Route path="/activity/:id" element={<ActivityDetail />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route path="/booking-recap/:id" element={<BookingRecap />} />
