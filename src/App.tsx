@@ -79,6 +79,7 @@ import RGPD from "./pages/legal/RGPD";
 import Cookies from "./pages/legal/Cookies";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CGU from "./pages/legal/CGU";
+import Simulateur from "./pages/aides/Simulateur";
 
 const queryClient = new QueryClient();
 
@@ -163,6 +164,7 @@ const App = () => (
           <Route path="/booking-status/:id" element={<BookingStatus />} />
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />
+          <Route path="/aides/simulateur" element={<Simulateur />} />
           <Route path="/aides-mobilite" element={<AidesMobilite />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/community" element={<Community />} />

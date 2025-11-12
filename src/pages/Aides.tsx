@@ -4,7 +4,6 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GeneralSimulateAidModal } from "@/components/simulations/GeneralSimulateAidModal";
 import { HelpCircle, Calculator, ExternalLink, MapPin } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { useQuery } from "@tanstack/react-query";
@@ -272,7 +271,6 @@ const getTypeColor = (type: string) => {
 
 const Aides = () => {
   const navigate = useNavigate();
-  const [showSimulator, setShowSimulator] = useState(false);
 
   // Récupérer le territoire de l'utilisateur (avec mapping automatique)
   const { data: userTerritory, isLoading } = useUserTerritory();
@@ -335,7 +333,7 @@ const Aides = () => {
               Le simulateur calcule votre reste à charge en fonction de l'activité, de votre territoire et des aides disponibles.
             </p>
             <Button 
-              onClick={() => setShowSimulator(true)} 
+              onClick={() => navigate('/aides/simulateur')} 
               variant="secondary" 
               className="bg-white text-primary hover:bg-white/90"
             >
@@ -454,12 +452,6 @@ const Aides = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Simulateur Modal */}
-      <GeneralSimulateAidModal
-        open={showSimulator}
-        onOpenChange={setShowSimulator}
-      />
 
       <BottomNavigation />
     </div>

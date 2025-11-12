@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GeneralSimulateAidModal } from "@/components/simulations/GeneralSimulateAidModal";
 import { HelpCircle, Calculator, ExternalLink, Bus, Bike, Car, MapPin } from "lucide-react";
 
 const AidesMobilite = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("aides");
-  const [showSimulator, setShowSimulator] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -155,7 +154,7 @@ const AidesMobilite = () => {
                   Simulez vos aides pour une activité type et découvrez vos économies potentielles
                 </p>
                 <Button 
-                  onClick={() => setShowSimulator(true)} 
+                  onClick={() => navigate('/aides/simulateur')} 
                   variant="secondary" 
                   className="bg-white text-primary hover:bg-white/90"
                 >
@@ -368,12 +367,6 @@ const AidesMobilite = () => {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Simulateur Modal */}
-      <GeneralSimulateAidModal
-        open={showSimulator}
-        onOpenChange={setShowSimulator}
-      />
     </PageLayout>
   );
 };
