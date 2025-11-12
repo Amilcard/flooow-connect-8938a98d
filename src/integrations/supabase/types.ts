@@ -1047,6 +1047,45 @@ export type Database = {
           },
         ]
       }
+      postal_codes: {
+        Row: {
+          city: string
+          code: string
+          created_at: string
+          id: string
+          territory_id: string | null
+        }
+        Insert: {
+          city: string
+          code: string
+          created_at?: string
+          id?: string
+          territory_id?: string | null
+        }
+        Update: {
+          city?: string
+          code?: string
+          created_at?: string
+          id?: string
+          territory_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postal_codes_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "territories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "postal_codes_territory_id_fkey"
+            columns: ["territory_id"]
+            isOneToOne: false
+            referencedRelation: "vw_dashboard_collectivite_overview"
+            referencedColumns: ["territory_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_status: string | null
