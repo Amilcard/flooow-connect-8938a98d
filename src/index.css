@@ -8,104 +8,135 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Core colors - InKlusif mobile app palette */
-    --background: 0 0% 97%;
-    --foreground: 220 15% 25%;
+    /* ============================================
+       🎨 PALETTE WETRANSFER-INSPIRED (2025)
+       Fond clair, couleurs pastel/vives, interface aérée
+       ============================================ */
+    
+    /* ANCIENNES VALEURS (pour rollback si besoin):
+       --background: 0 0% 97%; --foreground: 220 15% 25%;
+       --primary: 217 91% 60%; --accent: 25 95% 53%;
+       --primary-orange: 35 100% 65%; --success-green: 175 65% 60%;
+       --accent-pink: 342 100% 70%;
+    */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 25%;
+    /* 0. Fond & surfaces neutres (fond très clair, style WeTransfer) */
+    --bg-body: 210 20% 98%;           /* Fond global très clair #F9FAFB */
+    --bg-surface: 0 0% 100%;          /* Cartes/blocs blancs #FFFFFF */
+    --border-subtle: 210 16% 90%;     /* Lignes discrètes #E5E7EB */
 
+    /* 1. Couleurs principales (bleu-violet doux inspiré WeTransfer) */
+    --primary: 228 78% 61%;           /* Bleu-violet doux pour CTA principaux */
+    --primary-soft: 228 100% 96%;     /* Fond de puces / tags (bleu très pâle) */
+    --primary-light: 228 78% 71%;     /* Variante plus claire pour hover */
+    --primary-foreground: 0 0% 100%;  /* Texte sur boutons primaires */
+
+    /* 2. Accent chaud (jaune-orangé pastel pour cartes mises en avant) */
+    --accent: 39 97% 68%;             /* Jaune-orangé pastel */
+    --accent-soft: 39 100% 94%;       /* Fond très doux pour badges/sections */
+    --accent-light: 39 97% 78%;       /* Variante plus claire */
+    --accent-foreground: 222 47% 11%; /* Texte sur accent (sombre pour contraste) */
+
+    /* 3. Couleurs custom badges & catégories */
+    --primary-orange: 33 100% 64%;    /* Badge TARIF, 'GRATUIT', cartes chaudes */
+    --primary-orange-dark: 33 100% 54%; /* Version plus foncée pour hover */
+    --success-green: 164 63% 48%;     /* Boutons éco-mobilité (vert/bleu) */
+    --success-green-dark: 164 63% 38%; /* Version plus foncée */
+    --accent-pink: 338 86% 70%;       /* Badges secondaires, pastilles */
+    --accent-pink-light: 338 86% 80%; /* Version plus claire */
+    --lavender: 262 66% 77%;          /* Couleur de fond douce pour blocs 'infos' */
+
+    /* 4. Texte (bon contraste sur fond clair) */
+    --text-main: 222 47% 11%;         /* Texte principal (quasi noir) */
+    --text-muted: 215 16% 47%;        /* Texte secondaire */
+    --text-on-primary: 0 0% 100%;     /* Texte sur boutons primaires */
+
+    /* 5. Surfaces & éléments UI (compatibilité avec noms existants) */
+    --background: 210 20% 98%;        /* = bg-body */
+    --foreground: 222 47% 11%;        /* = text-main */
+    --card: 0 0% 100%;                /* = bg-surface */
+    --card-foreground: 222 47% 11%;   /* = text-main */
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 25%;
+    --popover-foreground: 222 47% 11%;
+    --secondary: 228 100% 96%;        /* Utilise primary-soft */
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 16% 93%;             /* Fond muted légèrement plus sombre */
+    --muted-foreground: 215 16% 47%;  /* = text-muted */
 
-    /* Primary - Blue for CTA and main actions */
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 217 91% 70%;
+    /* 6. Badge colors (thématiques d'activités) */
+    --badge-sport: 228 78% 61%;       /* = primary */
+    --badge-loisir: 164 63% 48%;      /* = success-green */
+    --badge-distance: 33 100% 64%;    /* = primary-orange */
+    --badge-age: 262 66% 77%;         /* = lavender */
+    --background-warm: 39 100% 94%;   /* = accent-soft */
 
-    /* Accent - Orange for highlights */
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 25 95% 63%;
-    
-    /* Secondary */
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 220 15% 25%;
-
-    /* Muted */
-    --muted: 220 13% 90%;
-    --muted-foreground: 220 10% 50%;
-
-    /* Badge colors from the app */
-    --badge-sport: 217 91% 60%;
-    --badge-loisir: 142 76% 36%;
-    --badge-distance: 25 95% 53%;
-    --badge-age: 280 65% 60%;
-    
-    /* Phase 1 Optimization - New Colors */
-    --primary-orange: 35 100% 65%; /* #FFB84D */
-    --primary-orange-dark: 32 100% 58%; /* #FFA726 */
-    --success-green: 175 65% 60%; /* #4ECDC4 */
-    --success-green-dark: 175 50% 50%; /* #44B3A8 */
-    --accent-pink: 342 100% 70%; /* #FF6B9D */
-    --accent-pink-light: 344 100% 77%; /* #FF8FA3 */
-    --background-warm: 45 100% 96%; /* #FFF9E6 */
-
+    /* 7. États & alertes */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
+    --border: 210 16% 90%;            /* = border-subtle */
+    --input: 210 16% 93%;
+    --ring: 228 78% 61%;              /* = primary */
 
-    --border: 220 13% 88%;
-    --input: 220 13% 90%;
-    --ring: 217 91% 60%;
-
+    /* 8. Radius */
     --radius: 1rem;
 
-    /* Elevation shadows - softer like in the app */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 8px 20px 0 rgba(0, 0, 0, 0.12);
-    --shadow-elegant: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+    /* 9. Ombres douces (style WeTransfer) */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 2px 6px 0 rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 8px 20px 0 rgba(0, 0, 0, 0.10);
+    --shadow-elegant: 0 2px 6px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.10);
 
-    /* Gradient overlays */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-light)) 100%);
-    --gradient-orange: linear-gradient(135deg, hsl(var(--primary-orange)) 0%, hsl(var(--primary-orange-dark)) 100%);
-    --gradient-green: linear-gradient(135deg, hsl(var(--success-green)) 0%, hsl(var(--success-green-dark)) 100%);
-    --gradient-pink: linear-gradient(135deg, hsl(var(--accent-pink)) 0%, hsl(var(--accent-pink-light)) 100%);
+    /* 10. Dégradés (optionnels pour cartes mises en avant) */
+    --card-gradient-1: linear-gradient(135deg, hsl(39 97% 68%), hsl(342 87% 72%));
+    --card-gradient-2: linear-gradient(135deg, hsl(228 78% 61%), hsl(262 66% 77%));
+    --gradient-hero: linear-gradient(135deg, hsl(228 78% 61%) 0%, hsl(228 78% 71%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(39 97% 68%) 0%, hsl(39 97% 78%) 100%);
+    --gradient-orange: linear-gradient(135deg, hsl(33 100% 64%) 0%, hsl(33 100% 54%) 100%);
+    --gradient-green: linear-gradient(135deg, hsl(164 63% 48%) 0%, hsl(164 63% 38%) 100%);
+    --gradient-pink: linear-gradient(135deg, hsl(338 86% 70%) 0%, hsl(338 86% 80%) 100%);
 
-    /* Animation */
+    /* 11. Animation */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
+    /* Mode sombre adapté à la nouvelle palette */
+    --bg-body: 220 15% 8%;
+    --bg-surface: 220 13% 12%;
+    --border-subtle: 220 13% 20%;
     --background: 220 15% 8%;
     --foreground: 220 10% 95%;
     --card: 220 13% 12%;
     --card-foreground: 220 10% 95%;
     --popover: 220 13% 12%;
     --popover-foreground: 220 10% 95%;
-    --primary: 217 91% 70%;
+    --primary: 228 78% 71%;
+    --primary-soft: 228 40% 20%;
+    --primary-light: 228 78% 81%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 217 91% 80%;
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 25 95% 63%;
+    --accent: 39 97% 68%;
+    --accent-soft: 39 60% 20%;
+    --accent-light: 39 97% 78%;
+    --accent-foreground: 220 15% 8%;
     --secondary: 220 13% 18%;
     --secondary-foreground: 220 10% 95%;
-    --badge-sport: 217 91% 70%;
-    --badge-loisir: 142 76% 46%;
-    --badge-distance: 25 95% 53%;
-    --badge-age: 280 65% 70%;
+    --badge-sport: 228 78% 71%;
+    --badge-loisir: 164 63% 58%;
+    --badge-distance: 33 100% 64%;
+    --badge-age: 262 66% 77%;
     --muted: 220 13% 15%;
     --muted-foreground: 220 8% 65%;
+    --text-main: 220 10% 95%;
+    --text-muted: 220 8% 65%;
+    --text-on-primary: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 13% 20%;
     --input: 220 13% 20%;
-    --ring: 217 91% 70%;
+    --ring: 228 78% 71%;
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
     --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
@@ -119,7 +150,9 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply font-sans antialiased;
+    background-color: hsl(var(--bg-body));
+    color: hsl(var(--text-main));
   }
 
   h1, h2, h3, h4, h5, h6 {
