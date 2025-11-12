@@ -23,7 +23,7 @@ export const AidesMobiliteBlock = () => {
           Mes aides & mobilités
         </h2>
       </div>
-      <div className="grid-staggered-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Calculer mes aides - Orange gradient WeTransfer style */}
         <Card 
           className="group cursor-pointer transition-all hover:shadow-2xl hover:-translate-y-1 border-0 bg-white min-h-[200px] flex flex-col rounded-2xl overflow-hidden"
