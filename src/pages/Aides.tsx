@@ -85,35 +85,40 @@ const TERRITORY_AIDS: Record<string, TerritoryAids> = {
         type: "Régionale",
         amount: "Variable",
         description: "Sport, culture, manuels scolaires (crédits)",
-        eligibility: "Lycéens, apprentis, stagiaires AURA (≈15–25 ans)"
+        eligibility: "Lycéens, apprentis, stagiaires AURA (≈15–25 ans)",
+        links: [{ label: "Région AURA", url: "https://www.auvergnerhonealpes.fr" }]
       },
       {
         name: "Carte Tattoo Isère",
         type: "Département",
         amount: "60€",
         description: "Cagnotte 60 € pour activités sport/culture/art",
-        eligibility: "Tous les collégiens domiciliés en Isère"
+        eligibility: "Tous les collégiens domiciliés en Isère",
+        links: [{ label: "Isère.fr", url: "https://www.isere.fr" }]
       },
       {
         name: "Bonus Culture CAF Isère",
         type: "CAF",
         amount: "60€",
         description: "+60 € pour activités culturelles annuelles",
-        eligibility: "Collégiens avec QF < 1 200 €"
+        eligibility: "Collégiens avec QF < 1 200 €",
+        links: [{ label: "CAF.fr", url: "https://www.caf.fr" }]
       },
       {
         name: "CAF Isère – VACAF (AVE/AVF)",
         type: "CAF",
         amount: "Variable",
         description: "Aides vacances + transport (selon QF et distance)",
-        eligibility: "Allocataires CAF 38, QF ≤ 900 € (janv. 2025)"
+        eligibility: "Allocataires CAF 38, QF ≤ 900 € (janv. 2025)",
+        links: [{ label: "CAF.fr", url: "https://www.caf.fr" }]
       },
       {
         name: "Éco-mobilité locale",
         type: "Mobilité",
         amount: "Variable",
         description: "Tram, bus, vélo pour se rendre aux activités",
-        eligibility: "Résidents de l'agglo grenobloise"
+        eligibility: "Résidents de l'agglo grenobloise",
+        links: [{ label: "Tag Mobilités", url: "https://www.tag.fr" }]
       }
     ]
   },
@@ -126,28 +131,32 @@ const TERRITORY_AIDS: Record<string, TerritoryAids> = {
         type: "Régionale",
         amount: "Variable",
         description: "Sport (licence), culture (ciné, musées), scolarité",
-        eligibility: "Jeunes en lycée / apprentissage / formation AURA"
+        eligibility: "Jeunes en lycée / apprentissage / formation AURA",
+        links: [{ label: "Région AURA", url: "https://www.auvergnerhonealpes.fr" }]
       },
       {
         name: "Culture Campus",
         type: "Locale",
         amount: "18€",
         description: "3 spectacles + 1 ciné pour 18 €",
-        eligibility: "Étudiants de la Métropole de Lyon"
+        eligibility: "Étudiants de la Métropole de Lyon",
+        links: [{ label: "Métropole de Lyon", url: "https://www.grandlyon.com" }]
       },
       {
         name: "CAF Rhône (69)",
         type: "CAF",
         amount: "Variable",
         description: "Aides locales vacances/loisirs (selon règlement)",
-        eligibility: "Allocataires CAF 69 (conditions QF à vérifier)"
+        eligibility: "Allocataires CAF 69 (conditions QF à vérifier)",
+        links: [{ label: "CAF.fr", url: "https://www.caf.fr" }]
       },
       {
         name: "Bons plans La Boge",
         type: "Info Jeunes",
         amount: "Variable",
         description: "Réductions et gratuités en AURA",
-        eligibility: "Jeunes 13–29 ans via Info Jeunes"
+        eligibility: "Jeunes 13–29 ans via Info Jeunes",
+        links: [{ label: "Info Jeunes AURA", url: "https://www.info-jeunes-aura.fr" }]
       }
     ]
   },
@@ -160,21 +169,24 @@ const TERRITORY_AIDS: Record<string, TerritoryAids> = {
         type: "Département",
         amount: "150€",
         description: "150 € (sport/culture/loisirs + soutien scolaire)",
-        eligibility: "Tous les collégiens du 13 (carte annuelle)"
+        eligibility: "Tous les collégiens du 13 (carte annuelle)",
+        links: [{ label: "Département 13", url: "https://www.departement13.fr" }]
       },
       {
         name: "Pass'Sport Loisirs Culture CAF 13",
         type: "CAF",
         amount: "50-150€",
         description: "50 à 150 € selon QF pour activités enfants",
-        eligibility: "Enfants 3–11 ans, QF ≤ 1 200 € (CAF 13)"
+        eligibility: "Enfants 3–11 ans, QF ≤ 1 200 € (CAF 13)",
+        links: [{ label: "CAF.fr", url: "https://www.caf.fr" }]
       },
       {
         name: "Départ 18:25",
         type: "Nationale",
         amount: "≈200€",
         description: "≈200 € pour un séjour vacances (ANCV)",
-        eligibility: "Jeunes 18–25 ans, sous conditions de revenus ou statut"
+        eligibility: "Jeunes 18–25 ans, sous conditions de revenus ou statut",
+        links: [{ label: "ANCV", url: "https://www.ancv.com" }]
       }
     ]
   },
@@ -187,28 +199,32 @@ const TERRITORY_AIDS: Record<string, TerritoryAids> = {
         type: "Nationale / Établissements",
         amount: "Variable",
         description: "Financement sorties/ateliers pour les classes",
-        eligibility: "Collèges et lycéens (6e à Terminale)"
+        eligibility: "Collèges et lycéens (6e à Terminale)",
+        links: [{ label: "Pass Culture", url: "https://pass.culture.fr" }]
       },
       {
         name: "Fonds sociaux",
         type: "National / Établissements",
         amount: "Variable",
         description: "Aides pour cantine, internat, frais scolaires",
-        eligibility: "Collégiens et lycéens selon fonds social"
+        eligibility: "Collégiens et lycéens selon fonds social",
+        links: [{ label: "Service-Public", url: "https://www.service-public.fr/particuliers/vosdroits/F984" }]
       },
       {
         name: "CAF Paris (VACAF)",
         type: "CAF",
         amount: "Variable",
         description: "Aides vacances AVE/AVF selon QF",
-        eligibility: "Allocataires CAF 75 selon QF"
+        eligibility: "Allocataires CAF 75 selon QF",
+        links: [{ label: "CAF.fr", url: "https://www.caf.fr" }]
       },
       {
         name: "Départ 18:25",
         type: "Nationale",
         amount: "≈200€",
         description: "≈200 € pour séjours vacances (ANCV)",
-        eligibility: "Jeunes 18–25 ans, conditions revenus/statut"
+        eligibility: "Jeunes 18–25 ans, conditions revenus/statut",
+        links: [{ label: "ANCV", url: "https://www.ancv.com" }]
       }
     ]
   }
