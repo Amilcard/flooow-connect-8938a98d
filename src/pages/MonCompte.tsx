@@ -33,8 +33,28 @@ import {
 const MonCompte = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading, isAuthenticated } = useAuth();
   const { unreadCount } = useNotifications(user?.id);
+
+  // Redirect to auth if not authenticated
+  if (!isLoading && !isAuthenticated) {
+    navigate("/auth");
+    return null;
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <PageLayout showHeader={false}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Chargement...</p>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
 
   // Données simulées pour la démonstration
   const userStats = {

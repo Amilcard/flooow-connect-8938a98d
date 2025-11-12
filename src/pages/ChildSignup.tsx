@@ -53,17 +53,58 @@ const ChildSignup = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating child:", error);
+        throw error;
+      }
 
-      toast.success("Demande envoyée ! En attente de validation parentale.");
-      navigate("/mon-compte");
-    } catch (error) {
+      if (!data) {
+        throw new Error("Aucune donnée retournée après la création");
+      }
+
+      toast.success("Profil enfant créé avec succès !");
+      
+      // Navigate to account page with a slight delay to ensure state updates
+      setTimeout(() => {
+        navigate("/mon-compte/enfants");
+      }, 100);
+    } catch (error: any) {
       console.error("Error creating child:", error);
-      toast.error("Erreur lors de la création du profil");
+      
+      // More specific error messages
+      let errorMessage = "Erreur lors de la création du profil";
+      
+      if (error?.code === "23505") {
+        errorMessage = "Un profil similaire existe déjà";
+      } else if (error?.code === "42501") {
+        errorMessage = "Vous n'avez pas les permissions nécessaires";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading state while checking auth
+  if (!session && formData.firstName === "" && formData.dob === "") {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <SearchBar />
+        <div className="container py-6">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="text-center space-y-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="text-muted-foreground">Vérification de votre session...</p>
+            </div>
+          </div>
+        </div>
+        <BottomNavigation />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">

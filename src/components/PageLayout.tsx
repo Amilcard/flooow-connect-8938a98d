@@ -14,7 +14,19 @@ const PageLayout = ({
   showHeader = true, 
   className = '' 
 }: PageLayoutProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen bg-background flex items-center justify-center ${className}`}>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen bg-background ${isAuthenticated ? 'pb-20' : ''} ${className}`}>
