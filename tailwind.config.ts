@@ -94,7 +94,9 @@ export default {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['DM Serif Display', 'Playfair Display', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        body: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

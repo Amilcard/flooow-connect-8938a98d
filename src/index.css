@@ -1,10 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================
+   🎨 DESIGN SYSTEM - Flooow Connect
+   Couleurs, typographie, tokens globaux
+   Inspiré WeTransfer : fond clair, couleurs pastel/vives, typo forte
+   ============================================ */
 
 @layer base {
   :root {
@@ -97,7 +101,11 @@ All colors MUST be HSL.
     --gradient-green: linear-gradient(135deg, hsl(164 63% 48%) 0%, hsl(164 63% 38%) 100%);
     --gradient-pink: linear-gradient(135deg, hsl(338 86% 70%) 0%, hsl(338 86% 80%) 100%);
 
-    /* 11. Animation */
+    /* 11. Typographie (style WeTransfer : display serif pour titres, sans-serif moderne pour corps) */
+    --font-display: 'DM Serif Display', 'Playfair Display', 'Georgia', serif;
+    --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* 12. Animation */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -150,25 +158,50 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply font-sans antialiased;
+    @apply antialiased;
+    font-family: var(--font-body);
     background-color: hsl(var(--bg-body));
     color: hsl(var(--text-main));
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+  /* Typographie style WeTransfer : gros titres display serif */
+  h1, h2, 
+  .hero-title,
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
+    @apply text-5xl md:text-6xl lg:text-7xl;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-body);
+    @apply font-semibold tracking-tight;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl;
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  /* Classes utilitaires pour contrôle manuel */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
   }
 }
 
