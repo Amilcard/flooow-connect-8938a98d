@@ -82,18 +82,18 @@ export const EventsSection = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid-staggered">
         {events.map((event) => (
           <Card
             key={event.id}
-            className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden group relative"
+            className="card-wetransfer cursor-pointer group relative overflow-hidden"
             onClick={() => navigate("/agenda-community")}
           >
             {user && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 left-2 z-10 bg-background/80 backdrop-blur-sm hover:bg-background"
+                className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-sm hover:bg-white shadow-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleFavorite.mutate(event.id);
@@ -109,11 +109,11 @@ export const EventsSection = () => {
               </Button>
             )}
             {event.image_url && (
-              <div className="relative h-48 w-full overflow-hidden">
+              <div className="relative h-52 w-full overflow-hidden">
                 <img
                   src={event.image_url}
                   alt={event.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium ${EVENT_TYPE_COLORS[event.event_type] || EVENT_TYPE_COLORS.territory_news}`}>
                   {event.event_type === "children_activity" && "Enfants"}

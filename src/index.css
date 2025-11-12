@@ -206,6 +206,101 @@
 }
 
 /* ============================================================
+   WeTransfer-inspired Staggered Grid Layout
+   Purpose: Create visual rhythm with offset cards on desktop
+   Mobile: Standard stacked layout (no offset)
+   Tablet/Desktop: Alternating vertical offsets for visual interest
+   Date: 2025-11-12
+   ============================================================ */
+
+@layer utilities {
+  /* Base staggered grid - Mobile: standard, Desktop: staggered */
+  .grid-staggered {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  /* Staggered effect only on tablet+ */
+  @media (min-width: 768px) {
+    .grid-staggered > *:nth-child(3n + 1) {
+      transform: translateY(0);
+    }
+    
+    .grid-staggered > *:nth-child(3n + 2) {
+      transform: translateY(20px);
+      margin-bottom: 20px;
+    }
+    
+    .grid-staggered > *:nth-child(3n + 3) {
+      transform: translateY(-12px);
+      margin-top: 12px;
+    }
+  }
+
+  /* Variant for 2-column grid (Aides & Mobilité) */
+  .grid-staggered-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+
+  @media (min-width: 768px) {
+    .grid-staggered-2 > *:nth-child(2n + 1) {
+      transform: translateY(-16px);
+      margin-bottom: 16px;
+    }
+    
+    .grid-staggered-2 > *:nth-child(2n + 2) {
+      transform: translateY(16px);
+      margin-top: 16px;
+    }
+  }
+
+  /* Variant for 5-column grid (Univers) */
+  .grid-staggered-5 {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5;
+  }
+
+  @media (min-width: 1024px) {
+    .grid-staggered-5 > *:nth-child(5n + 1) {
+      transform: translateY(0);
+    }
+    
+    .grid-staggered-5 > *:nth-child(5n + 2) {
+      transform: translateY(12px);
+    }
+    
+    .grid-staggered-5 > *:nth-child(5n + 3) {
+      transform: translateY(-8px);
+    }
+    
+    .grid-staggered-5 > *:nth-child(5n + 4) {
+      transform: translateY(16px);
+    }
+    
+    .grid-staggered-5 > *:nth-child(5n + 5) {
+      transform: translateY(-12px);
+    }
+  }
+
+  /* WeTransfer-style card enhancements */
+  .card-wetransfer {
+    @apply rounded-3xl border-0 bg-white shadow-md;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-wetransfer:hover {
+    @apply shadow-2xl;
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  /* Smooth transitions for staggered items */
+  .grid-staggered > *,
+  .grid-staggered-2 > *,
+  .grid-staggered-5 > * {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* ============================================================
    Mobile Carousel Utilities
    Purpose: Smooth horizontal scrolling with snap points
    Date: 2025-11-01

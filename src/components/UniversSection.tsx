@@ -67,9 +67,9 @@ export const UniversSection = () => {
         </p>
       </div>
 
-      {/* Grille responsive WeTransfer style - Plus d'espace, cartes plus grandes */}
+      {/* Grille responsive WeTransfer style - Plus d'espace, cartes plus grandes, effet décalé */}
       <div 
-        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5"
+        className="grid-staggered-5"
         role="list"
         aria-label="Univers d'activités"
       >

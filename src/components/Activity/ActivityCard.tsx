@@ -90,34 +90,34 @@ export const ActivityCard = ({
   const hasAids = priceAfterAids < price || aidesEligibles.length > 0;
   
   return (
-    <Card className="group overflow-hidden border border-border bg-card hover:shadow-xl transition-all duration-300 cursor-pointer">
-      {/* Image Container - 30% height */}
-      <div className="relative h-44 overflow-hidden bg-muted">
+    <Card className="card-wetransfer group overflow-hidden cursor-pointer">
+      {/* Image Container - WeTransfer style avec rounded corners */}
+      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft">
         <img
           src={displayImage}
           alt={title}
           loading="eager"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.currentTarget.src = fallbackImage;
           }}
         />
         
-        {/* Badge GRATUIT - Position top right */}
+        {/* Badge GRATUIT - Style WeTransfer arrondi */}
         {price === 0 && (
           <div 
-            className="absolute top-3 right-3 text-white font-bold text-xs uppercase px-3 py-1 rounded-full shadow-lg z-10"
+            className="absolute top-4 right-4 text-white font-bold text-xs uppercase px-4 py-2 rounded-full shadow-xl z-10 backdrop-blur-sm"
             style={{ background: 'var(--gradient-pink)' }}
           >
             Gratuit
           </div>
         )}
         
-        {/* BADGES OVERLAY - Simplifiés */}
-        <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
+        {/* BADGES OVERLAY - Style WeTransfer */}
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[calc(100%-5rem)]">
           {/* Badge Univers */}
           <Badge
-            className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs font-semibold"
+            className="bg-white/95 backdrop-blur-md text-foreground shadow-md text-xs font-semibold px-3 py-1.5 rounded-full border-0"
             aria-label={`Catégorie: ${category}`}
           >
             {category}

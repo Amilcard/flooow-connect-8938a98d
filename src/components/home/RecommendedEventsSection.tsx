@@ -58,14 +58,14 @@ const RecommendedEventsSection = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid-staggered">
         {events.map((event) => (
           <Card
             key={event.id}
-            className="p-4 hover:shadow-lg transition-shadow cursor-pointer group"
+            className="card-wetransfer p-5 cursor-pointer group"
           >
             <div className="flex justify-between items-start gap-2 mb-3">
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs font-medium px-3 py-1 rounded-full">
                 {event.recommendation_reason}
               </Badge>
               <div className="flex gap-1 shrink-0">
