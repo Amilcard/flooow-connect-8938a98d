@@ -21,24 +21,9 @@ const Header = () => {
             <img 
               src={logoFlooow} 
               alt="Flooow - Mon petit guichet du quotidien" 
-              className="h-12 md:h-14 w-auto object-contain"
+              className="h-16 w-auto object-contain py-2"
             />
           </Link>
-
-          {/* Desktop Navigation - Front Familles uniquement */}
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/activities" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Activités
-            </Link>
-            <Link to="/aides-mobilite" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Aides & Mobilité
-            </Link>
-            {isAuthenticated && (
-              <Link to="/mon-compte" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                Mon espace
-              </Link>
-            )}
-          </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-2">
@@ -77,31 +62,16 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu - Front Familles uniquement */}
-        {mobileMenuOpen && (
+        {/* Mobile Menu */}
+        {mobileMenuOpen && !isAuthenticated && (
           <div className="md:hidden py-4 border-t border-border/40">
-            <nav className="flex flex-col gap-4">
-              <Link to="/activities" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                Activités
-              </Link>
-              <Link to="/aides-mobilite" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                Aides & Mobilité
-              </Link>
-              {isAuthenticated && (
-                <Link to="/mon-compte" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                  Mon espace
-                </Link>
-              )}
-              {!isAuthenticated && (
-                <div className="flex flex-col gap-2 pt-4 border-t border-border/40">
-                  <Button variant="ghost" asChild className="justify-start">
-                    <Link to="/login">Se connecter</Link>
-                  </Button>
-                  <Button variant="default" asChild>
-                    <Link to="/signup">S'inscrire</Link>
-                  </Button>
-                </div>
-              )}
+            <nav className="flex flex-col gap-2">
+              <Button variant="ghost" asChild className="justify-start">
+                <Link to="/login">Se connecter</Link>
+              </Button>
+              <Button variant="default" asChild>
+                <Link to="/signup">S'inscrire</Link>
+              </Button>
             </nav>
           </div>
         )}
