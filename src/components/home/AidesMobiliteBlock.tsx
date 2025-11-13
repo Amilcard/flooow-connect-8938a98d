@@ -1,10 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator, Train } from "lucide-react";
+import { Calculator, Train, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTerritory } from "@/hooks/useTerritory";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const AidesMobiliteBlock = () => {
   const navigate = useNavigate();
+  const { territory, territoryKey, hasTerritory } = useTerritory();
 
   return (
     <section 
@@ -22,7 +25,22 @@ export const AidesMobiliteBlock = () => {
         <h2 className="font-display text-4xl md:text-5xl text-foreground">
           Mes aides & mobilités
         </h2>
+        {hasTerritory && territory && (
+          <p className="text-sm text-muted-foreground mt-2 flex items-center justify-center gap-1">
+            <MapPin className="h-4 w-4" />
+            {territory.name}
+          </p>
+        )}
       </div>
+
+      {/* Message si pas de territoire */}
+      {!hasTerritory && (
+        <Alert>
+          <AlertDescription>
+            📍 Choisis ton territoire pour découvrir les aides et options de mobilité disponibles près de chez toi.
+          </AlertDescription>
+        </Alert>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Calculer mes aides - Orange gradient WeTransfer style */}
         <Card 

@@ -176,8 +176,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           localStorage.removeItem(key);
         }
       });
+
+      // 3. Nettoyer les données de territoire
+      localStorage.removeItem('userTerritoryId');
+      localStorage.removeItem('userPostalCode');
+      localStorage.removeItem('userTerritoryMode');
+      localStorage.removeItem('hasSeenOnboarding');
       
-      // 3. Nettoyer sessionStorage
+      // 4. Nettoyer sessionStorage
       sessionStorage.clear();
     } catch (error) {
       console.error('Error clearing storage:', error);
@@ -190,8 +196,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Continue quand même, l'état est déjà nettoyé
     }
 
-    // Redirection directe sans passer par routeur
-    window.location.href = '/';
+    // Redirection vers l'onboarding après déconnexion
+    window.location.href = '/onboarding';
   };
 
   const value = {
