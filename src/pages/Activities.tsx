@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PageLayout from "@/components/PageLayout";
+import VisualModeToggle from "@/components/VisualModeToggle";
 
 // Mapping des IDs univers vers les catégories réelles
 const UNIVERSE_TO_CATEGORY: Record<string, string> = {
@@ -192,6 +193,7 @@ const Activities = () => {
           ))}
         </Tabs>
       </main>
+      <VisualModeToggle />
     </PageLayout>
   );
 };
