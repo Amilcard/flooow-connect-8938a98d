@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Menu, Presentation, Bell } from "lucide-react";
+import { Menu, Presentation, Bell } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logoFlooow from "@/assets/logo-flooow.png";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,10 +23,13 @@ const Header = () => {
       <div className="container px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Heart className="w-6 h-6 text-primary" />
-            <span className="text-xl font-semibold text-foreground">InKlusif Flooow</span>
-          </div>
+          <Link to="/" className="flex items-center">
+            <img 
+              src={logoFlooow} 
+              alt="Flooow - Mon petit guichet du quotidien" 
+              className="h-10 md:h-12 w-auto object-contain"
+            />
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
