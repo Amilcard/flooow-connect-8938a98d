@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HelpCircle, Calculator, ExternalLink, Bus, Bike, Car, MapPin } from "lucide-react";
+import { AppIcon } from "@/components/ui/app-icon";
+import { HelpCircle, Calculator, ExternalLink, Bus, Bike, UsersRound, MapPin } from "lucide-react";
 
 const AidesMobilite = () => {
   const [searchParams] = useSearchParams();
@@ -66,7 +67,7 @@ const AidesMobilite = () => {
       name: "STAS 10 €/mois",
       amount: "110 €/an",
       description: "Abonnement annuel pour publics éligibles",
-      icon: <Bus className="w-5 h-5" />,
+      mode: "public_transport" as const,
       eligibility: "Étudiants, demandeurs d'emploi, bénéficiaires RSA",
       cta: "Choisir mon abonnement",
       links: [
@@ -77,7 +78,7 @@ const AidesMobilite = () => {
       name: "VéliVert",
       amount: "10 €/an",
       description: "30 minutes offertes par trajet • 10 €/an si abonnement STAS annuel",
-      icon: <Bike className="w-5 h-5" />,
+      mode: "bike" as const,
       eligibility: "Accessible à tous",
       cta: "Activer VéliVert",
       links: [
@@ -88,7 +89,7 @@ const AidesMobilite = () => {
       name: "Moovizy",
       amount: "Gratuit",
       description: "Itinéraires multimodaux + achats + post-paiement",
-      icon: <MapPin className="w-5 h-5" />,
+      mode: "itinerary" as const,
       eligibility: "Téléchargement gratuit",
       cta: "En savoir plus",
       links: [
@@ -99,7 +100,7 @@ const AidesMobilite = () => {
       name: "La Ricamarie — Bus M1/70",
       amount: "Gratuit",
       description: "Venir en bus depuis/vers La Ricamarie",
-      icon: <Bus className="w-5 h-5" />,
+      mode: "bus" as const,
       eligibility: "Tous les voyageurs STAS",
       cta: "Voir les horaires",
       links: [
@@ -110,7 +111,7 @@ const AidesMobilite = () => {
       name: "Covoiturage Mov'ici",
       amount: "Gratuit",
       description: "Service régional de covoiturage",
-      icon: <Car className="w-5 h-5" />,
+      mode: "carpooling" as const,
       eligibility: "Tous les habitants de la région AURA",
       cta: "Rejoindre Mov'ici",
       links: [
@@ -119,6 +120,22 @@ const AidesMobilite = () => {
       note: "Prime nationale covoiturage terminée au 01/01/2025"
     }
   ];
+
+  const getMobilityIcon = (mode: string) => {
+    switch (mode) {
+      case "public_transport":
+      case "bus":
+        return Bus;
+      case "bike":
+        return Bike;
+      case "carpooling":
+        return UsersRound;
+      case "itinerary":
+        return MapPin;
+      default:
+        return MapPin;
+    }
+  };
 
   return (
     <PageLayout>
@@ -275,7 +292,12 @@ const AidesMobilite = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex gap-3 flex-1">
                         <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-                          {option.icon}
+                          <AppIcon 
+                            Icon={getMobilityIcon(option.mode)} 
+                            size="sm" 
+                            color="primary"
+                            data-testid={`icon-eco-${option.mode}`}
+                          />
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-base">{option.name}</CardTitle>

@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { Euro, Bike, Heart } from "lucide-react";
+import { AppIcon } from "@/components/ui/app-icon";
+import { BadgeEuro, Bike, Heart } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
 import ecoMobiliteImg from "@/assets/eco-mobilite.jpg";
 import handicapSanteImg from "@/assets/handicap-sante.jpg";
@@ -9,8 +11,9 @@ interface InfoBlock {
   title: string;
   description: string;
   image: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   gradient: string;
+  testId: string;
 }
 
 const infoBlocks: InfoBlock[] = [
@@ -19,24 +22,27 @@ const infoBlocks: InfoBlock[] = [
     title: "Aides Financières",
     description: "Découvrez les aides et subventions disponibles pour vos activités",
     image: aidesFinancieresImg,
-    icon: <Euro className="w-8 h-8" />,
-    gradient: "from-emerald-500/90 to-emerald-700/90"
+    icon: BadgeEuro,
+    gradient: "from-emerald-500/90 to-emerald-700/90",
+    testId: "icon-aide-financial"
   },
   {
     id: "mobilite",
     title: "Éco-Mobilité",
     description: "Solutions de transport écologique et covoiturage pour vos déplacements",
     image: ecoMobiliteImg,
-    icon: <Bike className="w-8 h-8" />,
-    gradient: "from-blue-500/90 to-blue-700/90"
+    icon: Bike,
+    gradient: "from-blue-500/90 to-blue-700/90",
+    testId: "icon-eco-bike"
   },
   {
     id: "handicap",
     title: "Handicap & Accessibilité",
     description: "Activités adaptées et accessibles pour tous les enfants",
     image: handicapSanteImg,
-    icon: <Heart className="w-8 h-8" />,
-    gradient: "from-rose-500/90 to-rose-700/90"
+    icon: Heart,
+    gradient: "from-rose-500/90 to-rose-700/90",
+    testId: "icon-aide-accessibility"
   }
 ];
 
@@ -80,7 +86,14 @@ export const InfoBlocks = () => {
               
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
                 <div className="mb-3 p-3 bg-white/20 rounded-full backdrop-blur-sm group-hover:scale-110 transition-transform">
-                  {block.icon}
+                  <AppIcon 
+                    Icon={block.icon} 
+                    size="lg" 
+                    color="default"
+                    title={block.title}
+                    data-testid={block.testId}
+                    className="w-8 h-8"
+                  />
                 </div>
                 <h3 className="text-xl font-bold mb-2">{block.title}</h3>
                 <p className="text-sm text-white/90">{block.description}</p>

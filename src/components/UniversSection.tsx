@@ -1,12 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { AppIcon } from "@/components/ui/app-icon";
+import { Dumbbell, Palette, GraduationCap, Gamepad2, Briefcase } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 interface Univers {
   id: string;
   name: string;
   image: string;
   gradient: string;
-  icon: string;
+  icon: LucideIcon;
+  testId: string;
 }
 
 const univers: Univers[] = [
@@ -15,35 +19,40 @@ const univers: Univers[] = [
     name: 'Sport',
     image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=280&fit=crop',
     gradient: 'from-blue-600',
-    icon: '⚽'
+    icon: Dumbbell,
+    testId: 'icon-category-sport'
   },
   {
     id: 'culture',
     name: 'Culture',
     image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=280&fit=crop',
     gradient: 'from-purple-600',
-    icon: '🎨'
+    icon: Palette,
+    testId: 'icon-category-culture'
   },
   {
     id: 'apprentissage',
     name: 'Apprentissage',
     image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=280&fit=crop',
     gradient: 'from-green-600',
-    icon: '📚'
+    icon: GraduationCap,
+    testId: 'icon-category-apprentissage'
   },
   {
     id: 'loisirs',
     name: 'Loisirs',
     image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=280&fit=crop',
     gradient: 'from-orange-600',
-    icon: '🎮'
+    icon: Gamepad2,
+    testId: 'icon-category-loisirs'
   },
   {
     id: 'vacances',
     name: 'Vacances',
     image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=280&fit=crop',
     gradient: 'from-pink-600',
-    icon: '🏖️'
+    icon: Briefcase,
+    testId: 'icon-category-vacances'
   },
 ];
 
@@ -93,9 +102,14 @@ export const UniversSection = () => {
                             flex items-center justify-center 
                             shadow-sm group-hover:shadow-lg
                             transition-all duration-300 ease-out group-hover:scale-110">
-                <span className="text-7xl filter drop-shadow-sm">
-                  {item.icon}
-                </span>
+                <AppIcon 
+                  Icon={item.icon} 
+                  size="lg" 
+                  color="primary"
+                  title={item.name}
+                  data-testid={item.testId}
+                  className="w-12 h-12"
+                />
               </div>
               <h3 className="text-base font-semibold text-text-main text-center group-hover:text-primary transition-colors">
                 {item.name}

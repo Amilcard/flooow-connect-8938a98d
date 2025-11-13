@@ -4,7 +4,8 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bus, Bike, Car, Calculator, MapPin, ExternalLink, HelpCircle } from "lucide-react";
+import { AppIcon } from "@/components/ui/app-icon";
+import { Bus, Bike, UsersRound, Calculator, MapPin, ExternalLink, HelpCircle, TramFront } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -246,14 +247,14 @@ const TERRITORY_MOBILITY: Record<string, TerritoryMobility> = {
 const getModeIcon = (mode: string) => {
   switch (mode) {
     case "public_transport":
-      return <Bus className="w-5 h-5" />;
+      return TramFront;
     case "bike_sharing":
     case "long_term_bike_loan":
-      return <Bike className="w-5 h-5" />;
+      return Bike;
     case "carpooling":
-      return <Car className="w-5 h-5" />;
+      return UsersRound;
     default:
-      return <MapPin className="w-5 h-5" />;
+      return MapPin;
   }
 };
 
@@ -385,7 +386,12 @@ const EcoMobilite = () => {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex gap-3 flex-1">
                         <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-                          {getModeIcon(option.mode)}
+                          <AppIcon 
+                            Icon={getModeIcon(option.mode)} 
+                            size="sm" 
+                            color="primary"
+                            data-testid={`icon-eco-${option.mode}`}
+                          />
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center gap-2 flex-wrap">

@@ -4,6 +4,7 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AppIcon } from "@/components/ui/app-icon";
 import { HelpCircle, Calculator, ExternalLink, MapPin } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { useQuery } from "@tanstack/react-query";
@@ -307,12 +308,12 @@ const Aides = () => {
           </div>
         ) : territoryAids ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
+            <AppIcon Icon={MapPin} size="xs" color="muted" data-testid="icon-aide-territory" />
             <span>Territoire : <strong>{territoryAids.label}</strong></span>
           </div>
         ) : (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
+            <AppIcon Icon={MapPin} size="xs" color="muted" data-testid="icon-aide-territory" />
             <span>Aides nationales disponibles</span>
           </div>
         )}
@@ -321,7 +322,7 @@ const Aides = () => {
         <Card className="bg-primary text-primary-foreground">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calculator className="w-5 h-5" />
+              <AppIcon Icon={Calculator} size="sm" color="default" data-testid="icon-aide-calculator" />
               Simulateur d'aides
             </CardTitle>
             <CardDescription className="text-primary-foreground/80">
@@ -337,7 +338,7 @@ const Aides = () => {
               variant="secondary" 
               className="bg-white text-primary hover:bg-white/90"
             >
-              <Calculator className="w-4 h-4 mr-2" />
+              <AppIcon Icon={Calculator} size="xs" color="primary" className="mr-2" />
               Lancer la simulation
             </Button>
           </CardContent>
@@ -387,7 +388,7 @@ const Aides = () => {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <AppIcon Icon={HelpCircle} size="xs" color="muted" className="shrink-0 mt-0.5" data-testid="icon-aide-eligibility" />
                       <span><strong>Éligibilité :</strong> {aide.eligibility}</span>
                     </div>
                     {aide.links && aide.links.length > 0 && (
@@ -403,7 +404,7 @@ const Aides = () => {
                               className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                             >
                               {link.label}
-                              <ExternalLink className="w-3 h-3" />
+                              <AppIcon Icon={ExternalLink} size="xs" color="primary" data-testid="icon-aide-lien" />
                             </a>
                           ))}
                         </div>
