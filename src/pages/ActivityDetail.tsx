@@ -68,6 +68,7 @@ const ActivityDetail = () => {
   const [searchParams] = useSearchParams();
   const periodFilter = searchParams.get("period") || undefined;
   const tabParam = searchParams.get("tab");
+  const visualParam = searchParams.get("visual");
   const [activeTab, setActiveTab] = useState<string>(
     ["infos", "tarifs", "mobilite", "echanges"].includes(tabParam || "") 
       ? tabParam! 
@@ -78,6 +79,9 @@ const ActivityDetail = () => {
   const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  // Feature flag: mode visuel mobile
+  const mobileVisualMode = visualParam === "true";
   
   // Hook pour la persistance des données d'aides et de transport
   const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id!);
@@ -362,8 +366,13 @@ const ActivityDetail = () => {
         </div>
       </div>
 
-      {/* Hero Image - Optimisé avec hauteur raisonnable selon breakpoints responsive */}
-      <div className="relative w-full h-[40vh] md:h-[45vh] lg:h-[480px] min-h-[240px] overflow-hidden">
+      {/* Hero Image - Hauteur adaptée au mode visuel mobile */}
+      <div 
+        className="relative w-full overflow-hidden"
+        style={{
+          height: mobileVisualMode ? "360px" : "clamp(240px, 40vh, 480px)"
+        }}
+      >
         <img
           src={imgError ? fallbackImage : displayImage}
           alt={activity.title}
@@ -371,8 +380,15 @@ const ActivityDetail = () => {
           onError={() => setImgError(true)}
         />
         
-        {/* Gradient overlay subtil */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        {/* Gradient overlay - plus prononcé en mode visuel mobile */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: mobileVisualMode 
+              ? "linear-gradient(to top, rgba(0,0,0,0.45), transparent 50%)"
+              : "linear-gradient(to top, rgba(0,0,0,0.40), transparent)"
+          }}
+        />
         
         {/* Badges flottants repositionnés */}
         <div className="absolute top-4 left-4 flex gap-2 flex-wrap max-w-[80%]">

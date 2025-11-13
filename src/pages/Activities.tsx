@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { BackButton } from "@/components/BackButton";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
+import { ActivityListMobile } from "@/components/Activity/ActivityListMobile";
 import { VacationPeriodFilter } from "@/components/VacationPeriodFilter";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
@@ -10,6 +11,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import PageLayout from "@/components/PageLayout";
 
 // Mapping des IDs univers vers les catégories réelles
@@ -27,6 +29,11 @@ const Activities = () => {
   const category = searchParams.get("category");
   const type = searchParams.get("type");
   const periodFromUrl = searchParams.get("period") || undefined;
+  const visualParam = searchParams.get("visual");
+  
+  // Feature flag: mode visuel mobile
+  const isMobile = useIsMobile();
+  const mobileVisualMode = isMobile && visualParam === "true";
   
   // Paramètres de pré-filtrage par profil enfant
   const childId = searchParams.get("childId");
@@ -167,11 +174,15 @@ const Activities = () => {
           </TabsList>
 
           <TabsContent value="all">
-            <ActivitySection
-              title={getTitle()}
-              activities={allActivities}
-              onActivityClick={(id) => console.log("Activity clicked:", id)}
-            />
+            {mobileVisualMode ? (
+              <ActivityListMobile activities={allActivities} isLoading={isLoading} />
+            ) : (
+              <ActivitySection
+                title={getTitle()}
+                activities={allActivities}
+                onActivityClick={(id) => console.log("Activity clicked:", id)}
+              />
+            )}
           </TabsContent>
 
           {["Sport", "Culture", "Loisirs", "Vacances", "Scolarité"].map((cat) => (
@@ -186,9 +197,16 @@ const Activities = () => {
 };
 
 const CategoryActivities = ({ category }: { category: string }) => {
-  const { data: activities = [] } = useActivities({ category });
+  const [searchParams] = useSearchParams();
+  const visualParam = searchParams.get("visual");
+  const isMobile = useIsMobile();
+  const mobileVisualMode = isMobile && visualParam === "true";
   
-  return (
+  const { data: activities = [], isLoading } = useActivities({ category });
+  
+  return mobileVisualMode ? (
+    <ActivityListMobile activities={activities} isLoading={isLoading} />
+  ) : (
     <ActivitySection
       title={`Activités ${category}`}
       activities={activities}
