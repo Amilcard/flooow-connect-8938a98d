@@ -109,14 +109,10 @@ export default function SearchFilters() {
         {/* Filters Content */}
         <div className="container max-w-2xl px-4 py-6">
           <div className="space-y-6">
-            {/* Pour qui ? */}
-            <WhoFilter
-              childId={localFilters.childId}
-              ageMin={localFilters.ageMin}
-              ageMax={localFilters.ageMax}
-              needsHandicapSupport={localFilters.needsHandicapSupport}
-              needsAseSupport={localFilters.needsAseSupport}
-              needsSchoolSupport={localFilters.needsSchoolSupport}
+            {/* Où ? - EN PREMIER sur mobile (critère prioritaire pour parents) */}
+            <WhereFilter
+              location={localFilters.location}
+              maxTravelTime={localFilters.maxTravelTime}
               onChange={(updates) => setLocalFilters(prev => ({ ...prev, ...updates }))}
             />
 
@@ -132,10 +128,14 @@ export default function SearchFilters() {
 
             <Separator />
 
-            {/* Où ? */}
-            <WhereFilter
-              location={localFilters.location}
-              maxTravelTime={localFilters.maxTravelTime}
+            {/* Pour qui ? */}
+            <WhoFilter
+              childId={localFilters.childId}
+              ageMin={localFilters.ageMin}
+              ageMax={localFilters.ageMax}
+              needsHandicapSupport={localFilters.needsHandicapSupport}
+              needsAseSupport={localFilters.needsAseSupport}
+              needsSchoolSupport={localFilters.needsSchoolSupport}
               onChange={(updates) => setLocalFilters(prev => ({ ...prev, ...updates }))}
             />
 

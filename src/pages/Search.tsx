@@ -9,7 +9,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { MapPin, List } from "lucide-react";
+import { MapPin, List, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logSearch } from "@/lib/tracking";
 import type { Activity } from "@/types/domain";
@@ -90,11 +90,12 @@ const MapView = ({ activities }: { activities: Activity[] }) => {
 };
 
 const Search = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   
   // Get filters from URL params
-  const searchQuery = searchParams.get("q") || searchParams.get("query"); // Support both q and query
+  const searchQuery = searchParams.get("q") || searchParams.get("query");
   const category = searchParams.get("category");
   const minAge = searchParams.get("minAge");
   const maxAge = searchParams.get("maxAge");
@@ -116,7 +117,6 @@ const Search = () => {
 
   const { data: activities, isLoading, error } = useActivities(filters);
 
-  // Ne pas afficher de fallback - montrer vraiment les résultats de recherche
   const displayActivities = activities || [];
 
   // Logger la recherche quand les résultats changent
@@ -128,6 +128,34 @@ const Search = () => {
       });
     }
   }, [activities, isLoading]);
+
+  // Build active filters for display
+  const activeFilters: Array<{ key: string; label: string; param: string }> = [];
+  if (category) activeFilters.push({ key: 'category', label: `Catégorie: ${category}`, param: 'category' });
+  if (minAge && maxAge) activeFilters.push({ key: 'age', label: `Âge: ${minAge}-${maxAge} ans`, param: 'age' });
+  else if (minAge) activeFilters.push({ key: 'minAge', label: `À partir de ${minAge} ans`, param: 'minAge' });
+  else if (maxAge) activeFilters.push({ key: 'maxAge', label: `Jusqu'à ${maxAge} ans`, param: 'maxAge' });
+  if (maxPrice) activeFilters.push({ key: 'maxPrice', label: `Max ${maxPrice}€`, param: 'maxPrice' });
+  if (hasAid) activeFilters.push({ key: 'hasAid', label: 'Avec aides financières', param: 'hasAid' });
+  if (isPMR) activeFilters.push({ key: 'isPMR', label: 'Accessible PMR', param: 'isPMR' });
+  if (hasCovoiturage) activeFilters.push({ key: 'hasCovoiturage', label: 'Covoiturage dispo', param: 'hasCovoiturage' });
+
+  const removeFilter = (paramKey: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (paramKey === 'age') {
+      newParams.delete('minAge');
+      newParams.delete('maxAge');
+    } else {
+      newParams.delete(paramKey);
+    }
+    setSearchParams(newParams);
+  };
+
+  const clearAllFilters = () => {
+    const newParams = new URLSearchParams();
+    if (searchQuery) newParams.set('q', searchQuery);
+    setSearchParams(newParams);
+  };
 
   if (error) {
     return <ErrorState message="Impossible de charger les activités" />;
@@ -143,26 +171,6 @@ const Search = () => {
       </div>
       
       <div className="container py-4 space-y-4">
-        {/* View toggle */}
-        <div className="flex justify-end gap-2">
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-          >
-            <List className="w-4 h-4 mr-2" />
-            Liste
-          </Button>
-          <Button
-            variant={viewMode === "map" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("map")}
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Carte
-          </Button>
-        </div>
-
         {/* Search query display */}
         {searchQuery && (
           <div className="mb-2">
@@ -172,10 +180,64 @@ const Search = () => {
           </div>
         )}
 
-        {/* Results count */}
-        <p className="text-sm text-muted-foreground">
-          {displayActivities?.length || 0} activité(s) trouvée(s)
-        </p>
+        {/* Active filters pills */}
+        {activeFilters.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/50 rounded-lg">
+            <span className="text-xs font-medium text-muted-foreground">Filtres actifs:</span>
+            {activeFilters.map((filter) => (
+              <Badge 
+                key={filter.key}
+                variant="secondary"
+                className="gap-2 cursor-pointer hover:bg-destructive/10 transition-colors"
+                onClick={() => removeFilter(filter.param)}
+              >
+                {filter.label}
+                <X size={12} />
+              </Badge>
+            ))}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={clearAllFilters}
+              className="h-6 text-xs px-2 ml-auto"
+            >
+              Tout effacer
+            </Button>
+          </div>
+        )}
+
+        {/* View toggle + Results count */}
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            {displayActivities?.length || 0} activité(s) trouvée(s)
+          </p>
+          
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/search-filters')}
+              className="gap-2"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filtres
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "map" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("map")}
+            >
+              <MapPin className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
 
         {/* View content */}
         {isLoading ? (
