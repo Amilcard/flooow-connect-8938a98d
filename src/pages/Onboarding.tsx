@@ -14,12 +14,12 @@ const Onboarding = () => {
 
   const handleComplete = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
-    navigate("/home");
+    navigate("/home", { replace: true });
   };
 
   const handleSkip = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
-    navigate("/home");
+    navigate("/home", { replace: true });
   };
 
   const steps = {

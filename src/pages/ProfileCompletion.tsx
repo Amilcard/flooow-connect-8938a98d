@@ -93,7 +93,7 @@ const ProfileCompletion = () => {
         description: "Vous pouvez maintenant accéder aux aides financières"
       });
 
-      navigate("/");
+      navigate("/home");
     } catch (error: any) {
       toast({
         title: "Erreur",

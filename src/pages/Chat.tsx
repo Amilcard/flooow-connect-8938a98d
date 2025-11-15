@@ -80,7 +80,7 @@ const Chat = () => {
           </div>
 
           <div className="pt-4">
-            <Button onClick={() => navigate('/')} variant="outline">
+            <Button onClick={() => navigate('/home')} variant="outline">
               Retour à l'accueil
             </Button>
           </div>

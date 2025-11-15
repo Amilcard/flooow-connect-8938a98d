@@ -1,22 +1,32 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 const Splash = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    // Only show splash on actual app entry, not on navigation
+    const isNavigating = location.state?.from || document.referrer.includes(window.location.origin);
+    
+    if (isNavigating) {
+      // User is navigating within the app, go directly to home
+      navigate("/home", { replace: true });
+      return;
+    }
+
     // Check if user has seen onboarding
     const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
     
     setTimeout(() => {
       if (hasSeenOnboarding) {
-        navigate("/home");
+        navigate("/home", { replace: true });
       } else {
-        navigate("/onboarding");
+        navigate("/onboarding", { replace: true });
       }
     }, 2000);
-  }, [navigate]);
+  }, [navigate, location]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary to-accent p-6">

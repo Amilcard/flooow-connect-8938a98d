@@ -70,7 +70,7 @@ const Auth = () => {
         description: "Bienvenue !"
       });
 
-      navigate("/");
+      navigate("/home");
     } catch (error: any) {
       toast({
         title: "Erreur de connexion",

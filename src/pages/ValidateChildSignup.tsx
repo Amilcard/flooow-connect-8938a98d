@@ -127,7 +127,7 @@ export default function ValidateChildSignup() {
                     </p>
                   </div>
                   <Button
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('/home')}
                     className="mt-4"
                   >
                     Retour à l'accueil

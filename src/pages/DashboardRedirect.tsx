@@ -69,7 +69,7 @@ const DashboardRedirect = () => {
           <p className="text-muted-foreground mb-4">
             Votre compte est en attente de validation par notre équipe. Vous recevrez un email dès que votre compte sera activé.
           </p>
-          <Button onClick={() => navigate("/")}>
+          <Button onClick={() => navigate("/home")}>
             Retour à l'accueil
           </Button>
         </Card>
