@@ -262,13 +262,27 @@ export const ActivityCard = ({
                 </div>
               </>
             ) : (
-              <span className="text-xl font-bold text-foreground">
-                {price === 0 ? 'Gratuit' : `${price}€`}
-              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-xl font-bold text-foreground">
+                  {price === 0 ? 'Gratuit' : `${price}€`}
+                </span>
+                {price > 0 && priceUnit && (
+                  <span className="text-xs text-muted-foreground font-normal">
+                    / {priceUnit}
+                  </span>
+                )}
+              </div>
             )}
-            <p className="text-[10px] text-muted-foreground">
-              {priceUnit || (periodType === 'annual' ? 'par an' : periodType === 'trimester' ? 'par trimestre' : 'par période')}
-            </p>
+            {!priceUnit && price > 0 && (
+              <p className="text-[10px] text-muted-foreground">
+                {periodType === 'annual' ? 'par an' : 
+                 periodType === 'trimester' ? 'par trimestre' : 
+                 vacationType === 'sejour_hebergement' ? 'par semaine' :
+                 vacationType === 'centre_loisirs' ? 'par jour' :
+                 vacationType === 'stage_journee' ? 'la session' :
+                 'par période'}
+              </p>
+            )}
             {(hasFinancialAid || aidesEligibles.length > 0) && !estimatedAidAmount && !hasAids && (
               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-1 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                 💰 Aides dispo
