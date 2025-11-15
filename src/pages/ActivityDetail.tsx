@@ -657,8 +657,8 @@ const ActivityDetail = () => {
                     <Alert className="bg-muted/50 border-primary/20">
                       <Info className="h-4 w-4" />
                       <AlertDescription className="text-sm">
-                        <strong>L'estimation des aides est facultative.</strong> Tu peux t'inscrire directement sans la faire. 
-                        Si tu souhaites connaître ton reste à charge avant de t'inscrire, utilise le calculateur ci-dessous.
+                        <strong>L'estimation des aides est facultative.</strong> Vous pouvez vous inscrire directement sans la faire. 
+                        Si vous souhaitez connaître votre reste à charge avant de vous inscrire, utilisez le calculateur ci-dessous.
                       </AlertDescription>
                     </Alert>
                     
@@ -855,7 +855,7 @@ const ActivityDetail = () => {
 
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
-                        💡 Tu peux calculer tes aides dans l'onglet "Tarifs" (optionnel)
+                        💡 Vous pouvez calculer vos aides dans l'onglet "Tarifs" (optionnel)
                       </p>
                     )}
                   </div>

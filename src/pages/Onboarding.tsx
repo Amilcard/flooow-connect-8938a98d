@@ -24,7 +24,7 @@ const Onboarding = () => {
 
   const steps = {
     discover: {
-      title: "Tu souhaites accéder et découvrir une multitude d'activités près de chez toi ?",
+      title: "Vous souhaitez accéder et découvrir une multitude d'activités près de chez vous ?",
       description: "Sports, Aides aux devoirs, Cultures, Vacances, Insertion...",
       illustration: <DiscoverActivitiesIllustration />,
       onNext: () => setCurrentStep("community"),
@@ -32,9 +32,9 @@ const Onboarding = () => {
       isLastStep: false,
     },
     community: {
-      title: "Rejoins la Communauté Flooow !",
+      title: "Rejoignez la Communauté Flooow !",
       description:
-        "Clique sur le ou les univers de ton choix afin d'identifier l'activité qui pourrait te correspondre. En quelques clics tu peux découvrir les différentes propositions, t'initier gratuitement selon la période et le club et t'y inscrire.",
+        "Cliquez sur le ou les univers de votre choix afin d'identifier l'activité qui pourrait vous correspondre. En quelques clics vous pouvez découvrir les différentes propositions, vous initier gratuitement selon la période et le club et vous y inscrire.",
       illustration: <CommunityIllustration />,
       onNext: () => setCurrentStep("cost"),
       stepNumber: 2,
@@ -43,7 +43,7 @@ const Onboarding = () => {
     cost: {
       title: "Mais ce n'est pas tout !",
       description:
-        "Tu as également la possibilité d'évaluer le coût de l'inscription avant d'envoyer une demande à l'organisme !",
+        "Vous avez également la possibilité d'évaluer le coût de l'inscription avant d'envoyer une demande à l'organisme !",
       illustration: <CostEstimationIllustration />,
       onNext: () => setCurrentStep("ready"),
       stepNumber: 3,
