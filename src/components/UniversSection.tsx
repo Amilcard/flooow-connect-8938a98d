@@ -37,13 +37,7 @@ const univers: Univers[] = [
     name: 'Loisirs',
     image: universLoisirs,
     testId: 'icon-category-loisirs'
-  },
-  {
-    id: 'vacances',
-    name: 'Vacances',
-    image: universVacances,
-    testId: 'icon-category-vacances'
-  },
+  }
 ];
 
 const getGradientForUniverse = (id: string) => {
@@ -74,7 +68,7 @@ export const UniversSection = () => {
       <div className="max-w-[1200px] mx-auto">
         <h2 
           id="univers-title" 
-          className="text-[18px] font-bold text-[#1F2937] mb-4"
+          className="text-[18px] font-bold text-[#1F2937] mb-3"
         >
           Découvrir nos univers
         </h2>
@@ -85,7 +79,7 @@ export const UniversSection = () => {
           role="list"
           aria-label="Univers d'activités"
         >
-          <div className="flex gap-2 min-w-max">
+          <div className="flex gap-[6px] min-w-max">
             {univers.map((item) => {
               const isActive = activeUniverse === item.id;
               
@@ -94,7 +88,7 @@ export const UniversSection = () => {
                   key={item.id}
                   onClick={() => handleUniversClick(item.id)}
                   className={cn(
-                    "relative w-[110px] h-[110px] rounded-[16px] overflow-hidden flex-shrink-0",
+                    "relative w-[84px] h-[84px] rounded-[16px] overflow-hidden flex-shrink-0",
                     "transition-all duration-300 ease-out",
                     "hover:scale-105 hover:shadow-lg",
                     isActive 
@@ -111,15 +105,15 @@ export const UniversSection = () => {
                   <img 
                     src={item.image}
                     alt=""
-                    className="absolute inset-0 w-full h-full object-cover opacity-30"
+                    className="absolute inset-0 w-full h-full object-cover opacity-25"
                   />
                   
                   {/* Texte centré */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[3] w-full px-2">
                     <span 
                       className={cn(
-                        "text-[16px] font-bold text-white text-center block leading-tight",
-                        "drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]"
+                        "text-[15px] font-bold text-white text-center block leading-tight whitespace-nowrap",
+                        "drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]"
                       )}
                     >
                       {item.name}
