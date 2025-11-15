@@ -6,6 +6,8 @@ import { AidesMobiliteBlock } from "@/components/home/AidesMobiliteBlock";
 import { TerritoireBlock } from "@/components/home/TerritoireBlock";
 import { EventsSection } from "@/components/home/EventsSection";
 import RecommendedEventsSection from "@/components/home/RecommendedEventsSection";
+import { MessagesSection } from "@/components/home/MessagesSection";
+import { BonsPlansSection } from "@/components/home/BonsPlansSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -177,6 +179,14 @@ const Index = () => {
 
             {/* Événements à venir */}
             <EventsSection />
+
+            {/* Messages & Bons plans */}
+            {isLoggedIn && (
+              <>
+                <MessagesSection />
+                <BonsPlansSection />
+              </>
+            )}
 
             {/* Activités Sport - Carousel horizontal */}
             <ActivitySection
