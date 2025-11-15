@@ -113,12 +113,16 @@ const Booking = () => {
     enabled: authChecked && !!userId // Only run query after auth check and if user is logged in
   });
 
-  // Auto-open add child modal if no children exist
+  // Auto-open add child modal only if no children exist
   useEffect(() => {
     if (authChecked && !loadingChildren && children.length === 0 && !showAddChildModal) {
+      toast({
+        title: "Ajoutez un enfant",
+        description: "Pour réserver cette activité, ajoutez d'abord les informations d'un enfant",
+      });
       setShowAddChildModal(true);
     }
-  }, [authChecked, loadingChildren, children.length, showAddChildModal]);
+  }, [authChecked, loadingChildren, children.length, showAddChildModal, toast]);
 
   // Helper function to calculate age and check eligibility
   const getChildEligibility = (child: any) => {
@@ -302,12 +306,12 @@ const Booking = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             aria-label="Retour"
           >
             <ArrowLeft />
           </Button>
-          <h1 className="font-semibold text-lg">Réservation</h1>
+          <h1 className="font-semibold text-lg">Inscription</h1>
         </div>
       </div>
 
