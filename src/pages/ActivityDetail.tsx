@@ -17,7 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
   MapPin, 
   Users, 
   Accessibility, 
@@ -38,7 +39,8 @@ import {
   CheckCircle2,
   Share2,
   Copy,
-  Check
+  Check,
+  Leaf
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -246,24 +248,9 @@ const ActivityDetail = () => {
       return;
     }
 
-    if (!aidsData) {
-      toast({
-        title: "Évaluation requise",
-        description: "Veuillez d'abord calculer vos aides pour cet enfant",
-        variant: "destructive"
-      });
-      // Scroll vers la section aides
-      const aidsSection = document.getElementById("aides-section");
-      if (aidsSection) {
-        aidsSection.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-      return;
-    }
-
-    // Rediriger vers le récap avec les données d'aides
-    navigate(`/booking-recap/${id}?slotId=${selectedSlotId}`, {
-      state: aidsData
-    });
+    // Rediriger vers la page d'inscription
+    // Les aides sont optionnelles, elles seront reprises si calculées
+    navigate(`/booking/${id}?slotId=${selectedSlotId}`);
   };
 
   const handleAidsCalculated = (data: {
@@ -664,9 +651,17 @@ const ActivityDetail = () => {
                   )}
                 </section>
 
-                {/* Financial Aids Section with integrated calculator */}
+                {/* Financial Aids Section with integrated calculator - OPTIONNEL */}
                 {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
                   <section id="aides-section" className="space-y-4">
+                    <Alert className="bg-muted/50 border-primary/20">
+                      <Info className="h-4 w-4" />
+                      <AlertDescription className="text-sm">
+                        <strong>L'estimation des aides est facultative.</strong> Tu peux t'inscrire directement sans la faire. 
+                        Si tu souhaites connaître ton reste à charge avant de t'inscrire, utilise le calculateur ci-dessous.
+                      </AlertDescription>
+                    </Alert>
+                    
                     <EnhancedFinancialAidCalculator
                       activityId={id!}
                       activityPrice={activity.price_base || 0}
@@ -679,16 +674,54 @@ const ActivityDetail = () => {
                 )}
               </TabsContent>
 
-              {/* Onglet Mobilité */}
+              {/* Onglet Mobilité - Version allégée */}
               <TabsContent value="mobilite" className="mt-0">
-                <EcoMobilitySection 
-                  activityId={activity.id}
-                  activityAddress={activity.structures?.address}
-                  structureName={activity.structures?.name}
-                  structureContactJson={activity.structures?.contact_json}
-                  onTransportModeSelected={handleTransportModeSelected}
-                  selectedTransportMode={bookingState?.transportMode}
-                />
+                <section className="space-y-6">
+                  <div className="space-y-3">
+                    <h2 className="text-2xl font-bold text-foreground">Comment s'y rendre ?</h2>
+                    <p className="text-base text-muted-foreground">
+                      Des solutions de mobilité douce seront bientôt disponibles sur ton territoire.
+                    </p>
+                  </div>
+
+                  <Card className="p-6 bg-muted/30">
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <Leaf size={24} className="text-primary mt-1" />
+                        <div className="space-y-2">
+                          <h3 className="font-semibold text-lg">Bientôt disponible</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Nous travaillons sur l'intégration des services STAS et VéliVert pour te proposer 
+                            des trajets en transport en commun et vélo partagé. En attendant, tu peux calculer 
+                            ton itinéraire ci-dessous.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        variant="outline"
+                        className="w-full"
+                        size="lg"
+                        onClick={() => {
+                          const address = activity.structures?.address;
+                          if (address) {
+                            const encodedAddress = encodeURIComponent(address);
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
+                          } else {
+                            toast({
+                              title: "Adresse non disponible",
+                              description: "Impossible de calculer l'itinéraire",
+                              variant: "destructive"
+                            });
+                          }
+                        }}
+                      >
+                        <MapPin className="mr-2" size={18} />
+                        Calculer mon itinéraire
+                      </Button>
+                    </div>
+                  </Card>
+                </section>
               </TabsContent>
 
               {/* Onglet Échanges */}
@@ -847,20 +880,18 @@ const ActivityDetail = () => {
 
                     <Button
                       onClick={handleBooking}
-                      disabled={!selectedSlotId || !aidsData}
+                      disabled={!selectedSlotId}
                       className="w-full h-12 text-base font-semibold"
                       size="lg"
                     >
-                      {!aidsData 
-                        ? "Calculez d'abord vos aides" 
-                        : !selectedSlotId 
+                      {!selectedSlotId 
                         ? "Sélectionnez un créneau"
-                        : "Demander une inscription"}
+                        : "Inscrire mon enfant"}
                     </Button>
 
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
-                        Complétez la section "Évaluer ton aide" ci-dessous
+                        💡 Tu peux calculer tes aides dans l'onglet "Tarifs" (optionnel)
                       </p>
                     )}
                   </div>
