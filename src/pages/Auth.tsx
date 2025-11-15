@@ -22,7 +22,7 @@ const Auth = () => {
     password: ""
   });
 
-  // Signup state
+  // Signup state (simplifié pour la version bêta)
   const [signupData, setSignupData] = useState({
     firstName: "",
     lastName: "",
@@ -30,10 +30,8 @@ const Auth = () => {
     password: "",
     confirmPassword: ""
   });
-  
-  const [passwordStrength, setPasswordStrength] = useState(0);
 
-  // Check if already logged in (exécuté une seule fois au montage)
+  // Check if already logged in
   useEffect(() => {
     let mounted = true;
     
@@ -50,31 +48,10 @@ const Auth = () => {
     
     checkAuth();
     
-    // Cleanup pour éviter les setState après unmount
     return () => {
       mounted = false;
     };
-  }, []); // Pas de dépendances → exécuté UNE SEULE FOIS
-
-  // Calculate password strength
-  useEffect(() => {
-    const password = signupData.password;
-    let strength = 0;
-    
-    if (password.length >= 8) strength += 25;
-    if (/[A-Z]/.test(password)) strength += 25;
-    if (/[0-9]/.test(password)) strength += 25;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-    
-    setPasswordStrength(strength);
-  }, [signupData.password]);
-
-  const passwordChecks = [
-    { label: "Au moins 8 caractères", valid: signupData.password.length >= 8 },
-    { label: "Une majuscule", valid: /[A-Z]/.test(signupData.password) },
-    { label: "Un chiffre", valid: /[0-9]/.test(signupData.password) },
-    { label: "Un caractère spécial", valid: /[^A-Za-z0-9]/.test(signupData.password) }
-  ];
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,10 +94,11 @@ const Auth = () => {
       return;
     }
 
-    if (passwordStrength < 100) {
+    // Version bêta : seulement 8 caractères minimum
+    if (signupData.password.length < 8) {
       toast({
-        title: "Mot de passe trop faible",
-        description: "Veuillez respecter tous les critères de sécurité",
+        title: "Mot de passe trop court",
+        description: "Le mot de passe doit contenir au moins 8 caractères",
         variant: "destructive"
       });
       return;
@@ -135,8 +113,8 @@ const Auth = () => {
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            first_name: signupData.firstName,
-            last_name: signupData.lastName
+            first_name: signupData.firstName || undefined,
+            last_name: signupData.lastName || undefined
           }
         }
       });
@@ -144,12 +122,12 @@ const Auth = () => {
       if (error) throw error;
 
       toast({
-        title: "Compte créé",
-        description: "Bienvenue ! Complétez votre profil pour accéder aux aides."
+        title: "Bienvenue sur Flooow ! 🎉",
+        description: "Tu utilises la version test. Merci de nous aider à l'améliorer.",
       });
 
-      // Redirect to profile completion
-      navigate("/profile-completion");
+      // Rediriger vers l'onboarding bêta
+      navigate("/onboarding");
     } catch (error: any) {
       toast({
         title: "Erreur d'inscription",
@@ -159,18 +137,6 @@ const Auth = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getStrengthColor = () => {
-    if (passwordStrength < 50) return "bg-destructive";
-    if (passwordStrength < 75) return "bg-yellow-500";
-    return "bg-green-500";
-  };
-
-  const getStrengthLabel = () => {
-    if (passwordStrength < 50) return "Faible";
-    if (passwordStrength < 75) return "Moyen";
-    return "Fort";
   };
 
   return (
@@ -232,21 +198,21 @@ const Auth = () => {
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">Prénom *</Label>
+                    <Label htmlFor="firstName">Prénom (optionnel)</Label>
                     <Input
                       id="firstName"
                       value={signupData.firstName}
                       onChange={(e) => setSignupData({ ...signupData, firstName: e.target.value })}
-                      required
+                      placeholder="Votre prénom"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Nom *</Label>
+                    <Label htmlFor="lastName">Nom (optionnel)</Label>
                     <Input
                       id="lastName"
                       value={signupData.lastName}
                       onChange={(e) => setSignupData({ ...signupData, lastName: e.target.value })}
-                      required
+                      placeholder="Votre nom"
                     />
                   </div>
                 </div>
@@ -270,32 +236,19 @@ const Auth = () => {
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     required
+                    placeholder="Au moins 8 caractères"
                   />
                   
-                  {signupData.password && (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Progress 
-                          value={passwordStrength} 
-                          className={`flex-1 [&>div]:${getStrengthColor()}`}
-                        />
-                        <span className="text-sm font-medium">{getStrengthLabel()}</span>
-                      </div>
-                      
-                      <div className="space-y-1">
-                        {passwordChecks.map((check, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm">
-                            {check.valid ? (
-                              <Check className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <X className="w-4 h-4 text-muted-foreground" />
-                            )}
-                            <span className={check.valid ? "text-foreground" : "text-muted-foreground"}>
-                              {check.label}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                  {signupData.password && signupData.password.length < 8 && (
+                    <p className="text-xs text-muted-foreground">
+                      Encore {8 - signupData.password.length} caractère{8 - signupData.password.length > 1 ? 's' : ''}
+                    </p>
+                  )}
+                  
+                  {signupData.password.length >= 8 && (
+                    <div className="flex items-center gap-2">
+                      <Check className="h-3 w-3 text-green-500" />
+                      <span className="text-xs text-green-500">Mot de passe valide</span>
                     </div>
                   )}
                 </div>
@@ -314,7 +267,7 @@ const Auth = () => {
                 <Button
                   type="submit"
                   className="w-full h-12"
-                  disabled={isLoading || passwordStrength < 100}
+                  disabled={isLoading || !signupData.email || !signupData.password || signupData.password.length < 8}
                 >
                   {isLoading ? "Création..." : "Créer mon compte"}
                 </Button>
