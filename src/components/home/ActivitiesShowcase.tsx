@@ -170,78 +170,9 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
         </div>
       )}
 
-      {/* Sous-carrousel: Innovantes */}
-      {innovativeActivities.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xl font-semibold text-text-main">Innovantes</h3>
-          <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
-            <div className="flex gap-4 px-1">
-              {innovativeActivities.map((activity) => (
-                <div key={activity.id} className="w-[260px] flex-shrink-0 snap-start">
-                  <div className="relative">
-                    <Badge 
-                      className="absolute top-2 left-2 z-10 bg-accent-orange text-white"
-                    >
-                      Nouveau
-                    </Badge>
-                    <ActivityCard
-                      {...activity}
-                      ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
-                      periodType={activity.periodType}
-                      structureName={activity.structureName}
-                      structureAddress={activity.structureAddress}
-                      vacationType={activity.vacationType}
-                      priceUnit={activity.priceUnit}
-                      hasAccommodation={activity.hasAccommodation}
-                      aidesEligibles={activity.aidesEligibles}
-                      mobility={activity.mobility}
-                      onRequestClick={() => handleActivityClick(activity.id)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Sous-carrousel: À proximité */}
-      {nearbyActivities.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xl font-semibold text-text-main">À proximité</h3>
-          <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
-            <div className="flex gap-4 px-1">
-              {nearbyActivities.map((activity) => (
-                <div key={activity.id} className="w-[260px] flex-shrink-0 snap-start">
-                  <div className="relative">
-                    {activity.distance && (
-                      <Badge 
-                        className="absolute top-2 left-2 z-10 bg-accent-blue text-white flex items-center gap-1"
-                      >
-                        <MapPin size={12} />
-                        {activity.distance}
-                      </Badge>
-                    )}
-                    <ActivityCard
-                      {...activity}
-                      ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
-                      periodType={activity.periodType}
-                      structureName={activity.structureName}
-                      structureAddress={activity.structureAddress}
-                      vacationType={activity.vacationType}
-                      priceUnit={activity.priceUnit}
-                      hasAccommodation={activity.hasAccommodation}
-                      aidesEligibles={activity.aidesEligibles}
-                      mobility={activity.mobility}
-                      onRequestClick={() => handleActivityClick(activity.id)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Section "Innovantes" désactivée pour simplifier la Home */}
+      
+      {/* Section "À proximité" désactivée pour simplifier la Home */}
     </section>
   );
 };
