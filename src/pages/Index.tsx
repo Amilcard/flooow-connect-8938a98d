@@ -3,12 +3,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { UniversSection } from "@/components/UniversSection";
 import { StaticSections } from "@/components/home/StaticSections";
-import { EventsSection } from "@/components/home/EventsSection";
-import RecommendedEventsSection from "@/components/home/RecommendedEventsSection";
-import { MessagesSection } from "@/components/home/MessagesSection";
-import { BonsPlansSection } from "@/components/home/BonsPlansSection";
 import { useActivities } from "@/hooks/useActivities";
-import { useMockActivities } from "@/hooks/useMockActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
 import { ErrorState } from "@/components/ErrorState";
@@ -19,7 +14,6 @@ import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
 import Footer from "@/components/Footer";
 import HelpFloatingButton from "@/components/HelpFloatingButton";
-import type { Activity } from "@/types/domain";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -102,26 +96,8 @@ const Index = () => {
   
   const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ 
     limit: 6, 
-    territoryId: userTerritory?.id // Filtre par territoire
-  });
-  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
-    maxPrice: 50, 
-    limit: 6,
     territoryId: userTerritory?.id
   });
-  const { data: healthActivities = [], isLoading: loadingHealth } = useActivities({ 
-    hasAccessibility: true, 
-    limit: 6,
-    territoryId: userTerritory?.id
-  });
-  const { data: sportActivities = [], isLoading: loadingSport } = useActivities({ 
-    category: 'sport', 
-    limit: 6,
-    territoryId: userTerritory?.id
-  });
-  const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(8);
-
-  const isLoading = loadingNearby || loadingBudget || loadingHealth || loadingSport || loadingMocks;
 
 
   if (errorNearby) {
@@ -161,70 +137,26 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* Carrousel d'activités en haut */}
-            <ActivitySection
-              title="Activités à la Une"
-              activities={nearbyActivities}
-              onSeeAll={() => navigate("/activities?type=nearby")}
-              onActivityClick={(id) => console.log("Activity clicked:", id)}
-              layout="carousel"
-            />
-
-            {/* Sections statiques Flooow */}
-            {isLoggedIn && <StaticSections />}
-
-            {/* Section Univers */}
-            <UniversSection />
-
-            {/* Petits budgets - Carousel horizontal */}
-            <ActivitySection
-              title="Activités à petits prix"
-              activities={budgetActivities}
-              onSeeAll={() => navigate("/activities?type=budget")}
-              onActivityClick={(id) => console.log("Activity clicked:", id)}
-              layout="carousel"
-            />
-
-            {/* Événements à venir */}
-            <EventsSection />
-
-            {/* Messages & Bons plans */}
-            {isLoggedIn && (
-              <div id="messages-section">
-                <MessagesSection />
-                <BonsPlansSection />
-              </div>
-            )}
-
-            {/* Activités Sport - Carousel horizontal */}
-            <ActivitySection
-              title="Activités Sport & Bien-être"
-              activities={sportActivities}
-              onSeeAll={() => navigate("/activities?category=sport")}
-              onActivityClick={(id) => console.log("Activity clicked:", id)}
-              layout="carousel"
-            />
-
-            {/* Recommandations personnalisées */}
-            <RecommendedEventsSection />
-
-            {/* Activités Innovantes - Carousel horizontal */}
-            <ActivitySection
-              title="Activités Innovantes"
-              activities={healthActivities}
-              onSeeAll={() => navigate("/activities?type=health")}
-              onActivityClick={(id) => console.log("Activity clicked:", id)}
-              layout="carousel"
-            />
-
-            {/* Section mocks masquée si vide (edge function indisponible) */}
-            {mockActivities.length > 0 && (
+            {/* ========== SECTION 1: ACTIVITÉS À LA UNE ========== */}
+            <section className="space-y-4">
               <ActivitySection
-                title="Activités Saint-Étienne (Mocks)"
-                activities={mockActivities}
-                onActivityClick={(id) => console.log("Mock activity clicked:", id)}
+                title="Activités à la Une"
+                activities={nearbyActivities}
+                onSeeAll={() => navigate("/activities?type=nearby")}
+                onActivityClick={(id) => console.log("Activity clicked:", id)}
+                layout="carousel"
               />
-            )}
+            </section>
+
+            {/* ========== SECTION 2: UNIVERS ========== */}
+            <section className="space-y-4">
+              <UniversSection />
+            </section>
+
+            {/* ========== SECTION 3: ACTUALITÉS ET OUTILS ========== */}
+            <section className="space-y-4">
+              {isLoggedIn && <StaticSections />}
+            </section>
           </>
         )}
       </main>
