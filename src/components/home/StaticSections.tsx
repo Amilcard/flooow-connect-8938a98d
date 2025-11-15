@@ -1,80 +1,92 @@
+import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Bell, Calendar, MessageCircle, DollarSign } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import actualiteAides from "@/assets/actualite-aides.jpg";
+import actualiteVille from "@/assets/actualite-ville.jpg";
+import actualiteTrajets from "@/assets/actualite-trajets.jpg";
+import actualitePrix from "@/assets/actualite-prix.jpg";
 
-interface NewsCardProps {
-  background: string;
-  Icon: typeof Bell;
-  text: string;
+interface StaticCardProps {
+  image: string;
+  title: string;
+  description: string;
   onClick: () => void;
 }
 
-const NewsCard = ({ background, Icon, text, onClick }: NewsCardProps) => {
+const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => {
   return (
-    <div 
-      className="w-full h-[70px] rounded-[12px] flex items-center gap-3 px-4 cursor-pointer hover:scale-[1.02] transition-transform"
-      style={{ background }}
+    <Card 
+      className="group p-4 cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-[14px] h-[104px] flex items-center gap-4 shadow-[0px_2px_8px_rgba(0,0,0,0.06)]"
       onClick={onClick}
     >
-      <Icon className="w-6 h-6 text-white flex-shrink-0" />
-      <p className="text-[14px] font-semibold text-white flex-1">
-        {text}
-      </p>
-    </div>
+      {/* Image à gauche */}
+      <div className="w-[80px] h-[80px] rounded-[10px] overflow-hidden flex-shrink-0">
+        <img 
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      
+      {/* Texte à droite */}
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-[16px] text-text-main mb-1 group-hover:text-primary transition-colors">
+          {title}
+        </h3>
+        <p className="text-[13px] text-[#555555] line-clamp-2 leading-relaxed">
+          {description}
+        </p>
+      </div>
+      
+      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+    </Card>
   );
 };
 
 export const StaticSections = () => {
   const navigate = useNavigate();
 
-  const newsCards = [
+  const sections = [
     {
-      background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
-      Icon: Bell,
-      text: "Nouveautés Flooow",
-      path: "/community"
-    },
-    {
-      background: "linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)",
-      Icon: Calendar,
-      text: "Événements à venir",
-      path: "/community"
-    },
-    {
-      background: "linear-gradient(135deg, #EC4899 0%, #F472B6 100%)",
-      Icon: MessageCircle,
-      text: "Retours familles",
-      path: "/community"
-    },
-    {
-      background: "linear-gradient(135deg, #10B981 0%, #34D399 100%)",
-      Icon: DollarSign,
-      text: "Aides disponibles",
+      image: actualiteAides,
+      title: "Mes aides financières",
+      description: "Simuler et retrouver tes aides pour les activités.",
       path: "/aides"
+    },
+    {
+      image: actualiteVille,
+      title: "Ma ville, mon actu",
+      description: "Infos locales, actus et événements près de chez toi.",
+      path: "/community"
+    },
+    {
+      image: actualiteTrajets,
+      title: "Mes trajets",
+      description: "Préparer le trajet pour aller à une activité.",
+      path: "/eco-mobilite"
+    },
+    {
+      image: actualitePrix,
+      title: "Prix Bon Esprit",
+      description: "Découvrir les clubs et jeunes mis à l'honneur.",
+      path: "/community"
     }
   ];
 
   return (
-    <section className="px-4 mt-6 mb-20">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-[18px] font-bold text-[#1F2937]">Actualités</h2>
-        <button 
-          onClick={() => navigate('/community')}
-          className="text-[13px] font-medium text-[#FF6B35]"
-        >
-          Toutes nos actualités
-        </button>
-      </div>
+    <section className="py-8 px-4 -mx-4 bg-gray-50/50 rounded-2xl space-y-5">
+      <h2 className="text-[20px] font-semibold text-[#222222]">
+        Actualités et outils pour ta famille
+      </h2>
       
-      {/* Cartes en vertical */}
-      <div className="flex flex-col gap-3">
-        {newsCards.map((card, index) => (
-          <NewsCard
+      <div className="grid gap-[14px]">
+        {sections.map((section, index) => (
+          <StaticCard
             key={index}
-            background={card.background}
-            Icon={card.Icon}
-            text={card.text}
-            onClick={() => navigate(card.path)}
+            image={section.image}
+            title={section.title}
+            description={section.description}
+            onClick={() => navigate(section.path)}
           />
         ))}
       </div>

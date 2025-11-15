@@ -37,19 +37,14 @@ const univers: Univers[] = [
     name: 'Loisirs',
     image: universLoisirs,
     testId: 'icon-category-loisirs'
-  }
+  },
+  {
+    id: 'vacances',
+    name: 'Vacances',
+    image: universVacances,
+    testId: 'icon-category-vacances'
+  },
 ];
-
-const getGradientForUniverse = (id: string) => {
-  const gradients: Record<string, string> = {
-    'sport': 'linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)',
-    'culture': 'linear-gradient(135deg, #EC4899 0%, #F472B6 100%)',
-    'apprentissage': 'linear-gradient(135deg, #10B981 0%, #34D399 100%)',
-    'loisirs': 'linear-gradient(135deg, #A855F7 0%, #C084FC 100%)',
-    'vacances': 'linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)',
-  };
-  return gradients[id] || gradients['sport'];
-};
 
 export const UniversSection = () => {
   const navigate = useNavigate();
@@ -62,24 +57,24 @@ export const UniversSection = () => {
 
   return (
     <section 
-      className="w-full py-4 px-4" 
+      className="w-full py-4 bg-[#F8F8F8]" 
       aria-labelledby="univers-title"
     >
-      <div className="max-w-[1200px] mx-auto">
+      <div className="max-w-[1200px] mx-auto px-6">
         <h2 
           id="univers-title" 
-          className="text-[18px] font-bold text-[#1F2937] mb-3"
+          className="text-[18px] font-semibold text-[#222222] mb-4"
         >
           Découvrir nos univers
         </h2>
 
-        {/* Scrollable horizontal */}
+        {/* Desktop: Ligne centrée - Mobile: Scrollable horizontal */}
         <div 
-          className="w-full overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4"
+          className="w-full overflow-x-auto scrollbar-hide pb-2"
           role="list"
           aria-label="Univers d'activités"
         >
-          <div className="flex gap-[6px] min-w-max">
+          <div className="flex gap-3 justify-center md:justify-between items-center min-w-max md:min-w-0">
             {univers.map((item) => {
               const isActive = activeUniverse === item.id;
               
@@ -88,32 +83,35 @@ export const UniversSection = () => {
                   key={item.id}
                   onClick={() => handleUniversClick(item.id)}
                   className={cn(
-                    "relative w-[84px] h-[84px] rounded-[16px] overflow-hidden flex-shrink-0",
-                    "transition-all duration-300 ease-out",
+                    "relative w-[85px] h-[105px] rounded-[14px] overflow-hidden",
+                    "group transition-all duration-300 ease-out",
                     "hover:scale-105 hover:shadow-lg",
                     isActive 
-                      ? "shadow-[0_4px_12px_rgba(255,107,53,0.3)]" 
-                      : "shadow-[0_2px_6px_rgba(0,0,0,0.08)]"
+                      ? "shadow-[0_4px_12px_rgba(127,86,217,0.3)]" 
+                      : "shadow-[0_2px_6px_rgba(0,0,0,0.04)]"
                   )}
-                  style={{ background: getGradientForUniverse(item.id) }}
                   role="listitem"
                   aria-label={`Voir les activités ${item.name}`}
                   aria-current={isActive ? 'page' : undefined}
                   data-testid={item.testId}
                 >
-                  {/* Image en overlay avec opacity */}
+                  {/* Image de fond */}
                   <img 
                     src={item.image}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover opacity-25"
+                    alt={item.name}
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                   
-                  {/* Texte centré */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[3] w-full px-2">
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  
+                  {/* Label en overlay */}
+                  <div className="absolute inset-x-0 bottom-0 p-2 flex items-end justify-center">
                     <span 
                       className={cn(
-                        "text-[15px] font-bold text-white text-center block leading-tight whitespace-nowrap",
-                        "drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]"
+                        "text-[16px] font-semibold text-white text-center leading-tight",
+                        "drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]",
+                        isActive && "scale-105"
                       )}
                     >
                       {item.name}
