@@ -12,10 +12,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: Home, label: "Accueil", path: "/", activeColor: "text-primary" },
-  { icon: Search, label: "Recherche", path: "/search", activeColor: "text-accent-blue" },
-  { icon: Grid3x3, label: "Univers", path: "/univers", activeColor: "text-accent-green" },
-  { icon: User, label: "Mon compte", path: "/mon-compte", activeColor: "text-accent-orange" },
+  { icon: Home, label: "Accueil", path: "/", activeColor: "text-orange" },
+  { icon: Search, label: "Recherche", path: "/search", activeColor: "text-orange" },
+  { icon: Grid3x3, label: "Univers", path: "/univers", activeColor: "text-orange" },
+  { icon: User, label: "Mon compte", path: "/mon-compte", activeColor: "text-orange" },
 ];
 
 export const BottomNavigation = () => {
