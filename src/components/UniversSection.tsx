@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Dumbbell, Palette, GraduationCap, Gamepad2, Briefcase } from "lucide-react";
@@ -60,66 +59,50 @@ export const UniversSection = () => {
   const navigate = useNavigate();
 
   const handleUniversClick = (universId: string) => {
-    // Navigate to activities page with universe filter
     navigate(`/activities?universe=${universId}`);
   };
 
   return (
-    <section className="w-full mt-16" aria-labelledby="univers-title">
-      {/* Titre de section WeTransfer style - Police display serif */}
-      <div className="mb-8">
-        <h2 id="univers-title" className="font-display text-4xl md:text-5xl text-foreground mb-3">
-          Découvrir nos univers
-        </h2>
-        <p className="text-base text-text-muted font-light">
-          Explorez nos catégories d'activités
-        </p>
-      </div>
+    <section className="w-full space-y-4" aria-labelledby="univers-title">
+      <h2 id="univers-title" className="text-2xl font-bold text-text-main">
+        Découvrir nos univers
+      </h2>
 
-      {/* Grille responsive WeTransfer style - Plus d'espace, cartes plus grandes */}
+      {/* Ligne horizontale scrollable d'icônes */}
       <div 
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"
+        className="w-full overflow-x-auto pb-2 -mx-4 px-4"
         role="list"
         aria-label="Univers d'activités"
       >
-        {univers.map((item) => (
-          <Card
-            key={item.id}
-            onClick={() => handleUniversClick(item.id)}
-            className="group relative overflow-hidden cursor-pointer
-                       h-44 flex flex-col items-center justify-center
-                       bg-white border-0
-                       transition-all duration-300 ease-out hover:-translate-y-2
-                       shadow-md hover:shadow-2xl rounded-3xl"
-            role="listitem"
-          >
-            {/* Fond coloré au survol - Style WeTransfer */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-soft to-accent-soft opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* Contenu de la carte - Icône agrandie style WeTransfer */}
-            <div className="relative z-10 flex flex-col items-center justify-center gap-4 p-5">
-              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-accent/15
+        <div className="flex gap-4" style={{ width: "max-content" }}>
+          {univers.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleUniversClick(item.id)}
+              className="flex flex-col items-center gap-2 min-w-[100px] group"
+              role="listitem"
+              aria-label={`Voir les activités ${item.name}`}
+            >
+              <div className="w-20 h-20 rounded-2xl bg-card border border-border
                             flex items-center justify-center 
-                            shadow-sm group-hover:shadow-lg
-                            transition-all duration-300 ease-out group-hover:scale-110">
+                            shadow-sm hover:shadow-md
+                            transition-all duration-300 ease-out group-hover:scale-105
+                            group-hover:border-primary">
                 <AppIcon 
                   Icon={item.icon} 
-                  size="lg" 
+                  size="md" 
                   color="primary"
                   title={item.name}
                   data-testid={item.testId}
-                  className="w-12 h-12"
                 />
               </div>
-              <h3 className="text-base font-semibold text-text-main text-center group-hover:text-primary transition-colors">
+              
+              <span className="text-sm font-medium text-text-main text-center">
                 {item.name}
-              </h3>
-            </div>
-
-            {/* Indicateur visuel au survol - Plus épais */}
-            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary to-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-b-3xl" />
-          </Card>
-        ))}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
