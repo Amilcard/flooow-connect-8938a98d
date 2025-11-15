@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppIcon } from "@/components/ui/app-icon";
 import { HelpCircle, Calculator, ExternalLink, Bus, Bike, UsersRound, MapPin } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 const AidesMobilite = () => {
   const [searchParams] = useSearchParams();
@@ -140,6 +141,11 @@ const AidesMobilite = () => {
   return (
     <PageLayout>
       <div className="container py-6 space-y-6">
+        {/* Bouton de retour amélioré */}
+        <div className="mb-4">
+          <BackButton fallback="/" showText={true} label="Retour à l'accueil" />
+        </div>
+        
         <div>
           <h1 className="text-3xl font-bold mb-2">Mes aides & mobilités</h1>
           <p className="text-muted-foreground">
@@ -210,7 +216,12 @@ const AidesMobilite = () => {
                     </div>
                     {aide.links && aide.links.length > 0 && (
                       <div className="pt-2 border-t">
-                        <p className="text-xs text-muted-foreground mb-2">Sources officielles :</p>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          <span className="inline-flex items-center gap-1">
+                            <ExternalLink className="w-3 h-3" />
+                            Sources officielles (ouverture externe) :
+                          </span>
+                        </p>
                         <div className="flex flex-wrap gap-2">
                           {aide.links.map((link) => (
                           <a
@@ -218,7 +229,8 @@ const AidesMobilite = () => {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline px-2 py-1 rounded bg-primary/5 hover:bg-primary/10 transition-colors"
+                            title="Ouvre un site partenaire dans un nouvel onglet"
                           >
                             {link.label}
                             <ExternalLink className="w-3 h-3" />
@@ -334,7 +346,12 @@ const AidesMobilite = () => {
 
                     {option.links && option.links.length > 0 && (
                       <div className="pt-2 border-t">
-                        <p className="text-xs text-muted-foreground mb-2">Sources :</p>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          <span className="inline-flex items-center gap-1">
+                            <ExternalLink className="w-3 h-3" />
+                            Sources (ouverture externe) :
+                          </span>
+                        </p>
                         <div className="flex flex-wrap gap-2">
                           {option.links.map((link) => (
                             <a
@@ -342,7 +359,8 @@ const AidesMobilite = () => {
                               href={link.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline px-2 py-1 rounded bg-primary/5 hover:bg-primary/10 transition-colors"
+                              title="Ouvre un site partenaire dans un nouvel onglet"
                             >
                               {link.label}
                               <ExternalLink className="w-3 h-3" />

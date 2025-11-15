@@ -10,6 +10,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { BackButton } from "@/components/BackButton";
+import { ActivityShareButton } from "@/components/ActivityShareButton";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -361,8 +362,21 @@ const ActivityDetail = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Minimalist Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container flex items-center gap-3 py-4 px-4 md:px-6">
-          <BackButton fallback="/activities" variant="ghost" size="icon" className="hover:bg-muted" />
+        <div className="container flex items-center justify-between gap-3 py-4 px-4 md:px-6">
+          <BackButton fallback="/activities" showText={true} label="Retour aux activités" />
+          <ActivityShareButton 
+            activity={{
+              id: activity.id,
+              title: activity.title,
+              description: activity.description || undefined,
+              category: activity.category,
+              price: activity.price_base || undefined,
+              location: (activity.structures as any)?.address || undefined
+            }}
+            variant="ghost"
+            size="default"
+            showLabel={false}
+          />
         </div>
       </div>
 
