@@ -1,0 +1,237 @@
+{
+  "export_date": "2025-11-15",
+  "description": "Export des tarifs d'activités groupés par période et type de durée",
+  
+  "summary_by_period_and_duration": {
+    "SAISON_SCOLAIRE": {
+      "ANNUEL": {
+        "Apprentissage": {
+          "nb_activities": 1,
+          "price_range": "100€",
+          "examples": ["Atelier Langues - Anglais Débutant: 100€/an"]
+        },
+        "Culture": {
+          "nb_activities": 7,
+          "price_range": "10€ - 150€",
+          "avg_price": "58.72€",
+          "examples": [
+            "Chorale Enfants - Initiation: 10€/an",
+            "Atelier Hip-Hop - CréaRythme: 60€/an",
+            "Atelier Arts Plastiques: 80€/an",
+            "Atelier Photo & Création: 150€/an"
+          ]
+        },
+        "Sport": {
+          "nb_activities": 5,
+          "price_range": "40€ - 150€",
+          "avg_price": "96€",
+          "examples": [
+            "Atelier Basket Jeunes: 40€/an",
+            "Atelier Judo Kids: 120€/an",
+            "Licence Football U11: 150€/an"
+          ]
+        },
+        "Loisirs": {
+          "nb_activities": 6,
+          "price_range": "20€ - 150€",
+          "avg_price": "113.33€"
+        }
+      },
+      "TRIMESTRIEL": {
+        "Apprentissage": {
+          "nb_activities": 7,
+          "price_range": "20€ - 120€",
+          "avg_price": "60€",
+          "examples": [
+            "Atelier Soutien Scolaire - Méthodo: 20€/trimestre",
+            "Atelier Coding Junior: 120€/trimestre"
+          ],
+          "notes": "⚠️ INCOHÉRENCE: Soutien scolaire à 20€/trimestre = 60€/an vs autres activités annuelles plus chères"
+        },
+        "Sport": {
+          "nb_activities": 1,
+          "price_range": "120€",
+          "examples": ["Club d'Escalade - Niveau Intermédiaire: 120€/trimestre"]
+        },
+        "Loisirs": {
+          "nb_activities": 2,
+          "price_range": "70€ - 80€",
+          "avg_price": "73.57€"
+        }
+      }
+    },
+    
+    "VACANCES": {
+      "STAGES_SPORT": {
+        "nb_activities": 3,
+        "price_range": "10€ - 180€",
+        "avg_price": "103.33€",
+        "duration": "5 jours",
+        "examples": [
+          {
+            "name": "Stage Foot - Académie Juniors",
+            "price": "10€/stage",
+            "age": "6-9 ans",
+            "duration_days": 5,
+            "note": "⚠️ PRIX TRÈS BAS - Possible erreur ou prix subventionné"
+          },
+          {
+            "name": "Stage Football Été",
+            "price": "120€/stage",
+            "age": "6-17 ans",
+            "duration_days": 5,
+            "note": "Prix cohérent pour un stage sportif de 5 jours"
+          },
+          {
+            "name": "Stage Multi-Sports Printemps",
+            "price": "180€/stage",
+            "age": "10-13 ans",
+            "duration_days": 5
+          }
+        ],
+        "analysis": "ÉCART IMPORTANT: 10€ vs 120€ pour des stages foot similaires (5 jours) - Vérifier si Stage Académie Juniors n'est pas une demi-journée ou un tarif journalier"
+      },
+      
+      "STAGES_CULTURE": {
+        "nb_activities": 1,
+        "price_range": "40€",
+        "examples": [
+          {
+            "name": "Stage Cirque - Vacances",
+            "price": "40€/stage",
+            "age": "6-13 ans"
+          }
+        ]
+      },
+      
+      "SEJOURS": {
+        "price_per_week": {
+          "nb_activities": 6,
+          "price_range": "520€ - 680€",
+          "avg_price": "596.67€",
+          "examples": [
+            {
+              "name": "Séjour Linguistique Court - Vacances",
+              "price": "680€/semaine",
+              "age": "10-13 ans",
+              "duration_days": 7,
+              "includes": "hébergement + activités"
+            },
+            {
+              "name": "Camp Nature et Aventure",
+              "price": "520€/semaine",
+              "age": "8-14 ans",
+              "duration_days": 7
+            }
+          ]
+        },
+        "price_per_stage": {
+          "nb_activities": 2,
+          "price_range": "60€ - 150€",
+          "avg_price": "117.86€",
+          "note": "Activités sans hébergement"
+        }
+      }
+    }
+  },
+
+  "detailed_pricing_examples": [
+    {
+      "id": "cb138d36-64c5-4340-baed-97b040c8a080",
+      "name": "Stage Foot - Académie Juniors",
+      "category": "Sport",
+      "period_type": "school_holidays",
+      "price_base": 10.00,
+      "price_unit": "par stage",
+      "duration_days": 5,
+      "age_min": 6,
+      "age_max": 9,
+      "issue": "⚠️ PRIX ANORMALEMENT BAS pour un stage de 5 jours"
+    },
+    {
+      "id": "d5fce2cd-9063-4779-9bb1-2c73f1ff88e6",
+      "name": "Stage Football Été",
+      "category": "Sport",
+      "period_type": "school_holidays",
+      "price_base": 120.00,
+      "price_unit": "par stage",
+      "duration_days": 5,
+      "age_min": 6,
+      "age_max": 17,
+      "note": "Prix cohérent"
+    },
+    {
+      "id": "4aa08b39-72e4-4e0c-b908-539027b0a8ba",
+      "name": "Atelier Basket Jeunes",
+      "category": "Sport",
+      "period_type": "annual",
+      "price_base": 40.00,
+      "price_unit": "par an",
+      "age_min": 10,
+      "age_max": 13,
+      "note": "Prix très attractif pour une licence annuelle"
+    },
+    {
+      "id": "3d832805-4792-4f90-bef9-ecde395f84a8",
+      "name": "Séjour Linguistique Court - Vacances",
+      "category": "Vacances",
+      "period_type": "school_holidays",
+      "price_base": 680.00,
+      "price_unit": "par semaine de séjour",
+      "duration_days": 7,
+      "age_min": 10,
+      "age_max": 13,
+      "note": "Prix cohérent pour séjour avec hébergement"
+    }
+  ],
+
+  "inconsistencies_detected": [
+    {
+      "severity": "HIGH",
+      "issue": "Stage Foot - Académie Juniors à 10€ pour 5 jours",
+      "comparison": "Stage Football Été à 120€ pour 5 jours",
+      "ratio": "12x moins cher",
+      "recommendation": "Vérifier si le prix de 10€ est correct ou s'il s'agit d'un tarif journalier (devrait être 50€) ou d'une demi-journée"
+    },
+    {
+      "severity": "MEDIUM",
+      "issue": "Atelier Soutien Scolaire à 20€/trimestre",
+      "analysis": "20€ × 3 trimestres = 60€/an, ce qui est cohérent avec d'autres activités annuelles peu chères",
+      "recommendation": "Vérifier si c'est un tarif subventionné ou si la durée est réduite"
+    },
+    {
+      "severity": "LOW",
+      "issue": "Large fourchette de prix pour activités Sport annuelles",
+      "range": "40€ - 150€",
+      "explanation": "Peut s'expliquer par différents niveaux d'équipements et fréquences"
+    }
+  ],
+
+  "recommendations": {
+    "price_normalization": [
+      "Harmoniser les prix des stages sportifs de même durée (5 jours)",
+      "Clarifier les unités de prix (jour vs stage vs semaine)",
+      "Documenter les tarifs subventionnés explicitement"
+    ],
+    "data_quality": [
+      "Ajouter un champ 'price_note' pour expliquer les tarifs exceptionnels",
+      "Standardiser duration_type (JOUR, DEMI_JOUR, SEMAINE, STAGE_5J, ANNUEL, etc.)",
+      "Vérifier cohérence entre duration_days et price_unit"
+    ]
+  },
+
+  "statistics": {
+    "total_activities": 95,
+    "by_period": {
+      "annual": 39,
+      "trimester": 20,
+      "school_holidays": 36
+    },
+    "price_distribution": {
+      "0-50€": "Stages courts ou activités subventionnées",
+      "50-150€": "Activités régulières saison scolaire",
+      "150-300€": "Licences sportives annuelles premium",
+      "300€+": "Séjours avec hébergement"
+    }
+  }
+}
