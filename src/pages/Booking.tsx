@@ -8,11 +8,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { ArrowLeft, User, Calendar, MapPin, AlertCircle } from "lucide-react";
+import { ArrowLeft, User, Calendar, MapPin, AlertCircle, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useBookingDraft } from "@/hooks/useBookingDraft";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSmartBack } from "@/hooks/useSmartBack";
+import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 
 const Booking = () => {
   const { id } = useParams();
@@ -27,6 +28,9 @@ const Booking = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  
+  // Récupérer les aides depuis le localStorage si elles existent
+  const { state: bookingState } = useActivityBookingState(id!);
 
   // Check authentication on mount
   useEffect(() => {
@@ -126,77 +130,71 @@ const Booking = () => {
           description: "Veuillez vous connecter",
           variant: "destructive"
         });
-        navigate("/");
+        navigate("/login");
         return;
       }
 
-      // Generate compact idempotency key (<100 chars)
+      // Generate idempotency key
       const compact = (s: string) => s.replace(/-/g, "").slice(0, 8);
       const idempotencyKey = `bkg_${compact(id!)}_${compact(slotId!)}_${compact(selectedChildId)}_${Date.now().toString(36)}`;
 
-      // Log payload for debugging
-      console.log("[booking] invoke payload", {
+      // Préparer les données de réservation
+      const bookingData: any = {
         activity_id: id,
         slot_id: slotId,
         child_id: selectedChildId,
         idempotency_key: idempotencyKey,
-        idempotency_key_length: idempotencyKey.length
-      });
+        express_flag: false
+      };
 
-      // Call edge function instead of direct insert
-      const { data, error } = await supabase.functions.invoke("bookings", {
-        body: {
-          activity_id: id,
-          slot_id: slotId,
-          child_id: selectedChildId,
-          idempotency_key: idempotencyKey,
-          express_flag: false
-        }
-      });
-
-      // Handle domain errors returned as success=false
-      if (!error && data && (data as any).success === false) {
-        const err = (data as any).error || {};
-        toast({
-          title: "Réservation non éligible",
-          description: err.message || "Cette réservation n'est pas possible",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
+      // Ajouter les aides si elles ont été calculées (optionnel)
+      if (bookingState?.calculated && bookingState.aids) {
+        bookingData.aids_applied = bookingState.aids;
+        bookingData.aids_total_cents = Math.round(bookingState.totalAids * 100);
+        bookingData.final_price_cents = Math.round(bookingState.remainingPrice * 100);
       }
+
+      // Call bookings edge function
+      const { data, error } = await supabase.functions.invoke("bookings", {
+        body: bookingData
+      });
 
       if (error) {
-        // Parse error response for better messages
-        const errorData = error.context?.body;
-        throw new Error(errorData?.message || errorData?.error || error.message);
+        console.error("Edge function error:", error);
+        
+        // Check for idempotency - booking already exists
+        if (error.message?.includes("idempotency") || error.message?.includes("already exists")) {
+          toast({
+            title: "Demande déjà envoyée",
+            description: "Cette réservation a déjà été traitée",
+            variant: "default"
+          });
+          navigate(`/booking-status/${id}?status=pending`);
+          return;
+        }
+        
+        throw error;
       }
 
-      // Show success with pricing breakdown
-      const pricing = data.pricing;
-      let description = "Votre demande de réservation a bien été enregistrée";
-
-      if (pricing && pricing.aids_total_euros > 0) {
-        description = `Prix initial: ${pricing.base_price_euros}€ - Aides: ${pricing.aids_total_euros}€ = ${pricing.final_price_euros}€ à payer`;
-      } else if (pricing && pricing.base_price_euros > 0) {
-        description = `Montant: ${pricing.base_price_euros}€ (aucune aide applicable)`;
+      if (!data || data.error) {
+        throw new Error(data?.error || "Erreur lors de la création de la réservation");
       }
 
+      // Success
+      clearDraft();
       toast({
         title: "Demande envoyée",
-        description
+        description: "Ta demande d'inscription a bien été transmise au club",
       });
 
-      navigate(`/booking-status/${data.id}`);
-      clearDraft();
+      // Navigate to status page
+      navigate(`/booking-status/${id}?status=pending&bookingId=${data.booking?.id}`);
+      
     } catch (error: any) {
-      // Extract structured error information
-      const errorMessage = error.message || "Une erreur est survenue";
-      const errorHint = error.hint || "";
-
+      console.error("Booking error:", error);
       toast({
-        title: "Erreur lors de la réservation",
-        description: errorHint ? `${errorMessage}. ${errorHint}` : errorMessage,
+        title: "Erreur",
+        description: error.message || "Impossible de finaliser la réservation",
         variant: "destructive"
       });
     } finally {
@@ -258,7 +256,27 @@ const Booking = () => {
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Réservation en cours récupérée. Vous pouvez continuer là où vous vous êtes arrêté.
+              Réservation en cours récupérée. Tu peux continuer là où tu t'es arrêté.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Info sur les aides */}
+        {bookingState?.calculated && bookingState.totalAids > 0 && (
+          <Alert className="bg-primary/10 border-primary/20">
+            <Info className="h-4 w-4 text-primary" />
+            <AlertDescription>
+              <strong>Tes aides ont été prises en compte :</strong> {bookingState.totalAids.toFixed(2)}€ d'aides seront appliquées. 
+              Reste à charge : <strong>{bookingState.remainingPrice.toFixed(2)}€</strong>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {!bookingState?.calculated && (
+          <Alert className="bg-muted/50 border-muted">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Tu peux revenir sur la fiche activité pour calculer tes aides avant de valider (optionnel).
             </AlertDescription>
           </Alert>
         )}
