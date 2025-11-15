@@ -16,11 +16,11 @@ interface StaticCardProps {
 const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => {
   return (
     <Card 
-      className="group cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-xl overflow-hidden shadow-card h-[160px] md:h-[220px] flex flex-row"
+      className="group cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-xl overflow-hidden shadow-card h-[160px] md:h-[220px] flex flex-row border-0"
       onClick={onClick}
     >
       {/* Texte à gauche - 60% */}
-      <div className="flex-1 w-[60%] p-4 md:p-6 flex flex-col justify-center">
+      <div className="flex-[6] p-4 md:p-6 flex flex-col justify-center min-w-0">
         <h3 className="font-semibold text-[16px] md:text-[18px] text-text-main mb-2 group-hover:text-primary transition-colors leading-[1.35]">
           {title}
         </h3>
@@ -30,11 +30,11 @@ const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => 
       </div>
       
       {/* Image à droite - 40% */}
-      <div className="w-[40%] md:w-[360px] h-full flex-shrink-0">
+      <div className="flex-[4] h-full flex-shrink-0 relative overflow-hidden">
         <img 
           src={image}
           alt={title}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
       </div>
     </Card>
