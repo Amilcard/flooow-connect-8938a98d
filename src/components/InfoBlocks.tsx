@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { AppIcon } from "@/components/ui/app-icon";
 import { BadgeEuro, Bike, Heart } from "lucide-react";
 import { LucideIcon } from "lucide-react";
-import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
+import aidesFinancieresImg from "@/assets/pass-sport.png";
 import ecoMobiliteImg from "@/assets/eco-mobilite.jpg";
 import handicapSanteImg from "@/assets/handicap-sante.jpg";
 
