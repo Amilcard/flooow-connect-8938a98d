@@ -147,7 +147,6 @@ const Index = () => {
           </>
         )}
       </main>
-      <Footer />
       <HelpFloatingButton />
     </PageLayout>
   );

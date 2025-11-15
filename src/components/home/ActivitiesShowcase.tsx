@@ -89,7 +89,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
             {heroActivities.map((activity) => (
               <div 
                 key={activity.id} 
-                className="w-[156px] h-[220px] flex-shrink-0 snap-start relative rounded-[16px] overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform"
+                className="w-[165px] h-[220px] flex-shrink-0 snap-start relative rounded-[16px] overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform"
                 onClick={() => handleActivityClick(activity.id)}
               >
                 {/* Image de fond */}
@@ -177,43 +177,6 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* Sous-carrousel: Petits budgets */}
-      {budgetActivities.length > 0 && (
-        <div className="space-y-3 mt-8">
-          <h3 className="text-lg font-semibold text-text-main">Petits budgets</h3>
-          <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
-            <div className="flex gap-4 px-1">
-              {budgetActivities.map((activity) => (
-                <div key={activity.id} className="w-[260px] flex-shrink-0 snap-start">
-                  <div className="relative">
-                    {activity.price < 30 && (
-                      <Badge 
-                        className="absolute top-2 left-2 z-10 bg-accent-green text-white"
-                      >
-                        Petit prix
-                      </Badge>
-                    )}
-                    <ActivityCard
-                      {...activity}
-                      ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
-                      periodType={activity.periodType}
-                      structureName={activity.structureName}
-                      structureAddress={activity.structureAddress}
-                      vacationType={activity.vacationType}
-                      priceUnit={activity.priceUnit}
-                      hasAccommodation={activity.hasAccommodation}
-                      aidesEligibles={activity.aidesEligibles}
-                      mobility={activity.mobility}
-                      onRequestClick={() => handleActivityClick(activity.id)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       )}
