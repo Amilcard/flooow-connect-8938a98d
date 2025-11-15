@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: Home, label: "Accueil", path: "/", showSplash: true },
+  { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
   { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants" },
   { icon: Bike, label: "Éco-mobilité", path: "/eco-mobilite" },
