@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 interface KidQuickAddModalProps {
   open: boolean;
   onClose: () => void;
-  onChildAdded: () => void;
+  onChildAdded: (childId?: string) => void;
 }
 
 export const KidQuickAddModal = ({ open, onClose, onChildAdded }: KidQuickAddModalProps) => {
@@ -40,25 +40,27 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded }: KidQuickAddMod
         throw new Error("Utilisateur non authentifié");
       }
 
-      const { error } = await supabase
+      const { data: newChild, error } = await supabase
         .from("children")
         .insert({
           user_id: user.id,
           first_name: firstName.trim(),
           dob: birthDate,
           needs_json: {}
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
       toast({
-        title: "Enfant enregistré",
-        description: `${firstName} a été ajouté avec succès`,
+        title: "Enfant enregistré et sélectionné",
+        description: `${firstName} a été ajouté avec succès pour cette inscription`,
       });
 
       setFirstName("");
       setBirthDate("");
-      onChildAdded();
+      onChildAdded(newChild?.id);
       onClose();
     } catch (error: any) {
       console.error("Error adding child:", error);
