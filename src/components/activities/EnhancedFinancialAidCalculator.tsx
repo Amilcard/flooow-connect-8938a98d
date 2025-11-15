@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, CheckCircle2, Calculator } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 
@@ -270,6 +271,17 @@ export const EnhancedFinancialAidCalculator = ({
         </div>
       </div>
 
+      {/* Message CAF si "Je ne sais pas" */}
+      {quotientFamilial === "0" && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-sm text-blue-900">
+            Pour connaître votre quotient familial, rapprochez-vous de votre CAF (Caisse d'Allocations Familiales). 
+            Cette information figure sur votre attestation CAF.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Bouton Calculer */}
       <Button 
         onClick={handleCalculate}
@@ -350,13 +362,32 @@ export const EnhancedFinancialAidCalculator = ({
               )}
             </div>
           </div>
+
+          {/* Message rappel pièces justificatives */}
+          <Alert className="bg-amber-50 border-amber-200">
+            <Info className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-sm text-amber-900">
+              <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription 
+              (attestation CAF, justificatif de domicile, etc.)
+            </AlertDescription>
+          </Alert>
         </>
       )}
 
       {calculated && aids.length === 0 && (
-        <div className="text-center py-4 text-muted-foreground text-sm">
-          Aucune aide disponible pour cette activité
-        </div>
+        <>
+          <div className="text-center py-4 text-muted-foreground text-sm">
+            Aucune aide disponible pour cette activité
+          </div>
+          
+          {/* Message rappel pièces justificatives même sans aides */}
+          <Alert className="bg-amber-50 border-amber-200">
+            <Info className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-sm text-amber-900">
+              <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription.
+            </AlertDescription>
+          </Alert>
+        </>
       )}
     </Card>
   );
