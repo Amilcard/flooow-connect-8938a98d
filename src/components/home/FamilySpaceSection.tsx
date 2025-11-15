@@ -47,7 +47,7 @@ export const FamilySpaceSection = () => {
         {/* Prix Bon Esprit */}
         <Card 
           className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-border rounded-2xl p-6"
-          onClick={() => navigate('/community')}
+          onClick={() => navigate('/prix-bon-esprit')}
         >
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-xl bg-yellow-100 text-yellow-600 shadow-sm">
