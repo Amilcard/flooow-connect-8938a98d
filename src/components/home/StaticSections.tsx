@@ -16,29 +16,27 @@ interface StaticCardProps {
 const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => {
   return (
     <Card 
-      className="group p-4 cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-[14px] h-[104px] flex items-center gap-4 shadow-[0px_2px_8px_rgba(0,0,0,0.06)]"
+      className="group cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-xl overflow-hidden shadow-card h-[160px] md:h-[220px] flex flex-row"
       onClick={onClick}
     >
-      {/* Image à gauche */}
-      <div className="w-[80px] h-[80px] rounded-[10px] overflow-hidden flex-shrink-0">
+      {/* Texte à gauche - 60% */}
+      <div className="flex-1 w-[60%] p-4 md:p-6 flex flex-col justify-center">
+        <h3 className="font-semibold text-[16px] md:text-[18px] text-text-main mb-2 group-hover:text-primary transition-colors leading-[1.35]">
+          {title}
+        </h3>
+        <p className="text-[13px] md:text-[14px] text-text-muted line-clamp-3 leading-[1.35]">
+          {description}
+        </p>
+      </div>
+      
+      {/* Image à droite - 40% */}
+      <div className="w-[40%] md:w-[360px] h-full flex-shrink-0">
         <img 
           src={image}
           alt={title}
           className="w-full h-full object-cover"
         />
       </div>
-      
-      {/* Texte à droite */}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-[16px] text-text-main mb-1 group-hover:text-primary transition-colors">
-          {title}
-        </h3>
-        <p className="text-[13px] text-[#555555] line-clamp-2 leading-relaxed">
-          {description}
-        </p>
-      </div>
-      
-      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
     </Card>
   );
 };
@@ -74,12 +72,12 @@ export const StaticSections = () => {
   ];
 
   return (
-    <section className="py-8 px-4 -mx-4 bg-gray-50/50 rounded-2xl space-y-5">
-      <h2 className="text-[20px] font-semibold text-[#222222]">
+    <section className="space-y-5">
+      <h2 className="text-[20px] font-semibold text-text-main">
         Actualités et outils pour ta famille
       </h2>
       
-      <div className="grid gap-[14px]">
+      <div className="grid gap-4">
         {sections.map((section, index) => (
           <StaticCard
             key={index}

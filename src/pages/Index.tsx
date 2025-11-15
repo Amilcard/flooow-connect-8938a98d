@@ -139,11 +139,9 @@ const Index = () => {
             </section>
 
             {/* ========== SECTION 3: ACTUALITÉS ET OUTILS (≈40%) ========== */}
-            {isLoggedIn && (
-              <section className="py-6">
-                <StaticSections />
-              </section>
-            )}
+            <section className="py-6">
+              <StaticSections />
+            </section>
           </>
         )}
       </main>
