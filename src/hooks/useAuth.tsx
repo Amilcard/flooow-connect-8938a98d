@@ -181,7 +181,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem('userTerritoryId');
       localStorage.removeItem('userPostalCode');
       localStorage.removeItem('userTerritoryMode');
-      localStorage.removeItem('hasSeenOnboarding');
+      // Ne pas supprimer hasSeenOnboarding pour ne pas relancer l'onboarding
       
       // 4. Nettoyer sessionStorage
       sessionStorage.clear();
@@ -196,8 +196,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Continue quand même, l'état est déjà nettoyé
     }
 
-    // Redirection vers l'onboarding après déconnexion
-    window.location.href = '/onboarding';
+    // Redirection vers home au lieu d'onboarding pour éviter de relancer l'onboarding
+    window.location.href = '/home';
   };
 
   const value = {

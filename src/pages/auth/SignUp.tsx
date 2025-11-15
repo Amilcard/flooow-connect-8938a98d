@@ -93,7 +93,7 @@ const SignUp = () => {
         description: "Votre compte sera activé après validation par notre équipe. Vous recevrez un email de confirmation.",
       });
       
-      navigate('/');
+      navigate('/home');
     } catch (error: any) {
       toast({
         title: "Erreur lors de l'inscription",
@@ -131,7 +131,7 @@ const SignUp = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="flex items-center gap-2 hover:bg-accent/10 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

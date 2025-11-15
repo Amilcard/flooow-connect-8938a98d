@@ -45,7 +45,7 @@ const BookingStatus = () => {
       <div className="min-h-screen bg-background p-4">
         <ErrorState 
           message="Réservation introuvable" 
-          onRetry={() => navigate("/")} 
+          onRetry={() => navigate("/home")} 
         />
       </div>
     );
@@ -196,7 +196,7 @@ const BookingStatus = () => {
           {/* Actions */}
           <div className="space-y-3">
             <Button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/home")}
               className="w-full h-12"
               size="lg"
             >

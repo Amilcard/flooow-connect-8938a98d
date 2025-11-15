@@ -50,7 +50,7 @@ export default function ChildSelfSignup() {
         description: data.message
       });
 
-      navigate('/');
+      navigate('/home');
     } catch (error: any) {
       toast({
         title: "Erreur",

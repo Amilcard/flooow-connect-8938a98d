@@ -81,7 +81,7 @@ const StructureDashboard = () => {
           <p className="text-muted-foreground mb-4">
             Cette page est réservée aux structures
           </p>
-          <Button onClick={() => navigate("/")}>
+          <Button onClick={() => navigate("/home")}>
             Retour à l'accueil
           </Button>
         </Card>

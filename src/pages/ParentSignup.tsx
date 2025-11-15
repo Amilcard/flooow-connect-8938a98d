@@ -109,7 +109,7 @@ const ParentSignup = () => {
       });
 
       localStorage.removeItem("parent-signup-draft");
-      navigate("/");
+      navigate("/home");
     } catch (error: any) {
       toast({
         title: "Erreur d'inscription",

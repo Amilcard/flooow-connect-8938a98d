@@ -232,7 +232,7 @@ const ActivityDetail = () => {
       <div className="min-h-screen bg-background p-4">
         <ErrorState 
           message="Activité introuvable" 
-          onRetry={() => navigate("/")} 
+          onRetry={() => navigate("/home")} 
         />
       </div>
     );

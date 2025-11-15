@@ -31,7 +31,7 @@ const Login = () => {
       });
       
       // Petit délai pour laisser la session se stabiliser
-      setTimeout(() => navigate('/'), 100);
+      setTimeout(() => navigate('/home'), 100);
     } catch (error: any) {
       // Afficher l'erreur seulement si elle provient vraiment de l'auth
       if (error?.message) {

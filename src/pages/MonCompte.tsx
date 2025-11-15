@@ -75,7 +75,7 @@ const MonCompte = () => {
         title: "D\u00E9connexion r\u00E9ussie",
         description: "\u00C0 bient\u00F4t !",
       });
-      navigate("/");
+      navigate("/home");
     } catch (error: any) {
       toast({
         title: "Erreur",
