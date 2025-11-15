@@ -1,14 +1,15 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Dumbbell, Palette, GraduationCap, Gamepad2, Briefcase } from "lucide-react";
-import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import universSport from "@/assets/univers-sport.jpg";
+import universCulture from "@/assets/univers-culture.jpg";
+import universApprentissage from "@/assets/univers-apprentissage.jpg";
+import universLoisirs from "@/assets/univers-loisirs.jpg";
+import universVacances from "@/assets/univers-vacances.jpg";
 
 interface Univers {
   id: string;
   name: string;
   image: string;
-  gradient: string;
-  icon: LucideIcon;
   testId: string;
 }
 
@@ -16,41 +17,31 @@ const univers: Univers[] = [
   {
     id: 'sport',
     name: 'Sport',
-    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=280&fit=crop',
-    gradient: 'from-blue-600',
-    icon: Dumbbell,
+    image: universSport,
     testId: 'icon-category-sport'
   },
   {
     id: 'culture',
     name: 'Culture',
-    image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=280&fit=crop',
-    gradient: 'from-purple-600',
-    icon: Palette,
+    image: universCulture,
     testId: 'icon-category-culture'
   },
   {
     id: 'apprentissage',
     name: 'Apprentissage',
-    image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=280&fit=crop',
-    gradient: 'from-green-600',
-    icon: GraduationCap,
+    image: universApprentissage,
     testId: 'icon-category-apprentissage'
   },
   {
     id: 'loisirs',
     name: 'Loisirs',
-    image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=280&fit=crop',
-    gradient: 'from-orange-600',
-    icon: Gamepad2,
+    image: universLoisirs,
     testId: 'icon-category-loisirs'
   },
   {
     id: 'vacances',
     name: 'Vacances',
-    image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=280&fit=crop',
-    gradient: 'from-pink-600',
-    icon: Briefcase,
+    image: universVacances,
     testId: 'icon-category-vacances'
   },
 ];
@@ -83,55 +74,49 @@ export const UniversSection = () => {
           role="list"
           aria-label="Univers d'activités"
         >
-          <div className="flex gap-8 justify-center md:justify-between items-center min-w-max md:min-w-0">
+          <div className="flex gap-3 justify-center md:justify-between items-center min-w-max md:min-w-0">
             {univers.map((item) => {
               const isActive = activeUniverse === item.id;
-              const IconComponent = item.icon;
               
               return (
                 <button
                   key={item.id}
                   onClick={() => handleUniversClick(item.id)}
                   className={cn(
-                    "flex flex-col items-center gap-2 min-w-[90px] group transition-all duration-200"
+                    "relative w-[85px] h-[105px] rounded-[14px] overflow-hidden",
+                    "group transition-all duration-300 ease-out",
+                    "hover:scale-105 hover:shadow-lg",
+                    isActive 
+                      ? "shadow-[0_4px_12px_rgba(127,86,217,0.3)]" 
+                      : "shadow-[0_2px_6px_rgba(0,0,0,0.04)]"
                   )}
                   role="listitem"
                   aria-label={`Voir les activités ${item.name}`}
                   aria-current={isActive ? 'page' : undefined}
+                  data-testid={item.testId}
                 >
-                  {/* Pastille blanche ronde */}
-                  <div 
-                    className={cn(
-                      "w-[66px] h-[66px] rounded-full bg-white",
-                      "flex items-center justify-center",
-                      "transition-all duration-300 ease-out",
-                      "group-hover:scale-110 group-hover:shadow-lg",
-                      isActive 
-                        ? "shadow-[0_4px_12px_rgba(127,86,217,0.2)]" 
-                        : "shadow-[0_2px_6px_rgba(0,0,0,0.06)]"
-                    )}
-                  >
-                    <IconComponent 
-                      size={26}
-                      strokeWidth={2}
-                      className={cn(
-                        "transition-colors",
-                        isActive ? "text-primary" : "text-[#7F56D9]"
-                      )}
-                      data-testid={item.testId}
-                      aria-hidden="true"
-                    />
-                  </div>
+                  {/* Image de fond */}
+                  <img 
+                    src={item.image}
+                    alt={item.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                   
-                  {/* Label */}
-                  <span 
-                    className={cn(
-                      "text-[14px] font-medium text-center leading-tight",
-                      isActive ? "text-primary" : "text-[#2D2D2D]"
-                    )}
-                  >
-                    {item.name}
-                  </span>
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  
+                  {/* Label en overlay */}
+                  <div className="absolute inset-x-0 bottom-0 p-2 flex items-end justify-center">
+                    <span 
+                      className={cn(
+                        "text-[16px] font-semibold text-white text-center leading-tight",
+                        "drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]",
+                        isActive && "scale-105"
+                      )}
+                    >
+                      {item.name}
+                    </span>
+                  </div>
                 </button>
               );
             })}
