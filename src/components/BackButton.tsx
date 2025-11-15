@@ -8,14 +8,16 @@ interface BackButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   showText?: boolean;
+  label?: string;
 }
 
 export const BackButton = ({ 
   fallback, 
-  variant = "ghost", 
-  size = "icon",
+  variant = "outline", 
+  size = "default",
   className = "",
-  showText = false
+  showText = true,
+  label = "Retour"
 }: BackButtonProps) => {
   const handleBack = useSmartBack(fallback);
 
@@ -24,11 +26,11 @@ export const BackButton = ({
       variant={variant}
       size={size}
       onClick={handleBack}
-      aria-label="Retour"
-      className={className}
+      aria-label={label}
+      className={`min-h-[44px] ${className}`}
     >
-      <ArrowLeft className={showText ? "mr-2" : ""} size={showText ? 18 : 20} />
-      {showText && "Retour"}
+      <ArrowLeft className={showText ? "mr-2" : ""} size={20} />
+      {showText && label}
     </Button>
   );
 };
