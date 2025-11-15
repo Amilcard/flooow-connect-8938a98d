@@ -72,7 +72,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
 
       {/* Carrousel principal hero */}
       {heroActivities.length > 0 && (
-        <div className="relative">
+        <div className="relative px-4">
           <div className="overflow-hidden rounded-xl">
             <div 
               className="flex transition-transform duration-500 ease-in-out"
