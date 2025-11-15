@@ -2188,7 +2188,29 @@ export type Database = {
           territory_level: string
         }[]
       }
+      calculate_eligible_aids_capped: {
+        Args: {
+          p_activity_price: number
+          p_age: number
+          p_categories: string[]
+          p_city_code: string
+          p_duration_days: number
+          p_qf: number
+        }
+        Returns: {
+          aid_name: string
+          amount: number
+          applied_amount: number
+          capped: boolean
+          official_link: string
+          territory_level: string
+        }[]
+      }
       calculate_reste_a_charge: {
+        Args: { p_price_base: number; p_simulated_aids: Json }
+        Returns: number
+      }
+      calculate_reste_a_charge_capped: {
         Args: { p_price_base: number; p_simulated_aids: Json }
         Returns: number
       }

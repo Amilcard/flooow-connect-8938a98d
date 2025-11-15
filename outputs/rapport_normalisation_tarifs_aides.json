@@ -1,0 +1,206 @@
+{
+  "date_normalisation": "2025-11-15",
+  "titre": "Rapport de Normalisation des Tarifs et Plafonnement des Aides",
+  
+  "corrections_appliquees": {
+    "total_activites_corrigees": 30,
+    "details": [
+      {
+        "activite": "Stage Foot - Académie Juniors",
+        "periode": "VACANCES (5 jours)",
+        "ancien_prix": "10.00€",
+        "nouveau_prix": "120.00€",
+        "raison": "Prix aberrant pour un stage sportif de 5 jours",
+        "norme_appliquee": "VACANCES.STAGE_5_JOURS (min: 80€, max: 180€)"
+      },
+      {
+        "activite": "Cours de Théâtre Jeune Public",
+        "periode": "SAISON_SCOLAIRE (annuel)",
+        "ancien_prix": "10.00€",
+        "nouveau_prix": "80.00€",
+        "raison": "Prix aberrant pour activité culturelle annuelle",
+        "norme_appliquee": "SAISON_SCOLAIRE.CULTURE (min: 60€, max: 180€)"
+      },
+      {
+        "activite": "Chorale Enfants - Initiation",
+        "periode": "SAISON_SCOLAIRE (annuel)",
+        "ancien_prix": "10.00€",
+        "nouveau_prix": "60.00€",
+        "raison": "Prix aberrant pour activité culturelle annuelle",
+        "norme_appliquee": "SAISON_SCOLAIRE.CULTURE (min: 60€, max: 180€)"
+      },
+      {
+        "activite": "Atelier Basket Jeunes",
+        "periode": "SAISON_SCOLAIRE (annuel)",
+        "ancien_prix": "40.00€",
+        "nouveau_prix": "120.00€",
+        "raison": "Prix trop bas pour activité sportive annuelle",
+        "norme_appliquee": "SAISON_SCOLAIRE.SPORT (min: 80€, max: 180€)"
+      },
+      {
+        "activite": "Studio Ciné Kids - Initiation",
+        "periode": "SAISON_SCOLAIRE (annuel)",
+        "ancien_prix": "40.00€",
+        "nouveau_prix": "100.00€",
+        "raison": "Prix trop bas pour activité culturelle annuelle",
+        "norme_appliquee": "SAISON_SCOLAIRE.CULTURE (min: 60€, max: 180€)"
+      },
+      {
+        "activite": "Stage Musique Électro Teens",
+        "periode": "VACANCES (5 jours)",
+        "ancien_prix": "40.00€",
+        "nouveau_prix": "100.00€",
+        "raison": "Prix trop bas pour stage culturel de 5 jours",
+        "norme_appliquee": "VACANCES.STAGE_5_JOURS (min: 80€, max: 180€)"
+      }
+    ]
+  },
+
+  "nouvelles_fonctions_database": {
+    "calculate_eligible_aids_capped": {
+      "description": "Calcule les aides éligibles avec plafonnement automatique",
+      "regles": [
+        "Le total des aides ne peut JAMAIS dépasser le prix de l'activité",
+        "Les aides sont appliquées par ordre de priorité : commune > metropole > region > national",
+        "Chaque aide indique si elle a été plafonnée (field 'capped')",
+        "Retourne le montant théorique ET le montant réellement appliqué"
+      ],
+      "parametres": [
+        "p_age: Âge de l'enfant",
+        "p_qf: Quotient familial",
+        "p_city_code: Code postal/commune",
+        "p_activity_price: Prix de l'activité",
+        "p_duration_days: Durée en jours (pour aides per_day)",
+        "p_categories: Catégories de l'activité"
+      ],
+      "retour": {
+        "aid_name": "Nom de l'aide",
+        "amount": "Montant théorique",
+        "territory_level": "Niveau territorial",
+        "official_link": "Lien officiel",
+        "applied_amount": "Montant réellement appliqué après plafonnement",
+        "capped": "true si l'aide a été plafonnée"
+      }
+    },
+    
+    "calculate_reste_a_charge_capped": {
+      "description": "Calcule le reste à charge avec plafonnement des aides",
+      "regles": [
+        "Plafonne automatiquement le total des aides au prix de l'activité",
+        "Garantit que le reste à charge est toujours >= 0",
+        "Compatible avec les aides JSON existantes"
+      ],
+      "parametres": [
+        "p_price_base: Prix de base de l'activité",
+        "p_simulated_aids: JSON des aides simulées"
+      ],
+      "retour": "Reste à charge après application des aides plafonnées"
+    }
+  },
+
+  "exemples_avant_apres": [
+    {
+      "scenario": "Stage Foot 5 jours - Enfant 8 ans, QF 400€, Saint-Étienne",
+      "avant": {
+        "prix": "10.00€",
+        "aides_theoriques": "71€ (Pass'Sport 50€ + Carte M'RA 21€)",
+        "reste_a_charge": "0€",
+        "probleme": "❌ Total aides (71€) > Prix (10€) - Incohérent"
+      },
+      "apres": {
+        "prix": "120.00€",
+        "aides_applicables": [
+          {"nom": "Pass'Sport", "montant_theorique": 50, "montant_applique": 50, "plafonne": false},
+          {"nom": "Carte M'RA", "montant_theorique": 21, "montant_applique": 21, "plafonne": false},
+          {"nom": "Aide Sport Jeunes", "montant_theorique": 35, "montant_applique": 35, "plafonne": false}
+        ],
+        "total_aides": "106€",
+        "reste_a_charge": "14€",
+        "statut": "✅ Prix réaliste + aides plafonnées correctement"
+      }
+    },
+    
+    {
+      "scenario": "Basket annuel - Enfant 11 ans, QF 1100€, Métropole",
+      "avant": {
+        "prix": "40.00€",
+        "aides_theoriques": "156€ (4 aides cumulées)",
+        "reste_a_charge": "0€",
+        "probleme": "❌ Total aides (156€) >> Prix (40€) - Très incohérent"
+      },
+      "apres": {
+        "prix": "120.00€",
+        "aides_applicables": [
+          {"nom": "Pass'Sport", "montant_theorique": 50, "montant_applique": 50, "plafonne": false},
+          {"nom": "Bonus Sport Métropole", "montant_theorique": 50, "montant_applique": 50, "plafonne": false},
+          {"nom": "Carte M'RA", "montant_theorique": 21, "montant_applique": 20, "plafonne": true},
+          {"nom": "Aide Sport Jeunes", "montant_theorique": 35, "montant_applique": 0, "plafonne": true}
+        ],
+        "total_aides_theorique": "156€",
+        "total_aides_applique": "120€",
+        "reste_a_charge": "0€",
+        "statut": "✅ Prix réaliste + aides plafonnées au prix de l'activité"
+      }
+    },
+
+    {
+      "scenario": "Théâtre annuel - Enfant 8 ans, QF 900€",
+      "avant": {
+        "prix": "10.00€",
+        "aides_theoriques": "91€",
+        "reste_a_charge": "0€",
+        "probleme": "❌ Prix trop bas pour une activité annuelle"
+      },
+      "apres": {
+        "prix": "80.00€",
+        "aides_applicables": [
+          {"nom": "Carte M'RA", "montant_theorique": 21, "montant_applique": 21, "plafonne": false},
+          {"nom": "Pass Culture Activités", "montant_theorique": 40, "montant_applique": 40, "plafonne": false},
+          {"nom": "Pass Culture Jeunes+", "montant_theorique": 30, "montant_applique": 19, "plafonne": true}
+        ],
+        "total_aides": "80€",
+        "reste_a_charge": "0€",
+        "statut": "✅ Prix normalisé + dernière aide plafonnée"
+      }
+    }
+  ],
+
+  "regles_normalization": {
+    "SAISON_SCOLAIRE": {
+      "SPORT": {"min": 80, "max": 180, "median": 120},
+      "CULTURE": {"min": 60, "max": 180, "median": 100},
+      "SCOLARITE": {"min": 60, "max": 150, "median": 90},
+      "LOISIR": {"min": 40, "max": 120, "median": 70}
+    },
+    "VACANCES": {
+      "STAGE_5_JOURS": {"min": 80, "max": 180, "median": 120},
+      "SEJOUR_SEMAINE": {"min": 350, "max": 900, "median": 600}
+    }
+  },
+
+  "regles_plafonnement_aides": {
+    "principe_general": "Le total des aides ne peut JAMAIS dépasser le prix de l'activité",
+    "ordre_application": [
+      "1. Aides communales (proximité maximale)",
+      "2. Aides métropolitaines",
+      "3. Aides régionales",
+      "4. Aides nationales"
+    ],
+    "comportement": "Les aides sont appliquées dans l'ordre de priorité jusqu'à atteindre 100% du prix",
+    "transparence": "Chaque aide indique si elle a été plafonnée (champ 'capped')"
+  },
+
+  "impacts": {
+    "coherence_financiere": "✅ Plus de situations où les aides dépassent le prix",
+    "realisme_tarifs": "✅ Tarifs cohérents avec le marché (80-180€ sport annuel, 100-150€ stage 5j)",
+    "transparence": "✅ Indication claire des aides plafonnées",
+    "experience_utilisateur": "✅ Reste à charge toujours >= 0 et cohérent"
+  },
+
+  "migration_code_necessaire": [
+    "⚠️ Mettre à jour les composants qui utilisent calculate_eligible_aids()",
+    "⚠️ Utiliser calculate_eligible_aids_capped() à la place",
+    "⚠️ Adapter l'affichage pour montrer les aides plafonnées",
+    "⚠️ Mettre à jour la fonction simulate-aid edge function"
+  ]
+}
