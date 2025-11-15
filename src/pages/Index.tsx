@@ -128,19 +128,19 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== SECTION 1: UNIVERS (≈10%) ========== */}
+            {/* ========== SECTION 1: ACTIVITÉS À LA UNE (≈40%) ========== */}
+            <section className="py-2">
+              <ActivitiesShowcase activities={nearbyActivities} />
+            </section>
+
+            {/* ========== SECTION 2: LES UNIVERS (≈20%) ========== */}
             <section className="py-4">
               <UniversSection />
             </section>
 
-            {/* ========== SECTION 2: ACTIVITÉS À LA UNE (≈50%) ========== */}
-            <section className="py-6">
-              <ActivitiesShowcase activities={nearbyActivities} />
-            </section>
-
             {/* ========== SECTION 3: ACTUALITÉS ET OUTILS (≈40%) ========== */}
             {isLoggedIn && (
-              <section className="py-6">
+              <section className="py-2">
                 <StaticSections />
               </section>
             )}
