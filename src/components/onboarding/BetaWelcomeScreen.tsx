@@ -25,14 +25,14 @@ export const BetaWelcomeScreen = ({ onNext, onSkip }: BetaWelcomeScreenProps) =>
 
         {/* Titre principal */}
         <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
             Bienvenue sur Flooow
           </h1>
           <div className="space-y-2">
             <p className="text-xl md:text-2xl text-primary font-semibold">
               Merci de faire partie des
             </p>
-            <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+            <p className="text-2xl md:text-3xl font-bold text-primary">
               Flooow testeurs ! 🎉
             </p>
           </div>
@@ -40,10 +40,10 @@ export const BetaWelcomeScreen = ({ onNext, onSkip }: BetaWelcomeScreenProps) =>
 
         {/* Message contexte */}
         <div className="max-w-md space-y-3">
-          <p className="text-base text-muted-foreground leading-relaxed">
+          <p className="text-base text-text-secondary leading-relaxed">
             Tu utilises une version test de Flooow. Certaines fonctionnalités peuvent encore évoluer.
           </p>
-          <p className="text-sm text-muted-foreground italic">
+          <p className="text-sm text-text-secondary italic">
             Ton avis nous aide à améliorer l'app pour tous ! 💪
           </p>
         </div>
@@ -63,7 +63,7 @@ export const BetaWelcomeScreen = ({ onNext, onSkip }: BetaWelcomeScreenProps) =>
         <Button
           onClick={onSkip}
           variant="ghost"
-          className="w-full text-sm text-muted-foreground hover:text-foreground"
+          className="w-full text-sm text-text-muted hover:text-text-primary"
         >
           Passer et commencer
         </Button>

@@ -1,4 +1,4 @@
-import { Coins, Newspaper, Navigation, Award } from "lucide-react";
+import { CircleDollarSign, Calendar, Car, Award, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -6,31 +6,23 @@ import { cn } from "@/lib/utils";
 interface StaticCardProps {
   icon: React.ReactNode;
   title: string;
-  description?: string;
   onClick: () => void;
-  className?: string;
+  iconColor: string;
 }
 
-const StaticCard = ({ icon, title, description, onClick, className }: StaticCardProps) => {
+const StaticCard = ({ icon, title, onClick, iconColor }: StaticCardProps) => {
   return (
     <Card 
-      className={cn(
-        "p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card border-border-subtle",
-        className
-      )}
+      className="cursor-pointer hover:shadow-lg transition-all duration-300 bg-card border border-border rounded-xl p-5 flex items-center justify-between group"
       onClick={onClick}
     >
-      <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+      <div className="flex items-center gap-4">
+        <div className={cn("flex items-center justify-center flex-shrink-0", iconColor)}>
           {icon}
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-text-main mb-1">{title}</h3>
-          {description && (
-            <p className="text-sm text-text-muted">{description}</p>
-          )}
-        </div>
+        <h3 className="font-bold text-lg text-text-main">{title}</h3>
       </div>
+      <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-text-main transition-colors" />
     </Card>
   );
 };
@@ -40,50 +32,41 @@ export const StaticSections = () => {
 
   const sections = [
     {
-      icon: <Coins className="w-6 h-6 text-primary" />,
-      title: "Mes aides financières",
-      description: "Estimez vos aides et réduisez vos coûts",
-      onClick: () => navigate("/aides-mobilite"),
+      icon: <CircleDollarSign className="w-10 h-10" strokeWidth={2} />,
+      title: "Mes Aides Financières",
+      onClick: () => navigate("/aides"),
+      iconColor: "text-primary",
     },
     {
-      icon: <Newspaper className="w-6 h-6 text-accent" />,
-      title: "Mon actu",
-      description: "Messages et bons plans vérifiés",
-      onClick: () => {
-        // Scroll to messages section on same page
-        const messagesSection = document.getElementById("messages-section");
-        if (messagesSection) {
-          messagesSection.scrollIntoView({ behavior: "smooth" });
-        }
-      },
+      icon: <Calendar className="w-10 h-10" strokeWidth={2} />,
+      title: "Agenda",
+      onClick: () => navigate("/agenda"),
+      iconColor: "text-accent-blue",
     },
     {
-      icon: <Navigation className="w-6 h-6 text-success-green" />,
-      title: "Mes trajets",
-      description: "Planifiez vos déplacements éco-responsables",
+      icon: <Car className="w-10 h-10" strokeWidth={2} />,
+      title: "Mes Trajets",
       onClick: () => navigate("/eco-mobilite"),
+      iconColor: "text-accent-green",
     },
     {
-      icon: <Award className="w-6 h-6 text-accent-pink" />,
-      title: "Prix Bon esprit",
-      description: "Partagez vos valeurs et soyez reconnu",
-      onClick: () => {
-        // TODO: Navigate to Prix Bon esprit form/page when implemented
-        console.log("Prix Bon esprit - À implémenter");
-      },
+      icon: <Award className="w-10 h-10" strokeWidth={2} />,
+      title: "Prix Bon Esprit",
+      onClick: () => navigate("/community"),
+      iconColor: "text-accent-orange",
     },
   ];
 
   return (
-    <section className="container px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section className="container px-4 py-6">
+      <div className="grid grid-cols-1 gap-4">
         {sections.map((section, index) => (
           <StaticCard
             key={index}
             icon={section.icon}
             title={section.title}
-            description={section.description}
             onClick={section.onClick}
+            iconColor={section.iconColor}
           />
         ))}
       </div>
