@@ -72,28 +72,70 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
 
       {/* Carrousel principal hero */}
       {heroActivities.length > 0 && (
-        <div className="relative">
-          <div className="overflow-hidden rounded-xl">
+        <div className="max-w-[1000px] mx-auto">
+          <div className="overflow-hidden rounded-3xl shadow-lg">
             <div 
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {heroActivities.map((activity) => (
                 <div key={activity.id} className="w-full flex-shrink-0">
-                  <div className="relative h-[280px] sm:h-[320px]">
-                    <ActivityCard
-                      {...activity}
-                      ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
-                      periodType={activity.periodType}
-                      structureName={activity.structureName}
-                      structureAddress={activity.structureAddress}
-                      vacationType={activity.vacationType}
-                      priceUnit={activity.priceUnit}
-                      hasAccommodation={activity.hasAccommodation}
-                      aidesEligibles={activity.aidesEligibles}
-                      mobility={activity.mobility}
-                      onRequestClick={() => handleActivityClick(activity.id)}
-                    />
+                  <div 
+                    className="relative bg-card cursor-pointer"
+                    onClick={() => handleActivityClick(activity.id)}
+                  >
+                    {/* Image 16:9 */}
+                    <div className="relative w-full aspect-video overflow-hidden">
+                      <img
+                        src={activity.image}
+                        alt={activity.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    {/* Contenu en dessous */}
+                    <div className="p-6 space-y-3">
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {activity.category}
+                        </Badge>
+                        {activity.age_min && activity.age_max && (
+                          <Badge variant="outline" className="text-xs">
+                            {activity.age_min}-{activity.age_max} ans
+                          </Badge>
+                        )}
+                        {activity.vacationType && (
+                          <Badge variant="outline" className="text-xs">
+                            {activity.vacationType === 'sejour_hebergement' ? 'Séjour' : 
+                             activity.vacationType === 'centre_loisirs' ? 'Centre de loisirs' : 'Stage'}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {/* Titre */}
+                      <h3 className="text-xl font-bold text-text-main line-clamp-2">
+                        {activity.title}
+                      </h3>
+                      
+                      {/* Localisation / durée / prix */}
+                      <div className="flex items-center justify-between text-sm text-text-muted">
+                        <div className="flex items-center gap-4">
+                          {activity.structureAddress && (
+                            <div className="flex items-center gap-1">
+                              <MapPin size={16} />
+                              <span className="line-clamp-1">{activity.structureAddress}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 font-semibold text-primary">
+                          <span className="text-lg">{activity.price}€</span>
+                          {activity.priceUnit && (
+                            <span className="text-xs text-text-muted">/{activity.priceUnit}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -101,7 +143,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
           </div>
           
           {/* Indicateurs de pagination */}
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="flex justify-center gap-2 mt-3">
             {heroActivities.map((_, index) => (
               <button
                 key={index}
