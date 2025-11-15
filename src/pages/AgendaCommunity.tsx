@@ -442,6 +442,64 @@ const AgendaCommunity = () => {
               </CardContent>
             </Card>
 
+            {/* Prix Bon Esprit - Vote scolaire */}
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
+              <CardHeader>
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-lg bg-primary/10">
+                    <Heart className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      Prix Bon Esprit
+                      <Badge variant="secondary" className="text-xs">Vote des élèves</Badge>
+                    </CardTitle>
+                    <CardDescription className="mt-2">
+                      Ici, vous pouvez voter pour une personne de votre école ou de votre quartier qui représente vraiment le bon esprit.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Ce peut être :
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground ml-4">
+                    <li>• un camarade toujours prêt à aider</li>
+                    <li>• un élève engagé dans la vie de l'établissement</li>
+                    <li>• un jeune qui encourage les autres</li>
+                    <li>• une personne discrète mais essentielle au quotidien</li>
+                    <li>• ou encore un bénévole, un animateur, un éducateur, un "héros du quotidien" que tout le monde apprécie</li>
+                  </ul>
+                  
+                  <div className="mt-4 p-4 bg-primary/5 border-l-4 border-primary rounded-r-lg">
+                    <p className="font-medium text-sm flex items-center gap-2">
+                      🧡 L'objectif
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Mettre en lumière celles et ceux qui font du bien autour d'eux.
+                    </p>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground mt-4">
+                    Choisissez la personne que vous souhaitez soutenir et expliquez en quelques mots pourquoi elle mérite le Prix Bon Esprit cette année.
+                  </p>
+                </div>
+
+                {isAuthenticated ? (
+                  <Button className="w-full" variant="default">
+                    <Heart className="w-4 h-4 mr-2" />
+                    Voter pour le Prix Bon Esprit
+                  </Button>
+                ) : (
+                  <div className="text-sm text-muted-foreground text-center py-2 bg-muted rounded-lg">
+                    Connectez-vous pour participer au vote
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Fonctionnalités communauté */}
             <Card>
               <CardHeader>
