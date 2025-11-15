@@ -5,6 +5,7 @@ interface FinancialAid {
   amount: number;
   territory_level: string;
   official_link: string | null;
+  is_informational?: boolean;
 }
 
 interface TransportMode {
