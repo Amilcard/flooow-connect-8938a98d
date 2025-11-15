@@ -29,10 +29,13 @@ export const WelcomeScreen = ({ onNext }: WelcomeScreenProps) => {
           </p>
         </div>
 
-        {/* Promesse courte */}
-        <p className="text-base text-muted-foreground max-w-sm">
-          Trouve des activités adaptées, calcule tes aides et découvre comment t'y rendre facilement
-        </p>
+        {/* Message bêta testeurs */}
+        <div className="space-y-3 text-sm text-muted-foreground max-w-md px-4">
+          <p className="font-medium text-foreground text-base">Bienvenue aux Flooow testeurs !</p>
+          <p>Merci de participer à cette version bêta d'InKlusif Flooow ! Cette application vous permet de simuler vos aides financières (Pass'Sport, aides CAF, aides locales…) pour rendre les activités accessibles à toute la famille.</p>
+          <p>Vous pouvez aussi consulter les meilleurs trajets pour vous rendre aux activités grâce à nos solutions d'éco-mobilité.</p>
+          <p>L'app évolue en continu et vos retours sont précieux pour l'améliorer. N'hésitez pas à nous faire part de vos remarques !</p>
+        </div>
       </div>
 
       <div className="p-6">
