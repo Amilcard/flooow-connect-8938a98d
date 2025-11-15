@@ -83,7 +83,15 @@ export const EnhancedFinancialAidCalculator = ({
   useEffect(() => {
     if (!savedState?.calculated && userProfile) {
       if (userProfile.quotient_familial && !quotientFamilial) {
-        setQuotientFamilial(String(userProfile.quotient_familial));
+        // Mapper le QF vers les tranches
+        const qf = userProfile.quotient_familial;
+        if (qf < 450) {
+          setQuotientFamilial("450");
+        } else if (qf >= 450 && qf <= 700) {
+          setQuotientFamilial("575");
+        } else if (qf > 700) {
+          setQuotientFamilial("800");
+        }
       }
       if (userProfile.postal_code && !cityCode) {
         setCityCode(userProfile.postal_code);
@@ -224,18 +232,20 @@ export const EnhancedFinancialAidCalculator = ({
           <Label htmlFor="qf">
             Quotient Familial <span className="text-destructive">*</span>
           </Label>
-          <Input
-            id="qf"
-            type="number"
-            min="0"
-            max="9999"
-            placeholder="Ex: 800"
-            value={quotientFamilial}
-            onChange={(e) => setQuotientFamilial(e.target.value)}
-          />
+          <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
+            <SelectTrigger id="qf">
+              <SelectValue placeholder="Choisir votre tranche" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="450">Moins de 450€</SelectItem>
+              <SelectItem value="575">Entre 450€ et 700€</SelectItem>
+              <SelectItem value="800">Plus de 700€</SelectItem>
+              <SelectItem value="0">Je ne sais pas</SelectItem>
+            </SelectContent>
+          </Select>
           {userProfile?.quotient_familial && (
             <p className="text-xs text-muted-foreground">
-              Pré-rempli depuis votre profil
+              Pré-rempli depuis votre profil ({userProfile.quotient_familial}€)
             </p>
           )}
         </div>
