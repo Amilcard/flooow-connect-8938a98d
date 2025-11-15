@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { ArrowLeft, User, Calendar, MapPin, AlertCircle, Info } from "lucide-react";
@@ -15,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSmartBack } from "@/hooks/useSmartBack";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { KidQuickAddModal } from "@/components/KidQuickAddModal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Booking = () => {
   const { id } = useParams();
@@ -118,6 +120,42 @@ const Booking = () => {
     }
   }, [authChecked, loadingChildren, children.length, showAddChildModal]);
 
+  // Helper function to calculate age and check eligibility
+  const getChildEligibility = (child: any) => {
+    if (!activity || !slot) return { age: 0, isEligible: true, reason: null };
+    
+    const birthDate = new Date(child.dob);
+    const slotDate = new Date(slot.start);
+    let age = slotDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = slotDate.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && slotDate.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    const minAge = activity.age_min || 0;
+    const maxAge = activity.age_max || 999;
+    const isEligible = age >= minAge && age <= maxAge;
+    
+    let reason = null;
+    if (!isEligible) {
+      if (age < minAge) {
+        reason = `Activité réservée aux enfants à partir de ${minAge} ans`;
+      } else {
+        reason = `Activité réservée aux enfants jusqu'à ${maxAge} ans`;
+      }
+    }
+    
+    return { age, isEligible, reason };
+  };
+
+  const handleChildAdded = (childId?: string) => {
+    refetchChildren();
+    if (childId) {
+      setSelectedChildId(childId);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!selectedChildId) {
       toast({
@@ -126,6 +164,20 @@ const Booking = () => {
         variant: "destructive"
       });
       return;
+    }
+
+    // Check if selected child is eligible
+    const selectedChild = children.find(c => c.id === selectedChildId);
+    if (selectedChild) {
+      const { isEligible, reason } = getChildEligibility(selectedChild);
+      if (!isEligible) {
+        toast({
+          title: "Enfant non éligible",
+          description: reason || "Cet enfant ne peut pas être inscrit à cette activité",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -290,6 +342,16 @@ const Booking = () => {
           </Alert>
         )}
 
+        {/* Age restrictions info */}
+        {(activity.age_min !== null || activity.age_max !== null) && (
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-sm text-blue-900">
+              <strong>Tranche d'âge :</strong> Cette activité est réservée aux enfants de {activity.age_min || 0} à {activity.age_max || '99+'} ans.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Activity summary */}
         <Card className="p-4">
           <h2 className="font-semibold text-lg mb-3">Récapitulatif</h2>
@@ -330,28 +392,53 @@ const Booking = () => {
             </div>
           ) : (
             <>
-              <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
-                <div className="space-y-3">
-                  {children.map((child) => {
-                    const age = new Date().getFullYear() - new Date(child.dob).getFullYear();
-                    return (
-                      <div key={child.id} className="flex items-center space-x-3">
-                        <RadioGroupItem value={child.id} id={child.id} />
-                        <Label
-                          htmlFor={child.id}
-                          className="flex-1 flex items-center gap-3 cursor-pointer p-3 rounded-lg border"
-                        >
-                          <User size={20} className="text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">{child.first_name}</p>
-                            <p className="text-sm text-muted-foreground">{age} ans</p>
-                          </div>
-                        </Label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </RadioGroup>
+              <TooltipProvider>
+                <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
+                  <div className="space-y-3">
+                    {children.map((child) => {
+                      const { age, isEligible, reason } = getChildEligibility(child);
+                      
+                      return (
+                        <div key={child.id} className="flex items-center space-x-3">
+                          <RadioGroupItem 
+                            value={child.id} 
+                            id={child.id} 
+                            disabled={!isEligible}
+                          />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Label
+                                htmlFor={child.id}
+                                className={`flex-1 flex items-center gap-3 p-3 rounded-lg border ${
+                                  isEligible 
+                                    ? 'cursor-pointer hover:bg-accent/50' 
+                                    : 'cursor-not-allowed opacity-50 bg-muted'
+                                }`}
+                              >
+                                <User size={20} className="text-muted-foreground" />
+                                <div className="flex-1">
+                                  <p className="font-medium">{child.first_name}</p>
+                                  <p className="text-sm text-muted-foreground">{age} ans</p>
+                                </div>
+                                {!isEligible && (
+                                  <Badge variant="destructive" className="text-xs">
+                                    Âge non éligible
+                                  </Badge>
+                                )}
+                              </Label>
+                            </TooltipTrigger>
+                            {!isEligible && reason && (
+                              <TooltipContent>
+                                <p className="text-sm">{reason}</p>
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </RadioGroup>
+              </TooltipProvider>
               
               <Button
                 variant="outline"
@@ -365,14 +452,33 @@ const Booking = () => {
         </Card>
 
         {/* Submit button */}
-        <Button
-          onClick={handleSubmit}
-          disabled={!selectedChildId || isSubmitting || children.length === 0}
-          className="w-full h-14 text-lg"
-          size="lg"
-        >
-          {isSubmitting ? "En cours..." : "Confirmer la demande"}
-        </Button>
+        {(() => {
+          const selectedChild = children.find(c => c.id === selectedChildId);
+          const isEligible = selectedChild ? getChildEligibility(selectedChild).isEligible : true;
+          const reason = selectedChild ? getChildEligibility(selectedChild).reason : null;
+          
+          return (
+            <>
+              {selectedChildId && !isEligible && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {reason}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              <Button
+                onClick={handleSubmit}
+                disabled={!selectedChildId || isSubmitting || children.length === 0 || !isEligible}
+                className="w-full h-14 text-lg"
+                size="lg"
+              >
+                {isSubmitting ? "En cours..." : "Confirmer la demande"}
+              </Button>
+            </>
+          );
+        })()}
 
         <p className="text-xs text-center text-muted-foreground">
           Votre demande sera transmise à la structure. Vous recevrez une confirmation par email.
@@ -382,7 +488,7 @@ const Booking = () => {
       <KidQuickAddModal
         open={showAddChildModal}
         onClose={() => setShowAddChildModal(false)}
-        onChildAdded={refetchChildren}
+        onChildAdded={handleChildAdded}
       />
     </div>
   );
