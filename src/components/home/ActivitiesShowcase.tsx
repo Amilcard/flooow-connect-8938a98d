@@ -66,9 +66,9 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
   const heroActivities = activities.slice(0, 5);
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6">
       {/* Titre principal */}
-      <h2 className="text-2xl font-bold text-text-main">Activités à la une</h2>
+      <h2 className="text-xl font-bold text-text-main">Activités à la une</h2>
 
       {/* Carrousel principal - 1.3 cartes visibles */}
       {heroActivities.length > 0 && (
@@ -135,8 +135,8 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
 
       {/* Sous-carrousel: Petits budgets */}
       {budgetActivities.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-xl font-semibold text-text-main">Petits budgets</h3>
+        <div className="space-y-3 mt-8">
+          <h3 className="text-lg font-semibold text-text-main">Petits budgets</h3>
           <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
             <div className="flex gap-4 px-1">
               {budgetActivities.map((activity) => (
