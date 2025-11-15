@@ -126,12 +126,17 @@ export const EventsSection = () => {
   return (
     <section className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-          Mon agenda des sorties
-        </h2>
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            Ma ville, mon actu
+          </h2>
+          <p className="text-sm text-text-muted mt-1">
+            Matchs, sorties culturelles, événements pour les familles près de chez vous.
+          </p>
+        </div>
         <Button
           variant="link"
-          onClick={() => navigate("/agenda-community")}
+          onClick={() => navigate("/ma-ville-mon-actu")}
           className="text-accent-foreground self-start sm:self-auto"
         >
           Voir tout l'agenda →
