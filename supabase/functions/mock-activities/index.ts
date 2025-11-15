@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+// Rate limit: 1 requête par seconde par IP
+const lastCall: Record<string, number> = {};
+
 // Fonction pour transformer les aides au format demandé
 function transformAides(aides: string[]): string[] {
   const mapping: Record<string, string> = {
@@ -1307,6 +1310,19 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers, status: 204 });
   }
+
+  // Rate limiting
+  const ip = req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for") ?? "unknown";
+  const now = Date.now();
+  
+  if (lastCall[ip] && now - lastCall[ip] < 1000) {
+    return new Response("Trop rapide 🙂 Attendez une seconde.", { 
+      status: 429,
+      headers 
+    });
+  }
+  
+  lastCall[ip] = now;
 
   // Accept both GET and POST (POST is used by supabase.functions.invoke)
   if (req.method === "GET" || req.method === "POST") {
