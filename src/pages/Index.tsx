@@ -118,15 +118,6 @@ const Index = () => {
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
       <main className="max-w-[1200px] mx-auto px-6 py-8 space-y-10">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-text-main">
-            Bonjour !
-          </h1>
-          <p className="text-text-muted">
-            Découvrez les activités et événements pour vos enfants
-          </p>
-        </div>
-
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
           <TerritoryCheck 
@@ -137,14 +128,14 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== SECTION 1: ACTIVITÉS À LA UNE ========== */}
-            <section>
-              <ActivitiesShowcase activities={nearbyActivities} />
-            </section>
-
-            {/* ========== SECTION 2: UNIVERS ========== */}
+            {/* ========== SECTION 1: UNIVERS ========== */}
             <section>
               <UniversSection />
+            </section>
+
+            {/* ========== SECTION 2: ACTIVITÉS À LA UNE ========== */}
+            <section>
+              <ActivitiesShowcase activities={nearbyActivities} />
             </section>
 
             {/* ========== SECTION 3: ACTUALITÉS ET OUTILS ========== */}
