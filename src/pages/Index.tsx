@@ -128,23 +128,6 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== TEXTE D'ONBOARDING ========== */}
-            <section className="py-6">
-              <h1 className="text-2xl font-bold text-text-main mb-3">Bienvenue aux Flooow testeurs !</h1>
-              <div className="text-base text-text-muted space-y-2 leading-relaxed">
-                <p>
-                  Merci de participer à cette version bêta d'InKlusif Flooow ! 
-                  Cette application vous permet de simuler vos aides financières (Pass'Sport, aides CAF, aides locales…) pour rendre les activités accessibles à toute la famille.
-                </p>
-                <p>
-                  Vous pouvez aussi consulter les meilleurs trajets pour vous rendre aux activités grâce à nos solutions d'éco-mobilité.
-                </p>
-                <p>
-                  L'app évolue en continu et vos retours sont précieux pour l'améliorer. N'hésitez pas à nous faire part de vos remarques !
-                </p>
-              </div>
-            </section>
-
             {/* ========== SECTION 1: UNIVERS (≈10%) ========== */}
             <section className="py-4">
               <UniversSection />
