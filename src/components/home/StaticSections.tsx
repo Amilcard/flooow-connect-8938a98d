@@ -14,26 +14,26 @@ interface StaticCardProps {
 const StaticCard = ({ icon, title, description, onClick, iconColor }: StaticCardProps) => {
   return (
     <Card 
-      className="cursor-pointer hover:shadow-lg transition-all duration-300 bg-card border border-border rounded-xl p-5 flex items-center justify-between group"
+      className="cursor-pointer hover:shadow-md transition-all duration-300 bg-white border border-border/50 rounded-2xl overflow-hidden min-h-[72px] group"
       onClick={onClick}
     >
-      <div className="flex items-start gap-4 flex-1">
+      <div className="flex items-center gap-4 p-5">
         <div className={cn(
-          "flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full bg-background",
+          "flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full",
           iconColor
         )}>
           {icon}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-base text-text-main mb-1 line-clamp-1">
+          <h3 className="font-semibold text-[15px] text-text-main mb-0.5 line-clamp-1">
             {title}
           </h3>
-          <p className="text-sm text-text-muted line-clamp-2">
+          <p className="text-[13px] text-text-muted line-clamp-2 leading-snug">
             {description}
           </p>
         </div>
+        <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" />
       </div>
-      <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-text-main group-hover:translate-x-1 transition-all flex-shrink-0 ml-2" />
     </Card>
   );
 };
@@ -43,42 +43,42 @@ export const StaticSections = () => {
 
   const sections = [
     {
-      icon: <CircleDollarSign className="w-6 h-6" strokeWidth={2.5} />,
+      icon: <CircleDollarSign className="w-5 h-5" strokeWidth={2.5} />,
       title: "Mes aides financières",
-      description: "Accéder au simulateur et à l'historique de tes aides",
+      description: "Simuler et retrouver tes aides pour les activités",
       onClick: () => navigate("/aides"),
-      iconColor: "text-primary",
+      iconColor: "text-primary bg-primary/10",
     },
     {
-      icon: <Newspaper className="w-6 h-6" strokeWidth={2.5} />,
+      icon: <Newspaper className="w-5 h-5" strokeWidth={2.5} />,
       title: "Ma ville, mon actu",
-      description: "Retrouver les infos locales et événements importants",
+      description: "Infos locales, actus et événements près de chez toi",
       onClick: () => navigate("/community"),
-      iconColor: "text-accent-blue",
+      iconColor: "text-accent-blue bg-accent-blue/10",
     },
     {
-      icon: <Bus className="w-6 h-6" strokeWidth={2.5} />,
+      icon: <Bus className="w-5 h-5" strokeWidth={2.5} />,
       title: "Mes trajets",
-      description: "Voir les options de transport pour se rendre aux activités",
+      description: "Préparer le trajet pour aller à une activité",
       onClick: () => navigate("/eco-mobilite"),
-      iconColor: "text-accent-green",
+      iconColor: "text-accent-green bg-accent-green/10",
     },
     {
-      icon: <Award className="w-6 h-6" strokeWidth={2.5} />,
+      icon: <Award className="w-5 h-5" strokeWidth={2.5} />,
       title: "Prix Bon Esprit",
       description: "Découvrir les clubs et jeunes mis à l'honneur",
       onClick: () => navigate("/community"),
-      iconColor: "text-accent-orange",
+      iconColor: "text-accent-orange bg-accent-orange/10",
     },
   ];
 
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-bold text-text-main">
+      <h2 className="text-[20px] font-semibold text-[#222222]">
         Actualités et outils pour ta famille
       </h2>
       
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-4">
         {sections.map((section, index) => (
           <StaticCard
             key={index}
