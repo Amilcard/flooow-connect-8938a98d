@@ -29,6 +29,7 @@ interface Props {
   activityId: string;
   activityPrice: number;
   activityCategories: string[];
+  periodType?: string;
   userProfile?: {
     quotient_familial?: number;
     postal_code?: string;
@@ -55,6 +56,7 @@ export const EnhancedFinancialAidCalculator = ({
   activityId,
   activityPrice,
   activityCategories,
+  periodType = "vacances",
   userProfile,
   children,
   onAidsCalculated
@@ -121,6 +123,42 @@ export const EnhancedFinancialAidCalculator = ({
       return;
     }
 
+    // Pour les activités de saison scolaire, on calcule directement le Pass'Sport
+    if (periodType === "saison_scolaire") {
+      const passSportAmount = Math.min(70, activityPrice);
+      const calculatedAids: FinancialAid[] = [{
+        aid_name: "Pass'Sport",
+        amount: passSportAmount,
+        territory_level: "national",
+        official_link: "https://www.sports.gouv.fr/pass-sport"
+      }];
+      
+      setAids(calculatedAids);
+      setCalculated(true);
+
+      const totalAids = passSportAmount;
+      const remainingPrice = Math.max(0, activityPrice - totalAids);
+
+      const aidData = {
+        childId: selectedChildId,
+        quotientFamilial: "N/A",
+        cityCode: cityCode || "N/A",
+        aids: calculatedAids,
+        totalAids,
+        remainingPrice
+      };
+
+      saveAidCalculation(aidData);
+      onAidsCalculated(aidData);
+
+      toast({
+        title: "Aide calculée",
+        description: `Pass'Sport : ${passSportAmount}€`,
+      });
+      return;
+    }
+
+    // Pour les activités de vacances, on demande le QF
     if (!quotientFamilial || !cityCode) {
       toast({
         title: "Informations manquantes",
@@ -152,8 +190,19 @@ export const EnhancedFinancialAidCalculator = ({
       setAids(calculatedAids);
       setCalculated(true);
 
-      const totalAids = calculatedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+      // S'assurer que les aides ne dépassent pas le prix
+      const totalAidsRaw = calculatedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+      const totalAids = Math.min(totalAidsRaw, activityPrice);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
+
+      // Avertir si les aides dépassent le prix
+      if (totalAidsRaw > activityPrice) {
+        toast({
+          title: "Aides ajustées",
+          description: "Les aides ont été limitées au montant de l'activité",
+          variant: "default"
+        });
+      }
 
       const aidData = {
         childId: selectedChildId,
@@ -227,52 +276,64 @@ export const EnhancedFinancialAidCalculator = ({
         </Select>
       </div>
 
-      {/* QF et Code postal */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="qf">
-            Quotient Familial <span className="text-destructive">*</span>
-          </Label>
-          <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
-            <SelectTrigger id="qf">
-              <SelectValue placeholder="Choisir votre tranche" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="450">Moins de 450€</SelectItem>
-              <SelectItem value="575">Entre 450€ et 700€</SelectItem>
-              <SelectItem value="800">Plus de 700€</SelectItem>
-              <SelectItem value="0">Je ne sais pas</SelectItem>
-            </SelectContent>
-          </Select>
-          {userProfile?.quotient_familial && (
-            <p className="text-xs text-muted-foreground">
-              Pré-rempli depuis votre profil ({userProfile.quotient_familial}€)
-            </p>
-          )}
-        </div>
+      {/* QF et Code postal - affichage conditionnel selon le type d'activité */}
+      {periodType === "saison_scolaire" ? (
+        // Pour les activités de saison : afficher info Pass'Sport uniquement
+        <Alert className="bg-primary/10 border-primary/20">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-sm">
+            <strong>Pass'Sport (70€)</strong> : Cette aide nationale est automatiquement appliquée pour les licences sportives. 
+            Si le tarif est inférieur à 70€, la réduction est limitée au prix de l'activité.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        // Pour les activités de vacances : afficher le formulaire QF
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="qf">
+              Quotient Familial <span className="text-destructive">*</span>
+            </Label>
+            <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
+              <SelectTrigger id="qf">
+                <SelectValue placeholder="Choisir votre tranche" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="450">Moins de 450€</SelectItem>
+                <SelectItem value="575">Entre 450€ et 700€</SelectItem>
+                <SelectItem value="800">Plus de 700€</SelectItem>
+                <SelectItem value="0">Je ne sais pas</SelectItem>
+              </SelectContent>
+            </Select>
+            {userProfile?.quotient_familial && (
+              <p className="text-xs text-muted-foreground">
+                Pré-rempli depuis votre profil ({userProfile.quotient_familial}€)
+              </p>
+            )}
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="city">
-            Code postal <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="city"
-            type="text"
-            placeholder="Ex: 42000"
-            maxLength={5}
-            value={cityCode}
-            onChange={(e) => setCityCode(e.target.value)}
-          />
-          {userProfile?.postal_code && (
-            <p className="text-xs text-muted-foreground">
-              Pré-rempli depuis votre profil
-            </p>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="city">
+              Code postal <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="city"
+              type="text"
+              placeholder="Ex: 42000"
+              maxLength={5}
+              value={cityCode}
+              onChange={(e) => setCityCode(e.target.value)}
+            />
+            {userProfile?.postal_code && (
+              <p className="text-xs text-muted-foreground">
+                Pré-rempli depuis votre profil
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Message CAF si "Je ne sais pas" */}
-      {quotientFamilial === "0" && (
+      {/* Message CAF si "Je ne sais pas" - uniquement pour les activités de vacances */}
+      {periodType === "vacances" && quotientFamilial === "0" && (
         <Alert className="bg-blue-50 border-blue-200">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-sm text-blue-900">
@@ -282,10 +343,14 @@ export const EnhancedFinancialAidCalculator = ({
         </Alert>
       )}
 
-      {/* Bouton Calculer */}
+      {/* Bouton Calculer - conditions différentes selon le type d'activité */}
       <Button 
         onClick={handleCalculate}
-        disabled={loading || !selectedChildId || !quotientFamilial || !cityCode}
+        disabled={
+          loading || 
+          !selectedChildId || 
+          (periodType === "vacances" && (!quotientFamilial || !cityCode))
+        }
         className="w-full"
         size="lg"
       >
@@ -297,7 +362,7 @@ export const EnhancedFinancialAidCalculator = ({
         ) : (
           <>
             <Calculator className="mr-2 h-4 w-4" />
-            Calculer mes aides
+            {periodType === "saison_scolaire" ? "Calculer mon aide" : "Calculer mes aides"}
           </>
         )}
       </Button>
@@ -388,6 +453,18 @@ export const EnhancedFinancialAidCalculator = ({
             </AlertDescription>
           </Alert>
         </>
+      )}
+
+      {/* Informations complémentaires pour les activités de saison */}
+      {periodType === "saison_scolaire" && (
+        <Alert className="bg-muted/50 border-muted">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-sm">
+            <strong>Autres aides possibles :</strong> Pass Culture, PASS'Région, bons plans locaux... 
+            Ces aides ne sont pas calculées automatiquement mais peuvent réduire votre reste à charge. 
+            Renseignez-vous auprès de votre collectivité !
+          </AlertDescription>
+        </Alert>
       )}
     </Card>
   );

@@ -666,6 +666,7 @@ const ActivityDetail = () => {
                       activityId={id!}
                       activityPrice={activity.price_base || 0}
                       activityCategories={activity.categories || [activity.category]}
+                      periodType={activity.period_type}
                       userProfile={userProfile}
                       children={children}
                       onAidsCalculated={handleAidsCalculated}
