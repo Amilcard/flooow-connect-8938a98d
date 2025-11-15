@@ -16,11 +16,11 @@ interface StaticCardProps {
 const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => {
   return (
     <Card 
-      className="group p-3 cursor-pointer hover:shadow-lg transition-all duration-200 bg-white rounded-xl min-h-[90px] flex items-center gap-3"
+      className="group p-4 cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-[14px] h-[104px] flex items-center gap-4 shadow-[0px_2px_8px_rgba(0,0,0,0.06)]"
       onClick={onClick}
     >
       {/* Image à gauche */}
-      <div className="w-[70px] h-[70px] rounded-[10px] overflow-hidden flex-shrink-0">
+      <div className="w-[80px] h-[80px] rounded-[10px] overflow-hidden flex-shrink-0">
         <img 
           src={image}
           alt={title}
@@ -33,7 +33,7 @@ const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => 
         <h3 className="font-semibold text-[16px] text-text-main mb-1 group-hover:text-primary transition-colors">
           {title}
         </h3>
-        <p className="text-[13px] text-[#555] line-clamp-2">
+        <p className="text-[13px] text-[#555555] line-clamp-2 leading-relaxed">
           {description}
         </p>
       </div>
@@ -74,12 +74,12 @@ export const StaticSections = () => {
   ];
 
   return (
-    <section className="space-y-4">
+    <section className="py-8 px-4 -mx-4 bg-gray-50/50 rounded-2xl space-y-5">
       <h2 className="text-[20px] font-semibold text-[#222222]">
         Actualités et outils pour ta famille
       </h2>
       
-      <div className="grid gap-3">
+      <div className="grid gap-[14px]">
         {sections.map((section, index) => (
           <StaticCard
             key={index}
