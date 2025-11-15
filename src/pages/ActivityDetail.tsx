@@ -675,54 +675,17 @@ const ActivityDetail = () => {
                 )}
               </TabsContent>
 
-              {/* Onglet Mobilité - Version allégée */}
+              {/* Onglet Mobilité */}
               <TabsContent value="mobilite" className="mt-0">
-                <section className="space-y-6">
-                  <div className="space-y-3">
-                    <h2 className="text-2xl font-bold text-foreground">Comment s'y rendre ?</h2>
-                    <p className="text-base text-muted-foreground">
-                      Des solutions de mobilité douce seront bientôt disponibles sur ton territoire.
-                    </p>
-                  </div>
-
-                  <Card className="p-6 bg-muted/30">
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <Leaf size={24} className="text-primary mt-1" />
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-lg">Bientôt disponible</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Nous travaillons sur l'intégration des services STAS et VéliVert pour te proposer 
-                            des trajets en transport en commun et vélo partagé. En attendant, tu peux calculer 
-                            ton itinéraire ci-dessous.
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <Button 
-                        variant="outline"
-                        className="w-full"
-                        size="lg"
-                        onClick={() => {
-                          const address = activity.structures?.address;
-                          if (address) {
-                            const encodedAddress = encodeURIComponent(address);
-                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
-                          } else {
-                            toast({
-                              title: "Adresse non disponible",
-                              description: "Impossible de calculer l'itinéraire",
-                              variant: "destructive"
-                            });
-                          }
-                        }}
-                      >
-                        <MapPin className="mr-2" size={18} />
-                        Calculer mon itinéraire
-                      </Button>
-                    </div>
-                  </Card>
-                </section>
+                <EcoMobilitySection
+                  activityId={activity.id}
+                  activityAddress={activity.structures?.address}
+                  structureName={activity.structures?.name}
+                  structureContactJson={activity.structures?.contact_json}
+                  onTransportModeSelected={(mode) => {
+                    console.log('Transport mode selected:', mode);
+                  }}
+                />
               </TabsContent>
 
               {/* Onglet Échanges */}

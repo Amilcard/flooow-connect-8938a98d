@@ -55,7 +55,7 @@ export const StaticSections = () => {
       image: actualiteVille,
       title: "Ma ville, mon actu",
       description: "Infos locales, actus et événements près de chez toi.",
-      path: "/community"
+      path: "/ma-ville-mon-actu"
     },
     {
       image: actualiteTrajets,
