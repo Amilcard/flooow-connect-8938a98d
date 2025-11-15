@@ -115,27 +115,72 @@ const sections: AidSection[] = [
     cards: [
       {
         id: "LOCAL_YOUTH_DEALS",
-        title: "Bons plans jeunesse",
-        badges: ["Local", "Jeunes"],
-        text: "Réductions et gratuités sur sport, culture, loisirs et transports.",
-        footer: "Ville / Espace Info Jeunes",
-        cta_label: "Voir près de chez moi",
-        cta_url: "https://www.laboge.fr"
+        title: "Carte jeune locale",
+        badges: ["Réductions", "Jeunes"],
+        text: "Réductions sur les activités, culture, sport et transports du territoire.",
+        footer: "Ville / Intercommunalité",
+        cta_label: "Voir les offres locales",
+        cta_action: "open_local_youth_card"
+      },
+      {
+        id: "TAXE_APPRENTISSAGE",
+        title: "Taxe d'apprentissage",
+        badges: ["Apprentis", "Financement formation"],
+        text: "Aide pour financer formations certifiées (CFA, lycées pro).",
+        footer: "Employeurs / CFA",
+        cta_label: "En savoir plus",
+        cta_url: "https://entreprendre.service-public.fr/vosdroits/F22574"
       }
     ]
   },
   {
-    section_id: "dynamic_for_activity",
-    title: "Pour cette activité",
+    section_id: "eco_mobility",
+    title: "Aides et solutions d'éco-mobilité",
     cards: [
       {
-        id: "AIDES_POUR_CETTE_ACTIVITE",
-        title: "Aides possibles pour cette activité",
-        badges: ["Calcul personnalisé"],
-        text: "En fonction de l'âge, du QF et du type d'activité, certaines aides peuvent réduire votre reste à charge.",
-        footer: "Simulation Flooow",
-        cta_label: "Lancer la simulation",
-        cta_action: "open_aid_estimator_for_current_activity"
+        id: "TARIFICATION_SOLIDAIRE_TC",
+        title: "Tarification solidaire (transports)",
+        badges: ["Abonnement", "Selon revenus"],
+        text: "Réductions ou gratuité sur les abonnements bus/tram selon le QF ou le statut (étudiant, invalidité, etc.).",
+        footer: "Réseaux de transport locaux",
+        cta_label: "Voir sur le site de mon réseau",
+        cta_action: "open_local_transport_site"
+      },
+      {
+        id: "FREEVELOV",
+        title: "FreeVélo'v (exemple Lyon)",
+        badges: ["Vélo longue durée", "14–25 ans"],
+        text: "Prêt de vélo 100 % gratuit pendant 3 à 12 mois pour les jeunes qui habitent ou étudient sur le territoire.",
+        footer: "Métropole (ex : Lyon)",
+        cta_label: "En savoir plus",
+        cta_action: "open_freevelov_or_local_equivalent"
+      },
+      {
+        id: "VAE_SOLIDAIRE",
+        title: "Location VAE solidaire",
+        badges: ["Vélo électrique", "+16 ans"],
+        text: "Location de vélo électrique à tarif réduit pour les publics boursiers ou à faible revenu.",
+        footer: "Métropoles / Régions",
+        cta_label: "Voir les conditions",
+        cta_action: "open_local_vae_solidarity_page"
+      },
+      {
+        id: "COVOIT_QUOTIDIEN",
+        title: "Covoiturage quotidien",
+        badges: ["Domicile–activité"],
+        text: "Covoiturage subventionné : trajets gratuits ou à petit prix dans les zones partenaires.",
+        footer: "Collectivités & plateformes",
+        cta_label: "Voir les solutions près de chez moi",
+        cta_action: "open_carpooling_info"
+      },
+      {
+        id: "COVOIT_LIGNES",
+        title: "Lignes de covoiturage",
+        badges: ["Sans réservation", "Trajets garantis"],
+        text: "Lignes organisées de covoiturage avec trajets passagers offerts et départs garantis.",
+        footer: "Autorités organisatrices de mobilité",
+        cta_label: "Découvrir ce dispositif",
+        cta_action: "open_line_carpooling_info"
       }
     ]
   }
@@ -147,6 +192,14 @@ const Aides = () => {
   const handleCTA = (card: AidCard) => {
     if (card.cta_action === "open_aid_estimator_for_current_activity") {
       navigate("/aides/simulateur");
+    } else if (
+      card.cta_action === "open_local_transport_site" ||
+      card.cta_action === "open_freevelov_or_local_equivalent" ||
+      card.cta_action === "open_local_vae_solidarity_page" ||
+      card.cta_action === "open_carpooling_info" ||
+      card.cta_action === "open_line_carpooling_info"
+    ) {
+      navigate("/eco-mobilite");
     } else if (card.cta_url) {
       window.open(card.cta_url, "_blank", "noopener,noreferrer");
     }
