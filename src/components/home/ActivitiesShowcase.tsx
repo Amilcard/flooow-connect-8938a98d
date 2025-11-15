@@ -87,11 +87,15 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                   onClick={() => handleActivityClick(activity.id)}
                 >
                   {/* Image 70% de la hauteur - ratio 4:3 */}
-                  <div className="relative w-full aspect-[4/3] overflow-hidden">
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
                     <img
-                      src={activity.image}
+                      src={activity.image || '/placeholder.svg'}
                       alt={activity.title}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.src = '/placeholder.svg';
+                      }}
                     />
                   </div>
                   

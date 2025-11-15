@@ -26,11 +26,11 @@ export const TerritoryCoveredScreen = ({ onNext }: TerritoryCoveredScreenProps) 
             C'est parti ! 🎉
           </h2>
           <p className="text-base text-muted-foreground max-w-sm mx-auto">
-            Ton territoire est en zone de test, tu peux explorer toutes les fonctionnalités
+            Votre territoire est en zone de test, vous pouvez explorer toutes les fonctionnalités
           </p>
         </div>
 
-        {/* Ce que tu peux faire - version visuelle */}
+        {/* Ce que vous pouvez faire - version visuelle */}
         <div className="space-y-3 max-w-md mx-auto">
           <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
             <div className="flex items-center gap-3">
@@ -38,7 +38,7 @@ export const TerritoryCoveredScreen = ({ onNext }: TerritoryCoveredScreenProps) 
                 <Activity className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">Activités près de toi</p>
+                <p className="font-semibold text-foreground">Activités près de chez vous</p>
                 <p className="text-sm text-muted-foreground">Sport, culture, loisirs...</p>
               </div>
             </div>
@@ -62,7 +62,7 @@ export const TerritoryCoveredScreen = ({ onNext }: TerritoryCoveredScreenProps) 
           <div className="flex items-start gap-3">
             <Shield className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Tes données sont protégées.</span> On ne les revend pas et tu peux les supprimer à tout moment.
+              <span className="font-medium text-foreground">Vos données sont protégées.</span> Nous ne les revendons pas et vous pouvez les supprimer à tout moment.
             </p>
           </div>
         </Card>

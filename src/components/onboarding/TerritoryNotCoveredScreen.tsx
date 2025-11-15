@@ -24,19 +24,19 @@ export const TerritoryNotCoveredScreen = ({ onDiscoverDemo, onNotifyMe }: Territ
             Bientôt disponible ! 🚀
           </h2>
           <p className="text-base text-muted-foreground max-w-sm mx-auto">
-            Ton territoire n'est pas encore connecté, mais tu peux déjà participer
+            Votre territoire n'est pas encore connecté, mais vous pouvez déjà participer
           </p>
         </div>
 
         {/* Message positif court */}
         <Card className="p-4 bg-card border-accent/20 max-w-md mx-auto">
           <p className="text-sm text-foreground text-center">
-            Flooow se déploie progressivement. Tu es en avance, c'est une bonne nouvelle ! 
-            <span className="font-semibold text-accent"> Aide-nous à préparer l'arrivée dans ta région.</span>
+            Flooow se déploie progressivement. Vous êtes en avance, c'est une bonne nouvelle ! 
+            <span className="font-semibold text-accent"> Aidez-nous à préparer l'arrivée dans votre région.</span>
           </p>
         </Card>
 
-        {/* Ce que tu peux faire maintenant */}
+        {/* Ce que vous pouvez faire maintenant */}
         <div className="space-y-3 max-w-md mx-auto">
           <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
             <div className="flex items-center gap-3">
@@ -80,7 +80,7 @@ export const TerritoryNotCoveredScreen = ({ onDiscoverDemo, onNotifyMe }: Territ
           <div className="flex items-start gap-3">
             <Shield className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Tes données sont protégées.</span> On ne les revend pas et tu peux les supprimer à tout moment.
+              <span className="font-medium text-foreground">Vos données sont protégées.</span> Nous ne les revendons pas et vous pouvez les supprimer à tout moment.
             </p>
           </div>
         </Card>
