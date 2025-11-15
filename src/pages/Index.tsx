@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { UniversSection } from "@/components/UniversSection";
-import { AidesMobiliteBlock } from "@/components/home/AidesMobiliteBlock";
-import { TerritoireBlock } from "@/components/home/TerritoireBlock";
+import { StaticSections } from "@/components/home/StaticSections";
 import { EventsSection } from "@/components/home/EventsSection";
 import RecommendedEventsSection from "@/components/home/RecommendedEventsSection";
 import { MessagesSection } from "@/components/home/MessagesSection";
@@ -142,7 +141,16 @@ const Index = () => {
     <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
-      <main className="container px-4 py-6 space-y-12">
+      <main className="container px-4 py-6 space-y-8">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-text-main">
+            Bonjour !
+          </h1>
+          <p className="text-text-muted">
+            Découvrez les activités et événements pour vos enfants
+          </p>
+        </div>
+
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
           <TerritoryCheck 
@@ -153,24 +161,24 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* Section Univers - Carousel horizontal */}
-            <UniversSection />
-
-            {/* MES AIDES & MOBILITÉS - Position 3 (remontée) ⭐ */}
-            <AidesMobiliteBlock />
-
-            {/* Activités recommandées - Carousel horizontal */}
+            {/* Carrousel d'activités en haut */}
             <ActivitySection
-              title="Activités recommandées pour vous"
+              title="Activités à la Une"
               activities={nearbyActivities}
               onSeeAll={() => navigate("/activities?type=nearby")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
               layout="carousel"
             />
 
+            {/* Sections statiques Flooow */}
+            {isLoggedIn && <StaticSections />}
+
+            {/* Section Univers */}
+            <UniversSection />
+
             {/* Petits budgets - Carousel horizontal */}
             <ActivitySection
-              title="Activités Petits budgets"
+              title="Activités à petits prix"
               activities={budgetActivities}
               onSeeAll={() => navigate("/activities?type=budget")}
               onActivityClick={(id) => console.log("Activity clicked:", id)}
@@ -182,10 +190,10 @@ const Index = () => {
 
             {/* Messages & Bons plans */}
             {isLoggedIn && (
-              <>
+              <div id="messages-section">
                 <MessagesSection />
                 <BonsPlansSection />
-              </>
+              </div>
             )}
 
             {/* Activités Sport - Carousel horizontal */}
@@ -199,9 +207,6 @@ const Index = () => {
 
             {/* Recommandations personnalisées */}
             <RecommendedEventsSection />
-
-            {/* Vivre mon territoire */}
-            <TerritoireBlock />
 
             {/* Activités Innovantes - Carousel horizontal */}
             <ActivitySection

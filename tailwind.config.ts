@@ -67,6 +67,9 @@ export default {
           accent: "hsl(var(--accent-pink))",
           'accent-light': "hsl(var(--accent-pink-light))",
         },
+        yellow: {
+          flooow: "hsl(var(--accent-yellow))",
+        },
         lavender: "hsl(var(--lavender))",
         popover: {
           DEFAULT: "hsl(var(--popover))",

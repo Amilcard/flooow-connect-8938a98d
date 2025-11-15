@@ -1,20 +1,20 @@
-import { Grid3x3, Calendar, User, Calculator } from "lucide-react";
+import { Home, Calendar, User, Calculator } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NotificationBadge } from "./NotificationBadge";
 import { useAuth } from "@/hooks/useAuth";
 
 interface NavItem {
-  icon: typeof Grid3x3;
+  icon: typeof Home;
   label: string;
   path: string;
 }
 
 const navItems: NavItem[] = [
-  { icon: Grid3x3, label: "Activités", path: "/activities" },
-  { icon: Calculator, label: "Aides & Mobilité", path: "/aides-mobilite" },
-  { icon: Calendar, label: "Agenda & Échanges", path: "/agenda-community" },
-  { icon: User, label: "Mon espace", path: "/mon-compte" },
+  { icon: Home, label: "Accueil", path: "/home" },
+  { icon: Calendar, label: "Agenda", path: "/agenda-community" },
+  { icon: Calculator, label: "Estimations", path: "/aides-mobilite" },
+  { icon: User, label: "Compte", path: "/mon-compte" },
 ];
 
 export const BottomNavigation = () => {
