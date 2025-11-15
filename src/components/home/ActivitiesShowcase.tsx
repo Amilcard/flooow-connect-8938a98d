@@ -70,91 +70,64 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
       {/* Titre principal */}
       <h2 className="text-2xl font-bold text-text-main">Activités à la une</h2>
 
-      {/* Carrousel principal hero */}
+      {/* Carrousel principal - 1.3 cartes visibles */}
       {heroActivities.length > 0 && (
-        <div className="max-w-[1000px] mx-auto">
-          <div className="overflow-hidden rounded-3xl shadow-lg">
-            <div 
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {heroActivities.map((activity) => (
-                <div key={activity.id} className="w-full flex-shrink-0">
-                  <div 
-                    className="relative bg-card cursor-pointer"
-                    onClick={() => handleActivityClick(activity.id)}
-                  >
-                    {/* Image 16:9 */}
-                    <div className="relative w-full aspect-video overflow-hidden">
-                      <img
-                        src={activity.image}
-                        alt={activity.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    
-                    {/* Contenu en dessous */}
-                    <div className="p-6 space-y-3">
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="text-xs">
-                          {activity.category}
+        <div className="w-full overflow-x-auto scrollbar-hide -mx-6 px-6">
+          <div 
+            className="flex gap-4 snap-x snap-mandatory"
+            style={{ width: 'max-content' }}
+          >
+            {heroActivities.map((activity) => (
+              <div 
+                key={activity.id} 
+                className="w-[70vw] max-w-[500px] flex-shrink-0 snap-start"
+              >
+                <div 
+                  className="bg-white rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => handleActivityClick(activity.id)}
+                >
+                  {/* Image 70% de la hauteur - ratio 4:3 */}
+                  <div className="relative w-full aspect-[4/3] overflow-hidden">
+                    <img
+                      src={activity.image}
+                      alt={activity.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  {/* Pied 30% - contenu sous l'image */}
+                  <div className="p-4 space-y-2">
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {activity.category}
+                      </Badge>
+                      {activity.age_min && activity.age_max && (
+                        <Badge variant="outline" className="text-xs">
+                          {activity.age_min}-{activity.age_max} ans
                         </Badge>
-                        {activity.age_min && activity.age_max && (
-                          <Badge variant="outline" className="text-xs">
-                            {activity.age_min}-{activity.age_max} ans
-                          </Badge>
-                        )}
-                        {activity.vacationType && (
-                          <Badge variant="outline" className="text-xs">
-                            {activity.vacationType === 'sejour_hebergement' ? 'Séjour' : 
-                             activity.vacationType === 'centre_loisirs' ? 'Centre de loisirs' : 'Stage'}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      {/* Titre */}
-                      <h3 className="text-xl font-bold text-text-main line-clamp-2">
-                        {activity.title}
-                      </h3>
-                      
-                      {/* Localisation / durée / prix */}
-                      <div className="flex items-center justify-between text-sm text-text-muted">
-                        <div className="flex items-center gap-4">
-                          {activity.structureAddress && (
-                            <div className="flex items-center gap-1">
-                              <MapPin size={16} />
-                              <span className="line-clamp-1">{activity.structureAddress}</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 font-semibold text-primary">
-                          <span className="text-lg">{activity.price}€</span>
-                          {activity.priceUnit && (
-                            <span className="text-xs text-text-muted">/{activity.priceUnit}</span>
-                          )}
-                        </div>
-                      </div>
+                      )}
+                    </div>
+
+                    {/* Titre */}
+                    <h3 className="font-bold text-lg text-text-main line-clamp-2">
+                      {activity.title}
+                    </h3>
+
+                    {/* Prix */}
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-primary font-bold text-xl">
+                        {activity.price}€
+                      </span>
+                      {activity.hasFinancialAid && (
+                        <Badge variant="outline" className="text-xs">
+                          Aides dispo
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Indicateurs de pagination */}
-          <div className="flex justify-center gap-2 mt-3">
-            {heroActivities.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`h-2 rounded-full transition-all ${
-                  index === currentSlide 
-                    ? 'w-8 bg-primary' 
-                    : 'w-2 bg-border'
-                }`}
-                aria-label={`Aller à l'activité ${index + 1}`}
-              />
+              </div>
             ))}
           </div>
         </div>
