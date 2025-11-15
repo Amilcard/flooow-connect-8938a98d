@@ -359,4 +359,9 @@
   .carousel-container::-webkit-scrollbar {
     display: none;
   }
+
+  /* Hide Lovable badge globally */
+  #lovable-badge {
+    display: none !important;
+  }
 }
