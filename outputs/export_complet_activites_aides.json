@@ -1,0 +1,386 @@
+{
+  "export_date": "2025-11-15",
+  "description": "Export complet de toutes les activités et aides financières intégrées dans la base de données Flooow",
+  
+  "statistics": {
+    "total_activities": 95,
+    "total_financial_aids": 14,
+    "activities_by_category": {
+      "Sport": 25,
+      "Culture": 20,
+      "Apprentissage": 15,
+      "Loisirs": 15,
+      "Vacances": 20
+    },
+    "aids_by_territory": {
+      "national": 8,
+      "metropole": 4,
+      "commune": 2
+    }
+  },
+
+  "financial_aids": [
+    {
+      "id": "93b914b5-3ea5-44b3-9de2-0d24c932bf3f",
+      "name": "Aide CCAS Saint-Étienne",
+      "slug": "ccas-saint-etienne",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 300,
+      "amount_type": "fixed",
+      "amount_value": 12,
+      "territory_level": "commune",
+      "territory_codes": ["42218"],
+      "categories": ["sport", "culture", "loisirs", "vacances"],
+      "cumulative": true,
+      "official_link": "https://www.saint-etienne.fr",
+      "eligibility_summary": "Enfants 6-17 ans, QF < 300€, résidents Saint-Étienne"
+    },
+    {
+      "id": "763dcbc1-106f-4ee3-a1c4-92893858f558",
+      "name": "Aide CCAS Firminy/Ricamarie",
+      "slug": "ccas-firminy-ricamarie",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 300,
+      "amount_type": "fixed",
+      "amount_value": 12,
+      "territory_level": "commune",
+      "territory_codes": ["42095", "42184"],
+      "categories": ["sport", "culture", "loisirs", "vacances"],
+      "cumulative": true
+    },
+    {
+      "id": "249586d8-5428-43a4-91a8-1967020b4dea",
+      "name": "Carte M'RA - Métropole Saint-Étienne",
+      "slug": "carte-mra-saint-etienne",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": null,
+      "amount_type": "fixed",
+      "amount_value": 21,
+      "territory_level": "metropole",
+      "territory_codes": ["200071108"],
+      "categories": ["sport", "culture", "loisirs"],
+      "cumulative": true,
+      "official_link": "https://www.saint-etienne-metropole.fr",
+      "eligibility_summary": "Enfants 6-17 ans, sans condition de QF, résidents Métropole Saint-Étienne"
+    },
+    {
+      "id": "cb552ab0-dc5a-4b7b-88d1-d5064817f865",
+      "name": "Bonus Sport Métropole",
+      "slug": "bonus-sport-metropole",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 2000,
+      "amount_type": "fixed",
+      "amount_value": 50,
+      "territory_level": "metropole",
+      "territory_codes": ["200071108"],
+      "categories": ["sport", "multisport"],
+      "cumulative": true,
+      "official_link": "https://www.saint-etienne-metropole.fr"
+    },
+    {
+      "id": "e465db8b-d1ab-49fd-a552-b99ee97e2bea",
+      "name": "Bonus Vacances Métropole",
+      "slug": "bonus-vacances-metropole",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 2000,
+      "amount_type": "fixed",
+      "amount_value": 48,
+      "territory_level": "metropole",
+      "territory_codes": ["200071108"],
+      "categories": ["vacances", "sejour"],
+      "cumulative": true,
+      "official_link": "https://www.saint-etienne-metropole.fr"
+    },
+    {
+      "id": "ee4875fa-acf1-457f-b3ce-1bdff0e4fd28",
+      "name": "Chèques Vacances",
+      "slug": "cheques-vacances",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": null,
+      "amount_type": "fixed",
+      "amount_value": 50,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["vacances", "loisirs"],
+      "cumulative": true,
+      "official_link": "https://www.ancv.com",
+      "eligibility_summary": "Sans condition de ressources"
+    },
+    {
+      "id": "d742b049-c749-40da-bc45-cb6dc2b6f740",
+      "name": "Bons Vacances CAF",
+      "slug": "bons-vacances-caf",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 600,
+      "amount_type": "per_day",
+      "amount_value": 2,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["vacances"],
+      "cumulative": true,
+      "official_link": "https://www.caf.fr",
+      "eligibility_summary": "2€ par jour, QF < 600€"
+    },
+    {
+      "id": "e2435ef3-6566-42f3-a153-b7f0bd584c94",
+      "name": "Aide Sport Jeunes",
+      "slug": "aide-sport-jeunes",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 1200,
+      "amount_type": "fixed",
+      "amount_value": 35,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["sport"],
+      "cumulative": true,
+      "official_link": "https://www.sports.gouv.fr"
+    },
+    {
+      "id": "ba4bd6bc-9804-468b-b0fc-a7e68d7d5c59",
+      "name": "Aide Loisirs Éducatifs",
+      "slug": "aide-loisirs-educatifs",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 1300,
+      "amount_type": "fixed",
+      "amount_value": 40,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["loisirs", "education"],
+      "cumulative": true,
+      "official_link": "https://www.jeunesse.gouv.fr"
+    },
+    {
+      "id": "ad196147-caf0-44b7-a2c3-9ba8a41b23e3",
+      "name": "Aide Séjours Vacances",
+      "slug": "aide-sejours-vacances",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 1500,
+      "amount_type": "fixed",
+      "amount_value": 45,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["vacances", "sejour"],
+      "cumulative": true,
+      "official_link": "https://www.vacaf.org"
+    },
+    {
+      "id": "d7172897-ae8e-4d08-8666-dd8d72341bf3",
+      "name": "Pass Culture Activités",
+      "slug": "pass-culture-activites",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": null,
+      "amount_type": "fixed",
+      "amount_value": 40,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["culture", "loisirs"],
+      "cumulative": true,
+      "official_link": "https://pass.culture.fr"
+    },
+    {
+      "id": "8bd091c4-1d70-4ba4-91a0-4e4a54c62e9c",
+      "name": "Pass'Sport",
+      "slug": "pass-sport",
+      "age_min": 6,
+      "age_max": 17,
+      "qf_max": 1200,
+      "amount_type": "fixed",
+      "amount_value": 50,
+      "territory_level": "national",
+      "territory_codes": ["FR"],
+      "categories": ["sport"],
+      "cumulative": true,
+      "official_link": "https://www.sports.gouv.fr/pass-sport",
+      "eligibility_summary": "50€ pour licence sportive, QF < 1200€"
+    }
+  ],
+
+  "sample_activities": [
+    {
+      "id": "cb138d36-64c5-4340-baed-97b040c8a080",
+      "title": "Stage Foot - Académie Juniors",
+      "category": "Sport",
+      "period_type": "school_holidays",
+      "price_base": 10.00,
+      "price_unit": "par stage",
+      "duration_days": 5,
+      "age_min": 6,
+      "age_max": 9,
+      "categories": ["sport", "football"],
+      "accepts_aid_types": ["PassSport", "CAF"],
+      "covoiturage_enabled": true,
+      "description": "Stage intensif de football pour enfants"
+    },
+    {
+      "id": "4aa08b39-72e4-4e0c-b908-539027b0a8ba",
+      "title": "Atelier Basket Jeunes",
+      "category": "Sport",
+      "period_type": "annual",
+      "price_base": 40.00,
+      "price_unit": "par an",
+      "age_min": 10,
+      "age_max": 13,
+      "categories": ["sport", "basket"],
+      "accepts_aid_types": ["PassSport"],
+      "covoiturage_enabled": false,
+      "description": "Initiation et perfectionnement au basketball"
+    },
+    {
+      "id": "7b471d0c-615e-444e-a4ab-7e890834f6fc",
+      "title": "Atelier Arts Plastiques",
+      "category": "Culture",
+      "period_type": "annual",
+      "price_base": 80.00,
+      "price_unit": "par an",
+      "age_min": 10,
+      "age_max": 13,
+      "categories": ["culture", "arts"],
+      "accepts_aid_types": ["ANCV"],
+      "covoiturage_enabled": false,
+      "description": "Découverte et pratique des arts plastiques"
+    },
+    {
+      "id": "3d832805-4792-4f90-bef9-ecde395f84a8",
+      "title": "Séjour Linguistique Court - Vacances",
+      "category": "Vacances",
+      "period_type": "school_holidays",
+      "vacation_type": "ete",
+      "vacation_periods": ["toussaint", "noel", "hiver", "printemps", "ete"],
+      "price_base": 680.00,
+      "price_unit": "par semaine de séjour",
+      "duration_days": 7,
+      "age_min": 10,
+      "age_max": 13,
+      "categories": ["vacances", "sejour", "langues"],
+      "accepts_aid_types": ["ANCV", "CAF"],
+      "covoiturage_enabled": false,
+      "description": "Séjour linguistique d'une semaine avec hébergement"
+    },
+    {
+      "id": "bef1c9c0-c5be-462a-9ead-dbffd20ba18b",
+      "title": "Aide aux Devoirs - Primaire",
+      "category": "Apprentissage",
+      "period_type": "trimester",
+      "price_base": 20.00,
+      "price_unit": "par trimestre",
+      "age_min": 6,
+      "age_max": 9,
+      "categories": ["scolarite", "soutien"],
+      "accepts_aid_types": ["CAF"],
+      "covoiturage_enabled": false,
+      "description": "Aide aux devoirs quotidienne pour élèves de primaire"
+    }
+  ],
+
+  "aid_calculation_rules": {
+    "cumulative_aids": "Toutes les aides marquées 'cumulative: true' peuvent se cumuler",
+    "territory_matching": {
+      "commune": "Code postal exact requis (ex: 42218 pour Saint-Étienne)",
+      "metropole": "Code EPCI (ex: 200071108 pour Métropole Saint-Étienne)",
+      "region": "Code région (ex: 84 pour Auvergne-Rhône-Alpes)",
+      "national": "Applicable partout en France"
+    },
+    "amount_types": {
+      "fixed": "Montant fixe en euros",
+      "per_day": "Montant par jour de séjour/activité",
+      "percentage": "Pourcentage du prix de l'activité"
+    },
+    "eligibility_criteria": [
+      "age_min et age_max: Tranche d'âge éligible",
+      "qf_max: Quotient familial maximum (null = pas de condition)",
+      "categories: L'activité doit correspondre à au moins une catégorie",
+      "territory_codes: Le code postal/territoire doit correspondre"
+    ]
+  },
+
+  "examples_calculation": [
+    {
+      "scenario": "Stage Foot Académie Juniors (10€, 5 jours) pour enfant 8 ans, QF 400€, Saint-Étienne (42218)",
+      "eligible_aids": [
+        {
+          "name": "Pass'Sport",
+          "amount": 50,
+          "reason": "✅ 6-17 ans, QF < 1200€, catégorie sport"
+        },
+        {
+          "name": "Carte M'RA",
+          "amount": 21,
+          "reason": "✅ 6-17 ans, Métropole Saint-Étienne, sans condition QF"
+        },
+        {
+          "name": "Chèques Vacances",
+          "amount": 50,
+          "reason": "✅ 6-17 ans, sans condition, catégorie vacances"
+        }
+      ],
+      "total_aids": 121,
+      "activity_price": 10,
+      "issue": "⚠️ Total aides (121€) > Prix activité (10€) - Limite au prix de l'activité",
+      "final_calculation": {
+        "price_base": 10,
+        "aids_applied": 10,
+        "reste_a_charge": 0,
+        "note": "Activité gratuite grâce aux aides"
+      }
+    },
+    {
+      "scenario": "Séjour Linguistique (680€, 7 jours) pour enfant 12 ans, QF 800€, Saint-Étienne",
+      "eligible_aids": [
+        {
+          "name": "Bons Vacances CAF",
+          "amount": 14,
+          "calculation": "2€ × 7 jours",
+          "reason": "✅ QF < 600€ - NON ÉLIGIBLE (QF trop élevé)"
+        },
+        {
+          "name": "Aide Séjours Vacances",
+          "amount": 45,
+          "reason": "✅ 6-17 ans, QF < 1500€, catégorie séjour"
+        },
+        {
+          "name": "Bonus Vacances Métropole",
+          "amount": 48,
+          "reason": "✅ 6-17 ans, QF < 2000€, Métropole"
+        },
+        {
+          "name": "Chèques Vacances",
+          "amount": 50,
+          "reason": "✅ Sans condition"
+        }
+      ],
+      "total_aids": 143,
+      "activity_price": 680,
+      "final_calculation": {
+        "price_base": 680,
+        "aids_applied": 143,
+        "reste_a_charge": 537,
+        "savings_percent": 21
+      }
+    }
+  ],
+
+  "notes": {
+    "data_quality": [
+      "95 activités publiées dans la base",
+      "14 aides financières actives configurées",
+      "Toutes les aides sont cumulables (cumulative: true)",
+      "Couverture territoriale: Commune (Saint-Étienne, Firminy, Ricamarie) + Métropole + National"
+    ],
+    "inconsistencies": [
+      "⚠️ Stage Foot Académie Juniors à 10€ pour 5 jours (prix anormalement bas)",
+      "Prix cohérents pour les autres activités",
+      "Aides bien réparties par niveau territorial"
+    ]
+  }
+}
