@@ -17,10 +17,10 @@ export const MobiliteCard = () => {
         </div>
         <div className="flex-1">
           <h2 className="text-xl md:text-2xl font-bold text-text-main mb-2 group-hover:text-green-600 transition-colors">
-            Mobilités
+            Mes trajets et mobilités
           </h2>
           <p className="text-sm md:text-base text-text-muted mb-4 leading-relaxed">
-            Préparez vos trajets vers les activités sans voiture, en privilégiant les solutions éco-responsables.
+            Préparez vos déplacements vers les activités avec des solutions éco-responsables.
           </p>
           <Button 
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 h-11 rounded-xl shadow-md hover:shadow-lg transition-all"

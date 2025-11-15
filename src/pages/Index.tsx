@@ -3,7 +3,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
-import { EventsSection } from "@/components/home/EventsSection";
+import { FamilySpaceSection } from "@/components/home/FamilySpaceSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
@@ -157,14 +157,12 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== SECTION 1: AIDES FINANCIÈRES ========== */}
+            {/* ========== SECTION 1: OUTILS (AIDES + MOBILITÉS) ========== */}
             <section className="py-4">
-              <AidesFinancieresCard />
-            </section>
-
-            {/* ========== SECTION 2: MOBILITÉS ========== */}
-            <section className="py-4">
-              <MobiliteCard />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <AidesFinancieresCard />
+                <MobiliteCard />
+              </div>
             </section>
 
             {/* ========== SECTION 3: ACTIVITÉS RECOMMANDÉES ========== */}
@@ -219,9 +217,9 @@ const Index = () => {
               </section>
             )}
 
-            {/* ========== SECTION 7: MA VILLE, MON ACTU ========== */}
+            {/* ========== SECTION 7: POUR VOTRE FAMILLE ========== */}
             <section className="py-6">
-              <EventsSection />
+              <FamilySpaceSection />
             </section>
           </>
         )}
