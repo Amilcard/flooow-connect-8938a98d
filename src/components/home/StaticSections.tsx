@@ -19,7 +19,16 @@ const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => 
       className="group cursor-pointer hover:shadow-xl transition-all duration-200 bg-white rounded-xl overflow-hidden shadow-card h-[160px] md:h-[220px] flex flex-row border-0"
       onClick={onClick}
     >
-      {/* Texte à gauche - 60% */}
+      {/* Image à gauche - 40% */}
+      <div className="flex-[4] h-full flex-shrink-0 relative overflow-hidden">
+        <img 
+          src={image}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+      
+      {/* Texte à droite - 60% */}
       <div className="flex-[6] p-4 md:p-6 flex flex-col justify-center min-w-0">
         <h3 className="font-semibold text-[16px] md:text-[18px] text-text-main mb-2 group-hover:text-primary transition-colors leading-[1.35]">
           {title}
@@ -27,15 +36,6 @@ const StaticCard = ({ image, title, description, onClick }: StaticCardProps) => 
         <p className="text-[13px] md:text-[14px] text-text-muted line-clamp-3 leading-[1.35]">
           {description}
         </p>
-      </div>
-      
-      {/* Image à droite - 40% */}
-      <div className="flex-[4] h-full flex-shrink-0 relative overflow-hidden">
-        <img 
-          src={image}
-          alt={title}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
       </div>
     </Card>
   );
