@@ -14,6 +14,7 @@ import { useBookingDraft } from "@/hooks/useBookingDraft";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSmartBack } from "@/hooks/useSmartBack";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
+import { KidQuickAddModal } from "@/components/KidQuickAddModal";
 
 const Booking = () => {
   const { id } = useParams();
@@ -28,6 +29,7 @@ const Booking = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [showAddChildModal, setShowAddChildModal] = useState(false);
   
   // Récupérer les aides depuis le localStorage si elles existent
   const { state: bookingState } = useActivityBookingState(id!);
@@ -91,7 +93,7 @@ const Booking = () => {
   });
 
   // Fetch user's children (only for authenticated user)
-  const { data: children = [], isLoading: loadingChildren } = useQuery({
+  const { data: children = [], isLoading: loadingChildren, refetch: refetchChildren } = useQuery({
     queryKey: ["children", userId],
     queryFn: async () => {
       if (!userId) {
@@ -108,6 +110,13 @@ const Booking = () => {
     },
     enabled: authChecked && !!userId // Only run query after auth check and if user is logged in
   });
+
+  // Auto-open add child modal if no children exist
+  useEffect(() => {
+    if (authChecked && !loadingChildren && children.length === 0 && !showAddChildModal) {
+      setShowAddChildModal(true);
+    }
+  }, [authChecked, loadingChildren, children.length, showAddChildModal]);
 
   const handleSubmit = async () => {
     if (!selectedChildId) {
@@ -316,35 +325,42 @@ const Booking = () => {
           {children.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">
-                Vous devez d'abord ajouter un enfant à votre compte
+                Aucun enfant enregistré. Ajoutez un enfant pour continuer.
               </p>
-              <Button onClick={() => navigate("/mon-compte")}>
-                Ajouter un enfant
-              </Button>
             </div>
           ) : (
-            <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
-              <div className="space-y-3">
-                {children.map((child) => {
-                  const age = new Date().getFullYear() - new Date(child.dob).getFullYear();
-                  return (
-                    <div key={child.id} className="flex items-center space-x-3">
-                      <RadioGroupItem value={child.id} id={child.id} />
-                      <Label
-                        htmlFor={child.id}
-                        className="flex-1 flex items-center gap-3 cursor-pointer p-3 rounded-lg border"
-                      >
-                        <User size={20} className="text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">{child.first_name}</p>
-                          <p className="text-sm text-muted-foreground">{age} ans</p>
-                        </div>
-                      </Label>
-                    </div>
-                  );
-                })}
-              </div>
-            </RadioGroup>
+            <>
+              <RadioGroup value={selectedChildId} onValueChange={setSelectedChildId}>
+                <div className="space-y-3">
+                  {children.map((child) => {
+                    const age = new Date().getFullYear() - new Date(child.dob).getFullYear();
+                    return (
+                      <div key={child.id} className="flex items-center space-x-3">
+                        <RadioGroupItem value={child.id} id={child.id} />
+                        <Label
+                          htmlFor={child.id}
+                          className="flex-1 flex items-center gap-3 cursor-pointer p-3 rounded-lg border"
+                        >
+                          <User size={20} className="text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">{child.first_name}</p>
+                            <p className="text-sm text-muted-foreground">{age} ans</p>
+                          </div>
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </RadioGroup>
+              
+              <Button
+                variant="outline"
+                className="w-full mt-4"
+                onClick={() => setShowAddChildModal(true)}
+              >
+                Ajouter un autre enfant
+              </Button>
+            </>
           )}
         </Card>
 
@@ -362,6 +378,12 @@ const Booking = () => {
           Votre demande sera transmise à la structure. Vous recevrez une confirmation par email.
         </p>
       </div>
+
+      <KidQuickAddModal
+        open={showAddChildModal}
+        onClose={() => setShowAddChildModal(false)}
+        onChildAdded={refetchChildren}
+      />
     </div>
   );
 };
