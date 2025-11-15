@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { ActivitySection } from "@/components/Activity/ActivitySection";
+import { ActivitiesShowcase } from "@/components/home/ActivitiesShowcase";
 import { UniversSection } from "@/components/UniversSection";
 import { StaticSections } from "@/components/home/StaticSections";
 import { useActivities } from "@/hooks/useActivities";
@@ -139,13 +139,7 @@ const Index = () => {
           <>
             {/* ========== SECTION 1: ACTIVITÉS À LA UNE ========== */}
             <section className="space-y-4">
-              <ActivitySection
-                title="Activités à la Une"
-                activities={nearbyActivities}
-                onSeeAll={() => navigate("/activities?type=nearby")}
-                onActivityClick={(id) => console.log("Activity clicked:", id)}
-                layout="carousel"
-              />
+              <ActivitiesShowcase activities={nearbyActivities} />
             </section>
 
             {/* ========== SECTION 2: UNIVERS ========== */}
