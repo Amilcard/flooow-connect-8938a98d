@@ -48,6 +48,9 @@ export default {
           foreground: "hsl(var(--accent-foreground))",
           light: "hsl(var(--accent-light))",
           soft: "hsl(var(--accent-soft))",
+          blue: "hsl(var(--accent-blue))",
+          green: "hsl(var(--accent-green))",
+          orange: "hsl(var(--accent-orange))",
         },
         badge: {
           sport: "hsl(var(--badge-sport))",

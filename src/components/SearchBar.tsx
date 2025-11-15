@@ -35,12 +35,12 @@ export const SearchBar = ({
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <header className="w-full bg-background border-b border-border">
         <div className="container px-4 py-3">
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search 
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" 
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" 
                 size={20}
                 aria-hidden="true"
               />
@@ -55,7 +55,7 @@ export const SearchBar = ({
                     handleSearch(e as any);
                   }
                 }}
-                className="pl-12 pr-4 h-14 rounded-full text-base bg-secondary/50 border-0 focus-visible:ring-2 focus-visible:ring-primary"
+                className="pl-12 pr-4 h-12 rounded-lg text-base bg-background border border-border focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Rechercher des activités"
               />
             </div>
@@ -63,14 +63,14 @@ export const SearchBar = ({
               type="button"
               variant="outline"
               size="icon"
-              className="h-14 w-14 rounded-full border-0 bg-secondary/50"
+              className="h-12 w-12 rounded-lg border-border"
               onClick={() => {
                 navigate('/search/filters');
                 onFilterClick?.();
               }}
               aria-label="Filtrer les résultats"
             >
-              <SlidersHorizontal size={20} />
+              <SlidersHorizontal size={20} className="text-text-main" />
             </Button>
           </form>
         </div>
