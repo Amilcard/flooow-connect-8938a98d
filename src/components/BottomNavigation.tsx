@@ -27,6 +27,12 @@ export const BottomNavigation = () => {
   const [showSplash, setShowSplash] = useState(false);
 
   const handleNavigation = (item: NavItem) => {
+    // Rediriger vers /auth si l'utilisateur n'est pas connecté et tente d'accéder à un espace privé
+    if (!isAuthenticated && (item.path.startsWith("/mon-compte") || item.path === "/mes-enfants")) {
+      navigate("/auth");
+      return;
+    }
+
     if (item.showSplash) {
       setShowSplash(true);
       setTimeout(() => {
@@ -37,6 +43,15 @@ export const BottomNavigation = () => {
       navigate(item.path);
     }
   };
+
+  // Filtrer les items selon l'état de connexion
+  const visibleItems = navItems.filter(item => {
+    // "Mes enfants" et "Mon compte" uniquement si connecté
+    if (!isAuthenticated && (item.path.startsWith("/mon-compte") || item.label === "Mes enfants")) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -57,7 +72,7 @@ export const BottomNavigation = () => {
       >
         <div className="container px-2 py-2.5">
           <ul className="flex items-center justify-around">
-            {navItems.map((item) => {
+            {visibleItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               
