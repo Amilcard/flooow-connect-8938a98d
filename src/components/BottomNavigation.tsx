@@ -15,7 +15,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/", showSplash: true },
   { icon: Search, label: "Recherche", path: "/search" },
-  { icon: Users, label: "Mes enfants", path: "/mon-compte/mes-enfants" },
+  { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants" },
   { icon: Bike, label: "Éco-mobilité", path: "/eco-mobilite" },
   { icon: UserCircle, label: "Mon compte", path: "/mon-compte" },
 ];

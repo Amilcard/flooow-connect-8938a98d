@@ -152,7 +152,9 @@ export const AvailableSlotsSection = ({
                     {!isFull && (
                       <Button
                         size="sm"
-                        onClick={() => navigate(`/booking/${activityId}?slotId=${slot.id}`)}
+                        onClick={() => {
+                          navigate(`/booking/${activityId}?slotId=${slot.id}`);
+                        }}
                       >
                         Réserver
                       </Button>
