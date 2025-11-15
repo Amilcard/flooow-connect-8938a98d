@@ -93,10 +93,11 @@ const Index = () => {
   
   // Récupérer le territoire de l'utilisateur pour filtrer les activités
   const { data: userTerritory } = useUserTerritory();
-  
-  const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({ 
-    limit: 6, 
-    territoryId: userTerritory?.id
+
+  // Charger les activités : avec territoire si connecté, sinon toutes les activités
+  const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({
+    limit: 6,
+    territoryId: userTerritory?.id || undefined // undefined permet de charger toutes les activités si pas de territoire
   });
 
 

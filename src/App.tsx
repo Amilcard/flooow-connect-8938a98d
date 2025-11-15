@@ -170,7 +170,7 @@ const App = () => (
           <Route path="/aides" element={<Aides />} />
           <Route path="/aides/simulateur" element={<Simulateur />} />
           <Route path="/aides-mobilite" element={<AidesMobilite />} />
-          <Route path="/ma-ville-mon-actu" element={<ProtectedRoute><MaVilleMonActu /></ProtectedRoute>} />
+          <Route path="/ma-ville-mon-actu" element={<MaVilleMonActu />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/community" element={<Community />} />
