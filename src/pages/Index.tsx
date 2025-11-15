@@ -117,7 +117,7 @@ const Index = () => {
     <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       
-      <main className="container px-4 py-6 space-y-8">
+      <main className="max-w-[1200px] mx-auto px-6 py-8 space-y-10">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-text-main">
             Bonjour !
@@ -138,19 +138,21 @@ const Index = () => {
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
             {/* ========== SECTION 1: ACTIVITÉS À LA UNE ========== */}
-            <section className="space-y-4">
+            <section>
               <ActivitiesShowcase activities={nearbyActivities} />
             </section>
 
             {/* ========== SECTION 2: UNIVERS ========== */}
-            <section className="space-y-4">
+            <section>
               <UniversSection />
             </section>
 
             {/* ========== SECTION 3: ACTUALITÉS ET OUTILS ========== */}
-            <section className="space-y-4">
-              {isLoggedIn && <StaticSections />}
-            </section>
+            {isLoggedIn && (
+              <section>
+                <StaticSections />
+              </section>
+            )}
           </>
         )}
       </main>

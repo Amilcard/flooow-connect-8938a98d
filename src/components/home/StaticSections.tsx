@@ -73,7 +73,7 @@ export const StaticSections = () => {
   ];
 
   return (
-    <section className="space-y-4 px-4">
+    <section className="space-y-4">
       <h2 className="text-2xl font-bold text-text-main">
         Actualités et outils pour ta famille
       </h2>
