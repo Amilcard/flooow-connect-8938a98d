@@ -164,10 +164,10 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
       {budgetActivities.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-text-main">Petits budgets</h3>
-          <div className="w-full overflow-x-auto pb-4 -mx-4 px-4">
-            <div className="flex gap-4" style={{ width: "max-content" }}>
+          <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
+            <div className="flex gap-4 px-1">
               {budgetActivities.map((activity) => (
-                <div key={activity.id} className="w-[280px] flex-shrink-0">
+                <div key={activity.id} className="w-[260px] flex-shrink-0 snap-start">
                   <div className="relative">
                     {activity.price < 30 && (
                       <Badge 
@@ -201,10 +201,10 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
       {innovativeActivities.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-text-main">Innovantes</h3>
-          <div className="w-full overflow-x-auto pb-4 -mx-4 px-4">
-            <div className="flex gap-4" style={{ width: "max-content" }}>
+          <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
+            <div className="flex gap-4 px-1">
               {innovativeActivities.map((activity) => (
-                <div key={activity.id} className="w-[280px] flex-shrink-0">
+                <div key={activity.id} className="w-[260px] flex-shrink-0 snap-start">
                   <div className="relative">
                     <Badge 
                       className="absolute top-2 left-2 z-10 bg-accent-orange text-white"
@@ -236,10 +236,10 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
       {nearbyActivities.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-text-main">À proximité</h3>
-          <div className="w-full overflow-x-auto pb-4 -mx-4 px-4">
-            <div className="flex gap-4" style={{ width: "max-content" }}>
+          <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4">
+            <div className="flex gap-4 px-1">
               {nearbyActivities.map((activity) => (
-                <div key={activity.id} className="w-[280px] flex-shrink-0">
+                <div key={activity.id} className="w-[260px] flex-shrink-0 snap-start">
                   <div className="relative">
                     {activity.distance && (
                       <Badge 
