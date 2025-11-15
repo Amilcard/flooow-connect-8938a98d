@@ -15,13 +15,13 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/80 backdrop-blur-lg">
       <div className="container px-4 md:px-6">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center h-16">
+          <Link to="/" className="flex items-center h-20 py-3">
             <img 
               src={logoFlooow} 
               alt="Flooow - Mon petit guichet du quotidien" 
-              className="h-16 w-auto object-contain py-2"
+              className="h-full w-auto min-w-[120px] object-contain"
             />
           </Link>
 
