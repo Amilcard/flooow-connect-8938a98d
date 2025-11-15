@@ -1,98 +1,58 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { WelcomeScreen } from "@/components/onboarding/WelcomeScreen";
-import { BetaContextScreen } from "@/components/onboarding/BetaContextScreen";
-import { TerritoryChoiceScreen } from "@/components/onboarding/TerritoryChoiceScreen";
-import { TerritoryCoveredScreen } from "@/components/onboarding/TerritoryCoveredScreen";
-import { TerritoryNotCoveredScreen } from "@/components/onboarding/TerritoryNotCoveredScreen";
-import { toast } from "sonner";
+import { BetaWelcomeScreen } from "@/components/onboarding/BetaWelcomeScreen";
+import { FindActivitiesScreen } from "@/components/onboarding/FindActivitiesScreen";
+import { UnderstandCostsScreen } from "@/components/onboarding/UnderstandCostsScreen";
+import { EasyAccessScreen } from "@/components/onboarding/EasyAccessScreen";
 
 type OnboardingStep = 
-  | "welcome" 
-  | "beta-context" 
-  | "territory-choice" 
-  | "territory-covered" 
-  | "territory-not-covered";
+  | "beta-welcome" 
+  | "find-activities" 
+  | "understand-costs" 
+  | "easy-access";
 
 const Onboarding = () => {
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>("welcome");
-  const [territoryId, setTerritoryId] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("beta-welcome");
   const navigate = useNavigate();
 
+  const handleComplete = () => {
+    localStorage.setItem("hasSeenOnboarding", "true");
+    navigate("/home");
+  };
+
+  const handleSkip = () => {
+    localStorage.setItem("hasSeenOnboarding", "true");
+    navigate("/home");
+  };
+
   const handleWelcomeNext = () => {
-    setCurrentStep("beta-context");
+    setCurrentStep("find-activities");
   };
 
-  const handleBetaContextNext = () => {
-    setCurrentStep("territory-choice");
+  const handleFindActivitiesNext = () => {
+    setCurrentStep("understand-costs");
   };
 
-  const handleTerritoryChoice = (selectedTerritoryId: string | null, isCovered: boolean) => {
-    setTerritoryId(selectedTerritoryId);
-    
-    if (isCovered) {
-      setCurrentStep("territory-covered");
-    } else {
-      setCurrentStep("territory-not-covered");
-    }
-  };
-
-  const handleTerritorySkip = () => {
-    localStorage.setItem("userTerritoryMode", "discovery");
-    localStorage.setItem("hasSeenOnboarding", "true");
-    navigate("/home");
-  };
-
-  const handleTerritoryCoveredNext = () => {
-    // Consentement intégré dans l'écran final
-    localStorage.setItem("hasSeenOnboarding", "true");
-    if (territoryId) {
-      localStorage.setItem("userTerritoryId", territoryId);
-    }
-    navigate("/home");
-  };
-
-  const handleDiscoverDemo = () => {
-    localStorage.setItem("userTerritoryMode", "demo");
-    localStorage.setItem("hasSeenOnboarding", "true");
-    navigate("/home");
-  };
-
-  const handleNotifyMe = () => {
-    // TODO: Implémenter l'inscription à la liste d'attente
-    toast.success("Nous te préviendrons dès que Flooow arrive dans ton territoire !");
-    handleDiscoverDemo();
+  const handleUnderstandCostsNext = () => {
+    setCurrentStep("easy-access");
   };
 
   const renderStep = () => {
     switch (currentStep) {
-      case "welcome":
-        return <WelcomeScreen onNext={handleWelcomeNext} />;
+      case "beta-welcome":
+        return <BetaWelcomeScreen onNext={handleWelcomeNext} onSkip={handleSkip} />;
       
-      case "beta-context":
-        return <BetaContextScreen onNext={handleBetaContextNext} />;
+      case "find-activities":
+        return <FindActivitiesScreen onNext={handleFindActivitiesNext} onSkip={handleSkip} />;
       
-      case "territory-choice":
-        return (
-          <TerritoryChoiceScreen 
-            onNext={handleTerritoryChoice}
-            onSkip={handleTerritorySkip}
-          />
-        );
+      case "understand-costs":
+        return <UnderstandCostsScreen onNext={handleUnderstandCostsNext} onSkip={handleSkip} />;
       
-      case "territory-covered":
-        return <TerritoryCoveredScreen onNext={handleTerritoryCoveredNext} />;
-      
-      case "territory-not-covered":
-        return (
-          <TerritoryNotCoveredScreen 
-            onDiscoverDemo={handleDiscoverDemo}
-            onNotifyMe={handleNotifyMe}
-          />
-        );
+      case "easy-access":
+        return <EasyAccessScreen onNext={handleComplete} onSkip={handleSkip} />;
       
       default:
-        return <WelcomeScreen onNext={handleWelcomeNext} />;
+        return <BetaWelcomeScreen onNext={handleWelcomeNext} onSkip={handleSkip} />;
     }
   };
 
