@@ -23,6 +23,7 @@ interface FinancialAid {
   amount: number;
   territory_level: string;
   official_link: string | null;
+  is_informational: boolean;
 }
 
 interface Props {
@@ -77,7 +78,12 @@ export const EnhancedFinancialAidCalculator = ({
       setSelectedChildId(savedState.childId);
       setQuotientFamilial(savedState.quotientFamilial);
       setCityCode(savedState.cityCode);
-      setAids(savedState.aids);
+      // Ensure all aids have is_informational
+      const aidsWithInfo = savedState.aids.map(aid => ({
+        ...aid,
+        is_informational: aid.is_informational ?? false
+      }));
+      setAids(aidsWithInfo);
       setCalculated(true);
     }
   }, [savedState?.calculated]);
@@ -130,7 +136,8 @@ export const EnhancedFinancialAidCalculator = ({
         aid_name: "Pass'Sport",
         amount: passSportAmount,
         territory_level: "national",
-        official_link: "https://www.sports.gouv.fr/pass-sport"
+        official_link: "https://www.sports.gouv.fr/pass-sport",
+        is_informational: false
       }];
       
       setAids(calculatedAids);
@@ -181,17 +188,22 @@ export const EnhancedFinancialAidCalculator = ({
         p_city_code: cityCode,
         p_activity_price: activityPrice,
         p_duration_days: 7, // Défaut pour séjours
-        p_categories: activityCategories
+        p_categories: activityCategories,
+        p_period_type: periodType
       });
 
       if (error) throw error;
 
-      const calculatedAids = data || [];
+      const calculatedAids = (data || []).map((aid: any) => ({
+        ...aid,
+        is_informational: aid.is_informational ?? false
+      }));
       setAids(calculatedAids);
       setCalculated(true);
 
-      // S'assurer que les aides ne dépassent pas le prix
-      const totalAidsRaw = calculatedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+      // S'assurer que les aides ne dépassent pas le prix (exclude informational aids)
+      const calculableAids = calculatedAids.filter((aid: FinancialAid) => !aid.is_informational);
+      const totalAidsRaw = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
       const totalAids = Math.min(totalAidsRaw, activityPrice);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
 

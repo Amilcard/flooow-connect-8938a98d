@@ -11,6 +11,7 @@ interface Props {
   quotientFamilial: number;
   cityCode: string;
   durationDays?: number;
+  periodType?: string;
 }
 
 interface FinancialAid {
@@ -18,6 +19,7 @@ interface FinancialAid {
   amount: number;
   territory_level: string;
   official_link: string | null;
+  is_informational: boolean;
 }
 
 const TERRITORY_ICONS = {
@@ -33,7 +35,8 @@ export const FinancialAidsCalculator = ({
   childAge,
   quotientFamilial,
   cityCode,
-  durationDays = 1
+  durationDays = 1,
+  periodType = "toute_annee"
 }: Props) => {
   const [loading, setLoading] = useState(false);
   const [aids, setAids] = useState<FinancialAid[]>([]);
@@ -56,11 +59,16 @@ export const FinancialAidsCalculator = ({
           p_city_code: cityCode,
           p_activity_price: activityPrice,
           p_duration_days: durationDays,
-          p_categories: activityCategories
+          p_categories: activityCategories,
+          p_period_type: periodType
         });
 
         if (rpcError) throw rpcError;
-        setAids(data || []);
+        const aidsData = (data || []).map((aid: any) => ({
+          ...aid,
+          is_informational: aid.is_informational ?? false
+        }));
+        setAids(aidsData);
       } catch (err) {
         console.error("Error fetching financial aids:", err);
         setError("Impossible de calculer les aides disponibles");
@@ -70,10 +78,12 @@ export const FinancialAidsCalculator = ({
     };
 
     fetchEligibleAids();
-  }, [activityPrice, activityCategories, childAge, quotientFamilial, cityCode, durationDays]);
+  }, [activityPrice, activityCategories, childAge, quotientFamilial, cityCode, durationDays, periodType]);
 
-  // Calculate totals
-  const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+  // Calculate totals - exclude informational aids
+  const calculableAids = aids.filter(aid => !aid.is_informational);
+  const informationalAids = aids.filter(aid => aid.is_informational);
+  const totalAids = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
 
@@ -106,11 +116,11 @@ export const FinancialAidsCalculator = ({
         </div>
       )}
 
-      {/* Aids list */}
-      {!loading && aids.length > 0 && (
+      {/* Calculable Aids list */}
+      {!loading && calculableAids.length > 0 && (
         <>
           <div className="space-y-2">
-            {aids.map((aid, index) => (
+            {calculableAids.map((aid, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-3 bg-accent/50 rounded-lg"
