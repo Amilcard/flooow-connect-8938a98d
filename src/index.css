@@ -24,62 +24,63 @@
        --accent-pink: 342 100% 70%;
     */
 
-    /* 0. Fond & surfaces neutres (fond très clair, style WeTransfer) */
-    --bg-body: 210 20% 98%;           /* Fond global très clair #F9FAFB */
+    /* 0. Fond & surfaces neutres (fond blanc pur Flooow) */
+    --bg-body: 0 0% 100%;             /* Fond global blanc pur #FFFFFF */
     --bg-surface: 0 0% 100%;          /* Cartes/blocs blancs #FFFFFF */
-    --border-subtle: 210 16% 90%;     /* Lignes discrètes #E5E7EB */
+    --border-subtle: 0 0% 88%;        /* Lignes discrètes #E0E0E0 */
 
-    /* 1. Couleurs principales (bleu-violet doux inspiré WeTransfer) */
-    --primary: 228 78% 61%;           /* Bleu-violet doux pour CTA principaux */
-    --primary-soft: 228 100% 96%;     /* Fond de puces / tags (bleu très pâle) */
-    --primary-light: 228 78% 71%;     /* Variante plus claire pour hover */
-    --primary-foreground: 0 0% 100%;  /* Texte sur boutons primaires */
+    /* 1. Couleurs principales Flooow (violet lavande) */
+    --primary: 262 66% 69%;           /* Violet clair/Lavande #9B77E6 - accent principal */
+    --primary-soft: 262 66% 93%;      /* Fond de tags violet très pâle */
+    --primary-light: 262 66% 79%;     /* Variante plus claire pour hover */
+    --primary-foreground: 0 0% 100%;  /* Texte blanc sur boutons primaires */
 
-    /* 2. Accent chaud (jaune-orangé pastel pour cartes mises en avant) */
-    --accent: 39 97% 68%;             /* Jaune-orangé pastel */
-    --accent-soft: 39 100% 94%;       /* Fond très doux pour badges/sections */
-    --accent-light: 39 97% 78%;       /* Variante plus claire */
-    --accent-foreground: 222 47% 11%; /* Texte sur accent (sombre pour contraste) */
+    /* 2. Accent secondaire Flooow (bleu vif) */
+    --accent: 228 62% 56%;            /* Bleu vif/Royal #4A60D4 */
+    --accent-soft: 228 62% 93%;       /* Fond très doux pour badges bleus */
+    --accent-light: 228 62% 66%;      /* Variante plus claire */
+    --accent-foreground: 0 0% 100%;   /* Texte blanc sur accent */
 
-    /* 3. Couleurs custom badges & catégories */
-    --primary-orange: 33 100% 64%;    /* Badge TARIF, 'GRATUIT', cartes chaudes */
-    --primary-orange-dark: 33 100% 54%; /* Version plus foncée pour hover */
-    --success-green: 164 63% 48%;     /* Boutons éco-mobilité (vert/bleu) */
+    /* 3. Couleurs custom badges & catégories Flooow */
+    --primary-orange: 33 100% 64%;    /* Orange pour badges distance */
+    --primary-orange-dark: 33 100% 54%; /* Version plus foncée */
+    --success-green: 164 63% 48%;     /* Vert pour éco-mobilité */
     --success-green-dark: 164 63% 38%; /* Version plus foncée */
-    --accent-pink: 338 86% 70%;       /* Badges secondaires, pastilles */
-    --accent-pink-light: 338 86% 80%; /* Version plus claire */
-    --lavender: 262 66% 77%;          /* Couleur de fond douce pour blocs 'infos' */
+    --accent-pink: 338 75% 59%;       /* Rose corail/Fuchsia #E64A8D */
+    --accent-pink-light: 338 75% 69%; /* Version plus claire */
+    --lavender: 262 66% 69%;          /* Violet lavande = primary */
+    --accent-yellow: 51 100% 50%;     /* Jaune clair/Or #FFD700 */
 
-    /* 4. Texte (bon contraste sur fond clair) */
-    --text-main: 222 47% 11%;         /* Texte principal (quasi noir) */
-    --text-muted: 215 16% 47%;        /* Texte secondaire */
-    --text-on-primary: 0 0% 100%;     /* Texte sur boutons primaires */
+    /* 4. Texte Flooow (gris foncé/noir sur fond blanc) */
+    --text-main: 0 0% 20%;            /* Gris foncé/Noir #333333 */
+    --text-muted: 0 0% 40%;           /* Gris plus clair #666666 */
+    --text-on-primary: 0 0% 100%;     /* Texte blanc sur boutons */
 
     /* 5. Surfaces & éléments UI (compatibilité avec noms existants) */
-    --background: 210 20% 98%;        /* = bg-body */
-    --foreground: 222 47% 11%;        /* = text-main */
-    --card: 0 0% 100%;                /* = bg-surface */
-    --card-foreground: 222 47% 11%;   /* = text-main */
+    --background: 0 0% 100%;          /* = bg-body blanc pur */
+    --foreground: 0 0% 20%;           /* = text-main gris foncé */
+    --card: 0 0% 100%;                /* = bg-surface blanc */
+    --card-foreground: 0 0% 20%;      /* = text-main gris foncé */
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --secondary: 228 100% 96%;        /* Utilise primary-soft */
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 16% 93%;             /* Fond muted légèrement plus sombre */
-    --muted-foreground: 215 16% 47%;  /* = text-muted */
+    --popover-foreground: 0 0% 20%;
+    --secondary: 262 66% 93%;         /* Utilise primary-soft violet pâle */
+    --secondary-foreground: 0 0% 20%;
+    --muted: 0 0% 96%;                /* Fond muted très clair */
+    --muted-foreground: 0 0% 40%;     /* = text-muted gris clair */
 
     /* 6. Badge colors (thématiques d'activités) */
-    --badge-sport: 228 78% 61%;       /* = primary */
+    --badge-sport: 262 66% 69%;       /* = primary violet */
     --badge-loisir: 164 63% 48%;      /* = success-green */
-    --badge-distance: 33 100% 64%;    /* = primary-orange */
-    --badge-age: 262 66% 77%;         /* = lavender */
-    --background-warm: 39 100% 94%;   /* = accent-soft */
+    --badge-distance: 228 62% 56%;    /* = accent bleu */
+    --badge-age: 262 66% 69%;         /* = lavender violet */
+    --background-warm: 262 66% 93%;   /* = primary-soft */
 
     /* 7. États & alertes */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 16% 90%;            /* = border-subtle */
-    --input: 210 16% 93%;
-    --ring: 228 78% 61%;              /* = primary */
+    --border: 0 0% 88%;               /* = border-subtle #E0E0E0 */
+    --input: 0 0% 96%;
+    --ring: 262 66% 69%;              /* = primary violet */
 
     /* 8. Radius */
     --radius: 1rem;
