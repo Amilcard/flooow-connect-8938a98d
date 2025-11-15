@@ -1605,6 +1605,9 @@ export type Database = {
       }
       territory_events: {
         Row: {
+          age_max: number | null
+          age_min: number | null
+          booking_url: string | null
           created_at: string
           description: string | null
           end_date: string
@@ -1615,6 +1618,7 @@ export type Database = {
           location: string | null
           organizer_contact: string | null
           organizer_name: string | null
+          price_indicative: number | null
           published: boolean | null
           start_date: string
           territory_id: string
@@ -1622,6 +1626,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          age_max?: number | null
+          age_min?: number | null
+          booking_url?: string | null
           created_at?: string
           description?: string | null
           end_date: string
@@ -1632,6 +1639,7 @@ export type Database = {
           location?: string | null
           organizer_contact?: string | null
           organizer_name?: string | null
+          price_indicative?: number | null
           published?: boolean | null
           start_date: string
           territory_id: string
@@ -1639,6 +1647,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          age_max?: number | null
+          age_min?: number | null
+          booking_url?: string | null
           created_at?: string
           description?: string | null
           end_date?: string
@@ -1649,6 +1660,7 @@ export type Database = {
           location?: string | null
           organizer_contact?: string | null
           organizer_name?: string | null
+          price_indicative?: number | null
           published?: boolean | null
           start_date?: string
           territory_id?: string
