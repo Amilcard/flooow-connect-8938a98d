@@ -1,5 +1,4 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AppIcon } from "@/components/ui/app-icon";
 import { Dumbbell, Palette, GraduationCap, Gamepad2, Briefcase } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -66,64 +65,77 @@ export const UniversSection = () => {
   };
 
   return (
-    <section className="w-full space-y-4 px-4" aria-labelledby="univers-title">
-      <h2 id="univers-title" className="text-2xl font-bold text-text-main">
-        Découvrir nos univers
-      </h2>
+    <section 
+      className="w-full py-10 bg-[#F8F8F8]" 
+      aria-labelledby="univers-title"
+    >
+      <div className="max-w-[1200px] mx-auto px-6">
+        <h2 
+          id="univers-title" 
+          className="text-[20px] font-semibold text-[#222222] mb-6"
+        >
+          Découvrir nos univers
+        </h2>
 
-      {/* Desktop/Tablet: Ligne centrée - Mobile: Scrollable horizontal */}
-      <div 
-        className="w-full overflow-x-auto pb-2"
-        role="list"
-        aria-label="Univers d'activités"
-      >
-        <div className="flex gap-6 md:gap-8 justify-start md:justify-center items-start">
-          {univers.map((item) => {
-            const isActive = activeUniverse === item.id;
-            
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleUniversClick(item.id)}
-                className={cn(
-                  "flex flex-col items-center gap-3 min-w-[80px] max-w-[100px] group flex-shrink-0",
-                  "transition-all duration-200"
-                )}
-                role="listitem"
-                aria-label={`Voir les activités ${item.name}`}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <div className={cn(
-                  "w-20 h-20 rounded-2xl bg-card border-2",
-                  "flex items-center justify-center",
-                  "shadow-sm transition-all duration-300 ease-out",
-                  "group-hover:scale-105 group-hover:shadow-md",
-                  isActive 
-                    ? "border-primary bg-primary/5 shadow-md" 
-                    : "border-border group-hover:border-primary/50"
-                )}>
-                  <AppIcon 
-                    Icon={item.icon} 
-                    size="md" 
-                    color={isActive ? "primary" : "default"}
-                    title={item.name}
-                    data-testid={item.testId}
+        {/* Desktop: Ligne centrée - Mobile: Scrollable horizontal */}
+        <div 
+          className="w-full overflow-x-auto scrollbar-hide pb-2"
+          role="list"
+          aria-label="Univers d'activités"
+        >
+          <div className="flex gap-8 justify-center md:justify-between items-center min-w-max md:min-w-0">
+            {univers.map((item) => {
+              const isActive = activeUniverse === item.id;
+              const IconComponent = item.icon;
+              
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleUniversClick(item.id)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 min-w-[90px] group transition-all duration-200"
+                  )}
+                  role="listitem"
+                  aria-label={`Voir les activités ${item.name}`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {/* Pastille blanche ronde */}
+                  <div 
                     className={cn(
-                      "transition-colors",
-                      isActive && "text-primary"
+                      "w-[66px] h-[66px] rounded-full bg-white",
+                      "flex items-center justify-center",
+                      "transition-all duration-300 ease-out",
+                      "group-hover:scale-110 group-hover:shadow-lg",
+                      isActive 
+                        ? "shadow-[0_4px_12px_rgba(127,86,217,0.2)]" 
+                        : "shadow-[0_2px_6px_rgba(0,0,0,0.06)]"
                     )}
-                  />
-                </div>
-                
-                <span className={cn(
-                  "text-sm font-medium text-center leading-tight",
-                  isActive ? "text-primary" : "text-text-main"
-                )}>
-                  {item.name}
-                </span>
-              </button>
-            );
-          })}
+                  >
+                    <IconComponent 
+                      size={26}
+                      strokeWidth={2}
+                      className={cn(
+                        "transition-colors",
+                        isActive ? "text-primary" : "text-[#7F56D9]"
+                      )}
+                      data-testid={item.testId}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  
+                  {/* Label */}
+                  <span 
+                    className={cn(
+                      "text-[14px] font-medium text-center leading-tight",
+                      isActive ? "text-primary" : "text-[#2D2D2D]"
+                    )}
+                  >
+                    {item.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
