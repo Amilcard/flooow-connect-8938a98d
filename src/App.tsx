@@ -54,6 +54,7 @@ import DemoStructure from "./pages/demo/DemoStructure";
 import DemoLemoine from "./pages/demo/DemoLemoine";
 import Itineraire from "./pages/Itineraire";
 import Agenda from "./pages/Agenda";
+import EventDetail from "./pages/EventDetail";
 import Community from "./pages/Community";
 import AgendaCommunity from "./pages/AgendaCommunity";
 import AidesMobilite from "./pages/AidesMobilite";
@@ -169,6 +170,7 @@ const App = () => (
           <Route path="/aides/simulateur" element={<Simulateur />} />
           <Route path="/aides-mobilite" element={<AidesMobilite />} />
           <Route path="/agenda" element={<Agenda />} />
+          <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/community" element={<Community />} />
           <Route path="/agenda-community" element={<AgendaCommunity />} />
           <Route path="/mes-evenements-favoris" element={<MesEvenementsFavoris />} />

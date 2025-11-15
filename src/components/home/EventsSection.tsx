@@ -1,30 +1,50 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Heart } from "lucide-react";
+import { Calendar, MapPin, Users, Heart, Euro } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, isThisWeek, isWithinInterval, addDays, startOfDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { EventShareButton } from "@/components/EventShareButton";
 import { EventRegistrationButton } from "@/components/EventRegistrationButton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   children_activity: "bg-accent/10 text-accent-foreground",
   teen_activity: "bg-primary/10 text-primary",
   parent_meeting: "bg-secondary/10 text-secondary-foreground",
   territory_news: "bg-muted text-muted-foreground",
+  spectacle: "bg-purple-100 text-purple-700",
+  sport: "bg-green-100 text-green-700",
+  noel: "bg-red-100 text-red-700",
+  match_asse: "bg-green-600 text-white",
+  vacances: "bg-blue-100 text-blue-700",
 };
+
+const EVENT_TYPE_LABELS: Record<string, string> = {
+  enfants_ados: "Enfants & Ados",
+  spectacle: "Spectacle",
+  sport: "Sport",
+  noel: "Noël",
+  match_asse: "ASSE",
+  vacances: "Vacances",
+};
+
+type FilterType = "all" | "weekend" | "holidays" | "asse";
 
 export const EventsSection = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toggleFavorite, isFavorite } = useFavoriteEvents(user?.id);
+  const [filter, setFilter] = useState<FilterType>("all");
 
-  const { data: events, isLoading } = useQuery({
+  const { data: allEvents, isLoading } = useQuery({
     queryKey: ["upcoming-events"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,12 +53,48 @@ export const EventsSection = () => {
         .eq("published", true)
         .gte("start_date", new Date().toISOString())
         .order("start_date", { ascending: true })
-        .limit(3);
+        .limit(20);
 
       if (error) throw error;
       return data;
     },
   });
+
+  // Filtrer les événements selon le filtre actif
+  const events = allEvents?.filter(event => {
+    const eventDate = new Date(event.start_date);
+    
+    if (filter === "weekend") {
+      // Ce week-end (vendredi soir à dimanche soir)
+      const now = new Date();
+      const nextFriday = addDays(now, (5 - now.getDay() + 7) % 7);
+      const nextSunday = addDays(nextFriday, 2);
+      return isWithinInterval(eventDate, {
+        start: startOfDay(nextFriday),
+        end: endOfDay(nextSunday)
+      });
+    }
+    
+    if (filter === "holidays") {
+      // Vacances & fêtes (Noël, vacances scolaires)
+      const eventType = event.event_type?.toLowerCase() || "";
+      return eventType.includes("noel") || 
+             eventType.includes("vacances") || 
+             eventType.includes("spectacle");
+    }
+    
+    if (filter === "asse") {
+      const eventType = event.event_type?.toLowerCase() || "";
+      const title = event.title?.toLowerCase() || "";
+      return eventType.includes("asse") || 
+             eventType.includes("match") ||
+             title.includes("asse") ||
+             title.includes("saint-étienne") ||
+             title.includes("geoffroy");
+    }
+    
+    return true; // "all"
+  }).slice(0, filter === "all" ? 10 : 20);
 
   if (isLoading) {
     return (
@@ -69,25 +125,35 @@ export const EventsSection = () => {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-          Événements à venir
+          Mon agenda des sorties
         </h2>
         <Button
           variant="link"
           onClick={() => navigate("/agenda-community")}
-          className="text-accent-foreground"
+          className="text-accent-foreground self-start sm:self-auto"
         >
-          Voir tous les événements →
+          Voir tout l'agenda →
         </Button>
       </div>
 
-      <div className="grid-staggered">
-        {events.map((event) => (
+      {/* Filtres rapides */}
+      <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)} className="w-full">
+        <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+          <TabsTrigger value="all">Tous</TabsTrigger>
+          <TabsTrigger value="weekend">Ce week-end</TabsTrigger>
+          <TabsTrigger value="holidays">Vacances & fêtes</TabsTrigger>
+          <TabsTrigger value="asse">Matches ASSE</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {events?.map((event) => (
           <Card
             key={event.id}
-            className="card-wetransfer cursor-pointer group relative overflow-hidden"
-            onClick={() => navigate("/agenda-community")}
+            className="card-wetransfer cursor-pointer group relative overflow-hidden hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/event/${event.id}`)}
           >
             {user && (
               <Button
@@ -109,75 +175,79 @@ export const EventsSection = () => {
               </Button>
             )}
             {event.image_url && (
-              <div className="relative h-52 w-full overflow-hidden">
+              <div className="relative h-48 w-full overflow-hidden">
                 <img
                   src={event.image_url}
                   alt={event.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium ${EVENT_TYPE_COLORS[event.event_type] || EVENT_TYPE_COLORS.territory_news}`}>
-                  {event.event_type === "children_activity" && "Enfants"}
-                  {event.event_type === "teen_activity" && "Ados"}
-                  {event.event_type === "parent_meeting" && "Parents"}
-                  {event.event_type === "territory_news" && "Actualité"}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
+                  <p className="text-sm font-medium">
+                    {format(new Date(event.start_date), "d MMM", { locale: fr })}
+                  </p>
+                  {event.event_type && EVENT_TYPE_LABELS[event.event_type] && (
+                    <Badge className={EVENT_TYPE_COLORS[event.event_type] || "bg-muted"}>
+                      {EVENT_TYPE_LABELS[event.event_type]}
+                    </Badge>
+                  )}
                 </div>
               </div>
             )}
-            
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg line-clamp-2 group-hover:text-accent-foreground transition-colors">
-                {event.title}
-              </CardTitle>
-              {event.description && (
-                <CardDescription className="line-clamp-2">
-                  {event.description}
-                </CardDescription>
-              )}
-            </CardHeader>
-
-            <CardContent className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 flex-shrink-0" />
-                <span className="truncate">
-                  {format(new Date(event.start_date), "d MMMM yyyy à HH:mm", { locale: fr })}
-                </span>
+            <CardHeader>
+              <div className="flex items-start justify-between gap-2">
+                <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                  {event.title}
+                </CardTitle>
               </div>
-
               {event.location && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">{event.location}</span>
+                  <MapPin className="h-3 w-3" />
+                  <span className="line-clamp-1">{event.location.split(',')[0]}</span>
                 </div>
               )}
-
-              {event.organizer_name && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">{event.organizer_name}</span>
-                </div>
-              )}
-
-              <div className="pt-2 space-y-2" onClick={(e) => e.stopPropagation()}>
-                <EventRegistrationButton
-                  eventId={event.id}
-                  userId={user?.id}
-                  variant="default"
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-4 text-sm">
+                {(event.age_min || event.age_max) && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Users className="h-3 w-3" />
+                    <span>
+                      {event.age_min && event.age_max 
+                        ? `${event.age_min}-${event.age_max} ans`
+                        : event.age_min 
+                        ? `${event.age_min}+ ans`
+                        : `${event.age_max} ans`}
+                    </span>
+                  </div>
+                )}
+                {event.price_indicative !== null && event.price_indicative !== undefined && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Euro className="h-3 w-3" />
+                    <span className="font-medium">
+                      {event.price_indicative === 0 ? "Gratuit" : `${event.price_indicative}€`}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2 justify-between pt-2">
+                <Button 
+                  variant="outline" 
                   size="sm"
-                  showCount={true}
-                  className="w-full"
-                />
-                <EventShareButton
-                  event={{
-                    id: event.id,
-                    title: event.title,
-                    description: event.description,
-                    startDate: event.start_date,
-                    location: event.location,
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/event/${event.id}`);
                   }}
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                />
+                >
+                  Voir le détail
+                </Button>
+                <EventShareButton event={{
+                  id: event.id,
+                  title: event.title,
+                  description: event.description,
+                  startDate: event.start_date,
+                  location: event.location,
+                }} />
               </div>
             </CardContent>
           </Card>
