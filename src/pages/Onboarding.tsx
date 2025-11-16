@@ -5,7 +5,6 @@ import onboardingActivites from "@/assets/onboarding-activites.png";
 import onboardingAides from "@/assets/onboarding-aides.png";
 import onboardingMobilite from "@/assets/onboarding-mobilite.png";
 import onboardingCommunity from "@/assets/onboarding-community.png";
-import onboardingAventure from "@/assets/onboarding-aventure.png";
 
 type OnboardingStepType = "activites" | "decouverte" | "aides" | "testeurs";
 
