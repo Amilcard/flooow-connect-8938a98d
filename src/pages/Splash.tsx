@@ -7,14 +7,17 @@ const Splash = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Only show splash on actual app entry, not on navigation
-    const isNavigating = location.state?.from || document.referrer.includes(window.location.origin);
+    // Check if this is a fresh app load (not internal navigation)
+    const isAppEntry = !sessionStorage.getItem('appInitialized');
     
-    if (isNavigating) {
-      // User is navigating within the app, go directly to home
+    if (!isAppEntry) {
+      // User is already in the app, redirect immediately without splash
       navigate("/home", { replace: true });
       return;
     }
+
+    // Mark app as initialized
+    sessionStorage.setItem('appInitialized', 'true');
 
     // Check if user has seen onboarding
     const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
@@ -26,7 +29,7 @@ const Splash = () => {
         navigate("/onboarding", { replace: true });
       }
     }, 2000);
-  }, [navigate, location]);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary to-accent p-6">

@@ -129,6 +129,16 @@ export const EnhancedFinancialAidCalculator = ({
       return;
     }
 
+    // Validate postal code format (5 digits for French postal codes)
+    if (cityCode && !/^\d{5}$/.test(cityCode)) {
+      toast({
+        title: "Code postal invalide",
+        description: "Le code postal doit contenir 5 chiffres",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Pour les activités de saison scolaire, on calcule directement le Pass'Sport
     if (periodType === "saison_scolaire") {
       const passSportAmount = Math.min(70, activityPrice);
@@ -192,7 +202,14 @@ export const EnhancedFinancialAidCalculator = ({
         p_period_type: periodType
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("RPC error:", error);
+        // Don't throw - instead, show info message about territory
+        toast({
+          title: "Territoire non couvert",
+          description: "Nous appliquons les aides nationales. Certaines aides locales peuvent ne pas être disponibles pour ce code postal.",
+        });
+      }
 
       const calculatedAids = (data || []).map((aid: any) => ({
         ...aid,
