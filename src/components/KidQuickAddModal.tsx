@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,23 @@ interface KidQuickAddModalProps {
   open: boolean;
   onClose: () => void;
   onChildAdded: (childId?: string) => void;
+  allowAnonymous?: boolean;
 }
 
-export const KidQuickAddModal = ({ open, onClose, onChildAdded }: KidQuickAddModalProps) => {
+export const KidQuickAddModal = ({ open, onClose, onChildAdded, allowAnonymous = false }: KidQuickAddModalProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [birthDate, setBirthDate] = useState("");
+
+  // Réinitialiser le formulaire quand la modale se ferme
+  useEffect(() => {
+    if (!open) {
+      setFirstName("");
+      setBirthDate("");
+      setIsSubmitting(false);
+    }
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,10 +46,37 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded }: KidQuickAddMod
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
+      // Si pas d'utilisateur connecté et mode anonyme autorisé
+      if (!user && allowAnonymous) {
+        // Créer un enfant anonyme en localStorage
+        const anonymousChild = {
+          id: `anonymous-${Date.now()}`,
+          first_name: firstName.trim(),
+          dob: birthDate,
+          isAnonymous: true
+        };
+        
+        // Récupérer les enfants anonymes existants
+        const existingChildren = localStorage.getItem('anonymous_children');
+        const children = existingChildren ? JSON.parse(existingChildren) : [];
+        children.push(anonymousChild);
+        localStorage.setItem('anonymous_children', JSON.stringify(children));
+
+        toast({
+          title: "Enfant ajouté",
+          description: `${firstName} a été ajouté pour cette simulation`,
+        });
+
+        onChildAdded(anonymousChild.id);
+        onClose();
+        return;
+      }
+      
       if (!user) {
-        throw new Error("Utilisateur non authentifié");
+        throw new Error("Veuillez vous connecter pour enregistrer un enfant");
       }
 
+      // Créer l'enfant en base de données
       const { data: newChild, error } = await supabase
         .from("children")
         .insert({
@@ -54,12 +91,10 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded }: KidQuickAddMod
       if (error) throw error;
 
       toast({
-        title: "Enfant enregistré et sélectionné",
-        description: `${firstName} a été ajouté avec succès pour cette inscription`,
+        title: "Enfant enregistré",
+        description: `${firstName} a été ajouté avec succès`,
       });
 
-      setFirstName("");
-      setBirthDate("");
       onChildAdded(newChild?.id);
       onClose();
     } catch (error: any) {

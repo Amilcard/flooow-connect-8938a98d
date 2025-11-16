@@ -493,6 +493,7 @@ const Booking = () => {
         open={showAddChildModal}
         onClose={() => setShowAddChildModal(false)}
         onChildAdded={handleChildAdded}
+        allowAnonymous={false}
       />
     </div>
   );
