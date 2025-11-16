@@ -10,11 +10,11 @@ export const AidesMobiliteBlock = () => {
   const { territory, territoryKey, hasTerritory } = useTerritory();
 
   return (
-    <section 
+    <section
       className="space-y-8 p-10 rounded-3xl border-2 my-12 shadow-lg"
-      style={{ 
-        background: 'var(--card-gradient-1)',
-        borderColor: 'hsl(var(--primary-orange))'
+      style={{
+        background: 'hsl(var(--accent-blue))',
+        borderColor: 'hsl(var(--accent-blue))'
       }}
     >
       {/* Accroche principale - Style WeTransfer avec police display */}

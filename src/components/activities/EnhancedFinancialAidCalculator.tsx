@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
+import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 
 interface Child {
   id: string;
@@ -92,15 +93,10 @@ export const EnhancedFinancialAidCalculator = ({
   useEffect(() => {
     if (!savedState?.calculated && userProfile) {
       if (userProfile.quotient_familial && !quotientFamilial) {
-        // Mapper le QF vers les tranches
+        // Mapper le QF vers les tranches en utilisant la config centralisée
         const qf = userProfile.quotient_familial;
-        if (qf < 450) {
-          setQuotientFamilial("450");
-        } else if (qf >= 450 && qf <= 700) {
-          setQuotientFamilial("575");
-        } else if (qf > 700) {
-          setQuotientFamilial("800");
-        }
+        const mappedValue = mapQFToBracket(qf);
+        setQuotientFamilial(String(mappedValue));
       }
       if (userProfile.postal_code && !cityCode) {
         setCityCode(userProfile.postal_code);
@@ -339,9 +335,11 @@ export const EnhancedFinancialAidCalculator = ({
                 <SelectValue placeholder="Choisir votre tranche" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="450">Moins de 450€</SelectItem>
-                <SelectItem value="575">Entre 450€ et 700€</SelectItem>
-                <SelectItem value="800">Plus de 700€</SelectItem>
+                {QF_BRACKETS.map(bracket => (
+                  <SelectItem key={bracket.id} value={String(bracket.value)}>
+                    {bracket.label}
+                  </SelectItem>
+                ))}
                 <SelectItem value="0">Je ne sais pas</SelectItem>
               </SelectContent>
             </Select>
