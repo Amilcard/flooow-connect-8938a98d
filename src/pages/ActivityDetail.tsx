@@ -73,7 +73,7 @@ const ActivityDetail = () => {
   const tabParam = searchParams.get("tab");
   const visualParam = searchParams.get("visual");
   const [activeTab, setActiveTab] = useState<string>(
-    ["infos", "tarifs", "mobilite", "echanges"].includes(tabParam || "") 
+    ["infos", "tarifs", "mobilite"].includes(tabParam || "") 
       ? tabParam! 
       : "infos"
   );
@@ -541,11 +541,10 @@ const ActivityDetail = () => {
           {/* Left Column - Main content with Tabs (8/12) */}
           <div className="md:col-span-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1 mb-6">
+              <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
                 <TabsTrigger value="tarifs" className="text-xs md:text-sm">Tarifs & aides</TabsTrigger>
                 <TabsTrigger value="mobilite" className="text-xs md:text-sm">Mobilité</TabsTrigger>
-                <TabsTrigger value="echanges" className="text-xs md:text-sm">Échanges</TabsTrigger>
               </TabsList>
 
               {/* Onglet Infos */}
@@ -686,65 +685,6 @@ const ActivityDetail = () => {
                     console.log('Transport mode selected:', mode);
                   }}
                 />
-              </TabsContent>
-
-              {/* Onglet Échanges */}
-              <TabsContent value="echanges" className="mt-0">
-                <section className="space-y-6">
-                  <div className="space-y-3">
-                    <h2 className="text-2xl font-bold text-foreground">Rejoignez la communauté</h2>
-                    <p className="text-base text-muted-foreground leading-relaxed">
-                      Échangez avec d'autres parents, posez vos questions et partagez vos expériences sur cette activité et bien d'autres.
-                    </p>
-                  </div>
-
-                  <Card className="p-6 bg-accent/30">
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <MessageCircle size={24} className="text-primary mt-1" />
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-lg">Communauté Parents</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Retrouvez des retours d'expérience, des conseils pratiques et des réponses à vos questions.
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <Button 
-                        onClick={() => navigate('/agenda-community?tab=community')}
-                        className="w-full"
-                        size="lg"
-                      >
-                        <MessageCircle className="mr-2" size={18} />
-                        Accéder aux échanges
-                      </Button>
-                    </div>
-                  </Card>
-
-                  <Card className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <Info size={24} className="text-primary mt-1" />
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-lg">Contactez l'organisateur</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Pour des questions spécifiques sur cette activité, contactez directement {activity.structures?.name}.
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <Button 
-                        onClick={() => setShowContactModal(true)}
-                        variant="outline"
-                        className="w-full"
-                        size="lg"
-                      >
-                        <Mail className="mr-2" size={18} />
-                        Contacter l'organisateur
-                      </Button>
-                    </div>
-                  </Card>
-                </section>
               </TabsContent>
             </Tabs>
           </div>
