@@ -6,15 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/PageHeader";
 import PageLayout from "@/components/PageLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
-  User, 
-  Users, 
-  FileText, 
-  Bell, 
-  HelpCircle, 
+  User,
+  Users,
+  FileText,
+  Bell,
+  HelpCircle,
   LogOut,
   ChevronRight,
   Settings,
@@ -93,6 +94,7 @@ const MonCompte = () => {
       subtitle: "Gérer les profils de vos enfants",
       badge: userStats.enfants,
       onClick: () => navigate("/mon-compte/enfants"),
+      tourId: "account-children",
     },
     {
       icon: <Calendar size={20} />,
@@ -100,6 +102,7 @@ const MonCompte = () => {
       subtitle: "Historique et réservations en cours",
       badge: userStats.reservations,
       onClick: () => navigate("/mon-compte/reservations"),
+      tourId: "account-reservations",
     },
     {
       icon: <Heart size={20} />,
@@ -107,6 +110,7 @@ const MonCompte = () => {
       subtitle: "Événements sauvegardés",
       badge: null,
       onClick: () => navigate("/mes-evenements-favoris"),
+      tourId: "account-favorites",
     },
     {
       icon: <Bell size={20} />,
@@ -114,6 +118,7 @@ const MonCompte = () => {
       subtitle: "Événements et préférences",
       badge: unreadCount > 0 ? unreadCount : null,
       onClick: () => navigate("/mon-compte/notifications"),
+      tourId: "account-notifications",
     },
     {
       icon: <Car size={20} />,
@@ -121,45 +126,47 @@ const MonCompte = () => {
       subtitle: "Demander ou proposer un covoiturage",
       badge: null,
       onClick: () => navigate("/mon-compte/covoiturage"),
+      tourId: "account-carpooling",
     },
     {
-      icon: <Euro size={20} />,
+      icon: <FileText size={20} />,
       title: "Mes justificatifs",
       subtitle: "Télécharger mes documents",
       badge: null,
       onClick: () => navigate("/mon-compte/justificatifs"),
+      tourId: "account-documents",
     },
   ];
 
   // Menu secondaire (options moins fréquentes)
   const secondaryMenuItems = [
     {
-      icon: <User size={18} />,
+      icon: <User size={18} className="text-blue-600" />,
       label: "Mes informations personnelles",
       onClick: () => navigate("/mon-compte/informations"),
     },
     {
-      icon: <Euro size={18} />,
+      icon: <Shield size={18} className="text-green-600" />,
       label: "Profil d'éligibilité",
       onClick: () => navigate("/mon-compte/eligibilite"),
     },
     {
-      icon: <FileText size={18} />,
+      icon: <Edit size={18} className="text-purple-600" />,
       label: "Demandes d'inscription",
       onClick: () => navigate("/mon-compte/validations"),
     },
     {
-      icon: <Shield size={18} />,
+      icon: <Calendar size={18} className="text-orange-600" />,
       label: "Mes sessions",
       onClick: () => navigate("/mon-compte/sessions"),
     },
     {
-      icon: <Settings size={18} />,
+      icon: <Settings size={18} className="text-gray-600" />,
       label: "Paramètres",
       onClick: () => navigate("/mon-compte/parametres"),
     },
     {
-      icon: <HelpCircle size={18} />,
+      icon: <HelpCircle size={18} className="text-indigo-600" />,
       label: "Aide & Support",
       onClick: () => navigate("/support"),
     },
@@ -167,27 +174,16 @@ const MonCompte = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header simplifié */}
-      <div className="bg-white border-b border-border">
-        <div className="container px-5 py-4 flex items-center justify-between">
-          {/* Partie gauche: Avatar + Bonjour */}
-          <div className="flex items-center gap-3">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={user?.avatar} alt={user?.firstName} />
-              <AvatarFallback className="bg-primary text-white text-sm font-semibold">
-                {user?.firstName?.[0]}
-                {user?.lastName?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-base font-semibold text-foreground">
-              Bonjour {user?.firstName}
-            </span>
-          </div>
-
-          {/* Partie droite: Icons notifications + settings */}
-          <div className="flex items-center gap-4">
+      {/* Nouveau PageHeader blanc standard */}
+      <PageHeader
+        title="Mon compte"
+        subtitle={`Bonjour ${user?.firstName || 'Parent'}`}
+        showBackButton={false}
+        tourId="account-page-header"
+        rightContent={
+          <>
             {/* Icon notifications avec badge */}
-            <button 
+            <button
               onClick={() => navigate("/mon-compte/notifications")}
               className="relative p-2 hover:bg-muted/50 rounded-lg transition-colors"
               aria-label="Notifications"
@@ -201,24 +197,25 @@ const MonCompte = () => {
             </button>
 
             {/* Icon settings */}
-            <button 
+            <button
               onClick={() => navigate("/mon-compte/parametres")}
               className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
               aria-label="Paramètres"
             >
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* Menu principal - Cards */}
-      <div className="container px-4 pt-6 pb-6 space-y-3">
+      <div className="container px-4 pt-6 pb-6 space-y-3" data-tour-id="account-main-list">
         {primaryMenuItems.map((item, index) => (
           <Card
             key={index}
             className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
             onClick={item.onClick}
+            data-tour-id={item.tourId}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -257,9 +254,7 @@ const MonCompte = () => {
                   onClick={item.onClick}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-all duration-200"
                 >
-                  <div className="text-muted-foreground">
-                    {item.icon}
-                  </div>
+                  {item.icon}
                   <span>{item.label}</span>
                 </button>
               ))}
