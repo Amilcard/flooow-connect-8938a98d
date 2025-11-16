@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { ActivitiesShowcase } from "@/components/home/ActivitiesShowcase";
-import { UniversSection } from "@/components/UniversSection";
-import { StaticSections } from "@/components/home/StaticSections";
+import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
+import { MobiliteCard } from "@/components/home/MobiliteCard";
+import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
+import { FamilySpaceSection } from "@/components/home/FamilySpaceSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
@@ -100,11 +101,34 @@ const Index = () => {
     territoryId: userTerritory?.id || undefined // undefined permet de charger toutes les activités si pas de territoire
   });
 
+  // Petits budgets (max 400€)
+  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
+    limit: 6,
+    territoryId: userTerritory?.id,
+    maxPrice: 400
+  });
 
-  if (errorNearby) {
+  // Sport & bien-être
+  const { data: sportActivities = [], isLoading: loadingSport } = useActivities({ 
+    limit: 6,
+    territoryId: userTerritory?.id,
+    category: 'sport'
+  });
+
+  // Activités innovantes (avec tag "innovant")
+  const { data: innovativeActivities = [], isLoading: loadingInnovative } = useActivities({ 
+    limit: 6,
+    territoryId: userTerritory?.id
+  });
+
+
+  if (errorRecommended) {
     return (
       <PageLayout>
-        <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+      <SearchBar 
+        placeholder="Rechercher une activité ou un événement pour votre enfant…"
+        onFilterClick={() => console.log("Filter clicked")} 
+      />
         <main className="container px-4 py-6">
           <ErrorState 
             message="Impossible de charger les activités. Veuillez réessayer." 
@@ -114,6 +138,10 @@ const Index = () => {
       </PageLayout>
     );
   }
+
+  const handleActivityClick = (id: string) => {
+    navigate(`/activity/${id}`);
+  };
   return (
     <PageLayout>
       <SearchBar onFilterClick={() => console.log("Filter clicked")} />
@@ -129,19 +157,69 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== SECTION 1: UNIVERS (≈10%) ========== */}
+            {/* ========== SECTION 1: OUTILS (AIDES + MOBILITÉS) ========== */}
             <section className="py-4">
-              <UniversSection />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <AidesFinancieresCard />
+                <MobiliteCard />
+              </div>
             </section>
 
-            {/* ========== SECTION 2: ACTIVITÉS À LA UNE (≈50%) ========== */}
-            <section className="py-6">
-              <ActivitiesShowcase activities={nearbyActivities} />
-            </section>
+            {/* ========== SECTION 3: ACTIVITÉS RECOMMANDÉES ========== */}
+            {!loadingRecommended && recommendedActivities.length > 0 && (
+              <section className="py-6">
+                <ActivityThematicSection
+                  title="Activités recommandées"
+                  subtitle="Une sélection d'activités adaptées au profil de votre famille."
+                  activities={recommendedActivities}
+                  showSeeAll
+                  onActivityClick={handleActivityClick}
+                  onSeeAllClick={() => navigate('/activities')}
+                />
+              </section>
+            )}
 
-            {/* ========== SECTION 3: ACTUALITÉS ET OUTILS (≈40%) ========== */}
+            {/* ========== SECTION 4: PETITS BUDGETS ========== */}
+            {!loadingBudget && budgetActivities.length > 0 && (
+              <section className="py-6">
+                <ActivityThematicSection
+                  title="Petits budgets"
+                  subtitle="Des idées d'activités à coût maîtrisé."
+                  activities={budgetActivities}
+                  badge="Budget maîtrisé"
+                  onActivityClick={handleActivityClick}
+                />
+              </section>
+            )}
+
+            {/* ========== SECTION 5: SPORT & BIEN-ÊTRE ========== */}
+            {!loadingSport && sportActivities.length > 0 && (
+              <section className="py-6">
+                <ActivityThematicSection
+                  title="Sport & bien-être"
+                  subtitle="Bouger, se défouler, se sentir bien."
+                  activities={sportActivities}
+                  badge="Sport"
+                  onActivityClick={handleActivityClick}
+                />
+              </section>
+            )}
+
+            {/* ========== SECTION 6: ACTIVITÉS INNOVANTES ========== */}
+            {!loadingInnovative && innovativeActivities.length > 0 && (
+              <section className="py-6">
+                <ActivityThematicSection
+                  title="Activités innovantes"
+                  subtitle="Découvrir de nouvelles façons d'apprendre, de créer et de s'amuser."
+                  activities={innovativeActivities}
+                  onActivityClick={handleActivityClick}
+                />
+              </section>
+            )}
+
+            {/* ========== SECTION 7: POUR VOTRE FAMILLE ========== */}
             <section className="py-6">
-              <StaticSections />
+              <FamilySpaceSection />
             </section>
           </>
         )}

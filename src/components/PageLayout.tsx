@@ -29,10 +29,10 @@ const PageLayout = ({
   }
 
   return (
-    <div className={`min-h-screen bg-background ${isAuthenticated ? 'pb-20' : ''} ${className}`}>
+    <div className={`min-h-screen bg-background pb-20 ${className}`}>
       {showHeader && <Header />}
       {children}
-      {isAuthenticated && <BottomNavigation />}
+      <BottomNavigation />
     </div>
   );
 };

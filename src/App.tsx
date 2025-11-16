@@ -60,6 +60,7 @@ import AgendaCommunity from "./pages/AgendaCommunity";
 import AidesMobilite from "./pages/AidesMobilite";
 import MesEvenementsFavoris from "./pages/MesEvenementsFavoris";
 import MaVilleMonActu from "./pages/MaVilleMonActu";
+import PrixBonEsprit from "./pages/PrixBonEsprit";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";

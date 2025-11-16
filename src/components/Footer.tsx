@@ -17,7 +17,7 @@ const Footer = () => {
 					<span className="text-xl font-semibold text-foreground">InKlusif Flooow</span>
 				</div>
 				<p className="text-sm text-muted-foreground leading-relaxed">
-					La plateforme gratuite pour faciliter l'accès aux activités pour tous les enfants.
+					La plateforme
 				</p>
 				</div>
 
@@ -25,10 +25,8 @@ const Footer = () => {
 				<div className="space-y-4">
 					<h4 className="font-semibold text-foreground">Familles</h4>
 					<ul className="space-y-2 text-sm text-muted-foreground">
-						  <li><Link to="/activities" className="hover:text-primary transition-colors">Rechercher une activité</Link></li>
-						  <li><Link to="/aides-mobilite" className="hover:text-primary transition-colors">Aides & Mobilité</Link></li>
-						  <li><Link to="/mon-compte" className="hover:text-primary transition-colors">Mon espace</Link></li>
-						  <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+						  <li><Link to="/search" className="hover:text-primary transition-colors">Rechercher une activité</Link></li>
+						  <li><Link to="/aides" className="hover:text-primary transition-colors">Aides & mobilités</Link></li>
 					</ul>
 				</div>
 
@@ -36,7 +34,6 @@ const Footer = () => {
 			<div className="space-y-4">
 				<h4 className="font-semibold text-foreground">À propos</h4>
 				<ul className="space-y-2 text-sm text-muted-foreground">
-					  <li><Link to="/about" className="hover:text-primary transition-colors">Notre mission</Link></li>
 					  <li><Link to="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
 					  <li><Link to="/legal/mentions" className="hover:text-primary transition-colors">Mentions légales</Link></li>
 					  <li><Link to="/legal/privacy" className="hover:text-primary transition-colors">Politique de confidentialité</Link></li>
@@ -47,7 +44,7 @@ const Footer = () => {
 				<div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
 					<p>© {currentYear} InKlusif Flooow. Tous droits réservés.</p>
 					<p className="flex items-center gap-2">
-						Fait avec <Heart className="w-4 h-4 text-accent fill-accent" /> pour l'inclusion
+						Fait avec <Heart className="w-4 h-4 text-accent fill-accent" /> pour vous.
 					</p>
 				</div>
 			</div>

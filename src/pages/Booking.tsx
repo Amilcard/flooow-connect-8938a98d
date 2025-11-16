@@ -321,7 +321,7 @@ const Booking = () => {
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Réservation en cours récupérée. Tu peux continuer là où tu t'es arrêté.
+              Réservation en cours récupérée. Vous pouvez continuer là où vous vous êtes arrêté.
             </AlertDescription>
           </Alert>
         )}
@@ -341,7 +341,7 @@ const Booking = () => {
           <Alert className="bg-muted/50 border-muted">
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Tu peux revenir sur la fiche activité pour calculer tes aides avant de valider (optionnel).
+              Vous pouvez revenir sur la fiche activité pour calculer vos aides avant de valider (optionnel).
             </AlertDescription>
           </Alert>
         )}

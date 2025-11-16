@@ -53,6 +53,9 @@ export const BottomNavigation = () => {
     }
   };
 
+  // Tous les items sont toujours visibles
+  const visibleItems = navItems;
+
   return (
     <>
       {/* Flooow Splash Overlay */}
@@ -72,7 +75,7 @@ export const BottomNavigation = () => {
       >
         <div className="container px-2 py-2.5">
           <ul className="flex items-center justify-around">
-            {navItems.map((item) => {
+            {visibleItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               

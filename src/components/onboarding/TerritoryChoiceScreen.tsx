@@ -191,7 +191,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
           {postalCode.length >= 2 && availableTerritories.length === 0 && (
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                📍 Ce code postal ne correspond pas encore à un territoire de test. Tu peux choisir un territoire manuellement ci-dessous.
+                📍 Ce code postal ne correspond pas encore à un territoire de test. Vous pouvez choisir un territoire manuellement ci-dessous.
               </p>
             </div>
           )}

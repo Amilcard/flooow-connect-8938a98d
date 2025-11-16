@@ -87,13 +87,28 @@ const MaVilleMonActu = () => {
         <BackButton />
         
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 space-y-4">
           <h1 className="text-3xl font-bold mb-2">Ma ville, mon actu</h1>
           <p className="text-muted-foreground">
             {territory?.name
               ? `Découvrez l'actualité et les événements de ${territory.name}`
               : "Découvrez l'actualité et les événements près de chez vous"}
           </p>
+          
+          {/* Texte d'introduction */}
+          <Card className="bg-accent/30 border-accent">
+            <CardContent className="pt-6">
+              <p className="text-text-secondary leading-relaxed">
+                Retrouve ici les informations de ta ville : actualités, événements sportifs et culturels, 
+                temps forts pour les enfants et les familles, ainsi que les annonces importantes de la mairie 
+                ou des structures locales.
+              </p>
+              <p className="text-text-secondary leading-relaxed mt-3">
+                Ces contenus peuvent évoluer selon ton territoire : consulte régulièrement cette rubrique 
+                pour ne rien manquer des activités et infos près de chez toi.
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Événements par catégorie */}
