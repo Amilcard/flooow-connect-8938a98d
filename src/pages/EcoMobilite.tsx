@@ -211,33 +211,33 @@ const TERRITORY_MOBILITY: Record<string, TerritoryMobility> = {
     city: "Saint-Étienne",
     options: [
       {
-        name: "STAS 10 €/mois",
+        name: "STAS – Bus & Tram",
         mode: "public_transport",
-        provider: "STAS",
+        provider: "STAS - Réseau de Saint-Étienne Métropole",
         age_min: 6,
         age_max: null,
-        eligibility_notes: "Étudiants, demandeurs d'emploi, bénéficiaires RSA",
-        pricing: "110€/an",
+        eligibility_notes: "Réseau de transports en commun de Saint-Étienne Métropole pour rejoindre ton activité en bus ou en tram. Tarification solidaire selon ta situation.",
+        pricing: "110€/an (tarif solidaire) • Tarifs réduits disponibles",
         official_url: "https://www.reseau-stas.fr/tarifs"
       },
       {
-        name: "VéliVert",
+        name: "VéliVert – Vélos en libre-service",
         mode: "bike_sharing",
-        provider: "STAS",
+        provider: "STAS - Service VéliVert",
         age_min: 14,
         age_max: null,
-        eligibility_notes: "Accessible à tous",
+        eligibility_notes: "Vélos en libre-service pour les trajets courts en ville, pratique pour rejoindre ton club ou ton activité. Consulte les stations proches de chez toi.",
         pricing: "10€/an avec abonnement STAS • 30 min gratuites par trajet",
         official_url: "https://www.reseau-stas.fr"
       },
       {
-        name: "Covoiturage Mov'ici",
+        name: "Covoiturage local",
         mode: "carpooling",
-        provider: "Région Auvergne-Rhône-Alpes",
+        provider: "Région Auvergne-Rhône-Alpes (Mov'ici)",
         age_min: 18,
         age_max: null,
-        eligibility_notes: "Tous les habitants de la région AURA",
-        pricing: "Gratuit",
+        eligibility_notes: "Partage de trajets entre familles ou habitants pour aller aux mêmes activités. À organiser avec ton club, ta structure ou ton entourage.",
+        pricing: "Gratuit pour les passagers",
         official_url: "https://www.movici.auvergnerhonealpes.fr/"
       }
     ]
@@ -303,17 +303,17 @@ const EcoMobilite = () => {
         <div className="container flex items-center gap-4 py-4">
           <BackButton fallback="/" />
           <div>
-            <h1 className="text-xl font-semibold">Éco-Mobilité</h1>
+            <h1 className="text-xl font-semibold">Comment se rendre sur mon lieu d'activité ?</h1>
           </div>
         </div>
       </header>
-      
+
       <div className="container py-6 space-y-6">
         {/* Intro */}
         <div>
-          <h2 className="text-2xl font-bold mb-2">🌱 Comment venir à l'activité sans voiture ?</h2>
+          <h2 className="text-2xl font-bold mb-2">🌱 Découvre les solutions de mobilité disponibles</h2>
           <p className="text-muted-foreground">
-            Découvrez les solutions de mobilité écologique disponibles pour vos déplacements
+            Pour aller à ton activité, plusieurs options de transport s'offrent à toi : transports en commun, vélos en libre-service ou covoiturage
           </p>
         </div>
 

@@ -175,6 +175,16 @@ export const EnhancedFinancialAidCalculator = ({
       return;
     }
 
+    // Validation du code postal (format français)
+    if (!/^[0-9]{5}$/.test(cityCode)) {
+      toast({
+        title: "Code postal invalide",
+        description: "Veuillez saisir un code postal français valide (5 chiffres)",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const selectedChild = children.find(c => c.id === selectedChildId);
     if (!selectedChild) return;
 
@@ -198,12 +208,16 @@ export const EnhancedFinancialAidCalculator = ({
         ...aid,
         is_informational: aid.is_informational ?? false
       }));
+
+      // Filtrer les aides informatives (messages uniquement)
+      const realAids = calculatedAids.filter((aid: FinancialAid) => !aid.is_informational);
+      const infoMessages = calculatedAids.filter((aid: FinancialAid) => aid.is_informational);
+
       setAids(calculatedAids);
       setCalculated(true);
 
       // S'assurer que les aides ne dépassent pas le prix (exclude informational aids)
-      const calculableAids = calculatedAids.filter((aid: FinancialAid) => !aid.is_informational);
-      const totalAidsRaw = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+      const totalAidsRaw = realAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
       const totalAids = Math.min(totalAidsRaw, activityPrice);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
 
@@ -230,10 +244,25 @@ export const EnhancedFinancialAidCalculator = ({
 
       onAidsCalculated(aidData);
 
-      toast({
-        title: "Aides calculées",
-        description: `${calculatedAids.length} aide(s) disponible(s)`,
-      });
+      // Message adapté selon le résultat
+      if (realAids.length > 0) {
+        toast({
+          title: "Aides calculées",
+          description: `${realAids.length} aide(s) disponible(s) - Total : ${totalAids.toFixed(2)}€`,
+        });
+      } else if (infoMessages.length > 0) {
+        toast({
+          title: "Simulation effectuée",
+          description: "Aides nationales appliquées. Certaines aides locales peuvent ne pas être disponibles pour votre territoire.",
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Simulation effectuée",
+          description: "Aucune aide disponible pour ce profil",
+          variant: "default"
+        });
+      }
     } catch (err) {
       console.error("Error calculating aids:", err);
       toast({
