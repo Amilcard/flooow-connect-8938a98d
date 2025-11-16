@@ -206,50 +206,77 @@ const Aides = () => {
   };
 
   return (
-    <PageLayout>
-      <div className="container mx-auto px-4 py-6 pb-24">
-        <BackButton />
-        
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Aides financières</h1>
-          <p className="text-muted-foreground">
-            Découvrez les aides qui peuvent réduire le coût des activités.
-          </p>
+    <PageLayout showHeader={false}>
+      {/* Header avec bandeau orange */}
+      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
+        <div className="container flex items-center gap-4">
+          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
+          <div>
+            <h1 className="text-xl font-bold">Aides financières</h1>
+            <p className="text-white/90 text-sm">Découvrez et estimez vos droits</p>
+          </div>
         </div>
+      </div>
 
-        {/* Sections */}
+      <div className="container mx-auto px-4 py-6 pb-24 space-y-8">
+        {/* CTA Principal en hero */}
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-2xl p-6">
+          <div className="text-center space-y-4">
+            <Calculator className="h-12 w-12 mx-auto text-primary" />
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Estimez vos aides en quelques clics</h2>
+              <p className="text-muted-foreground">
+                Calculez rapidement les aides auxquelles votre famille peut prétendre
+              </p>
+            </div>
+            <Button 
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 h-12 rounded-xl shadow-lg"
+              onClick={() => navigate("/aides/simulateur")}
+            >
+              <Calculator className="w-5 h-5 mr-2" />
+              Estimer mes aides
+            </Button>
+          </div>
+        </Card>
+
+        {/* Sections d'aides */}
         <div className="space-y-10">
           {sections.map((section) => (
             <section key={section.section_id} className="space-y-4">
-              <h2 className="text-2xl font-semibold">{section.title}</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">{section.title}</h2>
               
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2">
                 {section.cards.map((card) => (
-                  <Card key={card.id} className="flex flex-col">
+                  <Card key={card.id} className="flex flex-col hover:shadow-lg transition-shadow">
                     <CardHeader>
-                      <CardTitle className="text-lg">{card.title}</CardTitle>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {card.badges.map((badge, idx) => (
-                          <Badge key={idx} variant="secondary">
-                            {badge}
-                          </Badge>
-                        ))}
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-lg flex-1">{card.title}</CardTitle>
+                        <div className="flex flex-wrap gap-1 justify-end">
+                          {card.badges.slice(0, 2).map((badge, idx) => (
+                            <Badge key={idx} variant="secondary" className="text-xs">
+                              {badge}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     </CardHeader>
                     
-                    <CardContent className="flex-1">
+                    <CardContent className="flex-1 space-y-3">
                       <CardDescription className="text-sm leading-relaxed">
                         {card.text}
                       </CardDescription>
+                      <p className="text-xs text-muted-foreground italic flex items-center gap-1">
+                        <ExternalLink className="w-3 h-3" />
+                        {card.footer}
+                      </p>
                     </CardContent>
                     
-                    <CardFooter className="flex flex-col items-start gap-3">
-                      <p className="text-xs text-muted-foreground">{card.footer}</p>
-                      <Button
-                        onClick={() => handleCTA(card)}
-                        variant="default"
+                    <CardFooter>
+                      <Button 
+                        variant="outline" 
                         className="w-full"
+                        onClick={() => handleCTA(card)}
                       >
                         {card.cta_action === "open_aid_estimator_for_current_activity" ? (
                           <Calculator className="w-4 h-4 mr-2" />

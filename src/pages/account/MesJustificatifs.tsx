@@ -65,19 +65,25 @@ const MesJustificatifs = () => {
     .filter((j) => j.required)
     .every((j) => j.uploaded);
 
+  const uploadedCount = justificatifs.filter(j => j.uploaded).length;
+  const totalCount = justificatifs.length;
+  const requiredCount = justificatifs.filter(j => j.required).length;
+  const uploadedRequiredCount = justificatifs.filter(j => j.required && j.uploaded).length;
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="border-b bg-card">
-        <div className="container flex items-center gap-4 py-4">
-          <BackButton fallback="/mon-compte" className="hover:bg-muted" />
+      {/* Header avec bandeau orange */}
+      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
+        <div className="container flex items-center gap-4">
+          <BackButton fallback="/aides" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
           <div>
-            <h1 className="text-xl font-semibold">Mes justificatifs</h1>
-            <p className="text-sm text-muted-foreground">
-              Télécharge tes documents pour débloquer les aides
+            <h1 className="text-xl font-bold">Mes justificatifs</h1>
+            <p className="text-white/90 text-sm">
+              {uploadedRequiredCount}/{requiredCount} documents obligatoires ajoutés
             </p>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container py-6 space-y-6">
         {/* État vide */}
