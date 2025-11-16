@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Heart, Instagram, Facebook, Linkedin, MessageCircle } from "lucide-react";
 
 interface NewOnboardingStepProps {
   title: string;
@@ -11,6 +12,7 @@ interface NewOnboardingStepProps {
   onSkip: () => void;
   isLastStep?: boolean;
   primaryCtaLabel?: string;
+  showSocialIcons?: boolean;
 }
 
 export const NewOnboardingStep = ({
@@ -24,6 +26,7 @@ export const NewOnboardingStep = ({
   onSkip,
   isLastStep = false,
   primaryCtaLabel = "Continuer",
+  showSocialIcons = false,
 }: NewOnboardingStepProps) => {
   const accentColorClass = accentColor === "orange" ? "text-primary" : "text-accent-blue";
 
@@ -60,6 +63,57 @@ export const NewOnboardingStep = ({
         <p className="text-base text-foreground/80 text-center max-w-md whitespace-pre-line leading-relaxed">
           {body}
         </p>
+
+        {/* Social Icons */}
+        {showSocialIcons && (
+          <div className="mt-6 flex items-center justify-center gap-4">
+            <a
+              href="https://app.heartbeat.chat/my-communities"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+              aria-label="Heartbeat Community"
+            >
+              <Heart className="w-5 h-5 text-primary" />
+            </a>
+            <a
+              href="https://wa.me/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 hover:bg-green-200 transition-colors"
+              aria-label="WhatsApp"
+            >
+              <MessageCircle className="w-5 h-5 text-green-600" />
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-pink-100 hover:bg-pink-200 transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-5 h-5 text-pink-600" />
+            </a>
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
+              aria-label="Facebook"
+            >
+              <Facebook className="w-5 h-5 text-blue-600" />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5 text-blue-700" />
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Footer with pagination dots and CTA */}
