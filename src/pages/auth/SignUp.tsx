@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import logoFlooow from '@/assets/logo-flooow.png';
+import { LogoNananere } from '@/components/LogoNananere';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -137,16 +137,16 @@ const SignUp = () => {
       <div className="flex-1 flex items-center justify-center px-4 py-6">
         <Card className="w-full max-w-[480px] shadow-md border rounded-2xl bg-card">
           <CardHeader className="text-center space-y-4 pb-6">
-            {/* Logo Flooow */}
-            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-[#FF8A3D] to-[#FF6B1A] rounded-3xl flex items-center justify-center shadow-lg p-4">
-              <img src={logoFlooow} alt="Flooow" className="w-full h-full object-contain" />
+            {/* Logo NANANERE */}
+            <div className="mx-auto">
+              <LogoNananere width={160} height={48} />
             </div>
             <div>
               <CardTitle className="text-2xl font-bold text-foreground">
                 Créer un compte
               </CardTitle>
               <CardDescription className="text-muted-foreground mt-2">
-                Rejoignez la communauté Flooow dès aujourd'hui
+                Rejoignez-nous dès aujourd'hui
               </CardDescription>
             </div>
           </CardHeader>

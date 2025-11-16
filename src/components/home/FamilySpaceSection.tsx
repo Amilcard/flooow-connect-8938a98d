@@ -19,9 +19,10 @@ export const FamilySpaceSection = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Ma ville, mon actu */}
-        <Card 
+        <Card
           className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-border rounded-2xl p-6"
           onClick={() => navigate('/ma-ville-mon-actu')}
+          data-tour-id="home-city-events"
         >
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-xl bg-blue-100 text-blue-600 shadow-sm">
@@ -32,9 +33,9 @@ export const FamilySpaceSection = () => {
                 Ma ville, mon actu
               </h3>
               <p className="text-sm text-text-muted mb-4 leading-relaxed">
-                Matchs, sorties culturelles et événements proches de chez vous.
+                Tous les événements, sorties et animations près de chez vous : matchs, spectacles, festivals et plus encore !
               </p>
-              <Button 
+              <Button
                 variant="outline"
                 className="font-semibold hover:bg-background/80 transition-all"
               >
@@ -45,9 +46,10 @@ export const FamilySpaceSection = () => {
         </Card>
 
         {/* Prix Bon Esprit */}
-        <Card 
+        <Card
           className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-border rounded-2xl p-6"
           onClick={() => navigate('/prix-bon-esprit')}
+          data-tour-id="home-bon-esprit"
         >
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-xl bg-yellow-100 text-yellow-600 shadow-sm">
@@ -58,9 +60,9 @@ export const FamilySpaceSection = () => {
                 Prix Bon Esprit
               </h3>
               <p className="text-sm text-text-muted mb-4 leading-relaxed">
-                Mettre en lumière les élèves, jeunes et adultes qui font du bien autour d'eux.
+                Valorisez les belles actions ! Votez pour ceux qui font briller votre quartier par leur solidarité et leur engagement.
               </p>
-              <Button 
+              <Button
                 variant="outline"
                 className="font-semibold hover:bg-background/80 transition-all"
               >

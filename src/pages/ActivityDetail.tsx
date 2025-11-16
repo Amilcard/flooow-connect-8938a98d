@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import { ActivityShareButton } from "@/components/ActivityShareButton";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -151,7 +151,7 @@ const ActivityDetail = () => {
         .from("availability_slots")
         .select("*")
         .eq("activity_id", id)
-        .gt("seats_remaining", 0)
+        .gte("seats_remaining", 0) // Show ALL slots (available AND full) - full slots are disabled in UI
         .order("start", { ascending: true });
 
       if (error) throw error;
@@ -347,11 +347,14 @@ const ActivityDetail = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Minimalist Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container flex items-center justify-between gap-3 py-4 px-4 md:px-6">
-          <BackButton fallback="/activities" showText={true} label="Retour aux activités" />
-          <ActivityShareButton 
+      {/* Nouveau PageHeader blanc standard */}
+      <PageHeader
+        title={activity.title}
+        subtitle={activity.category}
+        backFallback="/activities"
+        tourId="activity-detail-header"
+        rightContent={
+          <ActivityShareButton
             activity={{
               id: activity.id,
               title: activity.title,
@@ -361,11 +364,11 @@ const ActivityDetail = () => {
               location: (activity.structures as any)?.address || undefined
             }}
             variant="ghost"
-            size="default"
+            size="sm"
             showLabel={false}
           />
-        </div>
-      </div>
+        }
+      />
 
       {/* Hero Image - Hauteur adaptée au mode visuel mobile */}
       <div 
@@ -550,7 +553,7 @@ const ActivityDetail = () => {
               {/* Onglet Infos */}
               <TabsContent value="infos" className="space-y-8 mt-0">
                 {activity.description && (
-                  <section className="space-y-3">
+                  <section className="space-y-3" data-tour-id="activity-infos-main">
                     <h2 className="text-2xl font-bold text-foreground">À propos de cette activité</h2>
                     <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                       {activity.description}
@@ -652,39 +655,43 @@ const ActivityDetail = () => {
 
                 {/* Financial Aids Section with integrated calculator - OPTIONNEL */}
                 {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
-                  <section id="aides-section" className="space-y-4">
+                  <section id="aides-section" className="space-y-4" data-tour-id="aid-simulation-section">
                     <Alert className="bg-muted/50 border-primary/20">
                       <Info className="h-4 w-4" />
                       <AlertDescription className="text-sm">
-                        <strong>L'estimation des aides est facultative.</strong> Vous pouvez vous inscrire directement sans la faire. 
+                        <strong>L'estimation des aides est facultative.</strong> Vous pouvez vous inscrire directement sans la faire.
                         Si vous souhaitez connaître votre reste à charge avant de vous inscrire, utilisez le calculateur ci-dessous.
                       </AlertDescription>
                     </Alert>
-                    
-                    <EnhancedFinancialAidCalculator
-                      activityId={id!}
-                      activityPrice={activity.price_base || 0}
-                      activityCategories={activity.categories || [activity.category]}
-                      periodType={activity.period_type}
-                      userProfile={userProfile}
-                      children={children}
-                      onAidsCalculated={handleAidsCalculated}
-                    />
+
+                    <div data-tour-id="aid-simulation-calculator">
+                      <EnhancedFinancialAidCalculator
+                        activityId={id!}
+                        activityPrice={activity.price_base || 0}
+                        activityCategories={activity.categories || [activity.category]}
+                        periodType={activity.period_type}
+                        userProfile={userProfile}
+                        children={children}
+                        onAidsCalculated={handleAidsCalculated}
+                      />
+                    </div>
                   </section>
                 )}
               </TabsContent>
 
               {/* Onglet Mobilité */}
               <TabsContent value="mobilite" className="mt-0">
-                <EcoMobilitySection
-                  activityId={activity.id}
-                  activityAddress={activity.structures?.address}
-                  structureName={activity.structures?.name}
-                  structureContactJson={activity.structures?.contact_json}
-                  onTransportModeSelected={(mode) => {
-                    console.log('Transport mode selected:', mode);
-                  }}
-                />
+                <div data-tour-id="mobility-cards">
+                  <EcoMobilitySection
+                    activityId={activity.id}
+                    activityAddress={activity.structures?.address}
+                    structureName={activity.structures?.name}
+                    structureContactJson={activity.structures?.contact_json}
+                    onTransportModeSelected={(mode) => {
+                      console.log('Transport mode selected:', mode);
+                    }}
+                  />
+                </div>
               </TabsContent>
             </Tabs>
           </div>
@@ -728,7 +735,7 @@ const ActivityDetail = () => {
               {slots.length > 0 && (
                 <>
                   <Separator />
-                  <div className="space-y-4">
+                  <div className="space-y-4" data-tour-id="aid-creneaux-list">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-lg">Créneaux disponibles</h3>
                       {periodFilter && (

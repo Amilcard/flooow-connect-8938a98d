@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Calculator } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import PageLayout from "@/components/PageLayout";
 
 interface AidCard {
@@ -108,81 +108,6 @@ const sections: AidSection[] = [
         cta_url: "https://depart1825.com"
       }
     ]
-  },
-  {
-    section_id: "local_deals",
-    title: "Aides & bons plans locaux",
-    cards: [
-      {
-        id: "LOCAL_YOUTH_DEALS",
-        title: "Carte jeune locale",
-        badges: ["Réductions", "Jeunes"],
-        text: "Réductions sur les activités, culture, sport et transports du territoire.",
-        footer: "Ville / Intercommunalité",
-        cta_label: "Voir les offres locales",
-        cta_action: "open_local_youth_card"
-      },
-      {
-        id: "TAXE_APPRENTISSAGE",
-        title: "Taxe d'apprentissage",
-        badges: ["Apprentis", "Financement formation"],
-        text: "Aide pour financer formations certifiées (CFA, lycées pro).",
-        footer: "Employeurs / CFA",
-        cta_label: "En savoir plus",
-        cta_url: "https://entreprendre.service-public.fr/vosdroits/F22574"
-      }
-    ]
-  },
-  {
-    section_id: "eco_mobility",
-    title: "Aides et solutions d'éco-mobilité",
-    cards: [
-      {
-        id: "TARIFICATION_SOLIDAIRE_TC",
-        title: "Tarification solidaire (transports)",
-        badges: ["Abonnement", "Selon revenus"],
-        text: "Réductions ou gratuité sur les abonnements bus/tram selon le QF ou le statut (étudiant, invalidité, etc.).",
-        footer: "Réseaux de transport locaux",
-        cta_label: "Voir sur le site de mon réseau",
-        cta_action: "open_local_transport_site"
-      },
-      {
-        id: "FREEVELOV",
-        title: "FreeVélo'v (exemple Lyon)",
-        badges: ["Vélo longue durée", "14–25 ans"],
-        text: "Prêt de vélo 100 % gratuit pendant 3 à 12 mois pour les jeunes qui habitent ou étudient sur le territoire.",
-        footer: "Métropole (ex : Lyon)",
-        cta_label: "En savoir plus",
-        cta_action: "open_freevelov_or_local_equivalent"
-      },
-      {
-        id: "VAE_SOLIDAIRE",
-        title: "Location VAE solidaire",
-        badges: ["Vélo électrique", "+16 ans"],
-        text: "Location de vélo électrique à tarif réduit pour les publics boursiers ou à faible revenu.",
-        footer: "Métropoles / Régions",
-        cta_label: "Voir les conditions",
-        cta_action: "open_local_vae_solidarity_page"
-      },
-      {
-        id: "COVOIT_QUOTIDIEN",
-        title: "Covoiturage quotidien",
-        badges: ["Domicile–activité"],
-        text: "Covoiturage subventionné : trajets gratuits ou à petit prix dans les zones partenaires.",
-        footer: "Collectivités & plateformes",
-        cta_label: "Voir les solutions près de chez moi",
-        cta_action: "open_carpooling_info"
-      },
-      {
-        id: "COVOIT_LIGNES",
-        title: "Lignes de covoiturage",
-        badges: ["Sans réservation", "Trajets garantis"],
-        text: "Lignes organisées de covoiturage avec trajets passagers offerts et départs garantis.",
-        footer: "Autorités organisatrices de mobilité",
-        cta_label: "Découvrir ce dispositif",
-        cta_action: "open_line_carpooling_info"
-      }
-    ]
   }
 ];
 
@@ -192,14 +117,6 @@ const Aides = () => {
   const handleCTA = (card: AidCard) => {
     if (card.cta_action === "open_aid_estimator_for_current_activity") {
       navigate("/aides/simulateur");
-    } else if (
-      card.cta_action === "open_local_transport_site" ||
-      card.cta_action === "open_freevelov_or_local_equivalent" ||
-      card.cta_action === "open_local_vae_solidarity_page" ||
-      card.cta_action === "open_carpooling_info" ||
-      card.cta_action === "open_line_carpooling_info"
-    ) {
-      navigate("/eco-mobilite");
     } else if (card.cta_url) {
       window.open(card.cta_url, "_blank", "noopener,noreferrer");
     }
@@ -207,76 +124,63 @@ const Aides = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header avec bandeau orange */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center gap-4">
-          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-          <div>
-            <h1 className="text-xl font-bold">Aides financières</h1>
-            <p className="text-white/90 text-sm">Découvrez et estimez vos droits</p>
-          </div>
-        </div>
-      </div>
+      {/* Nouveau bandeau blanc standard */}
+      <PageHeader
+        title="Aides financières"
+        subtitle="Réduisez le coût des activités pour vos enfants"
+        backFallback="/mon-compte"
+        tourId="aids-page-header"
+      />
 
-      <div className="container mx-auto px-4 py-6 pb-24 space-y-8">
-        {/* CTA Principal en hero */}
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-2xl p-6">
-          <div className="text-center space-y-4">
-            <Calculator className="h-12 w-12 mx-auto text-primary" />
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Estimez vos aides en quelques clics</h2>
-              <p className="text-muted-foreground">
-                Calculez rapidement les aides auxquelles votre famille peut prétendre
-              </p>
-            </div>
-            <Button 
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 h-12 rounded-xl shadow-lg"
-              onClick={() => navigate("/aides/simulateur")}
-            >
+      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="home-aids-card">
+        {/* Zone Hero CTA principal */}
+        <Card className="mb-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-xl">Estimez vos aides en quelques clics</CardTitle>
+            <CardDescription>
+              Notre simulateur identifie automatiquement les aides auxquelles vous avez droit pour chaque activité
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate("/aides/simulateur")} size="lg" className="w-full md:w-auto">
               <Calculator className="w-5 h-5 mr-2" />
-              Estimer mes aides
+              Estimer mes aides maintenant
             </Button>
-          </div>
+          </CardContent>
         </Card>
 
-        {/* Sections d'aides */}
+        {/* Sections */}
         <div className="space-y-10">
           {sections.map((section) => (
             <section key={section.section_id} className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-bold text-foreground">{section.title}</h2>
+              <h2 className="text-2xl font-semibold">{section.title}</h2>
               
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {section.cards.map((card) => (
-                  <Card key={card.id} className="flex flex-col hover:shadow-lg transition-shadow">
+                  <Card key={card.id} className="flex flex-col">
                     <CardHeader>
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-lg flex-1">{card.title}</CardTitle>
-                        <div className="flex flex-wrap gap-1 justify-end">
-                          {card.badges.slice(0, 2).map((badge, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs">
-                              {badge}
-                            </Badge>
-                          ))}
-                        </div>
+                      <CardTitle className="text-lg">{card.title}</CardTitle>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {card.badges.map((badge, idx) => (
+                          <Badge key={idx} variant="secondary">
+                            {badge}
+                          </Badge>
+                        ))}
                       </div>
                     </CardHeader>
                     
-                    <CardContent className="flex-1 space-y-3">
+                    <CardContent className="flex-1">
                       <CardDescription className="text-sm leading-relaxed">
                         {card.text}
                       </CardDescription>
-                      <p className="text-xs text-muted-foreground italic flex items-center gap-1">
-                        <ExternalLink className="w-3 h-3" />
-                        {card.footer}
-                      </p>
                     </CardContent>
                     
-                    <CardFooter>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
+                    <CardFooter className="flex flex-col items-start gap-3">
+                      <p className="text-xs text-muted-foreground">{card.footer}</p>
+                      <Button
                         onClick={() => handleCTA(card)}
+                        variant="default"
+                        className="w-full"
                       >
                         {card.cta_action === "open_aid_estimator_for_current_activity" ? (
                           <Calculator className="w-4 h-4 mr-2" />
@@ -293,19 +197,17 @@ const Aides = () => {
           ))}
         </div>
 
-        {/* Help Section */}
+        {/* Note informative en bas */}
         <Card className="mt-10 bg-muted/50">
           <CardHeader>
-            <CardTitle className="text-lg">Besoin d'aide pour choisir ?</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2">
+              💡 Bon à savoir
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Notre simulateur vous aide à identifier automatiquement les aides auxquelles vous avez droit.
+            <p className="text-sm text-muted-foreground">
+              Les aides sont cumulables dans la plupart des cas. Utilisez notre simulateur pour connaître le montant total d'aides auquel vous avez droit pour chaque activité.
             </p>
-            <Button onClick={() => navigate("/aides/simulateur")} variant="outline">
-              <Calculator className="w-4 h-4 mr-2" />
-              Simuler mes aides
-            </Button>
           </CardContent>
         </Card>
       </div>

@@ -159,14 +159,18 @@ const Index = () => {
             {/* ========== SECTION 1: OUTILS (AIDES + MOBILITÉS) ========== */}
             <section className="py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <AidesFinancieresCard />
-                <MobiliteCard />
+                <div data-tour-id="home-aids-card">
+                  <AidesFinancieresCard />
+                </div>
+                <div data-tour-id="home-mobility-card">
+                  <MobiliteCard />
+                </div>
               </div>
             </section>
 
             {/* ========== SECTION 3: ACTIVITÉS RECOMMANDÉES ========== */}
             {!loadingRecommended && recommendedActivities.length > 0 && (
-              <section className="py-6">
+              <section className="py-6" data-tour-id="home-reco-section">
                 <ActivityThematicSection
                   title="Activités recommandées"
                   subtitle="Une sélection d'activités adaptées au profil de votre famille."

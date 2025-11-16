@@ -1,9 +1,10 @@
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calculator, ExternalLink, Bike, Bus, UsersRound, Car, TramFront, MapPin } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
+import PageLayout from "@/components/PageLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
@@ -26,6 +27,65 @@ interface TerritoryMobility {
   city: string;
   options: MobilityOption[];
 }
+
+// Aides générales à l'éco-mobilité (nationales)
+interface GeneralMobilityAid {
+  id: string;
+  title: string;
+  badges: string[];
+  text: string;
+  footer: string;
+  cta_label: string;
+  cta_action?: string;
+}
+
+const GENERAL_MOBILITY_AIDS: GeneralMobilityAid[] = [
+  {
+    id: "TARIFICATION_SOLIDAIRE_TC",
+    title: "Tarification solidaire (transports)",
+    badges: ["Abonnement", "Selon revenus"],
+    text: "Réductions ou gratuité sur les abonnements bus/tram selon le QF ou le statut (étudiant, invalidité, etc.).",
+    footer: "Réseaux de transport locaux",
+    cta_label: "Voir sur le site de mon réseau",
+    cta_action: "open_local_transport_site"
+  },
+  {
+    id: "FREEVELOV",
+    title: "Prêt de vélo gratuit (exemple FreeVélo'v Lyon)",
+    badges: ["Vélo longue durée", "14–25 ans"],
+    text: "Prêt de vélo 100 % gratuit pendant 3 à 12 mois pour les jeunes qui habitent ou étudient sur le territoire.",
+    footer: "Métropoles (Lyon, Grenoble, etc.)",
+    cta_label: "En savoir plus",
+    cta_action: "scroll_to_territory_options"
+  },
+  {
+    id: "VAE_SOLIDAIRE",
+    title: "Location VAE solidaire",
+    badges: ["Vélo électrique", "+16 ans"],
+    text: "Location de vélo électrique à tarif réduit pour les publics boursiers ou à faible revenu.",
+    footer: "Métropoles / Régions",
+    cta_label: "Voir les conditions",
+    cta_action: "scroll_to_territory_options"
+  },
+  {
+    id: "COVOIT_QUOTIDIEN",
+    title: "Covoiturage quotidien",
+    badges: ["Domicile–activité"],
+    text: "Covoiturage subventionné : trajets gratuits ou à petit prix dans les zones partenaires.",
+    footer: "Collectivités & plateformes",
+    cta_label: "Voir les solutions près de chez moi",
+    cta_action: "scroll_to_territory_options"
+  },
+  {
+    id: "COVOIT_LIGNES",
+    title: "Lignes de covoiturage",
+    badges: ["Sans réservation", "Trajets garantis"],
+    text: "Lignes organisées de covoiturage avec trajets passagers offerts et départs garantis.",
+    footer: "Autorités organisatrices de mobilité",
+    cta_label: "Découvrir ce dispositif",
+    cta_action: "scroll_to_territory_options"
+  }
+];
 
 // Données de mobilité par territoire
 const TERRITORY_MOBILITY: Record<string, TerritoryMobility> = {
@@ -286,216 +346,209 @@ const getModeColor = (mode: string) => {
 
 const EcoMobilite = () => {
   const { data: userTerritory, isLoading } = useUserTerritory();
-  
+
   // Détermine les options de mobilité selon le territoire
   const territoryMobility = userTerritory?.key ? TERRITORY_MOBILITY[userTerritory.key] : null;
-
-  // Solutions de mobilité à Saint-Étienne
-  const mobilityAids = [
-    {
-      id: "STAS_TC",
-      title: "STAS – Bus & Tram",
-      badges: [],
-      description: "Réseau de transports en commun de Saint-Étienne Métropole pour rejoindre ton activité en bus ou en tram.",
-      footer: "Tarification solidaire possible selon ta situation.",
-      icon: Bus
-    },
-    {
-      id: "VELIVERT",
-      title: "VéliVert – Vélos en libre-service",
-      badges: [],
-      description: "Vélos en libre-service pour les trajets courts en ville, pratique pour rejoindre ton club ou ton activité.",
-      footer: "Consulte les stations proches de chez toi.",
-      icon: Bike
-    },
-    {
-      id: "COVOIT_STE",
-      title: "Covoiturage local",
-      badges: [],
-      description: "Partage de trajets entre familles ou habitants pour aller aux mêmes activités.",
-      footer: "À organiser avec ton club, ta structure ou ton entourage.",
-      icon: Car
-    }
-  ];
 
   const dataSources = [
     { label: "data.gouv.fr", url: "https://www.data.gouv.fr" },
     { label: "ADEME Base Carbone", url: "https://basecarbone.ademe.fr" }
   ];
 
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      <header className="border-b bg-card">
-        <div className="container flex items-center gap-4 py-4">
-          <BackButton fallback="/" />
-          <div>
-            <h1 className="text-xl font-semibold">Comment se rendre sur mon lieu d'activité ?</h1>
-          </div>
-        </div>
-      </header>
+  const handleGeneralAidCTA = (action?: string) => {
+    if (action === "scroll_to_territory_options") {
+      document.getElementById("territory-options")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
-      <div className="container py-6 space-y-6">
+  return (
+    <PageLayout showHeader={false}>
+      {/* PageHeader blanc standard */}
+      <PageHeader
+        title="Solutions de mobilité"
+        subtitle="Découvrez les aides pour vos déplacements éco-responsables"
+        backFallback="/"
+        tourId="mobility-page-header"
+      />
+
+      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="mobility-page">
         {/* Intro */}
-        <div>
+        <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Faites du bien à la planète</h2>
           <p className="text-muted-foreground">
-            Pour aller à ton activité, plusieurs options de transport s'offrent à toi : transports en commun, vélos en libre-service ou covoiturage
+            Pour aller à votre activité, plusieurs options de transport s'offrent à vous : transports en commun, vélos en libre-service ou covoiturage.
           </p>
         </div>
 
         {/* Territory indicator */}
         {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-4 w-48" />
           </div>
         ) : territoryMobility ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <MapPin className="w-4 h-4" />
             <span>Territoire : <strong>{territoryMobility.label}</strong></span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <MapPin className="w-4 h-4" />
             <span>Solutions de mobilité disponibles</span>
           </div>
         )}
 
-        {/* Impact Calculator CTA */}
-        <Card className="bg-primary text-primary-foreground">
+        {/* Simulateur ADEME */}
+        <Card className="mb-8 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="w-5 h-5" />
-              Calculer mon impact transport
-            </CardTitle>
-            <CardDescription className="text-primary-foreground/80">
-              Estimez le CO2 évité grâce à vos déplacements éco-responsables
-            </CardDescription>
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-primary text-white">
+                <Calculator className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-xl mb-2">Calculer mon impact transport</CardTitle>
+                <CardDescription className="text-base">
+                  Estimez le CO₂ évité grâce à vos déplacements éco-responsables. Utilisez le simulateur de l'ADEME pour mesurer votre impact transport.
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm mb-4">
-              Utilisez le simulateur de l'ADEME pour mesurer votre impact transport
-            </p>
-            <Button 
-              variant="secondary" 
-              className="bg-white text-primary hover:bg-white/90"
-              onClick={() => window.open("https://nosgestesclimat.fr/simulateur/bilan", "_blank")}
+            <Button
+              className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white"
+              onClick={() => window.open('https://nosgestesclimat.fr/simulateur/bilan', '_blank')}
             >
-              <Calculator className="w-4 h-4 mr-2" />
+              <Calculator className="mr-2 h-4 w-4" />
               Lancer le simulateur
+              <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
         </Card>
 
-        {/* Mobility options */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">
-            {territoryMobility ? `Solutions de mobilité à ${territoryMobility.city}` : "Solutions de mobilité"}
-          </h2>
-          
-          {/* Header */}
-          <div className="mb-8 space-y-2">
-            <h1 className="text-3xl md:text-4xl font-bold text-text-main">
-              Comment se rendre sur mon lieu d'activité ?
-            </h1>
-            <p className="text-lg text-text-muted">
-              Découvre les solutions de mobilité disponibles pour aller à ton activité.
-            </p>
-          </div>
+        {/* Section Aides générales */}
+        <section className="space-y-4 mb-10">
+          <h2 className="text-2xl font-semibold">Aides et solutions d'éco-mobilité</h2>
 
-          {/* Simulateur ADEME - Card en évidence */}
-          <Card className="mb-8 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-            <CardHeader>
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-primary text-white">
-                  <Calculator className="h-6 w-6" />
-                </div>
-                <div className="flex-1">
-                  <CardTitle className="text-xl mb-2">Calculer mon impact transport</CardTitle>
-                  <CardDescription className="text-base">
-                    Estimez le CO₂ évité grâce à vos déplacements éco-responsables. Utilisez le simulateur de l'ADEME pour mesurer votre impact transport.
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {GENERAL_MOBILITY_AIDS.map((card) => (
+              <Card key={card.id} className="flex flex-col">
+                <CardHeader>
+                  <CardTitle className="text-lg">{card.title}</CardTitle>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {card.badges.map((badge, idx) => (
+                      <Badge key={idx} variant="secondary">
+                        {badge}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardHeader>
+
+                <CardContent className="flex-1">
+                  <CardDescription className="text-sm leading-relaxed">
+                    {card.text}
                   </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white"
-                onClick={() => window.open('https://basecarbone.ademe.fr', '_blank')}
-              >
-                <Calculator className="mr-2 h-4 w-4" />
-                Lancer le simulateur
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+                </CardContent>
 
-          {/* Section Solutions Saint-Étienne */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-text-main mb-6">
-              Solutions de mobilité à Saint-Étienne
-            </h2>
-            
+                <CardFooter className="flex flex-col items-start gap-3">
+                  <p className="text-xs text-muted-foreground">{card.footer}</p>
+                  <Button
+                    onClick={() => handleGeneralAidCTA(card.cta_action)}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {card.cta_label}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Section Solutions par territoire */}
+        <section className="space-y-4 mb-10" id="territory-options">
+          <h2 className="text-2xl font-semibold">
+            {territoryMobility ? `Solutions spécifiques à ${territoryMobility.city}` : "Solutions par territoire"}
+          </h2>
+
+          {territoryMobility && territoryMobility.options.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
-              {mobilityAids.map((aid) => {
-                const IconComponent = aid.icon;
+              {territoryMobility.options.map((option) => {
+                const IconComponent = getModeIcon(option.mode);
+                const modeColor = getModeColor(option.mode);
                 return (
-                  <Card key={aid.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={option.name} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <div className="flex items-start gap-3 mb-3">
                         <div className="p-2 rounded-lg bg-accent">
                           <IconComponent className="h-5 w-5 text-primary" />
                         </div>
-                        <CardTitle className="text-lg flex-1">{aid.title}</CardTitle>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {aid.badges.map((badge, idx) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">
-                            {badge}
+                        <div className="flex-1">
+                          <CardTitle className="text-lg mb-2">{option.name}</CardTitle>
+                          <Badge variant="secondary" className={modeColor}>
+                            {getModeLabel(option.mode)}
                           </Badge>
-                        ))}
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-sm text-text-secondary leading-relaxed">
-                        {aid.description}
-                      </p>
-                      <p className="text-xs text-text-muted font-medium">
-                        {aid.footer}
-                      </p>
+                      <p className="text-sm leading-relaxed">{option.eligibility_notes}</p>
+                      <div className="pt-2 border-t">
+                        <p className="text-sm font-semibold text-primary">{option.pricing}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{option.provider}</p>
+                      </div>
                     </CardContent>
+                    <CardFooter>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => window.open(option.official_url, '_blank')}
+                      >
+                        En savoir plus
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardFooter>
                   </Card>
                 );
               })}
             </div>
-          </div>
+          ) : (
+            <Card className="text-center py-8">
+              <CardContent>
+                <MapPin className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  Connectez-vous pour voir les solutions de mobilité disponibles sur votre territoire.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </section>
 
-          {/* Sources des données */}
-          <Card className="bg-muted/50">
-            <CardHeader>
-              <CardTitle className="text-lg">Sources des données CO₂</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-4">
-                {dataSources.map((source, idx) => (
-                  <Button
-                    key={idx}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(source.url, '_blank')}
-                    className="text-sm"
-                  >
-                    {source.label}
-                    <ExternalLink className="ml-2 h-3 w-3" />
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Sources des données */}
+        <Card className="bg-muted/50">
+          <CardHeader>
+            <CardTitle className="text-lg">Sources des données CO₂</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4">
+              {dataSources.map((source, idx) => (
+                <Button
+                  key={idx}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(source.url, '_blank')}
+                  className="text-sm"
+                >
+                  {source.label}
+                  <ExternalLink className="ml-2 h-3 w-3" />
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
       <BottomNavigation />
-    </div>
+    </PageLayout>
   );
 };
 

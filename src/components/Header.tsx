@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import AuthNavigation from "@/components/authentification/AuthNavigation";
 import { NotificationBadge } from "@/components/NotificationBadge";
-import logoNananere from "@/assets/logo-nananere.png";
+import logoFlooow from "@/assets/logo-flooow.png";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -16,12 +16,12 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white shadow-sm">
       <div className="container px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center h-16 py-3">
-            <img 
-              src={logoNananere} 
-              alt="NANANERE - Mon petit guichet du quotidien" 
-              className="h-full w-auto min-w-[140px] object-contain"
+          {/* Logo FLOOOW */}
+          <Link to="/" className="flex items-center">
+            <img
+              src={logoFlooow}
+              alt="Flooow"
+              className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>
 
