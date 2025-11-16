@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { Card } from "@/components/ui/card";
-import { Calendar, MapPin, Heart, Download } from "lucide-react";
+import { Calendar, MapPin, Heart, Download, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const MesEvenementsFavoris = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { favorites, toggleFavorite, isFavorite } = useFavoriteEvents(user?.id);
 
@@ -41,9 +43,28 @@ const MesEvenementsFavoris = () => {
   });
 
   return (
-    <PageLayout>
-      <div className="container mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold mb-6">Mes événements favoris</h1>
+    <PageLayout showHeader={false}>
+      {/* Bandeau orange avec titre et retour */}
+      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
+        <div className="container flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-white hover:bg-white/20"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="mr-2" size={20} />
+          </Button>
+          <div>
+            <h1 className="text-xl font-bold">Mes événements favoris</h1>
+            <p className="text-white/90 text-sm">
+              {events && events.length > 0 ? `${events.length} événement${events.length > 1 ? 's' : ''}` : 'Aucun événement'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6 pb-24">
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
@@ -56,12 +77,18 @@ const MesEvenementsFavoris = () => {
           </div>
         ) : !events || events.length === 0 ? (
           <Card className="p-8">
-            <div className="text-center">
-              <Heart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="font-semibold text-lg mb-2">Aucun événement favori</h3>
-              <p className="text-muted-foreground">
-                Ajoutez des événements à vos favoris pour les retrouver facilement ici
-              </p>
+            <div className="text-center space-y-4">
+              <Heart className="h-16 w-16 mx-auto text-muted-foreground" />
+              <div>
+                <h3 className="font-semibold text-xl mb-2">Aucun événement favori</h3>
+                <p className="text-muted-foreground mb-4">
+                  Ajoutez des événements à vos favoris pour les retrouver facilement ici
+                </p>
+              </div>
+              <Button onClick={() => navigate("/agenda-community")} variant="default">
+                <Calendar className="w-4 h-4 mr-2" />
+                Découvrir les événements
+              </Button>
             </div>
           </Card>
         ) : (

@@ -206,17 +206,36 @@ const Aides = () => {
   };
 
   return (
-    <PageLayout>
-      <div className="container mx-auto px-4 py-6 pb-24">
-        <BackButton />
-        
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Aides financières</h1>
-          <p className="text-muted-foreground">
-            Découvrez les aides qui peuvent réduire le coût des activités.
-          </p>
+    <PageLayout showHeader={false}>
+      {/* Bandeau orange avec titre et retour */}
+      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
+        <div className="container flex items-center space-x-4">
+          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
+          <div>
+            <h1 className="text-xl font-bold">Aides financières</h1>
+            <p className="text-white/90 text-sm">
+              Réduisez le coût des activités pour vos enfants
+            </p>
+          </div>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6 pb-24">
+        {/* Zone Hero CTA principal */}
+        <Card className="mb-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-xl">Estimez vos aides en quelques clics</CardTitle>
+            <CardDescription>
+              Notre simulateur identifie automatiquement les aides auxquelles vous avez droit pour chaque activité
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate("/aides/simulateur")} size="lg" className="w-full md:w-auto">
+              <Calculator className="w-5 h-5 mr-2" />
+              Estimer mes aides maintenant
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Sections */}
         <div className="space-y-10">
@@ -266,19 +285,17 @@ const Aides = () => {
           ))}
         </div>
 
-        {/* Help Section */}
+        {/* Note informative en bas */}
         <Card className="mt-10 bg-muted/50">
           <CardHeader>
-            <CardTitle className="text-lg">Besoin d'aide pour choisir ?</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2">
+              💡 Bon à savoir
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Notre simulateur vous aide à identifier automatiquement les aides auxquelles vous avez droit.
+            <p className="text-sm text-muted-foreground">
+              Les aides sont cumulables dans la plupart des cas. Utilisez notre simulateur pour connaître le montant total d'aides auquel vous avez droit pour chaque activité.
             </p>
-            <Button onClick={() => navigate("/aides/simulateur")} variant="outline">
-              <Calculator className="w-4 h-4 mr-2" />
-              Simuler mes aides
-            </Button>
           </CardContent>
         </Card>
       </div>

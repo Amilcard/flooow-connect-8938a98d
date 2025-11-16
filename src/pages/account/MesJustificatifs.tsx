@@ -65,37 +65,50 @@ const MesJustificatifs = () => {
     .filter((j) => j.required)
     .every((j) => j.uploaded);
 
+  const uploadedCount = justificatifs.filter(j => j.uploaded).length;
+  const totalCount = justificatifs.length;
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="border-b bg-card">
-        <div className="container flex items-center gap-4 py-4">
-          <BackButton fallback="/mon-compte" className="hover:bg-muted" />
+      {/* Bandeau orange avec titre et retour */}
+      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
+        <div className="container flex items-center space-x-4">
+          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
           <div>
-            <h1 className="text-xl font-semibold">Mes justificatifs</h1>
-            <p className="text-sm text-muted-foreground">
-              Télécharge tes documents pour débloquer les aides
+            <h1 className="text-xl font-bold">Mes justificatifs</h1>
+            <p className="text-white/90 text-sm">
+              {uploadedCount}/{totalCount} document{totalCount > 1 ? 's' : ''} ajouté{uploadedCount > 1 ? 's' : ''}
             </p>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container py-6 space-y-6">
-        {/* État vide */}
-        {!allRequiredUploaded && (
-          <Card className="bg-muted/50">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <AlertCircle className="w-5 h-5" />
-                Ajoute un justificatif pour débloquer "Transmettre"
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Télécharge au moins les documents obligatoires pour pouvoir valider ta demande d'aide.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        {/* Résumé des documents */}
+        <Card className={!allRequiredUploaded ? "bg-muted/50 border-orange-200" : "bg-green-50 border-green-200"}>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              {!allRequiredUploaded ? (
+                <>
+                  <AlertCircle className="w-5 h-5 text-orange-600" />
+                  Documents manquants
+                </>
+              ) : (
+                <>
+                  <Check className="w-5 h-5 text-green-600" />
+                  Tous les documents obligatoires sont ajoutés
+                </>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              {!allRequiredUploaded
+                ? "Télécharge au moins les documents obligatoires pour pouvoir transmettre ta demande d'aide."
+                : "Tu peux maintenant transmettre tes justificatifs pour finaliser ta demande."}
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Liste des justificatifs */}
         <div className="space-y-4">
