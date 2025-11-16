@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
+import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Calendar, MapPin, Heart, Download } from "lucide-react";
 import { format } from "date-fns";
@@ -20,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const MesEvenementsFavoris = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { favorites, toggleFavorite, isFavorite } = useFavoriteEvents(user?.id);
 
@@ -42,27 +45,15 @@ const MesEvenementsFavoris = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header avec bandeau orange */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => window.history.back()}
-            className="text-white hover:bg-white/20"
-          >
-            ← Retour
-          </Button>
-          <div>
-            <h1 className="text-xl font-bold">Mes événements favoris</h1>
-            <p className="text-white/90 text-sm">
-              {events?.length || 0} événement{(events?.length || 0) > 1 ? 's' : ''} favori{(events?.length || 0) > 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Nouveau bandeau blanc standard */}
+      <PageHeader
+        title="Mes événements favoris"
+        subtitle={events && events.length > 0 ? `${events.length} événement${events.length > 1 ? 's' : ''}` : 'Aucun événement'}
+        backFallback={-1}
+        tourId="favorite-events-header"
+      />
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="account-favorites">
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
@@ -82,10 +73,11 @@ const MesEvenementsFavoris = () => {
                 <p className="text-muted-foreground mb-4">
                   Ajoutez des événements à vos favoris pour les retrouver facilement ici
                 </p>
-                <Button onClick={() => window.location.href = '/agenda-community'}>
-                  Découvrir les événements
-                </Button>
               </div>
+              <Button onClick={() => navigate("/agenda-community")} variant="default">
+                <Calendar className="w-4 h-4 mr-2" />
+                Découvrir les événements
+              </Button>
             </div>
           </Card>
         ) : (

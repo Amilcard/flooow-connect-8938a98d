@@ -28,6 +28,7 @@ import BookingRecap from "./pages/BookingRecap";
 import BookingStatus from "./pages/BookingStatus";
 import MonCompte from "./pages/MonCompte";
 import Aides from "./pages/Aides";
+import BonsPlansLocaux from "./pages/BonsPlansLocaux";
 import Univers from "./pages/Univers";
 import Chat from "./pages/Chat";
 import EcoMobilite from "./pages/EcoMobilite";
@@ -180,6 +181,7 @@ const App = () => (
           <Route path="/univers" element={<Univers />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/eco-mobilite" element={<EcoMobilite />} />
+          <Route path="/bons-plans-locaux" element={<BonsPlansLocaux />} />
           <Route path="/inclusivite" element={<Inclusivite />} />
           <Route path="/support" element={<Support />} />
           <Route path="/faq" element={<FAQ />} />

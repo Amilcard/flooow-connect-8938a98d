@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BackButton } from '@/components/BackButton';
+import { PageHeader } from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,13 +10,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import KidAddModal from './KidAddModal';
-import { 
-   
-  Plus, 
-  Calendar, 
-  User, 
-  Heart, 
-  Settings, 
+import {
+  Plus,
+  Calendar,
+  User,
+  Heart,
+  Settings,
   Edit,
   Trash2,
   Baby,
@@ -159,27 +158,26 @@ const MesEnfants = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-          <div>
-            <h1 className="text-xl font-bold">Mes enfants</h1>
-            <p className="text-white/90 text-sm">{children.length} enfant{children.length > 1 ? 's' : ''} enregistré{children.length > 1 ? 's' : ''}</p>
-          </div>
-        </div>
-        
-        <Button 
-          variant="secondary" 
-          size="sm"
-          onClick={() => setIsAddingChild(true)}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Ajouter
-        </Button>
-      </div>
-    </div>      <div className="container px-4 py-6 space-y-4">
+      {/* PageHeader blanc standard */}
+      <PageHeader
+        title="Mes enfants"
+        subtitle={`${children.length} enfant${children.length > 1 ? 's' : ''} enregistré${children.length > 1 ? 's' : ''}`}
+        backFallback="/mon-compte"
+        tourId="children-page-header"
+        rightContent={
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => setIsAddingChild(true)}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Ajouter
+          </Button>
+        }
+      />
+
+      <div className="container px-4 py-6 space-y-4" data-tour-id="children-list">
         {isLoading ? (
           <Card className="text-center py-12">
             <CardContent>
