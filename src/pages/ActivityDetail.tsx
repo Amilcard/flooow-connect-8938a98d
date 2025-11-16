@@ -151,7 +151,7 @@ const ActivityDetail = () => {
         .from("availability_slots")
         .select("*")
         .eq("activity_id", id)
-        .gt("seats_remaining", 0)
+        .gte("seats_remaining", 0) // Show ALL slots (available AND full) - full slots are disabled in UI
         .order("start", { ascending: true });
 
       if (error) throw error;
