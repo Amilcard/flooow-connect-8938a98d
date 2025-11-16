@@ -1,35 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 const Splash = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [shouldShowSplash, setShouldShowSplash] = useState(true);
 
   useEffect(() => {
-    // Check if this is a fresh app load (not internal navigation)
-    const isAppEntry = !sessionStorage.getItem('appInitialized');
-    
-    if (!isAppEntry) {
-      // User is already in the app, redirect immediately without splash
+    // Marquer que le splash a été vu dans cette session
+    const splashShownThisSession = sessionStorage.getItem("splashShown");
+
+    // Détecter si c'est une navigation interne (back/forward, liens internes)
+    const isInternalNavigation =
+      location.state?.from || // Navigation via React Router avec state
+      window.history.length > 1 || // Historique existant
+      document.referrer.includes(window.location.origin) || // Referrer interne
+      splashShownThisSession === "true"; // Déjà vu dans cette session
+
+    if (isInternalNavigation) {
+      // Navigation interne : aller directement à l'accueil sans splash
+      setShouldShowSplash(false);
       navigate("/home", { replace: true });
       return;
     }
 
-    // Mark app as initialized
-    sessionStorage.setItem('appInitialized', 'true');
+    // Première visite de la session : montrer le splash
+    sessionStorage.setItem("splashShown", "true");
 
     // Check if user has seen onboarding
     const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
-    
-    setTimeout(() => {
+
+    const timer = setTimeout(() => {
       if (hasSeenOnboarding) {
         navigate("/home", { replace: true });
       } else {
         navigate("/onboarding", { replace: true });
       }
     }, 2000);
-  }, [navigate]);
+
+    return () => clearTimeout(timer);
+  }, [navigate, location]);
+
+  // Ne pas afficher le splash si c'est une navigation interne
+  if (!shouldShowSplash) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary to-accent p-6">

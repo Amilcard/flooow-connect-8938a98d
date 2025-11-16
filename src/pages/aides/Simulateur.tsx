@@ -3,25 +3,25 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Euro, 
-  CheckCircle2, 
-  Loader2, 
-  AlertCircle, 
-  RefreshCw, 
+import {
+  Euro,
+  CheckCircle2,
+  Loader2,
+  AlertCircle,
+  RefreshCw,
   Info,
-  MapPin,
   Users,
-  Calendar
+  Calendar,
+  UserPlus
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { QF_BRACKETS } from "@/lib/qfBrackets";
 
 interface FinancialAid {
   aid_name: string;
@@ -31,15 +31,9 @@ interface FinancialAid {
 }
 
 interface SimulationForm {
-  quotientFamilial: string;
+  quotientFamilialBracket: string;
   selectedChildId: string;
-  cityCode: string;
-}
-
-interface UserProfile {
-  quotient_familial?: number;
-  postal_code?: string;
-  city_code?: string;
+  anonymousAge: string;
 }
 
 interface Child {
@@ -51,16 +45,13 @@ interface Child {
 
 const TERRITORY_LABELS = {
   national: "🇫🇷 National",
-  region: "🌍 Régional", 
+  region: "🌍 Régional",
   metropole: "🏙️ Métropole",
   commune: "🏘️ Communal"
 } as const;
 
-// Villes limitées pour la démo (zone pilote uniquement)
-const SAMPLE_CITIES = [
-  { code: "42000", name: "Saint-Étienne" },
-  { code: "42150", name: "La Ricamarie" }
-];
+// Générer les options d'âge pour les utilisateurs anonymes (6-18 ans)
+const AGE_OPTIONS = Array.from({ length: 13 }, (_, i) => i + 6);
 
 const Simulateur = () => {
   const navigate = useNavigate();
@@ -84,36 +75,25 @@ const Simulateur = () => {
     }
     return age;
   };
-  
+
   // State pour le formulaire
   const [form, setForm] = useState<SimulationForm>({
-    quotientFamilial: "",
+    quotientFamilialBracket: "",
     selectedChildId: "",
-    cityCode: ""
+    anonymousAge: ""
   });
-  
+
   // State pour les résultats
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSimulated, setHasSimulated] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [children, setChildren] = useState<Child[]>([]);
 
-  const loadUserProfile = useCallback(async () => {
+  const loadChildren = useCallback(async () => {
     if (!user) return;
 
     try {
-      // Charger le profil utilisateur complet
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) throw profileError;
-      setUserProfile(profileData || {});
-
       // Charger les enfants
       const { data: childrenData, error: childrenError } = await supabase
         .from('children')
@@ -123,69 +103,63 @@ const Simulateur = () => {
       if (childrenError) throw childrenError;
       setChildren(childrenData || []);
     } catch (err) {
-      console.error('Erreur lors du chargement des données:', err);
+      console.error('Erreur lors du chargement des enfants:', err);
     }
   }, [user]);
 
-  // Charger le profil utilisateur au montage
+  // Charger les enfants au montage si connecté
   useEffect(() => {
     if (user) {
-      loadUserProfile();
+      loadChildren();
     }
-  }, [user, loadUserProfile]);
-
-  // Pré-remplir le formulaire avec les données du profil utilisateur
-  useEffect(() => {
-    if (userProfile) {
-      setForm(prev => ({
-        ...prev,
-        quotientFamilial: userProfile.quotient_familial ? String(userProfile.quotient_familial) : prev.quotientFamilial,
-        cityCode: userProfile.postal_code || userProfile.city_code || prev.cityCode
-      }));
-    }
-  }, [userProfile]);
+  }, [user, loadChildren]);
 
   const handleSimulate = async () => {
-    if (!user) {
-      setError("Vous devez être connecté pour utiliser la simulation");
+    // Déterminer l'âge : soit depuis l'enfant sélectionné, soit depuis l'âge anonyme
+    let age: number;
+
+    if (user && form.selectedChildId) {
+      const selectedChild = children.find(child => child.id === form.selectedChildId);
+      if (!selectedChild) {
+        setError("Veuillez sélectionner un enfant");
+        return;
+      }
+      age = calculateAge(selectedChild.dob);
+    } else if (form.anonymousAge) {
+      age = parseInt(form.anonymousAge);
+    } else {
+      setError("Veuillez sélectionner l'âge de l'enfant");
       return;
     }
-
-    const qf = parseInt(form.quotientFamilial) || 0;
-    const selectedChild = children.find(child => child.id === form.selectedChildId);
-    
-    if (!selectedChild) {
-      setError("Veuillez sélectionner un enfant");
-      return;
-    }
-
-    const age = calculateAge(selectedChild.dob);
 
     if (age < 6 || age > 18) {
-      setError("L'enfant sélectionné doit être âgé de 6 à 18 ans pour bénéficier d'aides");
+      setError("L'enfant doit être âgé de 6 à 18 ans pour bénéficier d'aides");
       return;
     }
 
-    if (!form.cityCode) {
-      setError("Veuillez renseigner votre ville de résidence dans votre profil");
-      return; 
+    if (!form.quotientFamilialBracket) {
+      setError("Veuillez sélectionner votre tranche de quotient familial");
+      return;
     }
+
+    const qf = parseInt(form.quotientFamilialBracket);
 
     setIsLoading(true);
     setError(null);
 
     try {
+      // Appeler le RPC sans city_code (aides nationales et régionales uniquement)
       const { data, error: rpcError } = await supabase.rpc('calculate_eligible_aids', {
         p_age: age,
         p_qf: qf,
-        p_city_code: form.cityCode,
+        p_city_code: "42000", // Code par défaut pour la zone pilote Saint-Étienne
         p_activity_price: activityPrice,
         p_duration_days: durationDays,
         p_categories: activityCategories
       });
 
       if (rpcError) throw rpcError;
-      
+
       setAids(data || []);
       setHasSimulated(true);
     } catch (err) {
@@ -210,6 +184,10 @@ const Simulateur = () => {
       // Retour simple
       navigate(-1);
     }
+  };
+
+  const handleSignup = () => {
+    navigate("/signup");
   };
 
   const totalAid = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
@@ -268,100 +246,110 @@ const Simulateur = () => {
           </Card>
         )}
 
-        {/* Alerte si pas d'enfants */}
-        {children.length === 0 && (
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Vous devez d'abord ajouter un enfant dans votre profil pour utiliser la simulation d'aides.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {/* Formulaire de simulation */}
         {!hasSimulated ? (
           <div className="space-y-4">
-            {/* Sélection d'enfant */}
+            {/* Sélection d'âge - conditionnel selon authentification */}
             <div className="space-y-2">
-              <Label htmlFor="child" className="flex items-center gap-1">
+              <Label htmlFor="age" className="flex items-center gap-1">
                 <Users className="w-4 h-4" />
-                Enfant concerné
+                {user ? "Enfant concerné" : "Âge de l'enfant"}
               </Label>
-              <Select value={form.selectedChildId} onValueChange={(value) => setForm(prev => ({ ...prev, selectedChildId: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez un enfant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {children.map(child => {
-                    const age = calculateAge(child.dob);
-                    return (
-                      <SelectItem key={child.id} value={child.id}>
-                        {child.first_name} ({age} ans)
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {children.length === 0 
-                  ? "Aucun enfant enregistré. Ajoutez un enfant dans votre profil."
-                  : "Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides"
-                }
-              </p>
+
+              {user && children.length > 0 ? (
+                // Utilisateur connecté avec enfants : afficher le sélecteur d'enfant
+                <>
+                  <Select
+                    value={form.selectedChildId}
+                    onValueChange={(value) => setForm(prev => ({ ...prev, selectedChildId: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un enfant" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {children.map(child => {
+                        const age = calculateAge(child.dob);
+                        return (
+                          <SelectItem key={child.id} value={child.id}>
+                            {child.first_name} ({age} ans)
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides
+                  </p>
+                </>
+              ) : (
+                // Utilisateur anonyme ou sans enfants : afficher le sélecteur d'âge
+                <>
+                  <Select
+                    value={form.anonymousAge}
+                    onValueChange={(value) => setForm(prev => ({ ...prev, anonymousAge: value }))}
+                  >
+                    <SelectTrigger id="age">
+                      <SelectValue placeholder="Sélectionnez l'âge de l'enfant" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AGE_OPTIONS.map(age => (
+                        <SelectItem key={age} value={String(age)}>
+                          {age} ans
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Âge de l'enfant qui participera à l'activité (6-18 ans)
+                  </p>
+                </>
+              )}
             </div>
 
-            {/* Quotient Familial */}
+            {/* Quotient Familial - Tranches */}
             <div className="space-y-2">
               <Label htmlFor="qf" className="flex items-center gap-1">
                 <Euro className="w-4 h-4" />
                 Quotient Familial CAF
               </Label>
-              <Input
-                id="qf"
-                type="number"
-                placeholder="Ex: 750"
-                value={form.quotientFamilial}
-                onChange={(e) => setForm(prev => ({ ...prev, quotientFamilial: e.target.value }))}
-              />
-              <p className="text-xs text-muted-foreground">
-                {userProfile?.quotient_familial 
-                  ? "✓ Pré-rempli depuis votre profil" 
-                  : "Trouvez votre QF sur votre attestation CAF"
-                }
-              </p>
-            </div>
-
-            {/* Ville */}
-            <div className="space-y-2">
-              <Label htmlFor="city" className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" />
-                Ville de résidence
-              </Label>
-              <Select value={form.cityCode} onValueChange={(value) => setForm(prev => ({ ...prev, cityCode: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez votre ville" />
+              <Select
+                value={form.quotientFamilialBracket}
+                onValueChange={(value) => setForm(prev => ({ ...prev, quotientFamilialBracket: value }))}
+              >
+                <SelectTrigger id="qf">
+                  <SelectValue placeholder="Sélectionnez votre tranche" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SAMPLE_CITIES.map(city => (
-                    <SelectItem key={city.code} value={city.code}>
-                      {city.name}
+                  {QF_BRACKETS.map(bracket => (
+                    <SelectItem key={bracket.id} value={String(bracket.value)}>
+                      {bracket.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                {userProfile?.postal_code || userProfile?.city_code
-                  ? "✓ Pré-rempli depuis votre profil" 
-                  : "Nécessaire pour calculer les aides locales"
-                }
+                Trouvez votre QF sur votre attestation CAF
               </p>
             </div>
 
+            {/* Info sur les aides disponibles */}
+            <Alert className="bg-blue-50 border-blue-200">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-sm text-blue-900">
+                Cette simulation calcule les aides financières disponibles en fonction de l'âge et du quotient familial.
+                Les aides locales peuvent varier selon votre territoire.
+              </AlertDescription>
+            </Alert>
+
             {/* Bouton simulation */}
-            <Button 
-              onClick={handleSimulate} 
+            <Button
+              onClick={handleSimulate}
               className="w-full h-14"
-              disabled={!form.selectedChildId || !form.cityCode || isLoading}
+              disabled={
+                isLoading ||
+                !form.quotientFamilialBracket ||
+                (user ? !form.selectedChildId : !form.anonymousAge)
+              }
             >
               {isLoading ? (
                 <>
@@ -381,7 +369,7 @@ const Simulateur = () => {
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
                   Aucune aide financière n'est disponible pour ces critères.
-                  Vérifiez votre âge, quotient familial et ville de résidence.
+                  Vérifiez l'âge et le quotient familial sélectionnés.
                 </AlertDescription>
               </Alert>
             ) : (
@@ -408,7 +396,7 @@ const Simulateur = () => {
                         </div>
                         {aid.official_link && (
                           <div className="mt-2">
-                            <a 
+                            <a
                               href={aid.official_link}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -450,9 +438,30 @@ const Simulateur = () => {
               </>
             )}
 
+            {/* CTA Inscription pour utilisateurs anonymes */}
+            {!user && (
+              <Card className="bg-gradient-to-br from-[#FF8A3D] to-[#FF6B1A] border-0 text-white">
+                <CardContent className="p-6 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <UserPlus className="w-6 h-6" />
+                    <h3 className="font-semibold text-lg">Créer mon compte pour garder ces infos</h3>
+                  </div>
+                  <p className="text-sm text-white/90">
+                    Inscrivez-vous pour sauvegarder vos simulations, gérer vos enfants et réserver des activités en toute simplicité.
+                  </p>
+                  <Button
+                    onClick={handleSignup}
+                    className="w-full bg-white text-[#FF8A3D] hover:bg-white/90 font-semibold"
+                  >
+                    Créer mon compte gratuitement
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Boutons d'action */}
             <div className="flex gap-3">
-              <Button 
+              <Button
                 onClick={resetSimulation}
                 variant="outline"
                 className="flex-1"
@@ -461,7 +470,7 @@ const Simulateur = () => {
                 Nouvelle simulation
               </Button>
               {activityId && (
-                <Button 
+                <Button
                   onClick={handleContinue}
                   className="flex-1"
                 >
@@ -477,16 +486,6 @@ const Simulateur = () => {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {/* Note sur l'authentification */}
-        {!user && (
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Connectez-vous pour accéder à une simulation personnalisée avec vos données de profil.
-            </AlertDescription>
           </Alert>
         )}
       </div>

@@ -28,9 +28,17 @@ export const BottomNavigation = () => {
   const [showSplash, setShowSplash] = useState(false);
 
   const handleNavigation = (item: NavItem) => {
-    // Rediriger vers /auth si l'utilisateur n'est pas connecté et tente d'accéder à un espace privé
-    if (!isAuthenticated && item.requiresAuth) {
-      navigate("/auth");
+    // Si l'onglet nécessite une authentification et que l'utilisateur n'est pas connecté
+    if (item.requiresAuth && !isAuthenticated) {
+      // Rediriger vers la page de connexion avec le message approprié
+      navigate("/login", {
+        state: {
+          from: item.path,
+          message: item.label === "Mes enfants"
+            ? "Connectez-vous pour gérer vos enfants"
+            : "Connectez-vous pour accéder à votre compte"
+        }
+      });
       return;
     }
 

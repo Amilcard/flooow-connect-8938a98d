@@ -14,25 +14,28 @@ import { useUserTerritory } from "@/hooks/useUserTerritory";
 const MaVilleMonActu = () => {
   const { data: territory } = useUserTerritory();
 
-  // Récupérer les événements du territoire
+  // Récupérer les événements du territoire (ou tous les événements si pas de territoire)
   const { data: events, isLoading } = useQuery({
     queryKey: ["territory-events", territory?.id],
     queryFn: async () => {
-      if (!territory?.id) return [];
-      
-      const { data, error } = await supabase
+      let query = supabase
         .from("territory_events")
         .select("*")
-        .eq("territory_id", territory.id)
         .eq("published", true)
         .gte("start_date", new Date().toISOString())
         .order("start_date", { ascending: true })
         .limit(50);
 
+      // Filtrer par territoire uniquement si l'utilisateur en a un
+      if (territory?.id) {
+        query = query.eq("territory_id", territory.id);
+      }
+
+      const { data, error } = await query;
+
       if (error) throw error;
       return data || [];
     },
-    enabled: !!territory?.id,
   });
 
   // Grouper les événements par catégorie
@@ -87,7 +90,9 @@ const MaVilleMonActu = () => {
         <div className="mb-8 space-y-4">
           <h1 className="text-3xl font-bold mb-2">Ma ville, mon actu</h1>
           <p className="text-muted-foreground">
-            Infos locales, actualités et événements près de chez toi.
+            {territory?.name
+              ? `Découvrez l'actualité et les événements de ${territory.name}`
+              : "Découvrez l'actualité et les événements près de chez vous"}
           </p>
           
           {/* Texte d'introduction */}

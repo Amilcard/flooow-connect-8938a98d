@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
+import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 
 interface Child {
   id: string;
@@ -92,21 +93,10 @@ export const EnhancedFinancialAidCalculator = ({
   useEffect(() => {
     if (!savedState?.calculated && userProfile) {
       if (userProfile.quotient_familial && !quotientFamilial) {
-        // Mapper le QF vers les tranches
+        // Mapper le QF vers les tranches en utilisant la config centralisée
         const qf = userProfile.quotient_familial;
-        if (qf <= 300) {
-          setQuotientFamilial("300");
-        } else if (qf <= 600) {
-          setQuotientFamilial("450");
-        } else if (qf <= 900) {
-          setQuotientFamilial("750");
-        } else if (qf <= 1200) {
-          setQuotientFamilial("1050");
-        } else if (qf <= 1500) {
-          setQuotientFamilial("1350");
-        } else {
-          setQuotientFamilial("1500");
-        }
+        const mappedValue = mapQFToBracket(qf);
+        setQuotientFamilial(String(mappedValue));
       }
       if (userProfile.postal_code && !cityCode) {
         setCityCode(userProfile.postal_code);
@@ -191,6 +181,16 @@ export const EnhancedFinancialAidCalculator = ({
       return;
     }
 
+    // Validation du code postal (format français)
+    if (!/^[0-9]{5}$/.test(cityCode)) {
+      toast({
+        title: "Code postal invalide",
+        description: "Veuillez saisir un code postal français valide (5 chiffres)",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const selectedChild = children.find(c => c.id === selectedChildId);
     if (!selectedChild) return;
 
@@ -221,12 +221,16 @@ export const EnhancedFinancialAidCalculator = ({
         ...aid,
         is_informational: aid.is_informational ?? false
       }));
+
+      // Filtrer les aides informatives (messages uniquement)
+      const realAids = calculatedAids.filter((aid: FinancialAid) => !aid.is_informational);
+      const infoMessages = calculatedAids.filter((aid: FinancialAid) => aid.is_informational);
+
       setAids(calculatedAids);
       setCalculated(true);
 
       // S'assurer que les aides ne dépassent pas le prix (exclude informational aids)
-      const calculableAids = calculatedAids.filter((aid: FinancialAid) => !aid.is_informational);
-      const totalAidsRaw = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+      const totalAidsRaw = realAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
       const totalAids = Math.min(totalAidsRaw, activityPrice);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
 
@@ -253,10 +257,25 @@ export const EnhancedFinancialAidCalculator = ({
 
       onAidsCalculated(aidData);
 
-      toast({
-        title: "Aides calculées",
-        description: `${calculatedAids.length} aide(s) disponible(s)`,
-      });
+      // Message adapté selon le résultat
+      if (realAids.length > 0) {
+        toast({
+          title: "Aides calculées",
+          description: `${realAids.length} aide(s) disponible(s) - Total : ${totalAids.toFixed(2)}€`,
+        });
+      } else if (infoMessages.length > 0) {
+        toast({
+          title: "Simulation effectuée",
+          description: "Aides nationales appliquées. Certaines aides locales peuvent ne pas être disponibles pour votre territoire.",
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Simulation effectuée",
+          description: "Aucune aide disponible pour ce profil",
+          variant: "default"
+        });
+      }
     } catch (err) {
       console.error("Error calculating aids:", err);
       toast({
@@ -333,12 +352,12 @@ export const EnhancedFinancialAidCalculator = ({
                 <SelectValue placeholder="Choisir votre tranche" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">0 - 300 €</SelectItem>
-                <SelectItem value="450">301 - 600 €</SelectItem>
-                <SelectItem value="750">601 - 900 €</SelectItem>
-                <SelectItem value="1050">901 - 1200 €</SelectItem>
-                <SelectItem value="1350">1201 - 1500 €</SelectItem>
-                <SelectItem value="1500">1501 € et plus</SelectItem>
+                {QF_BRACKETS.map(bracket => (
+                  <SelectItem key={bracket.id} value={String(bracket.value)}>
+                    {bracket.label}
+                  </SelectItem>
+                ))}
+                <SelectItem value="0">Je ne sais pas</SelectItem>
               </SelectContent>
             </Select>
             {userProfile?.quotient_familial && (

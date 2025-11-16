@@ -73,8 +73,8 @@ const ActivityDetail = () => {
   const tabParam = searchParams.get("tab");
   const visualParam = searchParams.get("visual");
   const [activeTab, setActiveTab] = useState<string>(
-    ["infos", "tarifs", "mobilite"].includes(tabParam || "") 
-      ? tabParam! 
+    ["infos", "tarifs", "mobilite"].includes(tabParam || "")
+      ? tabParam!
       : "infos"
   );
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
