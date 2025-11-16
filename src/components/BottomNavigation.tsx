@@ -1,4 +1,4 @@
-import { Home, Search, Users, Bike, UserCircle } from "lucide-react";
+import { Home, Search, Users, Euro, UserCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -10,14 +10,15 @@ interface NavItem {
   label: string;
   path: string;
   showSplash?: boolean;
+  requiresAuth?: boolean;
 }
 
 const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
-  { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants" },
-  { icon: Bike, label: "Éco-mobilité", path: "/eco-mobilite" },
-  { icon: UserCircle, label: "Mon compte", path: "/mon-compte" },
+  { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants", requiresAuth: true },
+  { icon: Euro, label: "Mes aides", path: "/aides" },
+  { icon: UserCircle, label: "Mon compte", path: "/mon-compte", requiresAuth: true },
 ];
 
 export const BottomNavigation = () => {
@@ -27,6 +28,20 @@ export const BottomNavigation = () => {
   const [showSplash, setShowSplash] = useState(false);
 
   const handleNavigation = (item: NavItem) => {
+    // Si l'onglet nécessite une authentification et que l'utilisateur n'est pas connecté
+    if (item.requiresAuth && !isAuthenticated) {
+      // Rediriger vers la page de connexion avec le message approprié
+      navigate("/login", {
+        state: {
+          from: item.path,
+          message: item.label === "Mes enfants"
+            ? "Connectez-vous pour gérer vos enfants"
+            : "Connectez-vous pour accéder à votre compte"
+        }
+      });
+      return;
+    }
+
     if (item.showSplash) {
       setShowSplash(true);
       setTimeout(() => {

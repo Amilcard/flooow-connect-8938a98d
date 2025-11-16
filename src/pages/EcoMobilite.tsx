@@ -311,7 +311,7 @@ const EcoMobilite = () => {
       <div className="container py-6 space-y-6">
         {/* Intro */}
         <div>
-          <h2 className="text-2xl font-bold mb-2">🌱 Découvre les solutions de mobilité disponibles</h2>
+          <h2 className="text-2xl font-bold mb-2">Comment se rendre au lieu d'activité en faisant du bien à la planète ?</h2>
           <p className="text-muted-foreground">
             Pour aller à ton activité, plusieurs options de transport s'offrent à toi : transports en commun, vélos en libre-service ou covoiturage
           </p>
