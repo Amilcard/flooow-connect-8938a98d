@@ -29,19 +29,19 @@
     --bg-surface: 0 0% 100%;          /* Cartes/blocs blancs #FFFFFF */
     --border-subtle: 0 0% 88%;        /* Lignes discrètes #E0E0E0 */
 
-    /* 1. Couleurs principales Flooow (violet vif) */
-    --primary: 270 65% 47%;           /* Violet vif #6F2DBD - action principale */
-    --primary-soft: 270 65% 93%;      /* Fond de tags violet très pâle */
-    --primary-light: 270 65% 57%;     /* Variante plus claire pour hover */
+    /* 1. Couleurs principales Flooow (orange de marque) */
+    --primary: 25 95% 60%;            /* Orange Flooow #FF8A3D - action principale */
+    --primary-soft: 25 95% 95%;       /* Fond de tags orange très pâle */
+    --primary-light: 25 95% 70%;      /* Variante plus claire pour hover */
     --primary-foreground: 0 0% 100%;  /* Texte blanc sur boutons primaires */
 
     /* 2. Accents secondaires Flooow (multi-couleurs) */
-    --accent: 270 65% 47%;            /* = primary par défaut */
+    --accent: 25 95% 60%;             /* = primary orange par défaut */
     --accent-blue: 203 65% 60%;       /* Bleu clair #53A0DF */
     --accent-green: 122 39% 49%;      /* Vert #4CAF50 */
-    --accent-orange: 45 100% 51%;     /* Orange/Jaune #FFC107 */
-    --accent-soft: 270 65% 93%;       /* Fond très doux */
-    --accent-light: 270 65% 57%;      /* Variante plus claire */
+    --accent-violet: 270 65% 47%;     /* Violet #6F2DBD (ancien primary) */
+    --accent-soft: 25 95% 95%;        /* Fond très doux orange */
+    --accent-light: 25 95% 70%;       /* Variante plus claire */
     --accent-foreground: 0 0% 100%;   /* Texte blanc sur accent */
 
     /* 3. Couleurs custom badges & catégories Flooow */
@@ -66,17 +66,17 @@
     --card-foreground: 0 0% 20%;      /* = text-main gris foncé */
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 20%;
-    --secondary: 262 66% 93%;         /* Utilise primary-soft violet pâle */
+    --secondary: 25 95% 95%;          /* Utilise primary-soft orange pâle */
     --secondary-foreground: 0 0% 20%;
     --muted: 0 0% 96%;                /* Fond muted très clair */
     --muted-foreground: 0 0% 40%;     /* = text-muted gris clair */
 
     /* 6. Badge colors (thématiques d'activités) */
-    --badge-sport: 262 66% 69%;       /* = primary violet */
+    --badge-sport: 270 65% 47%;       /* Violet pour sport */
     --badge-loisir: 164 63% 48%;      /* = success-green */
     --badge-distance: 228 62% 56%;    /* = accent bleu */
-    --badge-age: 262 66% 69%;         /* = lavender violet */
-    --background-warm: 262 66% 93%;   /* = primary-soft */
+    --badge-age: 25 95% 60%;          /* = primary orange */
+    --background-warm: 25 95% 95%;    /* = primary-soft */
 
     /* 7. États & alertes */
     --destructive: 0 84% 60%;
