@@ -1,4 +1,4 @@
-import { Home, Search, Users, Bike, UserCircle } from "lucide-react";
+import { Home, Search, Users, Euro, UserCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -10,14 +10,15 @@ interface NavItem {
   label: string;
   path: string;
   showSplash?: boolean;
+  requiresAuth?: boolean;
 }
 
 const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
-  { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants" },
-  { icon: Bike, label: "Éco-mobilité", path: "/eco-mobilite" },
-  { icon: UserCircle, label: "Mon compte", path: "/mon-compte" },
+  { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants", requiresAuth: true },
+  { icon: Euro, label: "Mes aides", path: "/aides" },
+  { icon: UserCircle, label: "Mon compte", path: "/mon-compte", requiresAuth: true },
 ];
 
 export const BottomNavigation = () => {
@@ -28,7 +29,7 @@ export const BottomNavigation = () => {
 
   const handleNavigation = (item: NavItem) => {
     // Rediriger vers /auth si l'utilisateur n'est pas connecté et tente d'accéder à un espace privé
-    if (!isAuthenticated && (item.path.startsWith("/mon-compte") || item.path === "/mes-enfants")) {
+    if (!isAuthenticated && item.requiresAuth) {
       navigate("/auth");
       return;
     }
@@ -44,14 +45,8 @@ export const BottomNavigation = () => {
     }
   };
 
-  // Filtrer les items selon l'état de connexion
-  const visibleItems = navItems.filter(item => {
-    // "Mes enfants" et "Mon compte" uniquement si connecté
-    if (!isAuthenticated && (item.path.startsWith("/mon-compte") || item.label === "Mes enfants")) {
-      return false;
-    }
-    return true;
-  });
+  // Tous les items sont toujours visibles
+  const visibleItems = navItems;
 
   return (
     <>
