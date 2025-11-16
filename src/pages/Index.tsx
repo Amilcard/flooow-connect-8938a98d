@@ -115,12 +115,11 @@ const Index = () => {
     category: 'sport'
   });
 
-  // Activités innovantes (avec tag "innovant")
-  const { data: innovativeActivities = [], isLoading: loadingInnovative } = useActivities({ 
+  // Activités recommandées
+  const { data: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({ 
     limit: 6,
     territoryId: userTerritory?.id
   });
-
 
   if (errorRecommended) {
     return (
@@ -205,19 +204,7 @@ const Index = () => {
               </section>
             )}
 
-            {/* ========== SECTION 6: ACTIVITÉS INNOVANTES ========== */}
-            {!loadingInnovative && innovativeActivities.length > 0 && (
-              <section className="py-6">
-                <ActivityThematicSection
-                  title="Activités innovantes"
-                  subtitle="Découvrir de nouvelles façons d'apprendre, de créer et de s'amuser."
-                  activities={innovativeActivities}
-                  onActivityClick={handleActivityClick}
-                />
-              </section>
-            )}
-
-            {/* ========== SECTION 7: POUR VOTRE FAMILLE ========== */}
+            {/* ========== SECTION 6: POUR VOTRE FAMILLE ========== */}
             <section className="py-6">
               <FamilySpaceSection />
             </section>

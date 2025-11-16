@@ -2,7 +2,7 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calculator, ExternalLink, Bike, Bus, UsersRound, Car } from "lucide-react";
+import { Calculator, ExternalLink, Bike, Bus, UsersRound, Car, TramFront, MapPin } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -285,6 +285,11 @@ const getModeColor = (mode: string) => {
 };
 
 const EcoMobilite = () => {
+  const { data: userTerritory, isLoading } = useUserTerritory();
+  
+  // Détermine les options de mobilité selon le territoire
+  const territoryMobility = userTerritory?.key ? TERRITORY_MOBILITY[userTerritory.key] : null;
+
   // Solutions de mobilité à Saint-Étienne
   const mobilityAids = [
     {
