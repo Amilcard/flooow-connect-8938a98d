@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { KidQuickAddModal } from "@/components/KidQuickAddModal";
 
 interface GeneralSimulateAidModalProps {
   open: boolean;
@@ -59,7 +60,8 @@ interface Child {
   id: string;
   first_name: string;
   dob: string;
-  user_id: string;
+  user_id?: string;
+  isAnonymous?: boolean;
 }
 
 const TERRITORY_LABELS = {
@@ -69,7 +71,6 @@ const TERRITORY_LABELS = {
   commune: "🏘️ Communal"
 } as const;
 
-// Villes limitées pour la démo (zone pilote uniquement)
 const SAMPLE_CITIES = [
   { code: "42000", name: "Saint-Étienne" },
   { code: "42150", name: "La Ricamarie" }
@@ -83,13 +84,21 @@ const ACTIVITY_CATEGORIES = [
   { value: "innovantes", label: "Activités Innovantes", example: "Robotique, code, innovation..." }
 ];
 
+const QF_BRACKETS = [
+  { value: "0-300", label: "0 - 300 €" },
+  { value: "301-600", label: "301 - 600 €" },
+  { value: "601-900", label: "601 - 900 €" },
+  { value: "901-1200", label: "901 - 1200 €" },
+  { value: "1201-1500", label: "1201 - 1500 €" },
+  { value: "1501+", label: "1501 € et plus" }
+];
+
 export const GeneralSimulateAidModal = ({
   open,
   onOpenChange
 }: GeneralSimulateAidModalProps) => {
   const { user } = useAuth();
 
-  // Fonction pour calculer l'âge à partir de la date de naissance
   const calculateAge = (dob: string): number => {
     const today = new Date();
     const birthDate = new Date(dob);
@@ -101,7 +110,6 @@ export const GeneralSimulateAidModal = ({
     return age;
   };
   
-  // State pour le formulaire
   const [form, setForm] = useState<SimulationForm>({
     quotientFamilial: "",
     selectedChildId: "",
@@ -111,19 +119,19 @@ export const GeneralSimulateAidModal = ({
     durationDays: "1"
   });
   
-  // State pour les résultats
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSimulated, setHasSimulated] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [children, setChildren] = useState<Child[]>([]);
+  const [anonymousChildren, setAnonymousChildren] = useState<Child[]>([]);
+  const [showAddChildModal, setShowAddChildModal] = useState(false);
 
   const loadUserProfile = useCallback(async () => {
     if (!user) return;
 
     try {
-      // Charger le profil utilisateur complet
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -131,433 +139,451 @@ export const GeneralSimulateAidModal = ({
         .single();
 
       if (profileError) throw profileError;
-      setUserProfile(profileData || {});
 
-      // Charger les enfants
+      setUserProfile(profileData);
+      setForm(prev => ({
+        ...prev,
+        quotientFamilial: profileData.quotient_familial?.toString() || "",
+        cityCode: profileData.postal_code || ""
+      }));
+
       const { data: childrenData, error: childrenError } = await supabase
         .from('children')
         .select('*')
         .eq('user_id', user.id);
 
       if (childrenError) throw childrenError;
+
       setChildren(childrenData || []);
-    } catch (err) {
-      console.error('Erreur lors du chargement des données:', err);
+
+      if (childrenData && childrenData.length > 0) {
+        setForm(prev => ({ ...prev, selectedChildId: childrenData[0].id }));
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
     }
   }, [user]);
 
-  // Charger le profil utilisateur au montage du modal
-  useEffect(() => {
-    if (open && user) {
-      loadUserProfile();
+  const loadAnonymousChildren = useCallback(() => {
+    try {
+      const stored = localStorage.getItem('anonymous_children');
+      if (stored) {
+        const anonChildren = JSON.parse(stored);
+        setAnonymousChildren(anonChildren);
+      }
+    } catch (error) {
+      console.error('Error loading anonymous children:', error);
     }
-  }, [open, user, loadUserProfile]);
+  }, []);
 
-  // Pré-remplir le formulaire avec les données du profil utilisateur
   useEffect(() => {
-    if (userProfile) {
-      setForm(prev => ({
-        ...prev,
-        quotientFamilial: userProfile.quotient_familial ? String(userProfile.quotient_familial) : prev.quotientFamilial,
-        cityCode: userProfile.postal_code || userProfile.city_code || prev.cityCode
-      }));
+    if (open) {
+      loadUserProfile();
+      loadAnonymousChildren();
     }
-  }, [userProfile]);
+  }, [open, loadUserProfile, loadAnonymousChildren]);
+
+  const updateForm = (field: keyof SimulationForm, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    setHasSimulated(false);
+    setError(null);
+  };
 
   const handleSimulate = async () => {
-    const qf = parseInt(form.quotientFamilial) || 0;
-    const activityPrice = parseFloat(form.activityPrice) || 0;
-    const durationDays = parseInt(form.durationDays) || 1;
-    
-    let childAge: number;
-    
-    // Si l'utilisateur est connecté et a des enfants
-    if (children.length > 0) {
-      const selectedChild = children.find(child => child.id === form.selectedChildId);
-      if (!selectedChild) {
-        setError("Veuillez sélectionner un enfant");
-        return;
-      }
-      childAge = calculateAge(selectedChild.dob);
-    } else {
-      // Saisie manuelle de l'âge pour utilisateurs non connectés
-      childAge = parseInt(form.selectedChildId);
-      if (isNaN(childAge) || childAge < 6 || childAge > 18) {
-        setError("L'âge doit être entre 6 et 18 ans");
-        return;
-      }
-    }
-
-    if (childAge < 6 || childAge > 18) {
-      setError("L'enfant sélectionné doit être âgé de 6 à 18 ans pour bénéficier d'aides");
-      return;
-    }
-
-    if (activityPrice <= 0) {
-      setError("Le prix de l'activité doit être supérieur à 0€");
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
+    setHasSimulated(false);
 
     try {
-      const { data, error: rpcError } = await supabase.rpc('calculate_eligible_aids', {
+      if (!form.quotientFamilial) {
+        throw new Error("Veuillez sélectionner votre tranche de quotient familial");
+      }
+
+      if (!form.activityCategory) {
+        throw new Error("Veuillez sélectionner une catégorie d'activité");
+      }
+
+      let childAge: number | undefined;
+      
+      const selectedChild = children.find(c => c.id === form.selectedChildId);
+      if (selectedChild) {
+        childAge = calculateAge(selectedChild.dob);
+      } else {
+        const selectedAnonymous = anonymousChildren.find(c => c.id === form.selectedChildId);
+        if (selectedAnonymous) {
+          childAge = calculateAge(selectedAnonymous.dob);
+        }
+      }
+
+      if (!childAge) {
+        throw new Error("Veuillez sélectionner un enfant ou ajouter un enfant");
+      }
+
+      let qfValue = 0;
+      if (form.quotientFamilial.includes('-')) {
+        const [min, max] = form.quotientFamilial.split('-').map(Number);
+        qfValue = (min + max) / 2;
+      } else if (form.quotientFamilial.includes('+')) {
+        qfValue = parseInt(form.quotientFamilial.replace('+', ''));
+      } else {
+        qfValue = parseInt(form.quotientFamilial);
+      }
+
+      const { data, error } = await supabase.rpc('calculate_eligible_aids', {
+        p_qf: qfValue,
         p_age: childAge,
-        p_qf: qf,
-        p_city_code: form.cityCode || "42000",
-        p_activity_price: activityPrice,
-        p_duration_days: durationDays,
-        p_categories: [form.activityCategory]
+        p_city_code: form.cityCode || null,
+        p_categories: [form.activityCategory],
+        p_activity_price: parseFloat(form.activityPrice),
+        p_duration_days: parseInt(form.durationDays) || 1
       });
 
-      if (rpcError) throw rpcError;
-      
-      setAids(data || []);
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        setAids([]);
+        setError("Aucune aide disponible pour ces critères");
+      } else {
+        setAids(data);
+      }
+
       setHasSimulated(true);
-    } catch (err) {
-      console.error('Erreur lors de la simulation:', err);
-      setError(err instanceof Error ? err.message : "Erreur lors du calcul des aides");
+    } catch (err: any) {
+      console.error('Erreur simulation:', err);
+      setError(err.message || "Erreur lors de la simulation");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const resetSimulation = () => {
-    setHasSimulated(false);
+  const handleReset = () => {
+    setForm({
+      quotientFamilial: userProfile?.quotient_familial?.toString() || "",
+      selectedChildId: children.length > 0 ? children[0].id : "",
+      cityCode: userProfile?.postal_code || "",
+      activityPrice: "150",
+      activityCategory: "sport",
+      durationDays: "1"
+    });
     setAids([]);
     setError(null);
+    setHasSimulated(false);
   };
 
-  const totalAid = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
-  const activityPrice = parseFloat(form.activityPrice) || 0;
-  const finalPrice = Math.max(0, activityPrice - totalAid);
-  const savingsPercent = activityPrice > 0 ? Math.round((totalAid / activityPrice) * 100) : 0;
+  const handleClose = () => {
+    handleReset();
+    onOpenChange(false);
+  };
+
+  const totalAids = aids.reduce((sum, aid) => sum + aid.amount, 0);
+  const priceNumeric = parseFloat(form.activityPrice) || 0;
+  const remainingCost = Math.max(0, priceNumeric - totalAids);
+
+  const allChildren = [...children, ...anonymousChildren];
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Euro className="w-5 h-5 text-primary" />
-            Simulateur général d'aides financières
-          </DialogTitle>
-          <DialogDescription>
-            Testez différents scénarios pour découvrir vos aides potentielles
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-primary">
+              Simulateur d'aides financières
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Notre simulateur vous aide à identifier automatiquement les aides auxquelles vous avez droit.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Alerte si pas connecté ou pas d'enfants */}
-          {!user && (
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                Vous pouvez utiliser ce simulateur sans créer de compte. Saisissez simplement l'âge de votre enfant et vos informations pour estimer vos aides.
-              </AlertDescription>
-            </Alert>
-          )}
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Vous pouvez estimer vos aides sans créer de compte. L'inscription vous sera proposée ensuite si vous le souhaitez.
+            </AlertDescription>
+          </Alert>
 
-          {/* Formulaire de simulation */}
-          {!hasSimulated ? (
-            <div className="space-y-4">
-              {/* Type d'activité */}
-              <div className="space-y-2">
-                <Label htmlFor="category" className="flex items-center gap-1">
-                  <Activity className="w-4 h-4" />
-                  Type d'activité
-                </Label>
-                <Select value={form.activityCategory} onValueChange={(value) => setForm(prev => ({ ...prev, activityCategory: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ACTIVITY_CATEGORIES.map(category => (
-                      <SelectItem key={category.value} value={category.value}>
-                        <div>
-                          <div className="font-medium">{category.label}</div>
-                          <div className="text-xs text-muted-foreground">{category.example}</div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Prix de l'activité */}
-              <div className="space-y-2">
-                <Label htmlFor="price" className="flex items-center gap-1">
-                  <Euro className="w-4 h-4" />
-                  Prix de l'activité (€)
-                </Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="1"
-                  placeholder="Ex: 150"
-                  value={form.activityPrice}
-                  onChange={(e) => setForm(prev => ({ ...prev, activityPrice: e.target.value }))}
-                />
-              </div>
-
-              {/* Durée */}
-              <div className="space-y-2">
-                <Label htmlFor="duration" className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  Durée (jours)
-                </Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  min="1"
-                  placeholder="1"
-                  value={form.durationDays}
-                  onChange={(e) => setForm(prev => ({ ...prev, durationDays: e.target.value }))}
-                />
-              </div>
-
-              {/* Sélection d'enfant OU saisie d'âge */}
-              {children.length > 0 ? (
-                <div className="space-y-2">
-                  <Label htmlFor="child" className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    Enfant concerné
-                  </Label>
-                  <Select value={form.selectedChildId} onValueChange={(value) => setForm(prev => ({ ...prev, selectedChildId: value }))}>
+          <div className="space-y-6">
+            {/* Sélection enfant */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Enfant concerné
+              </Label>
+              
+              {allChildren.length > 0 ? (
+                <>
+                  <Select 
+                    value={form.selectedChildId} 
+                    onValueChange={(value) => updateForm('selectedChildId', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionnez un enfant" />
                     </SelectTrigger>
                     <SelectContent>
-                      {children.map(child => {
-                        const age = calculateAge(child.dob);
-                        return (
-                          <SelectItem key={child.id} value={child.id}>
-                            {child.first_name} ({age} ans)
-                          </SelectItem>
-                        );
-                      })}
+                      {allChildren.map((child) => (
+                        <SelectItem key={child.id} value={child.id}>
+                          {child.first_name} ({calculateAge(child.dob)} ans)
+                          {child.isAnonymous && " - Non enregistré"}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides
-                  </p>
-                </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAddChildModal(true)}
+                    className="w-full"
+                  >
+                    Ajouter un autre enfant
+                  </Button>
+                </>
               ) : (
-                <div className="space-y-2">
-                  <Label htmlFor="child-age" className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    Âge de l'enfant
-                  </Label>
-                  <Input
-                    id="child-age"
-                    type="number"
-                    min="6"
-                    max="18"
-                    placeholder="Ex: 10"
-                    value={form.selectedChildId}
-                    onChange={(e) => setForm(prev => ({ ...prev, selectedChildId: e.target.value }))}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides
-                  </p>
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAddChildModal(true)}
+                  className="w-full"
+                >
+                  Ajouter un enfant
+                </Button>
               )}
+            </div>
 
-              {/* Quotient Familial */}
-              <div className="space-y-2">
-                <Label htmlFor="qf" className="flex items-center gap-1">
-                  <Euro className="w-4 h-4" />
-                  Quotient Familial CAF
-                </Label>
-                <Select value={form.quotientFamilial} onValueChange={(value) => setForm(prev => ({ ...prev, quotientFamilial: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choisir votre tranche" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="300">0 - 300 €</SelectItem>
-                    <SelectItem value="450">301 - 600 €</SelectItem>
-                    <SelectItem value="750">601 - 900 €</SelectItem>
-                    <SelectItem value="1050">901 - 1200 €</SelectItem>
-                    <SelectItem value="1350">1201 - 1500 €</SelectItem>
-                    <SelectItem value="1500">1501 € et plus</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {userProfile?.quotient_familial 
-                    ? "✓ Pré-rempli depuis votre profil" 
-                    : "Trouvez votre QF sur votre attestation CAF"
-                  }
-                </p>
-              </div>
+            {/* Quotient familial */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <Euro className="h-4 w-4" />
+                Votre tranche de quotient familial (QF)
+              </Label>
+              <Select 
+                value={form.quotientFamilial} 
+                onValueChange={(value) => updateForm('quotientFamilial', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisissez votre tranche de QF" />
+                </SelectTrigger>
+                <SelectContent>
+                  {QF_BRACKETS.map((bracket) => (
+                    <SelectItem key={bracket.value} value={bracket.value}>
+                      {bracket.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Choisissez la tranche qui correspond à votre situation.
+              </p>
+            </div>
 
-              {/* Ville (optionnel) */}
-              <div className="space-y-2">
-                <Label htmlFor="city" className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  Ville de résidence (optionnel)
-                </Label>
-                <Select value={form.cityCode} onValueChange={(value) => setForm(prev => ({ ...prev, cityCode: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez votre ville" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SAMPLE_CITIES.map(city => (
-                      <SelectItem key={city.code} value={city.code}>
-                        {city.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {userProfile?.postal_code || userProfile?.city_code
-                    ? "✓ Pré-rempli depuis votre profil" 
-                    : "Permet de calculer les aides locales en plus des aides nationales"
-                  }
-                </p>
-              </div>
+            {/* Ville (optionnel) */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Ville de résidence (optionnel)
+              </Label>
+              <Select 
+                value={form.cityCode} 
+                onValueChange={(value) => updateForm('cityCode', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez votre ville" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SAMPLE_CITIES.map((city) => (
+                    <SelectItem key={city.code} value={city.code}>
+                      {city.name} ({city.code})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              {/* Bouton simulation */}
-              <Button 
-                onClick={handleSimulate} 
-                className="w-full"
-                disabled={!form.selectedChildId || !form.quotientFamilial || isLoading}
+            {/* Catégorie d'activité */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                Catégorie d'activité
+              </Label>
+              <Select 
+                value={form.activityCategory} 
+                onValueChange={(value) => updateForm('activityCategory', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACTIVITY_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      <div>
+                        <div className="font-medium">{cat.label}</div>
+                        <div className="text-xs text-muted-foreground">{cat.example}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Prix de l'activité */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <Euro className="h-4 w-4" />
+                Prix de l'activité (€)
+              </Label>
+              <Input
+                type="number"
+                min="0"
+                step="10"
+                value={form.activityPrice}
+                onChange={(e) => updateForm('activityPrice', e.target.value)}
+                placeholder="150"
+              />
+            </div>
+
+            {/* Boutons d'action */}
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={handleSimulate}
+                disabled={isLoading || !form.quotientFamilial || allChildren.length === 0}
+                className="flex-1"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Calcul en cours...
                   </>
                 ) : (
-                  "Calculer mes aides"
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Calculer mes aides
+                  </>
                 )}
               </Button>
+              {hasSimulated && (
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Réinitialiser
+                </Button>
+              )}
             </div>
-          ) : (
-            /* Résultats de la simulation */
-            <div className="space-y-4">
-              {/* Récapitulatif de la simulation */}
-              <Card className="bg-muted/50">
-                <CardContent className="p-4 space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Type d'activité</span>
-                    <Badge variant="outline">{ACTIVITY_CATEGORIES.find(cat => cat.value === form.activityCategory)?.label}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Prix</span>
-                    <Badge variant="outline">{form.activityPrice}€</Badge>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Durée</span>
-                    <Badge variant="outline">{form.durationDays} jour{parseInt(form.durationDays) > 1 ? 's' : ''}</Badge>
-                  </div>
-                </CardContent>
-              </Card>
 
-              {aids.length === 0 ? (
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Aucune aide financière n'est disponible pour ces critères.
-                    Essayez de modifier le type d'activité, le prix ou vérifiez votre quotient familial.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <>
-                  {/* Liste des aides */}
-                  <div className="space-y-3">
-                    <h3 className="font-medium">Aides financières éligibles :</h3>
-                    {aids.map((aid, index) => (
-                      <Card key={index} className="bg-green-50 border-green-200">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <CheckCircle2 className="w-5 h-5 text-green-600" />
-                              <div>
-                                <div className="font-medium">{aid.aid_name}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {TERRITORY_LABELS[aid.territory_level as keyof typeof TERRITORY_LABELS]}
+            {/* Résultats */}
+            {hasSimulated && !error && (
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="pt-6 space-y-4">
+                  {aids.length === 0 ? (
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Aucune aide disponible pour ces critères.
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <>
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-lg flex items-center gap-2">
+                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          Aides disponibles ({aids.length})
+                        </h3>
+                        
+                        {aids.map((aid, index) => (
+                          <Card key={index}>
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex-1 space-y-1">
+                                  <div className="font-medium">{aid.aid_name}</div>
+                                  <Badge variant="secondary" className="text-xs">
+                                    {TERRITORY_LABELS[aid.territory_level as keyof typeof TERRITORY_LABELS] || aid.territory_level}
+                                  </Badge>
+                                  {aid.official_link && (
+                                    <a
+                                      href={aid.official_link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-primary hover:underline block"
+                                    >
+                                      En savoir plus →
+                                    </a>
+                                  )}
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-xl font-bold text-green-600">
+                                    {aid.amount.toFixed(2)} €
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <Badge className="bg-green-100 text-green-700 border-green-300">
-                              -{aid.amount.toFixed(2)}€
-                            </Badge>
-                          </div>
-                          {aid.official_link && (
-                            <div className="mt-2">
-                              <a 
-                                href={aid.official_link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline"
-                              >
-                                📄 Voir les détails officiels
-                              </a>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
 
-                  {/* Récapitulatif financier */}
-                  <Card className="bg-primary/5 border-primary/20">
-                    <CardContent className="p-4 space-y-3">
-                      <div className="flex justify-between items-center text-sm">
-                        <span>Prix initial</span>
-                        <span>{activityPrice.toFixed(2)}€</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm text-green-600">
-                        <span>Total des aides</span>
-                        <span className="font-medium">-{totalAid.toFixed(2)}€</span>
-                      </div>
-                      <div className="border-t pt-3 flex justify-between items-center text-lg font-bold">
-                        <span>Reste à payer</span>
-                        <span className="text-primary">{finalPrice.toFixed(2)}€</span>
-                      </div>
-                      {savingsPercent > 0 && (
-                        <div className="text-center">
-                          <Badge className="bg-green-100 text-green-700">
-                            🎉 Économie de {savingsPercent}% !
-                          </Badge>
+                      <div className="border-t pt-4 space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Prix de l'activité</span>
+                          <span className="font-medium">{priceNumeric.toFixed(2)} €</span>
                         </div>
+                        <div className="flex justify-between text-sm text-green-600">
+                          <span>Total des aides</span>
+                          <span className="font-semibold">- {totalAids.toFixed(2)} €</span>
+                        </div>
+                        <div className="flex justify-between text-lg font-bold border-t pt-2">
+                          <span>Reste à charge</span>
+                          <span className={remainingCost === 0 ? "text-green-600" : ""}>
+                            {remainingCost.toFixed(2)} €
+                          </span>
+                        </div>
+                      </div>
+
+                      {!user && (
+                        <Alert>
+                          <Info className="h-4 w-4" />
+                          <AlertDescription>
+                            <Button
+                              variant="link"
+                              className="p-0 h-auto font-normal"
+                              onClick={() => {
+                                handleClose();
+                                window.location.href = '/signup';
+                              }}
+                            >
+                              Créer mon compte pour enregistrer ces informations →
+                            </Button>
+                          </AlertDescription>
+                        </Alert>
                       )}
-                    </CardContent>
-                  </Card>
-                </>
-              )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
-              {/* Bouton nouvelle simulation */}
-              <Button 
-                onClick={resetSimulation}
-                variant="outline"
-                className="w-full"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Nouvelle simulation
-              </Button>
-            </div>
-          )}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
-          {/* Affichage des erreurs */}
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {/* Note sur l'authentification */}
-          {!user && (
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                Connectez-vous pour accéder à une simulation personnalisée avec vos données de profil.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+      <KidQuickAddModal
+        open={showAddChildModal}
+        onClose={() => setShowAddChildModal(false)}
+        onChildAdded={(childId) => {
+          if (childId) {
+            if (user) {
+              loadUserProfile();
+            }
+            loadAnonymousChildren();
+            setForm(prev => ({ ...prev, selectedChildId: childId }));
+          }
+        }}
+        allowAnonymous={true}
+      />
+    </>
   );
 };
