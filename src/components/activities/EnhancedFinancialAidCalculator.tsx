@@ -94,12 +94,18 @@ export const EnhancedFinancialAidCalculator = ({
       if (userProfile.quotient_familial && !quotientFamilial) {
         // Mapper le QF vers les tranches
         const qf = userProfile.quotient_familial;
-        if (qf < 450) {
+        if (qf <= 300) {
+          setQuotientFamilial("300");
+        } else if (qf <= 600) {
           setQuotientFamilial("450");
-        } else if (qf >= 450 && qf <= 700) {
-          setQuotientFamilial("575");
-        } else if (qf > 700) {
-          setQuotientFamilial("800");
+        } else if (qf <= 900) {
+          setQuotientFamilial("750");
+        } else if (qf <= 1200) {
+          setQuotientFamilial("1050");
+        } else if (qf <= 1500) {
+          setQuotientFamilial("1350");
+        } else {
+          setQuotientFamilial("1500");
         }
       }
       if (userProfile.postal_code && !cityCode) {
@@ -327,10 +333,12 @@ export const EnhancedFinancialAidCalculator = ({
                 <SelectValue placeholder="Choisir votre tranche" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="450">Moins de 450€</SelectItem>
-                <SelectItem value="575">Entre 450€ et 700€</SelectItem>
-                <SelectItem value="800">Plus de 700€</SelectItem>
-                <SelectItem value="0">Je ne sais pas</SelectItem>
+                <SelectItem value="300">0 - 300 €</SelectItem>
+                <SelectItem value="450">301 - 600 €</SelectItem>
+                <SelectItem value="750">601 - 900 €</SelectItem>
+                <SelectItem value="1050">901 - 1200 €</SelectItem>
+                <SelectItem value="1350">1201 - 1500 €</SelectItem>
+                <SelectItem value="1500">1501 € et plus</SelectItem>
               </SelectContent>
             </Select>
             {userProfile?.quotient_familial && (
@@ -342,7 +350,7 @@ export const EnhancedFinancialAidCalculator = ({
 
           <div className="space-y-2">
             <Label htmlFor="city">
-              Code postal <span className="text-destructive">*</span>
+              Code postal
             </Label>
             <Input
               id="city"
