@@ -86,8 +86,40 @@ const MonCompte = () => {
     }
   };
 
-  // Cards principales (fréquemment utilisées)
-  const primaryMenuItems = [
+  // SECTION A : Mes espaces principaux (9 items prioritaires)
+  const mainSpacesItems = [
+    {
+      icon: <User size={20} />,
+      title: "Mes informations personnelles",
+      subtitle: "Gérer mon profil et mes coordonnées",
+      badge: null,
+      onClick: () => navigate("/mon-compte/informations"),
+      tourId: "account-profile",
+    },
+    {
+      icon: <Shield size={20} />,
+      title: "Profil d'éligibilité",
+      subtitle: "Vérifier mes droits et aides disponibles",
+      badge: null,
+      onClick: () => navigate("/mon-compte/eligibilite"),
+      tourId: "account-eligibility",
+    },
+    {
+      icon: <Edit size={20} />,
+      title: "Mes demandes d'inscription",
+      subtitle: "Suivre l'état de mes demandes",
+      badge: null,
+      onClick: () => navigate("/mon-compte/validations"),
+      tourId: "account-registrations",
+    },
+    {
+      icon: <Car size={20} />,
+      title: "Mon Covoiturage",
+      subtitle: "Demander ou proposer un covoiturage",
+      badge: null,
+      onClick: () => navigate("/mon-compte/covoiturage"),
+      tourId: "account-carpooling",
+    },
     {
       icon: <Users size={20} />,
       title: "Mes enfants",
@@ -105,12 +137,12 @@ const MonCompte = () => {
       tourId: "account-reservations",
     },
     {
-      icon: <Heart size={20} />,
-      title: "Mes événements favoris",
-      subtitle: "Événements sauvegardés",
+      icon: <FileText size={20} />,
+      title: "Mes justificatifs",
+      subtitle: "Télécharger mes documents",
       badge: null,
-      onClick: () => navigate("/mes-evenements-favoris"),
-      tourId: "account-favorites",
+      onClick: () => navigate("/mon-compte/justificatifs"),
+      tourId: "account-documents",
     },
     {
       icon: <Bell size={20} />,
@@ -121,40 +153,17 @@ const MonCompte = () => {
       tourId: "account-notifications",
     },
     {
-      icon: <Car size={20} />,
-      title: "Mon Covoiturage",
-      subtitle: "Demander ou proposer un covoiturage",
+      icon: <Heart size={20} />,
+      title: "Mes événements favoris",
+      subtitle: "Événements sauvegardés",
       badge: null,
-      onClick: () => navigate("/mon-compte/covoiturage"),
-      tourId: "account-carpooling",
-    },
-    {
-      icon: <FileText size={20} />,
-      title: "Mes justificatifs",
-      subtitle: "Télécharger mes documents",
-      badge: null,
-      onClick: () => navigate("/mon-compte/justificatifs"),
-      tourId: "account-documents",
+      onClick: () => navigate("/mes-evenements-favoris"),
+      tourId: "account-favorites",
     },
   ];
 
-  // Menu secondaire (options moins fréquentes)
-  const secondaryMenuItems = [
-    {
-      icon: <User size={18} className="text-blue-600" />,
-      label: "Mes informations personnelles",
-      onClick: () => navigate("/mon-compte/informations"),
-    },
-    {
-      icon: <Shield size={18} className="text-green-600" />,
-      label: "Profil d'éligibilité",
-      onClick: () => navigate("/mon-compte/eligibilite"),
-    },
-    {
-      icon: <Edit size={18} className="text-purple-600" />,
-      label: "Demandes d'inscription",
-      onClick: () => navigate("/mon-compte/validations"),
-    },
+  // SECTION B : Autres infos (items secondaires)
+  const otherInfoItems = [
     {
       icon: <Calendar size={18} className="text-orange-600" />,
       label: "Mes sessions",
@@ -174,10 +183,9 @@ const MonCompte = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Nouveau PageHeader blanc standard */}
+      {/* PageHeader blanc standard */}
       <PageHeader
         title="Mon compte"
-        subtitle={`Bonjour ${user?.firstName || 'Parent'}`}
         showBackButton={false}
         tourId="account-page-header"
         rightContent={
@@ -208,61 +216,96 @@ const MonCompte = () => {
         }
       />
 
-      {/* Menu principal - Cards */}
-      <div className="container px-4 pt-6 pb-6 space-y-3" data-tour-id="account-main-list">
-        {primaryMenuItems.map((item, index) => (
-          <Card
-            key={index}
-            className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
-            onClick={item.onClick}
-            data-tour-id={item.tourId}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl text-primary">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.subtitle}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {item.badge && (
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
-                      {item.badge}
-                    </Badge>
-                  )}
-                  <ChevronRight className="text-muted-foreground" size={20} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Bloc Bonjour [Prénom] avec avatar */}
+      <div className="container px-4 pt-4 pb-2">
+        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-primary/10">
+          <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+            <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-semibold text-lg">
+              {user?.firstName?.[0]?.toUpperCase() || 'P'}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">
+              Bonjour, {user?.firstName || 'Parent'} !
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Gérez votre compte et vos démarches
+            </p>
+          </div>
+        </div>
+      </div>
 
-        {/* Menu secondaire - Autres options */}
-        <div className="mt-10 mb-6">
-          <div className="max-w-[600px] mx-auto bg-muted/30 rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-muted-foreground mb-3 px-2">
-              Autres options
-            </h3>
-            <div className="space-y-1">
-              {secondaryMenuItems.map((item, index) => (
-                <button
-                  key={index}
-                  onClick={item.onClick}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-all duration-200"
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </button>
-              ))}
+      {/* SECTION A : Mes espaces principaux */}
+      <div className="container px-4 pt-6 pb-4">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-foreground">Mes espaces principaux</h3>
+          <p className="text-sm text-muted-foreground">Accès rapide à vos informations et démarches</p>
+        </div>
+
+        <div className="space-y-3" data-tour-id="account-main-list">
+          {mainSpacesItems.map((item, index) => (
+            <Card
+              key={index}
+              className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
+              onClick={item.onClick}
+              data-tour-id={item.tourId}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl text-primary">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground">{item.subtitle}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {item.badge && (
+                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                        {item.badge}
+                      </Badge>
+                    )}
+                    <ChevronRight className="text-muted-foreground" size={20} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* SECTION B : Autres infos */}
+      <div className="container px-4 pb-6">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-foreground">Autres infos</h3>
+        </div>
+
+        <div className="bg-muted/30 rounded-xl p-4 space-y-2">
+          {otherInfoItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={item.onClick}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-all duration-200"
+            >
+              {item.icon}
+              <span>{item.label}</span>
+              <ChevronRight className="ml-auto" size={16} />
+            </button>
+          ))}
+
+          {/* Version de l'application */}
+          <div className="pt-2 mt-2 border-t border-border/50">
+            <div className="px-3 py-2 text-xs text-muted-foreground text-center">
+              Version 1.0.0 InKlusif
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bouton déconnexion discret */}
+      {/* Bouton déconnexion discret */}
+      <div className="container px-4 pb-8">
         <button
           onClick={handleLogout}
           className="flex items-center justify-center gap-2 w-full py-4 text-sm text-muted-foreground hover:text-destructive transition-colors duration-200 underline"
@@ -270,10 +313,6 @@ const MonCompte = () => {
           <LogOut size={16} />
           <span>Se déconnecter</span>
         </button>
-
-        <div className="text-center text-sm text-muted-foreground pt-2">
-          Version 1.0.0 • InKlusif
-        </div>
       </div>
     </PageLayout>
   );
