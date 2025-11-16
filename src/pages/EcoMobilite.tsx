@@ -2,51 +2,35 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calculator, ExternalLink, Bike, Bus, UsersRound, TramFront } from "lucide-react";
+import { Calculator, ExternalLink, Bike, Bus, UsersRound, Car } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 
 const EcoMobilite = () => {
-  // Données des aides et solutions d'éco-mobilité
+  // Solutions de mobilité à Saint-Étienne
   const mobilityAids = [
     {
-      id: "TARIFICATION_SOLIDAIRE_TC",
-      title: "Tarification solidaire (transports)",
-      badges: ["Abonnement", "Selon revenus"],
-      description: "Réductions ou gratuité sur les abonnements bus/tram selon le QF ou le statut (étudiant, invalidité, etc.).",
-      footer: "Réseaux de transport locaux",
+      id: "STAS_TC",
+      title: "STAS – Bus & Tram",
+      badges: [],
+      description: "Réseau de transports en commun de Saint-Étienne Métropole pour rejoindre ton activité en bus ou en tram.",
+      footer: "Tarification solidaire possible selon ta situation.",
       icon: Bus
     },
     {
-      id: "FREEVELOV",
-      title: "FreeVélo'v (exemple Lyon)",
-      badges: ["Vélo longue durée", "14–25 ans"],
-      description: "Prêt de vélo 100 % gratuit pendant 3 à 12 mois pour les jeunes qui habitent ou étudient sur le territoire.",
-      footer: "Métropole (ex : Lyon)",
+      id: "VELIVERT",
+      title: "VéliVert – Vélos en libre-service",
+      badges: [],
+      description: "Vélos en libre-service pour les trajets courts en ville, pratique pour rejoindre ton club ou ton activité.",
+      footer: "Consulte les stations proches de chez toi.",
       icon: Bike
     },
     {
-      id: "VAE_SOLIDAIRE",
-      title: "Location VAE solidaire",
-      badges: ["Vélo électrique", "+16 ans"],
-      description: "Location de vélo électrique à tarif réduit pour les publics boursiers ou à faible revenu.",
-      footer: "Métropoles / Régions",
-      icon: Bike
-    },
-    {
-      id: "COVOIT_QUOTIDIEN",
-      title: "Covoiturage quotidien",
-      badges: ["Domicile–activité"],
-      description: "Covoiturage subventionné : trajets gratuits ou à petit prix dans les zones partenaires.",
-      footer: "Collectivités & plateformes",
-      icon: UsersRound
-    },
-    {
-      id: "COVOIT_LIGNES",
-      title: "Lignes de covoiturage",
-      badges: ["Sans réservation", "Trajets garantis"],
-      description: "Lignes organisées de covoiturage avec trajets passagers offerts et départs garantis.",
-      footer: "Autorités organisatrices de mobilité",
-      icon: TramFront
+      id: "COVOIT_STE",
+      title: "Covoiturage local",
+      badges: [],
+      description: "Partage de trajets entre familles ou habitants pour aller aux mêmes activités.",
+      footer: "À organiser avec ton club, ta structure ou ton entourage.",
+      icon: Car
     }
   ];
 
@@ -64,10 +48,10 @@ const EcoMobilite = () => {
           {/* Header */}
           <div className="mb-8 space-y-2">
             <h1 className="text-3xl md:text-4xl font-bold text-text-main">
-              Comment venir à l'activité sans voiture ?
+              Comment se rendre sur mon lieu d'activité ?
             </h1>
             <p className="text-lg text-text-muted">
-              Découvrez les solutions de mobilité écologique disponibles pour vos déplacements.
+              Découvre les solutions de mobilité disponibles pour aller à ton activité.
             </p>
           </div>
 
@@ -98,10 +82,10 @@ const EcoMobilite = () => {
             </CardContent>
           </Card>
 
-          {/* Section Aides */}
+          {/* Section Solutions Saint-Étienne */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-text-main mb-6">
-              Aides et solutions d'éco-mobilité
+              Solutions de mobilité à Saint-Étienne
             </h2>
             
             <div className="grid gap-4 md:grid-cols-2">
