@@ -8,22 +8,22 @@ export const MobiliteCard = () => {
 
   return (
     <Card 
-      className="group cursor-pointer hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-2xl p-6 md:p-8"
+      className="group cursor-pointer hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-6 md:p-8"
       onClick={() => navigate('/eco-mobilite')}
     >
       <div className="flex items-start gap-4">
-        <div className="p-3 rounded-xl bg-green-600 text-white shadow-md">
+        <div className="p-3 rounded-xl bg-accent-blue text-white shadow-md">
           <Train className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h2 className="text-xl md:text-2xl font-bold text-text-main mb-2 group-hover:text-green-600 transition-colors">
+          <h2 className="text-xl md:text-2xl font-bold text-text-main mb-2 group-hover:text-accent-blue transition-colors">
             Mes trajets et mobilités
           </h2>
           <p className="text-sm md:text-base text-text-muted mb-4 leading-relaxed">
             Préparez vos déplacements vers les activités avec des solutions éco-responsables.
           </p>
           <Button 
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 h-11 rounded-xl shadow-md hover:shadow-lg transition-all"
+            className="bg-accent-blue hover:bg-accent-blue/90 text-white font-semibold px-6 h-11 rounded-xl shadow-md hover:shadow-lg transition-all"
           >
             Voir les solutions de mobilité
           </Button>

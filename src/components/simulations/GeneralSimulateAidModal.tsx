@@ -165,31 +165,32 @@ export const GeneralSimulateAidModal = ({
   }, [userProfile]);
 
   const handleSimulate = async () => {
-    if (!user) {
-      setError("Vous devez être connecté pour utiliser la simulation");
-      return;
-    }
-
     const qf = parseInt(form.quotientFamilial) || 0;
-    const selectedChild = children.find(child => child.id === form.selectedChildId);
     const activityPrice = parseFloat(form.activityPrice) || 0;
     const durationDays = parseInt(form.durationDays) || 1;
     
-    if (!selectedChild) {
-      setError("Veuillez sélectionner un enfant");
-      return;
+    let childAge: number;
+    
+    // Si l'utilisateur est connecté et a des enfants
+    if (children.length > 0) {
+      const selectedChild = children.find(child => child.id === form.selectedChildId);
+      if (!selectedChild) {
+        setError("Veuillez sélectionner un enfant");
+        return;
+      }
+      childAge = calculateAge(selectedChild.dob);
+    } else {
+      // Saisie manuelle de l'âge pour utilisateurs non connectés
+      childAge = parseInt(form.selectedChildId);
+      if (isNaN(childAge) || childAge < 6 || childAge > 18) {
+        setError("L'âge doit être entre 6 et 18 ans");
+        return;
+      }
     }
 
-    const age = calculateAge(selectedChild.dob);
-
-    if (age < 6 || age > 18) {
+    if (childAge < 6 || childAge > 18) {
       setError("L'enfant sélectionné doit être âgé de 6 à 18 ans pour bénéficier d'aides");
       return;
-    }
-
-    if (!form.cityCode) {
-      setError("Veuillez renseigner votre ville de résidence dans votre profil");
-      return; 
     }
 
     if (activityPrice <= 0) {
@@ -202,9 +203,9 @@ export const GeneralSimulateAidModal = ({
 
     try {
       const { data, error: rpcError } = await supabase.rpc('calculate_eligible_aids', {
-        p_age: age,
+        p_age: childAge,
         p_qf: qf,
-        p_city_code: form.cityCode,
+        p_city_code: form.cityCode || "42000",
         p_activity_price: activityPrice,
         p_duration_days: durationDays,
         p_categories: [form.activityCategory]
@@ -247,12 +248,12 @@ export const GeneralSimulateAidModal = ({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Alerte si pas d'enfants */}
-          {children.length === 0 && (
+          {/* Alerte si pas connecté ou pas d'enfants */}
+          {!user && (
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
-                Vous devez d'abord ajouter un enfant dans votre profil pour utiliser la simulation d'aides.
+                Vous pouvez utiliser ce simulateur sans créer de compte. Saisissez simplement l'âge de votre enfant et vos informations pour estimer vos aides.
               </AlertDescription>
             </Alert>
           )}
@@ -315,34 +316,52 @@ export const GeneralSimulateAidModal = ({
                 />
               </div>
 
-              {/* Sélection d'enfant */}
-              <div className="space-y-2">
-                <Label htmlFor="child" className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  Enfant concerné
-                </Label>
-                <Select value={form.selectedChildId} onValueChange={(value) => setForm(prev => ({ ...prev, selectedChildId: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un enfant" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {children.map(child => {
-                      const age = calculateAge(child.dob);
-                      return (
-                        <SelectItem key={child.id} value={child.id}>
-                          {child.first_name} ({age} ans)
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {children.length === 0 
-                    ? "Aucun enfant enregistré. Ajoutez un enfant dans votre profil."
-                    : "Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides"
-                  }
-                </p>
-              </div>
+              {/* Sélection d'enfant OU saisie d'âge */}
+              {children.length > 0 ? (
+                <div className="space-y-2">
+                  <Label htmlFor="child" className="flex items-center gap-1">
+                    <Users className="w-4 h-4" />
+                    Enfant concerné
+                  </Label>
+                  <Select value={form.selectedChildId} onValueChange={(value) => setForm(prev => ({ ...prev, selectedChildId: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un enfant" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {children.map(child => {
+                        const age = calculateAge(child.dob);
+                        return (
+                          <SelectItem key={child.id} value={child.id}>
+                            {child.first_name} ({age} ans)
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="child-age" className="flex items-center gap-1">
+                    <Users className="w-4 h-4" />
+                    Âge de l'enfant
+                  </Label>
+                  <Input
+                    id="child-age"
+                    type="number"
+                    min="6"
+                    max="18"
+                    placeholder="Ex: 10"
+                    value={form.selectedChildId}
+                    onChange={(e) => setForm(prev => ({ ...prev, selectedChildId: e.target.value }))}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides
+                  </p>
+                </div>
+              )}
 
               {/* Quotient Familial */}
               <div className="space-y-2">
@@ -350,13 +369,19 @@ export const GeneralSimulateAidModal = ({
                   <Euro className="w-4 h-4" />
                   Quotient Familial CAF
                 </Label>
-                <Input
-                  id="qf"
-                  type="number"
-                  placeholder="Ex: 750"
-                  value={form.quotientFamilial}
-                  onChange={(e) => setForm(prev => ({ ...prev, quotientFamilial: e.target.value }))}
-                />
+                <Select value={form.quotientFamilial} onValueChange={(value) => setForm(prev => ({ ...prev, quotientFamilial: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisir votre tranche" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="300">0 - 300 €</SelectItem>
+                    <SelectItem value="450">301 - 600 €</SelectItem>
+                    <SelectItem value="750">601 - 900 €</SelectItem>
+                    <SelectItem value="1050">901 - 1200 €</SelectItem>
+                    <SelectItem value="1350">1201 - 1500 €</SelectItem>
+                    <SelectItem value="1500">1501 € et plus</SelectItem>
+                  </SelectContent>
+                </Select>
                 <p className="text-xs text-muted-foreground">
                   {userProfile?.quotient_familial 
                     ? "✓ Pré-rempli depuis votre profil" 
@@ -365,11 +390,11 @@ export const GeneralSimulateAidModal = ({
                 </p>
               </div>
 
-              {/* Ville */}
+              {/* Ville (optionnel) */}
               <div className="space-y-2">
                 <Label htmlFor="city" className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  Ville de résidence
+                  Ville de résidence (optionnel)
                 </Label>
                 <Select value={form.cityCode} onValueChange={(value) => setForm(prev => ({ ...prev, cityCode: value }))}>
                   <SelectTrigger>
@@ -386,7 +411,7 @@ export const GeneralSimulateAidModal = ({
                 <p className="text-xs text-muted-foreground">
                   {userProfile?.postal_code || userProfile?.city_code
                     ? "✓ Pré-rempli depuis votre profil" 
-                    : "Nécessaire pour calculer les aides locales"
+                    : "Permet de calculer les aides locales en plus des aides nationales"
                   }
                 </p>
               </div>
@@ -395,7 +420,7 @@ export const GeneralSimulateAidModal = ({
               <Button 
                 onClick={handleSimulate} 
                 className="w-full"
-                disabled={!form.selectedChildId || !form.cityCode || isLoading}
+                disabled={!form.selectedChildId || !form.quotientFamilial || isLoading}
               >
                 {isLoading ? (
                   <>

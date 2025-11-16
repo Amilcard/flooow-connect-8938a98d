@@ -190,12 +190,6 @@ export const SimulateAidModal = ({
         }
       }
 
-      if (!form.cityCode) {
-        setError("Veuillez renseigner votre ville de résidence");
-        setIsLoading(false);
-        return; 
-      }
-
       if (!form.quotientFamilial) {
         setError("Veuillez renseigner votre quotient familial");
         setIsLoading(false);
@@ -355,13 +349,19 @@ export const SimulateAidModal = ({
                   <Euro className="w-4 h-4" />
                   Quotient Familial CAF
                 </Label>
-                <Input
-                  id="qf"
-                  type="number"
-                  placeholder="Ex: 750"
-                  value={form.quotientFamilial}
-                  onChange={(e) => setForm(prev => ({ ...prev, quotientFamilial: e.target.value }))}
-                />
+                <Select value={form.quotientFamilial} onValueChange={(value) => setForm(prev => ({ ...prev, quotientFamilial: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisir votre tranche" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="300">0 - 300 €</SelectItem>
+                    <SelectItem value="450">301 - 600 €</SelectItem>
+                    <SelectItem value="750">601 - 900 €</SelectItem>
+                    <SelectItem value="1050">901 - 1200 €</SelectItem>
+                    <SelectItem value="1350">1201 - 1500 €</SelectItem>
+                    <SelectItem value="1500">1501 € et plus</SelectItem>
+                  </SelectContent>
+                </Select>
                 <p className="text-xs text-muted-foreground">
                   {userProfile?.quotient_familial 
                     ? "✓ Pré-rempli depuis votre profil" 
@@ -370,11 +370,11 @@ export const SimulateAidModal = ({
                 </p>
               </div>
 
-              {/* Ville */}
+              {/* Ville (optionnel) */}
               <div className="space-y-2">
                 <Label htmlFor="city" className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  Ville de résidence
+                  Ville de résidence (optionnel)
                 </Label>
                 <Select value={form.cityCode} onValueChange={(value) => setForm(prev => ({ ...prev, cityCode: value }))}>
                   <SelectTrigger>
@@ -391,7 +391,7 @@ export const SimulateAidModal = ({
                 <p className="text-xs text-muted-foreground">
                   {userProfile?.postal_code || userProfile?.city_code
                     ? "✓ Pré-rempli depuis votre profil" 
-                    : "Nécessaire pour calculer les aides locales"
+                    : "Permet de calculer les aides locales en plus des aides nationales"
                   }
                 </p>
               </div>
@@ -400,7 +400,7 @@ export const SimulateAidModal = ({
               <Button 
                 onClick={handleSimulate} 
                 className="w-full"
-                disabled={!form.selectedChildId || !form.cityCode || isLoading}
+                disabled={!form.selectedChildId || !form.quotientFamilial || isLoading}
               >
                 {isLoading ? (
                   <>
