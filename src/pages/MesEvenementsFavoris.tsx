@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
+import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
-import { Calendar, MapPin, Heart, Download, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, Heart, Download } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
@@ -44,27 +45,15 @@ const MesEvenementsFavoris = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Bandeau orange avec titre et retour */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-white/20"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="mr-2" size={20} />
-          </Button>
-          <div>
-            <h1 className="text-xl font-bold">Mes événements favoris</h1>
-            <p className="text-white/90 text-sm">
-              {events && events.length > 0 ? `${events.length} événement${events.length > 1 ? 's' : ''}` : 'Aucun événement'}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Nouveau bandeau blanc standard */}
+      <PageHeader
+        title="Mes événements favoris"
+        subtitle={events && events.length > 0 ? `${events.length} événement${events.length > 1 ? 's' : ''}` : 'Aucun événement'}
+        backFallback={-1}
+        tourId="favorite-events-header"
+      />
 
-      <div className="container mx-auto px-4 py-6 pb-24">
+      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="account-favorites">
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (

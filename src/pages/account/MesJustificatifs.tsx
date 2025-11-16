@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, FileText, Check, AlertCircle } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -70,20 +70,15 @@ const MesJustificatifs = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Bandeau orange avec titre et retour */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center space-x-4">
-          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-          <div>
-            <h1 className="text-xl font-bold">Mes justificatifs</h1>
-            <p className="text-white/90 text-sm">
-              {uploadedCount}/{totalCount} document{totalCount > 1 ? 's' : ''} ajouté{uploadedCount > 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Nouveau bandeau blanc standard */}
+      <PageHeader
+        title="Mes justificatifs"
+        subtitle={`${uploadedCount}/${totalCount} document${totalCount > 1 ? 's' : ''} ajouté${uploadedCount > 1 ? 's' : ''}`}
+        backFallback="/mon-compte"
+        tourId="documents-page-header"
+      />
 
-      <main className="container py-6 space-y-6">
+      <main className="container py-6 space-y-6" data-tour-id="account-documents">
         {/* Résumé des documents */}
         <Card className={!allRequiredUploaded ? "bg-muted/50 border-orange-200" : "bg-green-50 border-green-200"}>
           <CardHeader>

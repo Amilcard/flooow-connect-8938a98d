@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Calculator } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import PageLayout from "@/components/PageLayout";
 
 interface AidCard {
@@ -207,20 +207,15 @@ const Aides = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Bandeau orange avec titre et retour */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center space-x-4">
-          <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-          <div>
-            <h1 className="text-xl font-bold">Aides financières</h1>
-            <p className="text-white/90 text-sm">
-              Réduisez le coût des activités pour vos enfants
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Nouveau bandeau blanc standard */}
+      <PageHeader
+        title="Aides financières"
+        subtitle="Réduisez le coût des activités pour vos enfants"
+        backFallback="/mon-compte"
+        tourId="aids-page-header"
+      />
 
-      <div className="container mx-auto px-4 py-6 pb-24">
+      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="home-aids-card">
         {/* Zone Hero CTA principal */}
         <Card className="mb-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
           <CardHeader>
