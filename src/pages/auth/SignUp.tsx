@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { BackButton } from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import logoFlooow from '@/assets/logo-flooow.png';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -87,12 +89,12 @@ const SignUp = () => {
           .update({ account_status: 'pending' })
           .eq('id', data.user.id);
       }
-      
+
       toast({
         title: "Demande envoyée !",
         description: "Votre compte sera activé après validation par notre équipe. Vous recevrez un email de confirmation.",
       });
-      
+
       navigate('/home');
     } catch (error: any) {
       toast({
@@ -125,33 +127,26 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent/5 via-primary/5 to-secondary/5 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/home')}
-          className="flex items-center gap-2 hover:bg-accent/10 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </Button>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header avec BackButton */}
+      <div className="flex items-center p-4">
+        <BackButton fallback="/home" variant="ghost" size="sm" showText label="Accueil" className="gap-2" />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-20 h-20 bg-gradient-to-br from-accent via-accent/90 to-primary rounded-3xl flex items-center justify-center shadow-xl">
-              <span className="text-3xl font-bold text-white">In</span>
+      <div className="flex-1 flex items-center justify-center px-4 py-6">
+        <Card className="w-full max-w-[480px] shadow-md border rounded-2xl bg-card">
+          <CardHeader className="text-center space-y-4 pb-6">
+            {/* Logo Flooow */}
+            <div className="mx-auto w-24 h-24 bg-gradient-to-br from-[#FF8A3D] to-[#FF6B1A] rounded-3xl flex items-center justify-center shadow-lg p-4">
+              <img src={logoFlooow} alt="Flooow" className="w-full h-full object-contain" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+              <CardTitle className="text-2xl font-bold text-foreground">
                 Créer un compte
               </CardTitle>
               <CardDescription className="text-muted-foreground mt-2">
-                Rejoignez la communauté InKlusif dès aujourd'hui
+                Rejoignez la communauté Flooow dès aujourd'hui
               </CardDescription>
             </div>
           </CardHeader>
@@ -172,7 +167,7 @@ const SignUp = () => {
                       value={formData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       placeholder="Prénom"
-                      className="pl-10 h-11 border-2 focus:border-accent transition-colors"
+                      className="pl-10 h-11 border-2 focus:border-[#FF8A3D] transition-colors"
                       required
                     />
                   </div>
@@ -187,7 +182,7 @@ const SignUp = () => {
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     placeholder="Nom"
-                    className="h-11 border-2 focus:border-accent transition-colors"
+                    className="h-11 border-2 focus:border-[#FF8A3D] transition-colors"
                     required
                   />
                 </div>
@@ -206,7 +201,7 @@ const SignUp = () => {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     placeholder="votre@email.com"
-                    className="pl-10 h-11 border-2 focus:border-accent transition-colors"
+                    className="pl-10 h-11 border-2 focus:border-[#FF8A3D] transition-colors"
                     required
                   />
                 </div>
@@ -225,7 +220,7 @@ const SignUp = () => {
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="+33 6 12 34 56 78"
-                    className="pl-10 h-11 border-2 focus:border-accent transition-colors"
+                    className="pl-10 h-11 border-2 focus:border-[#FF8A3D] transition-colors"
                   />
                 </div>
               </div>
@@ -243,7 +238,7 @@ const SignUp = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 pr-10 h-11 border-2 focus:border-accent transition-colors"
+                    className="pl-10 pr-10 h-11 border-2 focus:border-[#FF8A3D] transition-colors"
                     required
                   />
                   <Button
@@ -275,7 +270,7 @@ const SignUp = () => {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 pr-10 h-11 border-2 focus:border-accent transition-colors"
+                    className="pl-10 pr-10 h-11 border-2 focus:border-[#FF8A3D] transition-colors"
                     required
                   />
                   <Button
@@ -304,11 +299,11 @@ const SignUp = () => {
                 />
                 <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed">
                   J'accepte les{' '}
-                  <Link to="/terms" className="text-accent hover:text-accent/80 underline">
+                  <Link to="/terms" className="text-[#FF8A3D] hover:text-[#FF6B1A] underline">
                     conditions d'utilisation
                   </Link>{' '}
                   et la{' '}
-                  <Link to="/privacy" className="text-accent hover:text-accent/80 underline">
+                  <Link to="/privacy" className="text-[#FF8A3D] hover:text-[#FF6B1A] underline">
                     politique de confidentialité
                   </Link>
                 </Label>
@@ -316,7 +311,7 @@ const SignUp = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02]"
+                className="w-full h-12 bg-[#FF8A3D] hover:bg-[#FF6B1A] text-white font-semibold rounded-xl transition-all duration-300"
                 disabled={isLoading}
               >
                 {isLoading ? 'Création du compte...' : 'Créer mon compte'}
@@ -325,7 +320,7 @@ const SignUp = () => {
 
             <div className="relative">
               <Separator className="my-6" />
-              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-sm text-muted-foreground">
+              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-sm text-muted-foreground">
                 Ou s'inscrire avec
               </span>
             </div>
@@ -334,7 +329,7 @@ const SignUp = () => {
               <Button
                 variant="outline"
                 onClick={() => handleSocialSignup('google')}
-                className="h-12 border-2 hover:border-accent/20 transition-colors"
+                className="h-12 border-2 hover:border-[#FF8A3D]/20 transition-colors"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
@@ -358,7 +353,7 @@ const SignUp = () => {
               <Button
                 variant="outline"
                 onClick={() => handleSocialSignup('facebook')}
-                className="h-12 border-2 hover:border-accent/20 transition-colors"
+                className="h-12 border-2 hover:border-[#FF8A3D]/20 transition-colors"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -367,7 +362,7 @@ const SignUp = () => {
               <Button
                 variant="outline"
                 onClick={() => handleSocialSignup('linkedin_oidc')}
-                className="h-12 border-2 hover:border-accent/20 transition-colors"
+                className="h-12 border-2 hover:border-[#FF8A3D]/20 transition-colors"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -376,7 +371,7 @@ const SignUp = () => {
               <Button
                 variant="outline"
                 onClick={() => handleSocialSignup('apple')}
-                className="h-12 border-2 hover:border-accent/20 transition-colors"
+                className="h-12 border-2 hover:border-[#FF8A3D]/20 transition-colors"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
@@ -389,7 +384,7 @@ const SignUp = () => {
                 Déjà un compte ?{' '}
                 <Link
                   to="/login"
-                  className="text-accent hover:text-accent/80 font-semibold transition-colors"
+                  className="text-[#FF8A3D] hover:text-[#FF6B1A] font-semibold transition-colors"
                 >
                   Se connecter
                 </Link>
