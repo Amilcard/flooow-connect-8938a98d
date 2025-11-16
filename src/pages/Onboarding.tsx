@@ -5,11 +5,12 @@ import onboardingActivites from "@/assets/onboarding-activites.png";
 import onboardingAides from "@/assets/onboarding-aides.png";
 import onboardingMobilite from "@/assets/onboarding-mobilite.png";
 import onboardingCommunity from "@/assets/onboarding-community.png";
+import onboardingMegaphone from "@/assets/onboarding-megaphone.png";
 
-type OnboardingStepType = "activites" | "decouverte" | "aides" | "testeurs";
+type OnboardingStepType = "decouvrir" | "aides" | "mobilite" | "guichet" | "cest-parti";
 
 const Onboarding = () => {
-  const [currentStep, setCurrentStep] = useState<OnboardingStepType>("activites");
+  const [currentStep, setCurrentStep] = useState<OnboardingStepType>("decouvrir");
   const navigate = useNavigate();
 
   const handleComplete = () => {
@@ -23,42 +24,51 @@ const Onboarding = () => {
   };
 
   const steps = {
-    activites: {
-      title: "Tu veux trouver des activités près de chez toi ?",
-      body: "Flooow t'aide à découvrir sports, culture, devoirs, vacances et loisirs.",
+    decouvrir: {
+      title: "Découvrir facilement",
+      body: "En quelques clics, Flooow géolocalise les activités disponibles autour de chez vous : sport, loisirs, scolarité, culture, insertion… Tout ce dont vos enfants ont besoin, au bon endroit et au bon moment.",
       illustration: onboardingActivites,
       accentColor: "blue" as const,
-      onNext: () => setCurrentStep("decouverte"),
+      onNext: () => setCurrentStep("aides"),
       stepNumber: 1,
       isLastStep: false,
     },
-    decouverte: {
-      title: "Trouve l'activité qui lui ressemble",
-      body: "Explore les univers, filtre par âge, par période ou par budget, et découvre ce qui correspond à ton enfant.",
-      illustration: onboardingMobilite,
+    aides: {
+      title: "Vos aides financières estimées",
+      body: "Flooow estime immédiatement vos aides financières possibles (CAF, Pass'Sport, dispositifs locaux…). Plus besoin de démarches multiples : vous gagnez du temps dès le départ.",
+      illustration: onboardingAides,
       accentColor: "orange" as const,
-      onNext: () => setCurrentStep("aides"),
+      onNext: () => setCurrentStep("mobilite"),
       stepNumber: 2,
       isLastStep: false,
     },
-    aides: {
-      title: "Simule les aides en un clic",
-      body: "Calcule ton reste à charge avec ton QF et ton code postal, sans créer de compte.",
-      illustration: onboardingAides,
+    mobilite: {
+      title: "Se rendre à l'activité",
+      body: "Des solutions de trajet adaptées vous sont proposées : transports locaux, vélo, marche… Et bientôt, le covoiturage entre parents pour encore plus de sérénité.",
+      illustration: onboardingMobilite,
       accentColor: "blue" as const,
-      onNext: () => setCurrentStep("testeurs"),
+      onNext: () => setCurrentStep("guichet"),
       stepNumber: 3,
       isLastStep: false,
     },
-    testeurs: {
-      title: "Rejoins les FlooowTesteurs",
-      body: "Tu fais partie des premiers testeurs. Tu recevras des infos-bulles et tu pourras nous aider en donnant ton avis.",
+    guichet: {
+      title: "Votre guichet du quotidien",
+      body: "Toutes les informations utiles sont réunies au même endroit : activités, disponibilités, créneaux, aides, mobilité… Flooow, votre guichet du quotidien pour accompagner vos enfants.",
       illustration: onboardingCommunity,
       accentColor: "orange" as const,
-      onNext: handleComplete,
+      onNext: () => setCurrentStep("cest-parti"),
       stepNumber: 4,
+      isLastStep: false,
+    },
+    "cest-parti": {
+      title: "C'est parti !",
+      body: "Bienvenue dans la communauté FlooowTesteurs ! Merci de nous aider à améliorer la plateforme avec vos retours.\nNananère !",
+      illustration: onboardingMegaphone,
+      accentColor: "blue" as const,
+      onNext: handleComplete,
+      stepNumber: 5,
       isLastStep: true,
-      primaryCtaLabel: "Accéder à Flooow",
+      primaryCtaLabel: "C'est parti",
       showSocialIcons: true,
     },
   };
@@ -72,7 +82,7 @@ const Onboarding = () => {
       illustration={currentStepData.illustration}
       accentColor={currentStepData.accentColor}
       currentStep={currentStepData.stepNumber}
-      totalSteps={4}
+      totalSteps={5}
       onNext={currentStepData.onNext}
       onSkip={handleSkip}
       isLastStep={currentStepData.isLastStep}
