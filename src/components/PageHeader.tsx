@@ -49,22 +49,23 @@ export const PageHeader = ({
       data-tour-id={tourId}
     >
       <div className="container h-16 flex items-center justify-between px-4">
-        {/* Left: Back button */}
-        <div className="flex items-center gap-3">
+        {/* Left: Back button and title */}
+        <div className="flex items-center gap-4 flex-1">
           {showBackButton && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleBack}
-              className="h-9 w-9 p-0"
+              className="h-9 px-2 gap-2"
               aria-label="Retour"
             >
               <ArrowLeft className="h-5 w-5" />
+              <span className="text-sm font-medium">Retour</span>
             </Button>
           )}
 
           {/* Title and subtitle */}
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1">
             <h1 className="text-lg font-semibold text-foreground leading-tight">
               {title}
             </h1>
