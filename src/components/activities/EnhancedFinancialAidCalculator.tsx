@@ -8,10 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
+import { useNavigate } from "react-router-dom";
 
 interface Child {
   id: string;
@@ -64,14 +65,19 @@ export const EnhancedFinancialAidCalculator = ({
   onAidsCalculated
 }: Props) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { state: savedState, saveAidCalculation } = useActivityBookingState(activityId);
-  
+
   const [loading, setLoading] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const [manualChildAge, setManualChildAge] = useState<string>("");
   const [quotientFamilial, setQuotientFamilial] = useState<string>("");
   const [cityCode, setCityCode] = useState<string>("");
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
+
+  // Check if user is logged in
+  const isLoggedIn = children.length > 0;
 
   // Restaurer depuis le state persisté
   useEffect(() => {
@@ -116,10 +122,20 @@ export const EnhancedFinancialAidCalculator = ({
   };
 
   const handleCalculate = async () => {
-    if (!selectedChildId) {
+    // Validation: soit un enfant sélectionné (logged in), soit un âge manuel (not logged in)
+    if (isLoggedIn && !selectedChildId) {
       toast({
         title: "Enfant requis",
         description: "Veuillez sélectionner un enfant",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!isLoggedIn && !manualChildAge) {
+      toast({
+        title: "Âge requis",
+        description: "Veuillez indiquer l'âge de votre enfant",
         variant: "destructive"
       });
       return;
@@ -191,10 +207,23 @@ export const EnhancedFinancialAidCalculator = ({
       return;
     }
 
-    const selectedChild = children.find(c => c.id === selectedChildId);
-    if (!selectedChild) return;
-
-    const childAge = calculateAge(selectedChild.dob);
+    // Déterminer l'âge de l'enfant: depuis profil (logged in) ou manuel (not logged in)
+    let childAge: number;
+    if (isLoggedIn) {
+      const selectedChild = children.find(c => c.id === selectedChildId);
+      if (!selectedChild) return;
+      childAge = calculateAge(selectedChild.dob);
+    } else {
+      childAge = parseInt(manualChildAge);
+      if (isNaN(childAge) || childAge < 0 || childAge > 18) {
+        toast({
+          title: "Âge invalide",
+          description: "Veuillez indiquer un âge entre 0 et 18 ans",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
 
     setLoading(true);
     try {
@@ -308,27 +337,47 @@ export const EnhancedFinancialAidCalculator = ({
 
       <Separator />
 
-      {/* Sélecteur d'enfant */}
-      <div className="space-y-2">
-        <Label htmlFor="child-select">
-          Enfant concerné <span className="text-destructive">*</span>
-        </Label>
-        <Select value={selectedChildId} onValueChange={setSelectedChildId}>
-          <SelectTrigger id="child-select">
-            <SelectValue placeholder="Sélectionner un enfant" />
-          </SelectTrigger>
-          <SelectContent>
-            {children.map(child => {
-              const age = calculateAge(child.dob);
-              return (
-                <SelectItem key={child.id} value={child.id}>
-                  {child.first_name} ({age} ans)
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Sélecteur d'enfant (logged in) OU âge manuel (not logged in) */}
+      {isLoggedIn ? (
+        <div className="space-y-2">
+          <Label htmlFor="child-select">
+            Enfant concerné <span className="text-destructive">*</span>
+          </Label>
+          <Select value={selectedChildId} onValueChange={setSelectedChildId}>
+            <SelectTrigger id="child-select">
+              <SelectValue placeholder="Sélectionner un enfant" />
+            </SelectTrigger>
+            <SelectContent>
+              {children.map(child => {
+                const age = calculateAge(child.dob);
+                return (
+                  <SelectItem key={child.id} value={child.id}>
+                    {child.first_name} ({age} ans)
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="child-age">
+            Âge de votre enfant <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="child-age"
+            type="number"
+            placeholder="Ex: 8"
+            min="0"
+            max="18"
+            value={manualChildAge}
+            onChange={(e) => setManualChildAge(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Entre 0 et 18 ans
+          </p>
+        </div>
+      )}
 
       {/* QF et Code postal - affichage conditionnel selon le type d'activité */}
       {periodType === "saison_scolaire" ? (
@@ -399,12 +448,12 @@ export const EnhancedFinancialAidCalculator = ({
         </Alert>
       )}
 
-      {/* Bouton Calculer - conditions différentes selon le type d'activité */}
-      <Button 
+      {/* Bouton Calculer - validation selon mode logged in/out */}
+      <Button
         onClick={handleCalculate}
         disabled={
-          loading || 
-          !selectedChildId || 
+          loading ||
+          (isLoggedIn ? !selectedChildId : !manualChildAge) ||
           (periodType === "vacances" && (!quotientFamilial || !cityCode))
         }
         className="w-full"
@@ -488,10 +537,32 @@ export const EnhancedFinancialAidCalculator = ({
           <Alert className="bg-amber-50 border-amber-200">
             <Info className="h-4 w-4 text-amber-600" />
             <AlertDescription className="text-sm text-amber-900">
-              <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription 
+              <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription
               (attestation CAF, justificatif de domicile, etc.)
             </AlertDescription>
           </Alert>
+
+          {/* CTA Signup pour utilisateurs non connectés */}
+          {!isLoggedIn && (
+            <div className="pt-4">
+              <Alert className="bg-primary/10 border-primary/30">
+                <UserPlus className="h-4 w-4 text-primary" />
+                <AlertDescription className="space-y-3">
+                  <p className="text-sm font-medium">
+                    Pour profiter de vos aides et inscrire votre enfant à cette activité
+                  </p>
+                  <Button
+                    onClick={() => navigate("/signup")}
+                    className="w-full"
+                    size="lg"
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Créer mon compte gratuit
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
         </>
       )}
 
@@ -500,7 +571,7 @@ export const EnhancedFinancialAidCalculator = ({
           <div className="text-center py-4 text-muted-foreground text-sm">
             Aucune aide disponible pour cette activité
           </div>
-          
+
           {/* Message rappel pièces justificatives même sans aides */}
           <Alert className="bg-amber-50 border-amber-200">
             <Info className="h-4 w-4 text-amber-600" />
@@ -508,6 +579,28 @@ export const EnhancedFinancialAidCalculator = ({
               <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription.
             </AlertDescription>
           </Alert>
+
+          {/* CTA Signup pour utilisateurs non connectés même sans aides */}
+          {!isLoggedIn && (
+            <div className="pt-4">
+              <Alert className="bg-primary/10 border-primary/30">
+                <UserPlus className="h-4 w-4 text-primary" />
+                <AlertDescription className="space-y-3">
+                  <p className="text-sm font-medium">
+                    Pour inscrire votre enfant à cette activité
+                  </p>
+                  <Button
+                    onClick={() => navigate("/signup")}
+                    className="w-full"
+                    size="lg"
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Créer mon compte gratuit
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
         </>
       )}
 

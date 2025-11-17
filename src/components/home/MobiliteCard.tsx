@@ -1,33 +1,56 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Train } from "lucide-react";
+import { Train, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ecoMobiliteImg from "@/assets/eco-mobilite.jpg";
 
+/**
+ * Carte portrait "Mes trajets et mobilités"
+ * Design moderne avec image plein cadre, texte centré sur overlay
+ */
 export const MobiliteCard = () => {
   const navigate = useNavigate();
 
   return (
-    <Card 
-      className="group cursor-pointer hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-6 md:p-8"
+    <Card
+      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
       onClick={() => navigate('/eco-mobilite')}
     >
-      <div className="flex items-start gap-4">
-        <div className="p-3 rounded-xl bg-accent-blue text-white shadow-md">
-          <Train className="h-6 w-6" />
+      {/* Image de fond plein cadre */}
+      <div className="absolute inset-0">
+        <img
+          src={ecoMobiliteImg}
+          alt="Éco-mobilité"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        />
+        {/* Gradient overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      </div>
+
+      {/* Contenu centré */}
+      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
+        {/* Icône */}
+        <div className="mb-4 p-3 rounded-full bg-accent-blue/90 backdrop-blur-sm shadow-lg">
+          <Train className="h-6 w-6 text-white" />
         </div>
-        <div className="flex-1">
-          <h2 className="text-xl md:text-2xl font-bold text-text-main mb-2 group-hover:text-accent-blue transition-colors">
-            Mes trajets et mobilités
-          </h2>
-          <p className="text-sm md:text-base text-text-muted mb-4 leading-relaxed">
-            Préparez vos déplacements vers les activités avec des solutions éco-responsables.
-          </p>
-          <Button 
-            className="bg-accent-blue hover:bg-accent-blue/90 text-white font-semibold px-6 h-11 rounded-xl shadow-md hover:shadow-lg transition-all"
-          >
-            Voir les solutions de mobilité
-          </Button>
-        </div>
+
+        {/* Titre */}
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+          Mes trajets et mobilités
+        </h2>
+
+        {/* Sous-titre */}
+        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
+          Préparez vos déplacements avec des solutions éco-responsables
+        </p>
+
+        {/* CTA discret */}
+        <Button
+          className="bg-white/95 hover:bg-white text-accent-blue font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
+        >
+          Voir les solutions
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </div>
     </Card>
   );
