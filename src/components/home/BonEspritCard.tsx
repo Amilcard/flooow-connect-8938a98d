@@ -1,34 +1,57 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy } from "lucide-react";
+import { Award, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import actualitePrixImg from "@/assets/actualite-prix.jpg";
 
+/**
+ * Carte portrait "Prix Bon Esprit"
+ * Design moderne avec image plein cadre, texte centré sur overlay
+ */
 export const BonEspritCard = () => {
   const navigate = useNavigate();
 
   return (
     <Card
-      className="group cursor-pointer hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-6 md:p-8"
+      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
       onClick={() => navigate('/bon-esprit')}
       data-tour-id="home-bon-esprit"
     >
-      <div className="flex items-start gap-4">
-        <div className="p-3 rounded-xl bg-accent-blue text-white shadow-md">
-          <Trophy className="h-6 w-6" />
+      {/* Image de fond plein cadre */}
+      <div className="absolute inset-0">
+        <img
+          src={actualitePrixImg}
+          alt="Prix Bon Esprit"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        />
+        {/* Gradient overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      </div>
+
+      {/* Contenu centré */}
+      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
+        {/* Icône */}
+        <div className="mb-4 p-3 rounded-full bg-accent-blue/90 backdrop-blur-sm shadow-lg">
+          <Award className="h-6 w-6 text-white" />
         </div>
-        <div className="flex-1">
-          <h2 className="text-xl md:text-2xl font-bold text-text-main mb-2 group-hover:text-accent-blue transition-colors">
-            Prix Bon Esprit
-          </h2>
-          <p className="text-sm md:text-base text-text-muted mb-4 leading-relaxed">
-            Valorisez les belles actions ! Votez pour ceux qui font briller votre quartier.
-          </p>
-          <Button
-            className="bg-accent-blue hover:bg-accent-blue/90 text-white font-semibold px-6 h-11 rounded-xl shadow-md hover:shadow-lg transition-all"
-          >
-            Voter pour un héros
-          </Button>
-        </div>
+
+        {/* Titre */}
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+          Prix Bon Esprit
+        </h2>
+
+        {/* Sous-titre */}
+        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
+          Valorisez les belles actions ! Votez pour ceux qui font briller votre quartier
+        </p>
+
+        {/* CTA discret */}
+        <Button
+          className="bg-white/95 hover:bg-white text-accent-blue font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
+        >
+          Voter pour un héros
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </div>
     </Card>
   );

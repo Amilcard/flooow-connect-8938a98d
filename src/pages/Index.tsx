@@ -157,17 +157,21 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== SECTION 1: OUTILS (AIDES + MOBILITÉS + MA VILLE + BON ESPRIT) ========== */}
+            {/* ========== SECTION 1: CARTES PORTRAIT (4 OUTILS) ========== */}
             <section className="py-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div data-tour-id="home-aids-card">
                   <AidesFinancieresCard />
                 </div>
                 <div data-tour-id="home-mobility-card">
                   <MobiliteCard />
                 </div>
-                <MaVilleCard />
-                <BonEspritCard />
+                <div data-tour-id="home-ville-card">
+                  <MaVilleCard />
+                </div>
+                <div data-tour-id="home-prix-card">
+                  <BonEspritCard />
+                </div>
               </div>
             </section>
 
