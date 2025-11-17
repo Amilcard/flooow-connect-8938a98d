@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Activity } from "@/types/domain";
 import { toActivity } from "@/types/schemas";
 import type { ActivityRaw } from "@/types/domain";
+import { sanitizeSearchQuery } from "@/utils/sanitize";
 
 // Export le type depuis domain pour rétro-compatibilité
 export type { Activity } from "@/types/domain";
@@ -118,10 +119,14 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       // Support both search and searchQuery for compatibility
-      const searchTerm = filters?.searchQuery || filters?.search;
-      if (searchTerm) {
-        // Recherche insensible aux accents et casse dans title ET description
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      const rawSearchTerm = filters?.searchQuery || filters?.search;
+      if (rawSearchTerm) {
+        // Sanitize search query to prevent LIKE wildcard abuse
+        const searchTerm = sanitizeSearchQuery(rawSearchTerm);
+        if (searchTerm) {
+          // Recherche insensible aux accents et casse dans title ET description
+          query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+        }
       }
 
       if (filters?.category) {
