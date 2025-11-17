@@ -52,6 +52,9 @@ import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
+import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
+import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
+import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap: Record<string, string> = {
@@ -347,140 +350,84 @@ const ActivityDetail = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Nouveau PageHeader blanc standard */}
-      <PageHeader
+      {/* Compact Hero Header (160px optimisé) */}
+      <CompactHeroHeader
+        imageUrl={displayImage}
         title={activity.title}
-        subtitle={activity.category}
+        category={activity.category}
+        categories={activity.categories}
         backFallback="/activities"
-        tourId="activity-detail-header"
         rightContent={
-          <ActivityShareButton
-            activity={{
-              id: activity.id,
-              title: activity.title,
-              description: activity.description || undefined,
-              category: activity.category,
-              price: activity.price_base || undefined,
-              location: (activity.structures as any)?.address || undefined
-            }}
-            variant="ghost"
-            size="sm"
-            showLabel={false}
-          />
+          <div className="relative">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={handleShare}
+                    className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full"
+                  >
+                    <Share2 size={18} className="text-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Partager</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* Share menu for desktop */}
+            {showShareMenu && (
+              <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
+                <div className="space-y-1">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={shareViaWhatsApp}
+                  >
+                    <MessageCircle size={16} className="mr-2" />
+                    WhatsApp
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={shareViaEmail}
+                  >
+                    <Mail size={16} className="mr-2" />
+                    E-mail
+                  </Button>
+                  <Separator className="my-1" />
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={copyLink}
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={16} className="mr-2 text-green-600" />
+                        <span className="text-green-600">Lien copié !</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={16} className="mr-2" />
+                        Copier le lien
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </div>
         }
       />
 
-      {/* Hero Image - Hauteur adaptée au mode visuel mobile */}
-      <div 
-        className="relative w-full overflow-hidden"
-        style={{
-          height: mobileVisualMode ? "360px" : "clamp(240px, 40vh, 480px)"
-        }}
-      >
-        <img
-          src={imgError ? fallbackImage : displayImage}
-          alt={activity.title}
-          className="w-full h-full object-cover"
-          onError={() => setImgError(true)}
-        />
-        
-        {/* Gradient overlay - plus prononcé en mode visuel mobile */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: mobileVisualMode 
-              ? "linear-gradient(to top, rgba(0,0,0,0.45), transparent 50%)"
-              : "linear-gradient(to top, rgba(0,0,0,0.40), transparent)"
-          }}
-        />
-        
-        {/* Badges flottants repositionnés */}
-        <div className="absolute top-4 left-4 flex gap-2 flex-wrap max-w-[80%]">
-          {activity.categories && activity.categories.length > 0 ? (
-            activity.categories.slice(0, 2).map((cat: string) => (
-              <Badge key={cat} variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-md">
-                {cat}
-              </Badge>
-            ))
-          ) : (
-            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-md">
-              {activity.category}
-            </Badge>
-          )}
-          {typeof activity.accessibility_checklist === 'object' && 
-           activity.accessibility_checklist !== null && 
-           'wheelchair' in activity.accessibility_checklist &&
-           activity.accessibility_checklist.wheelchair && (
-            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-md">
-              <Accessibility size={14} className="mr-1" />
-              PMR
-            </Badge>
-          )}
-        </div>
-        
-        {/* Bouton de partage en superposition - en haut à droite */}
-        <div className="absolute top-4 right-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleShare}
-                  className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-md"
-                >
-                  <Share2 size={18} className="text-foreground" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Partager</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Share menu for desktop */}
-          {showShareMenu && (
-            <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
-              <div className="space-y-1">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm"
-                  onClick={shareViaWhatsApp}
-                >
-                  <MessageCircle size={16} className="mr-2" />
-                  WhatsApp
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm"
-                  onClick={shareViaEmail}
-                >
-                  <Mail size={16} className="mr-2" />
-                  E-mail
-                </Button>
-                <Separator className="my-1" />
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm"
-                  onClick={copyLink}
-                >
-                  {copied ? (
-                    <>
-                      <Check size={16} className="mr-2 text-green-600" />
-                      <span className="text-green-600">Lien copié !</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={16} className="mr-2" />
-                      Copier le lien
-                    </>
-                  )}
-                </Button>
-              </div>
-            </Card>
-          )}
-        </div>
-      </div>
+      {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
+      <QuickInfoBar
+        ageRange={{ min: activity.age_min, max: activity.age_max }}
+        isFree={activity.price_base === 0}
+        spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
+      />
 
       {/* Main Content Container - Airbnb Style with Grid */}
       <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
@@ -838,6 +785,18 @@ const ActivityDetail = () => {
           activityTitle={activity.title}
         />
       )}
+
+      {/* Sticky Booking CTA - Mobile only */}
+      <StickyBookingCTA
+        price={activity.price_base || 0}
+        discountedPrice={aidsData?.remainingPrice}
+        priceUnit={activity.price_note || "par activité"}
+        onBook={handleBooking}
+        onShare={handleShare}
+        disabled={!selectedSlotId}
+        buttonText={!selectedSlotId ? "Sélectionnez un créneau" : "Réserver"}
+        mobileOnly={true}
+      />
 
       <BottomNavigation />
     </div>
