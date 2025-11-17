@@ -9,6 +9,7 @@ import "../../../node_modules/leaflet/dist/leaflet.css";
 
 // Import icon fix CRITICAL for Vite/Webpack
 import "@/utils/leafletIconFix";
+import { validateCoordinates } from "@/utils/sanitize";
 
 /**
  * Interface étendue pour activités avec coordonnées géographiques
@@ -80,12 +81,16 @@ export function InteractiveMapActivities({
   const activitiesWithCoords = useMemo(() => {
     return activities.filter((activity): activity is ActivityWithLocation => {
       const a = activity as ActivityWithLocation;
-      return (
-        a.location?.lat !== undefined &&
-        a.location?.lng !== undefined &&
-        !isNaN(a.location.lat) &&
-        !isNaN(a.location.lng)
-      );
+      if (
+        a.location?.lat === undefined ||
+        a.location?.lng === undefined
+      ) {
+        return false;
+      }
+
+      // Security: Validate coordinates are within valid ranges
+      const validation = validateCoordinates(a.location.lat, a.location.lng);
+      return validation.isValid;
     });
   }, [activities]);
 
@@ -225,8 +230,19 @@ export function InteractiveMapActivities({
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        // Ouvrir itinéraire dans Google Maps
-                        const url = `https://www.google.com/maps/dir/?api=1&destination=${activity.location!.lat},${activity.location!.lng}`;
+                        // Security: Validate coordinates before constructing URL
+                        const { isValid, lat, lng } = validateCoordinates(
+                          activity.location!.lat,
+                          activity.location!.lng
+                        );
+
+                        if (!isValid) {
+                          console.warn("Invalid coordinates for navigation");
+                          return;
+                        }
+
+                        // Ouvrir itinéraire dans Google Maps avec coordonnées validées
+                        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
                         window.open(url, "_blank", "noopener,noreferrer");
                       }}
                       title="Itinéraire"
