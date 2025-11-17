@@ -130,6 +130,17 @@ export function toActivity(raw: ActivityRaw): Activity {
     activity.accessibility = raw.accessibility_checklist;
   }
 
+  // Location géographique (pour carte interactive)
+  if (raw.structures?.location_lat && raw.structures?.location_lng) {
+    activity.location = {
+      lat: raw.structures.location_lat,
+      lng: raw.structures.location_lng,
+      adresse: raw.structures.address || '',
+      ville: '', // Peut être extrait du code postal si nécessaire
+      codePostal: '', // Peut être ajouté si disponible
+    };
+  }
+
   return activity;
 }
 

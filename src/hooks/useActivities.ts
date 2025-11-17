@@ -36,10 +36,27 @@ interface ActivityFilters {
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
   // Use first image from images array if available (now using Unsplash URLs directly)
-  const imageUrl = dbActivity.images && dbActivity.images.length > 0 
-    ? dbActivity.images[0] 
+  const imageUrl = dbActivity.images && dbActivity.images.length > 0
+    ? dbActivity.images[0]
     : dbActivity.cover;
-  
+
+  // Parse PostGIS location (GeoJSON format) to extract lat/lng
+  let location_lat: number | undefined;
+  let location_lng: number | undefined;
+
+  if (dbActivity.structures?.location) {
+    try {
+      const location = dbActivity.structures.location;
+      // PostGIS returns GeoJSON: { type: "Point", coordinates: [lng, lat] }
+      if (location.type === "Point" && Array.isArray(location.coordinates)) {
+        location_lng = location.coordinates[0]; // Longitude (x)
+        location_lat = location.coordinates[1]; // Latitude (y)
+      }
+    } catch (e) {
+      console.warn("Failed to parse location from structures:", e);
+    }
+  }
+
   // Mapper les données DB vers ActivityRaw puis utiliser toActivity
   const raw: ActivityRaw = {
     id: dbActivity.id,
@@ -53,7 +70,11 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     accessibility_checklist: dbActivity.accessibility_checklist,
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
-    structures: dbActivity.structures,
+    structures: {
+      ...dbActivity.structures,
+      location_lat,
+      location_lng,
+    },
     vacation_periods: dbActivity.vacation_periods,
     covoiturage_enabled: dbActivity.covoiturage_enabled,
     // Nouveaux champs pour tarification vacances
@@ -85,7 +106,7 @@ export const useActivities = (filters?: ActivityFilters) => {
           images, accessibility_checklist, accepts_aid_types,
           capacity_policy, covoiturage_enabled, structure_id, period_type,
           vacation_periods, price_unit, vacation_type, duration_days, has_accommodation,
-          structures:structure_id (name, address, territory_id),
+          structures:structure_id (name, address, territory_id, location),
           availability_slots!inner(start)
         `)
         .eq("published", true)
