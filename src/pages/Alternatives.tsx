@@ -71,7 +71,7 @@ const Alternatives = () => {
       <SearchBar />
       
       <div className="container py-6 space-y-6">
-        <BackButton fallback="/" showText={true} className="gap-2" size="default" />
+        <BackButton fallback="/" />
 
         {/* Refusal notice */}
         <Card className="border-2 border-destructive/20 bg-destructive/5">

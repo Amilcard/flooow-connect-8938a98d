@@ -69,7 +69,7 @@ const Login = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header avec BackButton */}
       <div className="flex items-center p-4">
-        <BackButton fallback="/home" variant="ghost" size="sm" showText label="Accueil" className="gap-2" />
+        <BackButton fallback="/home" />
       </div>
 
       {/* Main Content */}
@@ -78,7 +78,7 @@ const Login = () => {
           <CardHeader className="text-center space-y-4 pb-6">
             {/* Logo NANANERE */}
             <div className="mx-auto">
-              <LogoNananere width={160} height={48} />
+              <LogoNananere />
             </div>
             <div>
               <CardTitle className="text-2xl font-bold text-foreground">

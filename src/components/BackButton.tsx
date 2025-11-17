@@ -13,12 +13,12 @@ interface BackButtonProps {
   showSplash?: boolean;
 }
 
-export const BackButton = ({ 
-  fallback, 
-  variant = "outline", 
+export const BackButton = ({
+  fallback,
+  variant = "outline",
   size = "default",
   className = "",
-  showText = true,
+  showText = false,
   label = "Retour",
   showSplash = false
 }: BackButtonProps) => {
@@ -37,6 +37,9 @@ export const BackButton = ({
     }
   };
 
+  // Pill style classes for standardized back button
+  const pillClasses = "absolute top-3 left-4 z-10 bg-white border border-gray-200 rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
+
   return (
     <>
       {/* Flooow Splash Overlay */}
@@ -48,15 +51,15 @@ export const BackButton = ({
           </div>
         </div>
       )}
-      
+
       <Button
         variant={variant}
         size={size}
         onClick={handleClick}
         aria-label={label}
-        className={`min-h-[44px] ${className}`}
+        className={`${pillClasses} ${className}`}
       >
-        <ArrowLeft className={showText ? "mr-2" : ""} size={20} />
+        <ArrowLeft className={showText ? "mr-2 text-gray-700" : "text-gray-700"} size={20} strokeWidth={2} />
         {showText && label}
       </Button>
     </>

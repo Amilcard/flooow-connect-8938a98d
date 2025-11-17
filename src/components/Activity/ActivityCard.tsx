@@ -92,12 +92,12 @@ export const ActivityCard = ({
   return (
     <Card className="card-wetransfer group overflow-hidden cursor-pointer">
       {/* Image Container - WeTransfer style avec rounded corners */}
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft">
+      <div className="relative w-[280px] h-[210px] overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft">
         <img
           src={displayImage}
           alt={title}
           loading="eager"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.currentTarget.src = fallbackImage;
           }}

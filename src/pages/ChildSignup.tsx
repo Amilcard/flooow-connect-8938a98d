@@ -111,7 +111,7 @@ const ChildSignup = () => {
       <SearchBar />
       
       <div className="container py-6 space-y-6">
-        <BackButton fallback="/" showText={true} className="gap-2" size="default" />
+        <BackButton fallback="/" />
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Créer un profil enfant</h1>

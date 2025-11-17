@@ -13,15 +13,15 @@ interface LogoNananereProps {
 
 export const LogoNananere = ({
   className = "",
-  width = 160,
-  height = 48
+  width = 200,
+  height
 }: LogoNananereProps) => {
   return (
     <img
       src={logoNananere}
       alt="NANANERE"
       className={`object-contain ${className}`}
-      style={{ width: `${width}px`, height: `${height}px` }}
+      style={{ width: `${width}px`, height: height ? `${height}px` : 'auto' }}
     />
   );
 };
