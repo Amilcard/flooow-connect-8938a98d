@@ -27,10 +27,10 @@ const univers: Univers[] = [
     testId: 'icon-category-culture'
   },
   {
-    id: 'apprentissage',
-    name: 'Apprentissage',
+    id: 'scolarite',
+    name: 'Scolarité',
     image: universApprentissage,
-    testId: 'icon-category-apprentissage'
+    testId: 'icon-category-scolarite'
   },
   {
     id: 'loisirs',
