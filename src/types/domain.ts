@@ -52,6 +52,7 @@ export interface Activity {
   periodType?: PeriodType | string;
   structureName?: string;
   structureAddress?: string;
+  location?: Location;           // Geographic coordinates for map display
   vacationPeriods?: string[];
   accessibility?: AccessibilityFlags;
   mobility?: Mobility;
@@ -98,6 +99,8 @@ export interface ActivityRaw {
   structures?: {
     name?: string;
     address?: string;
+    location_lat?: number;     // PostGIS lat from structures.location
+    location_lng?: number;     // PostGIS lng from structures.location
   };
   covoiturage_enabled?: boolean;
   vacationType?: VacationType;
