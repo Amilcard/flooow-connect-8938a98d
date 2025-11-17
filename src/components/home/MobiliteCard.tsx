@@ -13,11 +13,11 @@ export const MobiliteCard = () => {
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
+      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col"
       onClick={() => navigate('/eco-mobilite')}
     >
-      {/* Image de fond plein cadre */}
-      <div className="absolute inset-0">
+      {/* Image avec ratio 16:10 */}
+      <div className="relative w-full h-[140px] overflow-hidden">
         <img
           src={ecoMobiliteImg}
           alt="Éco-mobilité"
@@ -28,7 +28,7 @@ export const MobiliteCard = () => {
       </div>
 
       {/* Contenu centré */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
+      <div className="flex flex-col items-center justify-center p-6 md:p-8 text-center flex-1">
         {/* Icône */}
         <div className="mb-4 p-3 rounded-full bg-accent-blue/90 backdrop-blur-sm shadow-lg">
           <Train className="h-6 w-6 text-white" />

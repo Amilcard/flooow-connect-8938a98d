@@ -51,7 +51,7 @@ const ForgotPassword = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col">
         <div className="flex items-center justify-between p-4">
-          <BackButton fallback="/login" variant="ghost" size="sm" showText className="gap-2" />
+          <BackButton fallback="/login" />
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">

@@ -21,7 +21,7 @@ const Header = () => {
             <img
               src={logoFlooow}
               alt="Flooow"
-              className="h-10 md:h-12 w-auto object-contain"
+              className="w-[120px] min-[375px]:w-[140px] md:w-[160px] h-auto max-h-10 object-contain"
             />
           </Link>
 
