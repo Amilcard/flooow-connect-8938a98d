@@ -156,7 +156,17 @@ export const useActivities = (filters?: ActivityFilters) => {
         throw error;
       }
 
-      return (data || []).map((activity) => 
+      // Dédupliquer les activités par ID (car jointure avec availability_slots peut créer des doublons)
+      const seenIds = new Set<string>();
+      const uniqueActivities = (data || []).filter((activity) => {
+        if (seenIds.has(activity.id)) {
+          return false;
+        }
+        seenIds.add(activity.id);
+        return true;
+      });
+
+      return uniqueActivities.map((activity) =>
         mapActivityFromDB({
           ...activity,
           cover: activity.images?.[0],

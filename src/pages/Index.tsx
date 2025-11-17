@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
+import { MaVilleCard } from "@/components/home/MaVilleCard";
+import { BonEspritCard } from "@/components/home/BonEspritCard";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
-import { FamilySpaceSection } from "@/components/home/FamilySpaceSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
@@ -156,7 +157,7 @@ const Index = () => {
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* ========== SECTION 1: OUTILS (AIDES + MOBILITÉS) ========== */}
+            {/* ========== SECTION 1: OUTILS (AIDES + MOBILITÉS + MA VILLE + BON ESPRIT) ========== */}
             <section className="py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div data-tour-id="home-aids-card">
@@ -165,6 +166,8 @@ const Index = () => {
                 <div data-tour-id="home-mobility-card">
                   <MobiliteCard />
                 </div>
+                <MaVilleCard />
+                <BonEspritCard />
               </div>
             </section>
 
@@ -207,11 +210,6 @@ const Index = () => {
                 />
               </section>
             )}
-
-            {/* ========== SECTION 6: POUR VOTRE FAMILLE ========== */}
-            <section className="py-6">
-              <FamilySpaceSection />
-            </section>
           </>
         )}
       </main>
