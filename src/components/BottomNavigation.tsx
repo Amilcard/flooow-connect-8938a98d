@@ -1,4 +1,4 @@
-import { Home, Search, Users, Euro, UserCircle } from "lucide-react";
+import { Home, Search, MapPin, Euro, UserCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
-  { icon: Users, label: "Mes enfants", path: "/mon-compte/enfants", requiresAuth: true },
+  { icon: MapPin, label: "Ma ville", path: "/ma-ville-mon-actu" },
   { icon: Euro, label: "Mes aides", path: "/aides" },
   { icon: UserCircle, label: "Mon compte", path: "/mon-compte", requiresAuth: true },
 ];
@@ -34,9 +34,7 @@ export const BottomNavigation = () => {
       navigate("/login", {
         state: {
           from: item.path,
-          message: item.label === "Mes enfants"
-            ? "Connectez-vous pour gérer vos enfants"
-            : "Connectez-vous pour accéder à votre compte"
+          message: "Connectez-vous pour accéder à votre compte"
         }
       });
       return;

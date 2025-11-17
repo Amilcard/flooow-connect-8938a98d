@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageLayout from "@/components/PageLayout";
+import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, ExternalLink, Phone, Mail, Clock } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -64,14 +64,17 @@ const MaVilleMonActu = () => {
 
   if (isLoading) {
     return (
-      <PageLayout>
-        <div className="container mx-auto px-4 py-6 pb-24">
-          <BackButton />
+      <PageLayout showHeader={false}>
+        <PageHeader
+          title="Ma ville, mon actu"
+          subtitle="Chargement..."
+          backFallback="/home"
+        />
+        <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl">
           <div className="mb-8">
-            <Skeleton className="h-10 w-64 mb-2" />
-            <Skeleton className="h-6 w-96" />
+            <Skeleton className="h-32 w-full" />
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4].map((i) => (
               <Skeleton key={i} className="h-64" />
             ))}
@@ -82,34 +85,30 @@ const MaVilleMonActu = () => {
   }
 
   return (
-    <PageLayout>
-      <div className="container mx-auto px-4 py-6 pb-24">
-        <BackButton />
-        
-        {/* Header */}
-        <div className="mb-8 space-y-4">
-          <h1 className="text-3xl font-bold mb-2">Ma ville, mon actu</h1>
-          <p className="text-muted-foreground">
-            {territory?.name
-              ? `Découvrez l'actualité et les événements de ${territory.name}`
-              : "Découvrez l'actualité et les événements près de chez vous"}
-          </p>
-          
-          {/* Texte d'introduction */}
-          <Card className="bg-accent/30 border-accent">
-            <CardContent className="pt-6">
-              <p className="text-text-secondary leading-relaxed">
-                Retrouve ici les informations de ta ville : actualités, événements sportifs et culturels, 
-                temps forts pour les enfants et les familles, ainsi que les annonces importantes de la mairie 
-                ou des structures locales.
-              </p>
-              <p className="text-text-secondary leading-relaxed mt-3">
-                Ces contenus peuvent évoluer selon ton territoire : consulte régulièrement cette rubrique 
-                pour ne rien manquer des activités et infos près de chez toi.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+    <PageLayout showHeader={false}>
+      <PageHeader
+        title="Ma ville, mon actu"
+        subtitle={territory?.name
+          ? `Découvrez l'actualité et les événements de ${territory.name}`
+          : "Découvrez l'actualité et les événements près de chez vous"}
+        backFallback="/home"
+      />
+
+      <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl">
+        {/* Bandeau d'intro orange */}
+        <Card className="mb-8 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Retrouve ici les informations de ta ville : actualités, événements sportifs et culturels,
+              temps forts pour les enfants et les familles, ainsi que les annonces importantes de la mairie
+              ou des structures locales.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed mt-3">
+              Ces contenus peuvent évoluer selon ton territoire : consulte régulièrement cette rubrique
+              pour ne rien manquer des activités et infos près de chez toi.
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Événements par catégorie */}
         {groupedEvents && Object.keys(groupedEvents).length > 0 ? (

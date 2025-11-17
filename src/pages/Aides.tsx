@@ -128,13 +128,13 @@ const Aides = () => {
       <PageHeader
         title="Aides financières"
         subtitle="Réduisez le coût des activités pour vos enfants"
-        backFallback="/mon-compte"
+        backFallback="/home"
         tourId="aids-page-header"
       />
 
-      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="home-aids-card">
-        {/* Zone Hero CTA principal */}
-        <Card className="mb-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+      <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl" data-tour-id="home-aids-card">
+        {/* Zone Hero CTA principal - Fond bleu clair */}
+        <Card className="mb-8 bg-gradient-to-br from-accent-blue/10 to-accent-blue/5 border-accent-blue/20">
           <CardHeader>
             <CardTitle className="text-xl">Estimez vos aides en quelques clics</CardTitle>
             <CardDescription>

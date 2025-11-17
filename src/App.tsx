@@ -61,7 +61,7 @@ import AgendaCommunity from "./pages/AgendaCommunity";
 import AidesMobilite from "./pages/AidesMobilite";
 import MesEvenementsFavoris from "./pages/MesEvenementsFavoris";
 import MaVilleMonActu from "./pages/MaVilleMonActu";
-import PrixBonEsprit from "./pages/PrixBonEsprit";
+import BonEsprit from "./pages/BonEsprit";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -220,6 +220,7 @@ const App = () => (
           <Route path="/legal/mentions" element={<MentionsLegales />} />
           <Route path="/legal/cgu" element={<CGU />} />
           <Route path="/itineraire" element={<Itineraire />} />
+          <Route path="/bon-esprit" element={<BonEsprit />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

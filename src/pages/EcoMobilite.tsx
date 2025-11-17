@@ -371,7 +371,7 @@ const EcoMobilite = () => {
         tourId="mobility-page-header"
       />
 
-      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="mobility-page">
+      <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl" data-tour-id="mobility-page">
         {/* Intro */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Faites du bien à la planète</h2>
@@ -398,8 +398,8 @@ const EcoMobilite = () => {
           </div>
         )}
 
-        {/* Simulateur ADEME */}
-        <Card className="mb-8 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+        {/* Simulateur ADEME - Fond bleu dominant */}
+        <Card className="mb-8 border-2 border-accent-blue/30 bg-gradient-to-br from-accent-blue/10 to-accent-blue/5">
           <CardHeader>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-primary text-white">
@@ -415,7 +415,7 @@ const EcoMobilite = () => {
           </CardHeader>
           <CardContent>
             <Button
-              className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white"
+              className="w-full md:w-auto"
               onClick={() => window.open('https://nosgestesclimat.fr/simulateur/bilan', '_blank')}
             >
               <Calculator className="mr-2 h-4 w-4" />
