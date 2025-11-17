@@ -19,7 +19,7 @@ import VisualModeToggle from "@/components/VisualModeToggle";
 const UNIVERSE_TO_CATEGORY: Record<string, string> = {
   'sport': 'Sport',
   'culture': 'Culture',
-  'apprentissage': 'Scolarité',
+  'scolarite': 'Scolarité',
   'loisirs': 'Loisirs',
   'vacances': 'Vacances'
 };

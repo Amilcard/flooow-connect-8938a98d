@@ -8,6 +8,22 @@ import type { Activity, ActivityRaw, ActivityCategory } from './domain';
 import { getActivityImage } from '@/lib/imageMapping';
 
 /**
+ * Schema Zod pour validation des créneaux horaires (availability_slots)
+ * Fix pour anomalie 8.10 - Validation stricte des dates
+ */
+export const AvailabilitySlotSchema = z.object({
+  id: z.string().uuid().optional(),
+  activity_id: z.string().uuid().optional(),
+  start: z.string().datetime('Date de début invalide (ISO 8601 requis)'),
+  end: z.string().datetime('Date de fin invalide (ISO 8601 requis)'),
+  capacity: z.number().int().min(0).optional(),
+  day_of_week: z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']).optional(),
+}).refine(
+  (data) => new Date(data.start) < new Date(data.end),
+  { message: "La date de fin doit être après la date de début" }
+);
+
+/**
  * Schema Zod pour validation des activités
  */
 export const ActivityDomainSchema = z.object({
