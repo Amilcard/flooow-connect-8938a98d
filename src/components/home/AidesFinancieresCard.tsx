@@ -1,33 +1,56 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calculator } from "lucide-react";
+import { Calculator, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
 
+/**
+ * Carte portrait "Mes aides financières"
+ * Design moderne avec image plein cadre, texte centré sur overlay
+ */
 export const AidesFinancieresCard = () => {
   const navigate = useNavigate();
 
   return (
-    <Card 
-      className="group cursor-pointer hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-2xl p-6 md:p-8"
+    <Card
+      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
       onClick={() => navigate('/aides')}
     >
-      <div className="flex items-start gap-4">
-        <div className="p-3 rounded-xl bg-primary text-white shadow-md">
-          <Calculator className="h-6 w-6" />
+      {/* Image de fond plein cadre */}
+      <div className="absolute inset-0">
+        <img
+          src={aidesFinancieresImg}
+          alt="Aides financières"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        />
+        {/* Gradient overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      </div>
+
+      {/* Contenu centré */}
+      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
+        {/* Icône */}
+        <div className="mb-4 p-3 rounded-full bg-primary/90 backdrop-blur-sm shadow-lg">
+          <Calculator className="h-6 w-6 text-white" />
         </div>
-        <div className="flex-1">
-          <h2 className="text-xl md:text-2xl font-bold text-text-main mb-2 group-hover:text-primary transition-colors">
-            Mes aides financières
-          </h2>
-          <p className="text-sm md:text-base text-text-muted mb-4 leading-relaxed">
-            Estimez rapidement les aides auxquelles votre famille peut avoir droit.
-          </p>
-          <Button 
-            className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 h-11 rounded-xl shadow-md hover:shadow-lg transition-all"
-          >
-            Découvrir mes aides
-          </Button>
-        </div>
+
+        {/* Titre */}
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+          Mes aides financières
+        </h2>
+
+        {/* Sous-titre */}
+        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
+          Estimez rapidement les aides auxquelles votre famille peut avoir droit
+        </p>
+
+        {/* CTA discret */}
+        <Button
+          className="bg-white/95 hover:bg-white text-primary font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
+        >
+          Découvrir mes aides
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </div>
     </Card>
   );
