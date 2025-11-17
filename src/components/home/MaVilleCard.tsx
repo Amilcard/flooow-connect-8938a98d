@@ -2,55 +2,53 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Newspaper, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import actualiteVilleImg from "@/assets/actualite-ville.jpg";
 
 /**
- * Carte portrait "Ma ville, mon actu"
- * Design moderne avec image plein cadre, texte centré sur overlay
+ * Banner compact "Ma ville, mon actu"
+ *
+ * Design System LOT 1 Optimization:
+ * - Height: 140px (compact banner)
+ * - Gradient background with icon pattern
+ * - No image, clean gradient design
+ * - Removed excessive whitespace
  */
 export const MaVilleCard = () => {
   const navigate = useNavigate();
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col"
+      className="group relative overflow-hidden rounded-2xl cursor-pointer h-[140px] border-0 shadow-md hover:shadow-xl transition-all duration-300"
       onClick={() => navigate('/ma-ville-mon-actu')}
       data-tour-id="home-city-events"
     >
-      {/* Image avec ratio 16:10 */}
-      <div className="relative w-full h-[140px] overflow-hidden">
-        <img
-          src={actualiteVilleImg}
-          alt="Ma ville, mon actu"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        {/* Gradient overlay pour lisibilité */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      {/* Gradient background bleu clair */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#E0F2FE] to-[#DBEAFE]" />
+
+      {/* Icon pattern background */}
+      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+        <Newspaper className="h-20 w-20 text-[#0EA5E9] opacity-10" />
       </div>
 
-      {/* Contenu centré */}
-      <div className="flex flex-col items-center justify-center p-6 md:p-8 text-center flex-1">
-        {/* Icône */}
-        <div className="mb-4 p-3 rounded-full bg-primary/90 backdrop-blur-sm shadow-lg">
-          <Newspaper className="h-6 w-6 text-white" />
-        </div>
-
+      {/* Content */}
+      <div className="relative h-full flex flex-col justify-center p-5 pr-28">
         {/* Titre */}
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+        <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
           Ma ville, mon actu
-        </h2>
+        </h3>
 
         {/* Sous-titre */}
-        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
-          Tous les événements, sorties et animations près de chez vous
+        <p className="text-sm text-gray-700 mb-3 leading-snug">
+          Tous les événements près de chez vous
         </p>
 
-        {/* CTA discret */}
+        {/* CTA */}
         <Button
-          className="bg-white/95 hover:bg-white text-primary font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
+          variant="ghost"
+          size="sm"
+          className="w-fit text-[#0EA5E9] hover:text-[#0EA5E9] hover:bg-white/50 p-0 h-auto font-semibold"
         >
-          Découvrir les événements
-          <ArrowRight className="ml-2 h-4 w-4" />
+          Découvrir
+          <ArrowRight className="ml-1 h-3.5 w-3.5" />
         </Button>
       </div>
     </Card>
