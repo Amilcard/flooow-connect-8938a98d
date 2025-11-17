@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import AuthNavigation from "@/components/authentification/AuthNavigation";
 import { NotificationBadge } from "@/components/NotificationBadge";
-import logoFlooow from "@/assets/logo-flooow.png";
+import { HeaderLogo } from "@/components/common/HeaderLogo";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,13 +17,7 @@ const Header = () => {
       <div className="container px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo FLOOOW */}
-          <Link to="/" className="flex items-center">
-            <img
-              src={logoFlooow}
-              alt="Flooow"
-              className="w-[120px] min-[375px]:w-[140px] md:w-[160px] h-auto max-h-10 object-contain"
-            />
-          </Link>
+          <HeaderLogo />
 
           {/* Actions */}
           <div className="flex items-center gap-2">

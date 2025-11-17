@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useSmartBack } from "@/hooks/useSmartBack";
 
 interface BackButtonProps {
@@ -59,7 +59,7 @@ export const BackButton = ({
         aria-label={label}
         className={`${pillClasses} ${className}`}
       >
-        <ArrowLeft className={showText ? "mr-2 text-gray-700" : "text-gray-700"} size={20} strokeWidth={2} />
+        <ChevronLeft className={showText ? "mr-2 text-gray-700" : "text-gray-700"} size={24} strokeWidth={2} />
         {showText && label}
       </Button>
     </>
