@@ -1,4 +1,4 @@
-import { MapPin, Users, Accessibility, Heart, Bus, Bike, Car } from "lucide-react";
+import { MapPin, Users, Accessibility, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,7 @@ import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
 
 /**
- * [D1] ActivityCard utilise le type domain Activity unifié
- * Props compatibles avec Activity mais permet aussi passage direct des champs
+ * ActivityCard - Optimized for grid layout with reduced whitespace
  */
 interface ActivityCardProps {
   id: string;
@@ -33,13 +32,11 @@ interface ActivityCardProps {
     covoit?: boolean;
   };
   onRequestClick?: () => void;
-  // Nouveaux champs pour 10 axes
   isHealthFocused?: boolean;
   isApa?: boolean;
   isInsertionPro?: boolean;
   insertionType?: string;
   complexityScore?: number;
-  // Nouveaux champs pour tarification vacances
   vacationType?: 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
   priceUnit?: string;
   hasAccommodation?: boolean;
@@ -50,7 +47,7 @@ const getCategoryImage = (category: string): string => {
     Sport: activitySportImg,
     Loisirs: activityLoisirsImg,
     Vacances: activityVacancesImg,
-    Apprentissage: activityCultureImg, // Renamed from Scolarité
+    Apprentissage: activityCultureImg,
     Culture: activityCultureImg,
     "Activités Innovantes": activityCultureImg,
   };
@@ -73,26 +70,25 @@ export const ActivityCard = ({
   aidesEligibles = [],
   mobility,
   onRequestClick,
-  isHealthFocused = false,
-  isApa = false,
-  isInsertionPro = false,
-  insertionType,
-  complexityScore,
   vacationType,
   priceUnit,
-  hasAccommodation,
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
   const displayImage = image || fallbackImage;
 
-  // Calculate price after aids (simulation)
   const priceAfterAids = price > 100 ? Math.round(price * 0.7) : price;
   const hasAids = priceAfterAids < price || aidesEligibles.length > 0;
+
+  // Extract city from address
+  const getCity = (address: string) => {
+    const parts = address.split(',');
+    return parts[1]?.trim() || parts[0];
+  };
   
   return (
-    <Card className="card-wetransfer group overflow-hidden cursor-pointer">
-      {/* Image Container - WeTransfer style avec rounded corners */}
-      <div className="relative w-[280px] h-[210px] overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft">
+    <Card className="card-wetransfer group overflow-hidden cursor-pointer h-full flex flex-col">
+      {/* Image Container - Reduced height */}
+      <div className="relative w-full h-[180px] overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft flex-shrink-0">
         <img
           src={displayImage}
           alt={title}
@@ -103,63 +99,44 @@ export const ActivityCard = ({
           }}
         />
         
-        {/* Badge GRATUIT - Style WeTransfer arrondi */}
+        {/* Badge GRATUIT */}
         {price === 0 && (
           <div 
-            className="absolute top-4 right-4 text-white font-bold text-xs uppercase px-4 py-2 rounded-full shadow-xl z-10 backdrop-blur-sm"
+            className="absolute top-3 right-3 text-white font-bold text-xs uppercase px-3 py-1.5 rounded-full shadow-xl z-10 backdrop-blur-sm"
             style={{ background: 'var(--gradient-pink)' }}
           >
             Gratuit
           </div>
         )}
         
-        {/* BADGES OVERLAY - Style WeTransfer */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[calc(100%-5rem)]">
-          {/* Badge Univers */}
+        {/* BADGES OVERLAY */}
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
           <Badge
-            className="bg-white/95 backdrop-blur-md text-foreground shadow-md text-xs font-semibold px-3 py-1.5 rounded-full border-0"
-            aria-label={`Catégorie: ${category}`}
+            className="bg-white/95 backdrop-blur-md text-foreground shadow-md text-xs font-semibold px-2.5 py-1 rounded-full border-0"
+            aria-label={"Catégorie: " + category}
           >
             {category}
           </Badge>
           
-          {/* Badge Type d'accueil (uniquement pour vacances) */}
           {vacationType === 'sejour_hebergement' && (
-            <Badge
-              variant="secondary"
-              className="bg-purple-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
-              aria-label="Séjour / Colonie"
-            >
-              Séjour / Colonie
+            <Badge variant="secondary" className="bg-purple-500/90 backdrop-blur-sm text-white shadow-sm text-xs px-2 py-0.5">
+              Séjour
             </Badge>
           )}
           {vacationType === 'centre_loisirs' && (
-            <Badge
-              variant="secondary"
-              className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
-              aria-label="Centre de loisirs"
-            >
-              Centre de loisirs
+            <Badge variant="secondary" className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs px-2 py-0.5">
+              Centre
             </Badge>
           )}
           {vacationType === 'stage_journee' && (
-            <Badge
-              variant="secondary"
-              className="bg-amber-500/90 backdrop-blur-sm text-white shadow-sm text-xs"
-              aria-label="Stage"
-            >
+            <Badge variant="secondary" className="bg-amber-500/90 backdrop-blur-sm text-white shadow-sm text-xs px-2 py-0.5">
               Stage
             </Badge>
           )}
           
-          {/* Badge Accessibilité PMR */}
           {hasAccessibility && (
-            <Badge
-              variant="secondary"
-              className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs"
-              aria-label="Accessible PMR"
-            >
-              <Accessibility size={12} className="mr-1" />
+            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs px-2 py-0.5">
+              <Accessibility size={12} className="mr-0.5" />
               PMR
             </Badge>
           )}
@@ -169,43 +146,41 @@ export const ActivityCard = ({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-2 bg-white/90 hover:bg-white h-8 w-8"
+          className="absolute top-2 right-2 bg-white/90 hover:bg-white h-7 w-7"
           onClick={(e) => {
             e.stopPropagation();
             console.log("Favori:", title);
           }}
           aria-label="Ajouter aux favoris"
         >
-          <Heart className="w-4 h-4" />
+          <Heart className="w-3.5 h-3.5" />
         </Button>
       </div>
 
-      {/* CONTENT CONTAINER - 70% */}
-      <div className="p-4 space-y-3 mb-2">
+      {/* CONTENT CONTAINER - Reduced padding and spacing */}
+      <div className="p-3 space-y-2 flex-1 flex flex-col">
         
         {/* TITLE */}
-        <h3 className="font-semibold text-base leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">
+        <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.25rem]">
           {title}
         </h3>
 
-        {/* METADATA */}
-        <div className="space-y-1.5 text-sm text-muted-foreground">
-          {/* Organization + Location */}
+        {/* METADATA - Reduced spacing */}
+        <div className="space-y-1 text-sm text-muted-foreground flex-1">
           {structureName && (
-            <div className="flex items-start gap-1.5">
-              <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex items-start gap-1">
+              <MapPin className="w-3 h-3 shrink-0 mt-0.5" aria-hidden="true" />
               <span className="line-clamp-1 text-xs">
                 {structureName}
-                {structureAddress && ` • ${structureAddress.split(',')[1]?.trim() || structureAddress.split(',')[0]}`}
+                {structureAddress && " • " + getCity(structureAddress)}
               </span>
             </div>
           )}
 
-          {/* Ages + Période + Distance */}
           <div className="flex items-center gap-2 text-xs flex-wrap">
             {ageRange && (
-              <div className="flex items-center gap-1">
-                <Users className="w-3.5 h-3.5" aria-hidden="true" />
+              <div className="flex items-center gap-0.5">
+                <Users className="w-3 h-3" aria-hidden="true" />
                 <span>{ageRange}</span>
               </div>
             )}
@@ -213,7 +188,7 @@ export const ActivityCard = ({
             {periodType && (
               <>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
-                <span className="text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   {periodType === 'annual' || periodType === 'trimester' 
                     ? 'Année scolaire' 
                     : 'Vacances'}
@@ -224,25 +199,25 @@ export const ActivityCard = ({
             {distance && (
               <>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
-                <span>{distance}</span>
+                <span className="text-xs">{distance}</span>
               </>
             )}
           </div>
         </div>
 
-        {/* PRICING + CTA */}
-        <div className="flex items-end justify-between pt-2 border-t border-border">
-          <div className="space-y-0.5">
+        {/* PRICING + CTA - Reduced spacing */}
+        <div className="flex items-end justify-between pt-2 border-t border-border mt-auto">
+          <div className="space-y-0">
             {estimatedAidAmount && estimatedAidAmount > 0 ? (
               <>
                 <div className="text-xs line-through text-muted-foreground">
                   {price}€
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xl font-bold text-foreground">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-bold text-foreground">
                     {Math.max(0, price - estimatedAidAmount)}€
                   </span>
-                  <Badge variant="secondary" className="text-[10px] h-5 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                  <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-green-100 text-green-700">
                     -{estimatedAidAmount}€
                   </Badge>
                 </div>
@@ -252,19 +227,19 @@ export const ActivityCard = ({
                 <div className="text-xs line-through text-muted-foreground">
                   {price}€
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xl font-bold text-primary">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-bold text-primary">
                     {priceAfterAids}€
                   </span>
-                  <Badge variant="secondary" className="text-[10px] h-5 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                  <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-green-100 text-green-700">
                     -30%
                   </Badge>
                 </div>
               </>
             ) : (
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl font-bold text-foreground">
-                  {price === 0 ? 'Gratuit' : `${price}€`}
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg font-bold text-foreground">
+                  {price === 0 ? 'Gratuit' : price + '€'}
                 </span>
                 {price > 0 && priceUnit && (
                   <span className="text-xs text-muted-foreground font-normal">
@@ -284,7 +259,7 @@ export const ActivityCard = ({
               </p>
             )}
             {(hasFinancialAid || aidesEligibles.length > 0) && !estimatedAidAmount && !hasAids && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-1 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-0.5 bg-green-100 text-green-700">
                 💰 Aides dispo
               </Badge>
             )}
@@ -292,9 +267,9 @@ export const ActivityCard = ({
 
           <Button
             size="sm"
-            className="h-8 text-xs px-4"
+            className="h-8 text-xs px-3 flex-shrink-0"
             onClick={onRequestClick}
-            aria-label={`Intéressé par ${title}`}
+            aria-label={"Intéressé par " + title}
           >
             Je suis intéressé
           </Button>
