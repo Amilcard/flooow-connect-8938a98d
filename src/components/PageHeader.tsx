@@ -1,13 +1,10 @@
 import { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { BackButton } from "@/components/BackButton";
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
   showBackButton?: boolean;
-  onBackClick?: () => void;
   backFallback?: string;
   rightContent?: ReactNode;
   /** ID pour Usetiful tour */
@@ -17,52 +14,39 @@ interface PageHeaderProps {
 /**
  * Composant de bandeau blanc standard pour l'espace parent
  * Remplace les anciens bandeaux orange pour uniformiser l'UI
+ * Harmonized with all other page headers (LOT F)
  *
  * Fond: blanc (#FFFFFF) avec ombre légère
- * Hauteur: 64px (h-16)
+ * Hauteur: auto (flexible)
  * Structure: flèche retour (gauche) | titre + sous-titre (centre/gauche) | icônes/actions (droite)
  */
 export const PageHeader = ({
   title,
   subtitle,
   showBackButton = true,
-  onBackClick,
-  backFallback = -1,
+  backFallback,
   rightContent,
   tourId,
 }: PageHeaderProps) => {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    if (onBackClick) {
-      onBackClick();
-    } else if (typeof backFallback === 'string') {
-      navigate(backFallback);
-    } else {
-      navigate(backFallback as number);
-    }
-  };
-
   return (
     <header
       className="bg-white border-b border-border shadow-sm sticky top-0 z-50"
       data-tour-id={tourId}
     >
-      <div className="container h-16 flex items-center justify-between px-4">
-        {/* Left: Back button - Minimalist design */}
-        <div className="flex items-center gap-3">
+      <div className="container flex items-center justify-between px-4 py-3">
+        {/* Left: Back button + Title/subtitle */}
+        <div className="flex items-start gap-3 flex-1 min-w-0">
           {showBackButton && (
-            <button
-              onClick={handleBack}
-              className="flex items-center justify-center h-8 w-8 text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md hover:bg-muted/50"
-              aria-label="Retour"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
+            <BackButton
+              fallback={backFallback}
+              positioning="relative"
+              size="sm"
+              className="shrink-0"
+            />
           )}
 
           {/* Title and subtitle */}
-          <div className="flex flex-col flex-1">
+          <div className="flex flex-col flex-1 min-w-0">
             <h1 className="text-lg font-semibold text-foreground leading-tight">
               {title}
             </h1>
@@ -76,7 +60,7 @@ export const PageHeader = ({
 
         {/* Right: Optional content (icons, avatar, etc.) */}
         {rightContent && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-4 shrink-0">
             {rightContent}
           </div>
         )}

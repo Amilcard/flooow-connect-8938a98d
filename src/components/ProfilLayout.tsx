@@ -91,6 +91,7 @@ export const ProfilLayout = ({
               fallback={backFallback}
               variant="ghost"
               size="sm"
+              positioning="relative"
               className="text-white hover:bg-white/20 shrink-0"
             />
             <div className="min-w-0 flex-1">
