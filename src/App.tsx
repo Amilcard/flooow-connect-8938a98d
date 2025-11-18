@@ -22,6 +22,7 @@ import DashboardRedirect from "./pages/DashboardRedirect";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import Activities from "./pages/Activities";
 import Search from "./pages/Search";
+import SearchResults from "./pages/SearchResults";
 import ActivityDetail from "./pages/ActivityDetail";
 import Booking from "./pages/Booking";
 import BookingRecap from "./pages/BookingRecap";
@@ -162,7 +163,7 @@ const App = () => (
           <Route path="/demo/lemoine" element={<DemoLemoine />} />
 
           <Route path="/activities" element={<Activities />} />
-          <Route path="/search" element={<Search />} />
+          <Route path="/search" element={<SearchResults />} />
           <Route path="/search/filters" element={<SearchFilters />} />
           <Route path="/activity/:id" element={<ActivityDetail />} />
           <Route path="/booking/:id" element={<Booking />} />
