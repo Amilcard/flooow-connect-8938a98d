@@ -90,34 +90,34 @@ export function AidCard({ aid }: AidCardProps) {
 
       {/* PLAIN TEXT MODE CONTACTS */}
       {isPlainTextMode && (
-        <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
-          <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <div className="space-y-2 mb-4 pb-4 border-b border-gray-100">
+          <p className="font-poppins text-[11px] font-semibold text-gray-400 uppercase tracking-wide">
             Contact
           </p>
 
           {/* Phone (plain text) */}
           {aid.telephone && (
-            <div className="space-y-1">
-              <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
-                <Phone size={14} className="text-gray-400 shrink-0 mt-0.5" />
-                <span>{aid.telephone}</span>
-              </div>
+            <div className="flex items-start gap-2 font-poppins text-xs text-gray-600 leading-snug">
+              <Phone size={12} className="text-gray-400 shrink-0 mt-0.5" />
+              <span>{aid.telephone}</span>
             </div>
           )}
 
           {/* Permanence (plain text) */}
           {aid.permanence && (
-            <div className="flex items-start gap-2 font-poppins text-xs text-gray-500">
-              <Clock size={14} className="text-gray-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 font-poppins text-[11px] text-gray-500 leading-snug">
+              <Clock size={12} className="text-gray-400 shrink-0 mt-0.5" />
               <span>{aid.permanence}</span>
             </div>
           )}
 
-          {/* URL Info (plain text) */}
+          {/* URL Info (plain text) - truncated for better readability */}
           {aid.url_info && (
-            <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
-              <Info size={14} className="text-gray-400 shrink-0 mt-0.5" />
-              <span className="break-all">{aid.url_info}</span>
+            <div className="flex items-start gap-2 font-poppins text-xs text-gray-600">
+              <Info size={12} className="text-gray-400 shrink-0 mt-0.5" />
+              <span className="truncate">
+                {aid.url_info.replace(/^https?:\/\/(www\.)?/, '')}
+              </span>
             </div>
           )}
         </div>
