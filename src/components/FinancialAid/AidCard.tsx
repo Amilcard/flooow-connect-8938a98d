@@ -1,18 +1,14 @@
 /**
- * LOT 5 - AidCard Component
+ * LOT 5 - AidCard Component (Updated with Contacts & CTAs)
  * Redesigned aid card with:
- * - Hover effects
- * - Amount badge (prominent green gradient)
- * - Age/Type chips
- * - Eligibility indicators
- * - Organizer info
- * - CTA link
- * Refactored with Tailwind CSS for consistency
+ * - Clickable phone numbers
+ * - In-app webview links
+ * - Primary and secondary CTAs
+ * - Contact information (phone, email, website)
  */
 
-import { Baby, Building2, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { Building2, Phone, Mail, ExternalLink, Globe } from 'lucide-react';
 import { FinancialAid } from '@/types/FinancialAid';
-import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 
 interface AidCardProps {
@@ -20,82 +16,127 @@ interface AidCardProps {
 }
 
 export function AidCard({ aid }: AidCardProps) {
-  const navigate = useNavigate();
+  const handleCTAClick = (url: string, openMode: string) => {
+    // In-app webview mode (if supported by platform)
+    if (openMode === 'in_app_webview') {
+      // For web, open in new tab - mobile app can intercept and open webview
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
-  const handleClick = () => {
-    // Navigate to aid detail page
-    navigate(`/aide/${aid.id}`);
+  const handlePhoneClick = (telHref: string | null) => {
+    if (telHref) {
+      window.location.href = telHref;
+    }
   };
 
   return (
-    <div
-      className="bg-white border-2 border-gray-200 rounded-2xl p-5 transition-all duration-200 cursor-pointer hover:border-[#FF8C42] hover:shadow-[0_8px_24px_rgba(255,140,66,0.15)] hover:-translate-y-1 group"
-      onClick={handleClick}
-    >
-      {/* Header: Title + Amount Badge */}
+    <div className="bg-white border-2 border-gray-200 rounded-2xl p-5 transition-all duration-200 hover:border-[#FF8C42] hover:shadow-[0_8px_24px_rgba(255,140,66,0.15)]">
+      {/* Header: Title + Category Badge */}
       <div className="flex justify-between items-start mb-3">
         {/* Title */}
         <h3 className="flex-1 font-poppins text-[17px] font-semibold text-gray-900 leading-snug mr-2">
-          {aid.title}
+          {aid.name}
         </h3>
 
-        {/* Amount Badge */}
-        <div className="bg-gradient-to-br from-[#DCFCE7] to-[#D1FAE5] text-emerald-500 px-3 py-1.5 rounded-lg font-poppins text-[15px] font-bold whitespace-nowrap shadow-[0_2px_6px_rgba(16,185,129,0.2)]">
-          {aid.amount}
-        </div>
+        {/* Category Badge */}
+        <Badge className="bg-gradient-to-br from-[#DCFCE7] to-[#D1FAE5] text-emerald-600 px-3 py-1 rounded-lg font-poppins text-xs font-semibold border-0 shadow-sm whitespace-nowrap">
+          {aid.short_label}
+        </Badge>
       </div>
 
-      {/* Meta Chips Row: Age + Type */}
-      <div className="flex gap-2 mb-3 flex-wrap">
-        {/* Age Chip */}
-        <Badge variant="secondary" className="inline-flex items-center gap-1 bg-blue-50 text-[#4A90E2] px-2.5 py-1 rounded-md font-poppins text-[13px] font-semibold border-0">
-          <Baby size={14} />
-          {aid.age_range}
-        </Badge>
+      {/* Territory Scope */}
+      <div className="font-poppins text-[13px] font-medium text-gray-400 mb-3 flex items-center gap-1">
+        <Globe size={14} />
+        {aid.territory_scope}
+      </div>
 
-        {/* Type Chip */}
-        <Badge variant="secondary" className="inline-flex items-center gap-1 bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-poppins text-xs font-medium border-0">
-          {aid.type}
-        </Badge>
+      {/* Who is eligible */}
+      <div className="mb-3">
+        <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+          Pour qui ?
+        </p>
+        <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed">
+          {aid.who}
+        </p>
       </div>
 
       {/* Description */}
-      <p className="font-poppins text-sm font-normal text-gray-500 leading-relaxed mb-3 line-clamp-3">
-        {aid.description}
+      <p className="font-poppins text-sm font-normal text-gray-500 leading-relaxed mb-4">
+        {aid.description_parent}
       </p>
 
-      {/* Organizer */}
-      <div className="font-poppins text-[13px] font-medium text-gray-400 mb-4 flex items-center gap-1">
-        <Building2 size={14} />
-        {aid.organizer}
-      </div>
+      {/* Contacts Section */}
+      {(aid.contacts.phone || aid.contacts.email) && (
+        <div className="mb-4 pb-4 border-b border-gray-200">
+          <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            Contact
+          </p>
 
-      {/* Footer: Eligibility + CTA */}
-      <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-        {/* Eligibility Indicator */}
-        {aid.is_eligible && (
-          <div className="flex items-center gap-1 font-poppins text-[13px] font-semibold text-emerald-500">
-            <CheckCircle size={16} className="text-emerald-500" />
-            Éligible
+          <div className="space-y-2">
+            {/* Phone */}
+            {aid.contacts.phone && (
+              <div>
+                {aid.contacts.phone.tel_href ? (
+                  <button
+                    onClick={() => handlePhoneClick(aid.contacts.phone!.tel_href)}
+                    className="flex items-center gap-2 font-poppins text-sm font-medium text-[#4A90E2] hover:text-[#3A7BC2] transition-colors"
+                  >
+                    <Phone size={14} />
+                    {aid.contacts.phone.display}
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 font-poppins text-sm font-medium text-gray-600">
+                    <Phone size={14} />
+                    {aid.contacts.phone.display}
+                  </div>
+                )}
+                {aid.contacts.phone.note && (
+                  <p className="font-poppins text-xs text-gray-400 mt-1 ml-5">
+                    {aid.contacts.phone.note}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Email */}
+            {aid.contacts.email && (
+              <a
+                href={`mailto:${aid.contacts.email}`}
+                className="flex items-center gap-2 font-poppins text-sm font-medium text-[#4A90E2] hover:text-[#3A7BC2] transition-colors"
+              >
+                <Mail size={14} />
+                {aid.contacts.email}
+              </a>
+            )}
           </div>
-        )}
-
-        {aid.check_eligibility_needed && !aid.is_eligible && (
-          <div className="flex items-center gap-1 font-poppins text-[13px] font-semibold text-amber-500">
-            <AlertCircle size={16} className="text-amber-500" />
-            Vérifier
-          </div>
-        )}
-
-        {!aid.is_eligible && !aid.check_eligibility_needed && (
-          <div className="w-20"></div>
-        )}
-
-        {/* CTA Link */}
-        <div className="text-[#FF8C42] font-poppins text-sm font-semibold flex items-center gap-1 transition-all duration-200 group-hover:gap-2">
-          En savoir plus
-          <ArrowRight size={16} />
         </div>
+      )}
+
+      {/* CTAs Section */}
+      <div className="space-y-2">
+        {/* Primary CTA */}
+        <button
+          onClick={() => handleCTAClick(aid.primary_cta.url, aid.primary_cta.open_mode)}
+          className="w-full bg-[#FF8C42] hover:bg-[#FF7A28] text-white font-poppins text-sm font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          {aid.primary_cta.label}
+          <ExternalLink size={16} />
+        </button>
+
+        {/* Secondary CTAs */}
+        {aid.secondary_ctas.map((cta, index) => (
+          <button
+            key={index}
+            onClick={() => handleCTAClick(cta.url, cta.open_mode)}
+            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-poppins text-sm font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            {cta.label}
+            <ExternalLink size={14} />
+          </button>
+        ))}
       </div>
     </div>
   );
