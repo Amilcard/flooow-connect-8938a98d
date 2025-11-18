@@ -1,54 +1,52 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Award, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Banner compact "Prix Bon Esprit"
- *
- * Design System LOT 1 Optimization:
- * - Height: 140px (compact banner)
- * - Gradient background with icon pattern
- * - No image, clean gradient design
- * - Removed excessive whitespace
+ * Hero Tile "Prix Bon Esprit"
+ * Updated UI/UX: Visual + aligned title/subtitle (secondary role)
  */
 export const BonEspritCard = () => {
   const navigate = useNavigate();
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-2xl cursor-pointer h-[140px] border-0 shadow-md hover:shadow-xl transition-all duration-300"
+      className="group relative overflow-hidden rounded-2xl cursor-pointer h-[280px] border-0 shadow-md hover:shadow-xl transition-all duration-300"
       onClick={() => navigate('/bon-esprit')}
       data-tour-id="home-bon-esprit"
     >
-      {/* Gradient background lavande/violet */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#F3E8FF] to-[#E9D5FF]" />
-
-      {/* Icon pattern background */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-        <Award className="h-20 w-20 text-[#9333EA] opacity-10" />
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&auto=format&fit=crop&q=80"
+          alt="Entraide et solidarité"
+          className="w-full h-full object-cover opacity-85"
+        />
+        {/* Overlay gradient for text readability - slightly softer */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10" />
       </div>
 
       {/* Content */}
-      <div className="relative h-full flex flex-col justify-center p-5 pr-28">
+      <div className="relative h-full flex flex-col justify-end p-6">
         {/* Titre */}
-        <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+        <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
           Prix Bon Esprit
         </h3>
 
         {/* Sous-titre */}
-        <p className="text-sm text-gray-700 mb-3 leading-snug">
-          Votez pour les héros de votre quartier
+        <p className="text-sm text-white/90 mb-4 leading-snug">
+          Votez pour les héros de votre quartier.
         </p>
 
         {/* CTA */}
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
-          className="w-fit text-[#9333EA] hover:text-[#9333EA] hover:bg-white/50 p-0 h-auto font-semibold"
+          className="w-fit bg-white text-gray-900 hover:bg-white/90 font-semibold"
         >
-          Voter
-          <ArrowRight className="ml-1 h-3.5 w-3.5" />
+          Je vote
+          <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </Card>

@@ -1,53 +1,51 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Train, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Banner compact "Mes trajets et mobilités"
- *
- * Design System LOT 1 Optimization:
- * - Height: 140px (compact banner)
- * - Gradient background with icon pattern
- * - No image, clean gradient design
- * - Removed excessive whitespace
+ * Hero Tile "Mes trajets"
+ * Updated UI/UX: Visual + aligned title/subtitle
  */
 export const MobiliteCard = () => {
   const navigate = useNavigate();
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-2xl cursor-pointer h-[140px] border-0 shadow-md hover:shadow-xl transition-all duration-300"
+      className="group relative overflow-hidden rounded-2xl cursor-pointer h-[280px] border-0 shadow-md hover:shadow-xl transition-all duration-300"
       onClick={() => navigate('/eco-mobilite')}
     >
-      {/* Gradient background vert */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#DCFCE7] to-[#D1FAE5]" />
-
-      {/* Icon pattern background */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-        <Train className="h-20 w-20 text-[#10B981] opacity-10" />
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop&q=80"
+          alt="Famille en mouvement"
+          className="w-full h-full object-cover opacity-90"
+        />
+        {/* Overlay gradient for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
       </div>
 
       {/* Content */}
-      <div className="relative h-full flex flex-col justify-center p-5 pr-28">
+      <div className="relative h-full flex flex-col justify-end p-6">
         {/* Titre */}
-        <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
-          Mes trajets et mobilités
+        <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
+          Mes trajets
         </h3>
 
         {/* Sous-titre */}
-        <p className="text-sm text-gray-700 mb-3 leading-snug">
-          Solutions éco-responsables
+        <p className="text-sm text-white/90 mb-4 leading-snug">
+          Préparer le trajet jusqu'à l'activité sans voiture.
         </p>
 
         {/* CTA */}
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
-          className="w-fit text-[#10B981] hover:text-[#10B981] hover:bg-white/50 p-0 h-auto font-semibold"
+          className="w-fit bg-white text-gray-900 hover:bg-white/90 font-semibold"
         >
-          Voir les solutions
-          <ArrowRight className="ml-1 h-3.5 w-3.5" />
+          Voir les trajets possibles
+          <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </Card>
