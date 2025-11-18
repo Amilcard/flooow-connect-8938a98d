@@ -15,7 +15,7 @@ import { Bell, Calendar, MessageCircle, DollarSign } from "lucide-react";
 
 interface ActualiteCardProps {
   gradient: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<any>;
   text: string;
   onClick: () => void;
 }
