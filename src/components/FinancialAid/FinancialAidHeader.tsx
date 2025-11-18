@@ -1,6 +1,7 @@
 /**
  * LOT 5 - FinancialAidHeader Component
  * Enhanced header with gradient background, Coins icon, and proper typography
+ * Refactored with Tailwind CSS for consistency
  */
 
 import { Coins } from 'lucide-react';
@@ -8,78 +9,34 @@ import { BackButton } from '@/components/BackButton';
 
 export function FinancialAidHeader() {
   return (
-    <div className="financial-aid-header" style={{
-      position: 'relative',
-      background: 'linear-gradient(135deg, #FEF3E2 0%, #FFE8CC 100%)',
-      padding: '24px 16px',
-      overflow: 'hidden'
-    }}>
+    <div className="relative bg-gradient-to-br from-[#FEF3E2] to-[#FFE8CC] px-4 py-6 overflow-hidden">
       {/* Background Pattern */}
-      <div style={{
-        position: 'absolute',
-        top: '-20px',
-        right: '-20px',
-        transform: 'rotate(15deg)',
-        opacity: 0.08,
-        zIndex: 1
-      }}>
-        <Coins size={120} color="#F59E0B" />
+      <div className="absolute -top-5 -right-5 rotate-[15deg] opacity-[0.08] z-[1]">
+        <Coins size={120} className="text-amber-500" />
       </div>
 
       {/* Content */}
-      <div style={{
-        position: 'relative',
-        zIndex: 2
-      }}>
+      <div className="relative z-[2]">
         {/* Back Button */}
-        <div style={{ marginBottom: '16px' }}>
+        <div className="mb-4">
           <BackButton />
         </div>
 
         {/* Icon + Title Row */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '8px'
-        }}>
+        <div className="flex items-center gap-3 mb-2">
           {/* Icon Container */}
-          <div style={{
-            width: '48px',
-            height: '48px',
-            background: '#FFFFFF',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0px 2px 8px rgba(245, 158, 11, 0.2)'
-          }}>
-            <Coins size={28} color="#F59E0B" />
+          <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-[0_2px_8px_rgba(245,158,11,0.2)]">
+            <Coins size={28} className="text-amber-500" />
           </div>
 
           {/* Title */}
-          <h1 style={{
-            fontFamily: 'Poppins, sans-serif',
-            fontSize: '24px',
-            fontWeight: 700,
-            color: '#111827',
-            lineHeight: 1.2,
-            margin: 0
-          }}>
+          <h1 className="font-poppins text-2xl font-bold text-gray-900 leading-tight">
             Aides financières
           </h1>
         </div>
 
         {/* Subtitle */}
-        <p style={{
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '15px',
-          fontWeight: 400,
-          color: '#6B7280',
-          lineHeight: 1.5,
-          marginTop: '8px',
-          marginBottom: 0
-        }}>
+        <p className="font-poppins text-[15px] font-normal text-gray-500 leading-relaxed mt-2">
           Réduisez le coût des activités pour vos enfants grâce aux aides disponibles
         </p>
       </div>
