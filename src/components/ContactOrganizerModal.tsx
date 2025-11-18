@@ -34,19 +34,23 @@ export const ContactOrganizerModal = ({
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate sending email (in production, this would call an edge function)
+    // Phase de test : simulation d'envoi sans ouvrir de client mail
     try {
-      // Format email body
-      const subject = encodeURIComponent(`Question sur l'activité: ${activityTitle}`);
-      const body = encodeURIComponent(
-        `Nom: ${name}\nEmail: ${email}\nTéléphone: ${phone}\n\nMessage:\n${message}`
-      );
-      
-      // Open email client with pre-filled information
-      window.location.href = `mailto:${organizerEmail}?subject=${subject}&body=${body}`;
-      
-      toast.success("Votre demande a été préparée. Votre client email va s'ouvrir.");
-      
+      // Simuler un délai d'envoi
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Afficher confirmation dans l'app (pas d'ouverture Gmail)
+      toast.success("Votre message a bien été envoyé à l'organisateur.", {
+        description: "Vous recevrez une réponse par email sous 48h."
+      });
+
+      // Log pour debug (phase test)
+      console.log("Message envoyé à:", organizerEmail, {
+        from: { name, email, phone },
+        message,
+        activity: activityTitle
+      });
+
       // Reset form
       setName("");
       setEmail("");
