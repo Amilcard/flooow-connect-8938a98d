@@ -30,16 +30,22 @@ export interface FinancialAid {
   category: string;
 
   // Descriptions
-  who: string;
-  description_parent: string;
-  territory_scope: string;
+  who?: string;
+  description_parent?: string;
+  description_courte?: string;
+  territory_scope?: string;
 
-  // Actions
-  primary_cta: CTA;
-  secondary_ctas: CTA[];
+  // Actions (optional for backward compatibility)
+  primary_cta?: CTA;
+  secondary_ctas?: CTA[];
 
-  // Contacts
-  contacts: Contacts;
+  // Contacts (legacy structure)
+  contacts?: Contacts;
+
+  // Plain text contacts (new structure)
+  telephone?: string;
+  permanence?: string;
+  url_info?: string;
 
   // Legacy fields for backward compatibility
   id?: string;

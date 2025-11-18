@@ -1,10 +1,12 @@
 /**
  * MobilitySolutionCard Component
- * Displays a mobility solution with contacts, CTAs, and territory scope
+ * Supports two modes:
+ * - Plain text mode: telephone, permanence, url_info (no click actions)
+ * - Legacy mode: contacts, CTAs (with click actions)
  */
 
 import { MobilitySolution, TransportMode } from '@/types/Mobility';
-import { Globe, Phone, Mail, ExternalLink, Bus, Bike, Users, Car, Train, Smartphone, Info } from 'lucide-react';
+import { Globe, Phone, Mail, ExternalLink, Bus, Bike, Users, Car, Train, Smartphone, Info, Clock } from 'lucide-react';
 
 interface MobilitySolutionCardProps {
   solution: MobilitySolution;
@@ -72,6 +74,9 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
     window.location.href = `mailto:${email}`;
   };
 
+  // Determine if we're in plain text mode (new structure) or legacy mode
+  const isPlainTextMode = !!solution.telephone || !!solution.permanence || !!solution.url_info;
+
   // Mode principal (le premier dans la liste)
   const primaryMode = solution.modes[0];
   const modeStyle = MODE_COLORS[primaryMode] || MODE_COLORS.infos_transports;
@@ -125,28 +130,69 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
 
       {/* Content */}
       <div className="p-6 space-y-4">
-        {/* Territory Scope */}
-        <div className="flex items-start gap-2">
-          <Globe size={18} className="text-gray-400 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-poppins">
-              Périmètre
-            </p>
-            <p className="text-sm font-medium text-gray-700 font-poppins">
-              {solution.territory_scope}
-            </p>
+        {/* Territory Scope (legacy mode only) */}
+        {!isPlainTextMode && solution.territory_scope && (
+          <div className="flex items-start gap-2">
+            <Globe size={18} className="text-gray-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-poppins">
+                Périmètre
+              </p>
+              <p className="text-sm font-medium text-gray-700 font-poppins">
+                {solution.territory_scope}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Description */}
-        <div>
+        {solution.description_courte && (
+          <p className="text-sm leading-relaxed text-gray-700 font-poppins">
+            {solution.description_courte}
+          </p>
+        )}
+
+        {solution.description_parent && !solution.description_courte && (
           <p className="text-sm leading-relaxed text-gray-700 font-poppins">
             {solution.description_parent}
           </p>
-        </div>
+        )}
 
-        {/* Contact Section */}
-        {(solution.contacts.phone || solution.contacts.email || solution.contacts.website) && (
+        {/* PLAIN TEXT MODE CONTACTS */}
+        {isPlainTextMode && (
+          <div className="pt-4 border-t border-gray-100 space-y-3">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-poppins">
+              Contact
+            </p>
+
+            {/* Phone (plain text) */}
+            {solution.telephone && (
+              <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
+                <Phone size={14} className="text-gray-400 shrink-0 mt-0.5" />
+                <span>{solution.telephone}</span>
+              </div>
+            )}
+
+            {/* Permanence (plain text) */}
+            {solution.permanence && (
+              <div className="flex items-start gap-2 font-poppins text-xs text-gray-500">
+                <Clock size={14} className="text-gray-400 shrink-0 mt-0.5" />
+                <span>{solution.permanence}</span>
+              </div>
+            )}
+
+            {/* URL Info (plain text) */}
+            {solution.url_info && (
+              <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
+                <Info size={14} className="text-gray-400 shrink-0 mt-0.5" />
+                <span className="break-all">{solution.url_info}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* LEGACY MODE CONTACTS */}
+        {!isPlainTextMode && solution.contacts && (solution.contacts.phone || solution.contacts.email || solution.contacts.website) && (
           <div className="pt-4 border-t border-gray-100">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 font-poppins">
               Contact
@@ -157,7 +203,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
                 <div>
                   {solution.contacts.phone.tel_href ? (
                     <button
-                      onClick={() => handlePhoneClick(solution.contacts.phone!.tel_href)}
+                      onClick={() => handlePhoneClick(solution.contacts!.phone!.tel_href)}
                       className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium font-poppins transition-colors"
                     >
                       <Phone size={14} className="shrink-0" />
@@ -180,7 +226,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
               {/* Email */}
               {solution.contacts.email && (
                 <button
-                  onClick={() => handleEmailClick(solution.contacts.email!)}
+                  onClick={() => handleEmailClick(solution.contacts!.email!)}
                   className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium font-poppins transition-colors"
                 >
                   <Mail size={14} className="shrink-0" />
@@ -204,16 +250,18 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
           </div>
         )}
 
-        {/* Primary CTA */}
-        <button
-          onClick={() => handleCTAClick(solution.primary_cta.url, solution.primary_cta.open_mode)}
-          className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all hover:-translate-y-0.5 font-poppins text-sm shadow-md"
-        >
-          {solution.primary_cta.label}
-        </button>
+        {/* Primary CTA (legacy mode only) */}
+        {!isPlainTextMode && solution.primary_cta && (
+          <button
+            onClick={() => handleCTAClick(solution.primary_cta!.url, solution.primary_cta!.open_mode)}
+            className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all hover:-translate-y-0.5 font-poppins text-sm shadow-md"
+          >
+            {solution.primary_cta.label}
+          </button>
+        )}
 
-        {/* Secondary CTAs */}
-        {solution.secondary_ctas.length > 0 && (
+        {/* Secondary CTAs (legacy mode only) */}
+        {!isPlainTextMode && solution.secondary_ctas && solution.secondary_ctas.length > 0 && (
           <div className="space-y-2">
             {solution.secondary_ctas.map((cta, index) => (
               <button
