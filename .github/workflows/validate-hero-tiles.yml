@@ -1,0 +1,92 @@
+name: Validate Hero Tiles Format
+
+# This workflow prevents regression of hero tiles to old designs
+# It checks that tiles maintain the correct portrait format
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/home/AidesFinancieresCard.tsx'
+      - 'src/components/home/MobiliteCard.tsx'
+      - 'src/components/home/BonEspritCard.tsx'
+      - 'src/components/home/MaVilleCard.tsx'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/components/home/AidesFinancieresCard.tsx'
+      - 'src/components/home/MobiliteCard.tsx'
+      - 'src/components/home/BonEspritCard.tsx'
+      - 'src/components/home/MaVilleCard.tsx'
+
+jobs:
+  validate-format:
+    name: Check Hero Tiles Portrait Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate hero tiles format
+        run: |
+          echo "🔍 Validating hero tiles format..."
+
+          FAILED=0
+
+          # Check each hero tile component
+          for file in \
+            "src/components/home/AidesFinancieresCard.tsx" \
+            "src/components/home/MobiliteCard.tsx" \
+            "src/components/home/BonEspritCard.tsx" \
+            "src/components/home/MaVilleCard.tsx"
+          do
+            echo ""
+            echo "Checking $file..."
+
+            # Check for correct portrait format
+            if grep -q "h-\[400px\] md:h-\[480px\]" "$file"; then
+              echo "✅ Correct portrait format found (h-[400px] md:h-[480px])"
+            else
+              echo "❌ ERROR: Portrait format not found!"
+              echo "Expected: h-[400px] md:h-[480px]"
+              echo "This tile has regressed to an old design."
+              FAILED=1
+            fi
+
+            # Check for local image imports (not Unsplash URLs)
+            if grep -q "from.*@/assets/" "$file"; then
+              echo "✅ Using local image assets"
+            else
+              echo "⚠️  WARNING: Not using local assets (may use Unsplash)"
+            fi
+
+            # Check for forbidden old formats
+            if grep -q "h-\[140px\]" "$file"; then
+              echo "❌ ERROR: Old compact format detected (h-[140px])"
+              FAILED=1
+            fi
+
+            if grep -q "h-\[280px\]" "$file"; then
+              echo "❌ ERROR: Regression format detected (h-[280px])"
+              FAILED=1
+            fi
+          done
+
+          echo ""
+          if [ $FAILED -eq 1 ]; then
+            echo "❌ Hero tiles validation FAILED"
+            echo ""
+            echo "📚 See .github/HERO_TILES_GUIDE.md for the correct specification"
+            echo "📋 Reference commit: 1c5e23e (JSON_1)"
+            exit 1
+          else
+            echo "✅ All hero tiles validation PASSED"
+          fi
+
+      - name: Build test
+        run: |
+          echo "🔨 Testing build..."
+          npm ci
+          npm run build
+          echo "✅ Build successful"
