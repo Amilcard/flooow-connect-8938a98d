@@ -1,13 +1,11 @@
 /**
- * LOT 5 - AidCard Component (Updated with Contacts & CTAs)
- * Redesigned aid card with:
- * - Clickable phone numbers
- * - In-app webview links
- * - Primary and secondary CTAs
- * - Contact information (phone, email, website)
+ * LOT 5 - AidCard Component (Updated with Plain Text Contacts)
+ * Supports two modes:
+ * - Plain text mode: telephone, permanence, url_info (no click actions)
+ * - Legacy mode: contacts, CTAs (with click actions)
  */
 
-import { Building2, Phone, Mail, ExternalLink, Globe } from 'lucide-react';
+import { Building2, Phone, Mail, ExternalLink, Globe, Clock, Info } from 'lucide-react';
 import { FinancialAid } from '@/types/FinancialAid';
 import { Badge } from '@/components/ui/badge';
 
@@ -32,6 +30,9 @@ export function AidCard({ aid }: AidCardProps) {
     }
   };
 
+  // Determine if we're in plain text mode (new structure) or legacy mode
+  const isPlainTextMode = !!aid.telephone || !!aid.permanence || !!aid.url_info;
+
   return (
     <div className="bg-white border-2 border-gray-200 rounded-2xl p-5 transition-all duration-200 hover:border-[#FF8C42] hover:shadow-[0_8px_24px_rgba(255,140,66,0.15)]">
       {/* Header: Title + Category Badge */}
@@ -47,29 +48,83 @@ export function AidCard({ aid }: AidCardProps) {
         </Badge>
       </div>
 
-      {/* Territory Scope */}
-      <div className="font-poppins text-[13px] font-medium text-gray-400 mb-3 flex items-center gap-1">
-        <Globe size={14} />
-        {aid.territory_scope}
-      </div>
+      {/* Territory Scope (legacy mode only) */}
+      {!isPlainTextMode && aid.territory_scope && (
+        <div className="font-poppins text-[13px] font-medium text-gray-400 mb-3 flex items-center gap-1">
+          <Globe size={14} />
+          {aid.territory_scope}
+        </div>
+      )}
 
-      {/* Who is eligible */}
-      <div className="mb-3">
-        <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-          Pour qui ?
-        </p>
-        <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed">
-          {aid.who}
-        </p>
-      </div>
+      {/* Category indicator for plain text mode */}
+      {isPlainTextMode && (
+        <div className="font-poppins text-[13px] font-medium text-gray-400 mb-3 capitalize">
+          {aid.category.replace(/_/g, ' ')}
+        </div>
+      )}
 
       {/* Description */}
-      <p className="font-poppins text-sm font-normal text-gray-500 leading-relaxed mb-4">
-        {aid.description_parent}
-      </p>
+      {aid.description_courte && (
+        <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed mb-4">
+          {aid.description_courte}
+        </p>
+      )}
 
-      {/* Contacts Section */}
-      {(aid.contacts.phone || aid.contacts.email) && (
+      {aid.description_parent && !aid.description_courte && (
+        <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed mb-4">
+          {aid.description_parent}
+        </p>
+      )}
+
+      {/* Who is eligible (legacy mode) */}
+      {!isPlainTextMode && aid.who && (
+        <div className="mb-3">
+          <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+            Pour qui ?
+          </p>
+          <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed">
+            {aid.who}
+          </p>
+        </div>
+      )}
+
+      {/* PLAIN TEXT MODE CONTACTS */}
+      {isPlainTextMode && (
+        <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
+          <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Contact
+          </p>
+
+          {/* Phone (plain text) */}
+          {aid.telephone && (
+            <div className="space-y-1">
+              <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
+                <Phone size={14} className="text-gray-400 shrink-0 mt-0.5" />
+                <span>{aid.telephone}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Permanence (plain text) */}
+          {aid.permanence && (
+            <div className="flex items-start gap-2 font-poppins text-xs text-gray-500">
+              <Clock size={14} className="text-gray-400 shrink-0 mt-0.5" />
+              <span>{aid.permanence}</span>
+            </div>
+          )}
+
+          {/* URL Info (plain text) */}
+          {aid.url_info && (
+            <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
+              <Info size={14} className="text-gray-400 shrink-0 mt-0.5" />
+              <span className="break-all">{aid.url_info}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* LEGACY MODE CONTACTS */}
+      {!isPlainTextMode && aid.contacts && (aid.contacts.phone || aid.contacts.email) && (
         <div className="mb-4 pb-4 border-b border-gray-200">
           <p className="font-poppins text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
             Contact
@@ -115,29 +170,31 @@ export function AidCard({ aid }: AidCardProps) {
         </div>
       )}
 
-      {/* CTAs Section */}
-      <div className="space-y-2">
-        {/* Primary CTA */}
-        <button
-          onClick={() => handleCTAClick(aid.primary_cta.url, aid.primary_cta.open_mode)}
-          className="w-full bg-[#FF8C42] hover:bg-[#FF7A28] text-white font-poppins text-sm font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-        >
-          {aid.primary_cta.label}
-          <ExternalLink size={16} />
-        </button>
-
-        {/* Secondary CTAs */}
-        {aid.secondary_ctas.map((cta, index) => (
+      {/* CTAs Section (legacy mode only) */}
+      {!isPlainTextMode && aid.primary_cta && (
+        <div className="space-y-2">
+          {/* Primary CTA */}
           <button
-            key={index}
-            onClick={() => handleCTAClick(cta.url, cta.open_mode)}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-poppins text-sm font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+            onClick={() => handleCTAClick(aid.primary_cta!.url, aid.primary_cta!.open_mode)}
+            className="w-full bg-[#FF8C42] hover:bg-[#FF7A28] text-white font-poppins text-sm font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
-            {cta.label}
-            <ExternalLink size={14} />
+            {aid.primary_cta.label}
+            <ExternalLink size={16} />
           </button>
-        ))}
-      </div>
+
+          {/* Secondary CTAs */}
+          {aid.secondary_ctas && aid.secondary_ctas.map((cta, index) => (
+            <button
+              key={index}
+              onClick={() => handleCTAClick(cta.url, cta.open_mode)}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-poppins text-sm font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              {cta.label}
+              <ExternalLink size={14} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

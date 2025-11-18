@@ -1,6 +1,6 @@
 /**
  * Eco-Mobility Page
- * Updated with new data structure: contacts, CTAs, territory scope
+ * Updated with plain text contacts (telephone, permanence, url_info)
  */
 
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -18,200 +18,80 @@ import { Skeleton } from "@/components/ui/skeleton";
 const MOBILITY_SOLUTIONS: MobilitySolution[] = [
   {
     code: "STAS_TC",
-    name: "STAS – Tram et bus",
-    short_label: "Transports en commun",
+    name: "STAS – Réseau tram et bus",
+    short_label: "Transport en commun",
     modes: ["tram", "bus", "trolleybus"],
-    description_parent: "Réseau de transports en commun de Saint-Étienne Métropole : tramways, bus, trolleybus et services adaptés (scolaires, Handi'Stas…).",
-    territory_scope: "Saint-Étienne Métropole",
-    primary_cta: {
-      label: "Voir horaires et plans STAS",
-      type: "link",
-      url: "https://www.reseau-stas.fr",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [
-      {
-        label: "Infos accessibilité / Handi'Stas",
-        type: "link",
-        url: "https://www.reseau-stas.fr/fr/handistas/39",
-        open_mode: "in_app_webview"
-      }
-    ],
-    contacts: {
-      website: "https://www.reseau-stas.fr",
-      phone: {
-        display: "0800 041 042",
-        tel_href: "tel:+33800041042",
-        note: "Allo STAS – appel et service gratuits."
-      },
-      email: null
-    }
+    category: "transport_en_commun",
+    description_courte: "Lignes de tram et bus de Saint-Étienne Métropole pour accéder aux activités sans voiture.",
+    telephone: "Allo STAS (information voyageurs) : 0800 041 042",
+    permanence: "Du lundi au samedi (horaires exacts à vérifier sur le site STAS).",
+    url_info: "https://www.reseau-stas.fr"
   },
   {
     code: "VELIVERT_VLS",
     name: "VéliVert – vélos en libre-service",
     short_label: "Vélos en libre-service",
     modes: ["velo_libre_service"],
-    description_parent: "Vélos en libre-service sur Saint-Étienne Métropole : bornes en ville, abonnements courte et longue durée, tarifs réduits possibles.",
-    territory_scope: "Saint-Étienne Métropole",
-    primary_cta: {
-      label: "Voir les stations et tarifs",
-      type: "link",
-      url: "https://www.velivert.fr",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [],
-    contacts: {
-      website: "https://www.velivert.fr",
-      phone: {
-        display: "04 77 37 18 36",
-        tel_href: "tel:+33477371836",
-        note: "Agence VéliVert – informations abonnements et stations."
-      },
-      email: "velivert@saint-etienne-metropole.fr"
-    }
+    category: "velo",
+    description_courte: "Service de vélos en libre-service et location sur Saint-Étienne Métropole.",
+    telephone: "VéliVert : 04 77 37 18 36",
+    permanence: "Horaires d'accueil indiqués sur le site VéliVert.",
+    url_info: "https://www.velivert.fr"
   },
   {
     code: "MOOVIZY_MAAS",
     name: "Moovizy Saint-Étienne",
-    short_label: "Appli tous déplacements",
-    modes: ["tram", "bus", "velo", "covoiturage", "autopartage", "train", "taxi"],
-    description_parent: "Application MaaS qui regroupe tous les modes de déplacement : itinéraires en temps réel, achat de titres STAS, VéliVert, covoiturage Mov'ici, autopartage Citiz, etc.",
-    territory_scope: "Saint-Étienne Métropole + liaisons vers Lyon",
-    primary_cta: {
-      label: "Découvrir l'appli Moovizy",
-      type: "link",
-      url: "https://www.reseau-stas.fr/fr/lappli-moovizy/9",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [
-      {
-        label: "Moovizy sur Google Play",
-        type: "link",
-        url: "https://play.google.com/store/apps/details?id=fr.cityway.android_v2.stas",
-        open_mode: "external_tab"
-      },
-      {
-        label: "Moovizy sur l'App Store",
-        type: "link",
-        url: "https://apps.apple.com/fr/app/moovizy-saint-etienne/id944230356",
-        open_mode: "external_tab"
-      }
-    ],
-    contacts: {
-      website: "https://www.reseau-stas.fr/fr/lappli-moovizy/9",
-      phone: {
-        display: "0800 041 042",
-        tel_href: "tel:+33800041042",
-        note: "Allo STAS pour toute question sur Moovizy et les titres de transport."
-      },
-      email: null
-    }
+    short_label: "Appli mobilité",
+    modes: ["infos_transports"],
+    category: "application_mobilite",
+    description_courte: "Application de mobilité pour planifier ses trajets (tram, bus, vélo, covoiturage, autopartage...).",
+    telephone: "Renseignements via Allo STAS : 0800 041 042",
+    permanence: "Du lundi au samedi (voir précisions STAS).",
+    url_info: "Page d'information : rechercher « Moovizy Saint-Étienne »"
   },
   {
     code: "MOVICI_COVOITURAGE",
-    name: "Mov'ici – covoiturage Auvergne-Rhône-Alpes",
-    short_label: "Covoiturage domicile-loisirs",
+    name: "Mov'ici – covoiturage",
+    short_label: "Covoiturage",
     modes: ["covoiturage"],
-    description_parent: "Plateforme régionale de covoiturage du quotidien (travail, études, loisirs) soutenue par la Région Auvergne-Rhône-Alpes et intégrée à Moovizy.",
-    territory_scope: "Auvergne-Rhône-Alpes (dont Saint-Étienne Métropole)",
-    primary_cta: {
-      label: "Accéder à Mov'ici",
-      type: "link",
-      url: "https://movici.auvergnerhonealpes.fr",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [],
-    contacts: {
-      website: "https://movici.auvergnerhonealpes.fr",
-      phone: {
-        display: "Voir les contacts sur le site Mov'ici",
-        tel_href: null,
-        note: "Les coordonnées varient selon les territoires partenaires."
-      },
-      email: null
-    }
+    category: "covoiturage",
+    description_courte: "Plateforme de covoiturage du quotidien en Auvergne-Rhône-Alpes.",
+    telephone: "Coordonnées selon le territoire (voir rubrique Contact sur le site Mov'ici).",
+    permanence: "Selon les services partenaires.",
+    url_info: "https://movici.auvergnerhonealpes.fr"
   },
   {
     code: "CITIZ_AUTOPARTAGE",
     name: "Citiz – voitures en autopartage",
-    short_label: "Voiture en libre-service",
+    short_label: "Autopartage",
     modes: ["autopartage"],
-    description_parent: "Voitures partagées en station pour les trajets ponctuels (week-end, compétition sportive, sortie famille), accessible aussi via Moovizy.",
-    territory_scope: "Saint-Étienne Métropole et réseau Citiz national",
-    primary_cta: {
-      label: "Voir les stations Citiz",
-      type: "link",
-      url: "https://citiz.coop",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [],
-    contacts: {
-      website: "https://citiz.coop",
-      phone: {
-        display: "Voir le contact Citiz Saint-Étienne sur le site",
-        tel_href: null,
-        note: "Numéros et mails diffèrent selon les agences locales."
-      },
-      email: null
-    }
+    category: "autopartage",
+    description_courte: "Voitures partagées disponibles sur réservation pour les trajets ponctuels.",
+    telephone: "Contact Citiz : numéro indiqué pour l'agence locale sur le site Citiz.",
+    permanence: "Selon l'agence Citiz (horaires consultables en ligne).",
+    url_info: "https://citiz.coop"
   },
   {
     code: "MOBILISE_VILLE",
-    name: "MobiliSÉ Saint-Étienne",
+    name: "MobiliSÉ – application Ville de Saint-Étienne",
     short_label: "Appli services ville",
-    modes: ["infos_transports", "infos_ville"],
-    description_parent: "Application officielle de la Ville de Saint-Étienne : infos de quartier, démarches, actualités, et liens vers les mobilités (transports, parkings, etc.).",
-    territory_scope: "Ville de Saint-Étienne",
-    primary_cta: {
-      label: "Infos sur MobiliSÉ",
-      type: "link",
-      url: "https://www.saint-etienne.fr/les-applications-et-les-plateformes-numeriques-indispensables-saint-etienne",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [
-      {
-        label: "MobiliSÉ sur Google Play",
-        type: "link",
-        url: "https://play.google.com/store/apps/details?id=com.saintetienne.mobilise",
-        open_mode: "external_tab"
-      },
-      {
-        label: "MobiliSÉ sur l'App Store",
-        type: "link",
-        url: "https://apps.apple.com/fr/app/mobilis%C3%A9-saint-%C3%A9tienne/id1100145971",
-        open_mode: "external_tab"
-      }
-    ],
-    contacts: {
-      website: "https://www.saint-etienne.fr",
-      phone: {
-        display: "Standard Ville de Saint-Étienne (voir site)",
-        tel_href: null,
-        note: "Les demandes liées à l'appli sont traitées via les canaux de contact de la Ville."
-      },
-      email: null
-    }
+    modes: ["infos_ville"],
+    category: "infos_ville",
+    description_courte: "Application d'information de la Ville, incluant des rubriques mobilité et déplacements.",
+    telephone: "Standard Ville de Saint-Étienne (voir contact sur le site de la Ville).",
+    permanence: "Horaires d'ouverture des services municipaux.",
+    url_info: "https://www.saint-etienne.fr (rechercher « application MobiliSÉ »)"
   },
   {
     code: "CO2_SIMULATOR",
     name: "Simulateur CO₂ transport",
-    short_label: "Calculer l'impact de mon trajet",
+    short_label: "Calculer impact CO₂",
     modes: ["information_CO2"],
-    description_parent: "Outil en ligne pour comparer l'empreinte carbone de différents modes de transport (voiture, train, bus, covoiturage, etc.) et encourager les choix éco-responsables.",
-    territory_scope: "National",
-    primary_cta: {
-      label: "Lancer le simulateur",
-      type: "link",
-      url: "https://monimpacttransport.fr",
-      open_mode: "in_app_webview"
-    },
-    secondary_ctas: [],
-    contacts: {
-      website: "https://monimpacttransport.fr",
-      phone: null,
-      email: null
-    }
+    category: "information_CO2",
+    description_courte: "Outil en ligne pour comparer l'impact carbone des différents modes de transport.",
+    telephone: "Pas de permanence téléphonique dédiée.",
+    permanence: "Service en ligne accessible 7j/7.",
+    url_info: "https://monimpacttransport.fr"
   }
 ];
 
@@ -294,13 +174,14 @@ const EcoMobilite = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Button
-              className="w-full md:w-auto bg-blue-500 hover:bg-blue-600 font-poppins"
-              onClick={() => window.location.href = 'https://monimpacttransport.fr'}
-            >
-              <Calculator className="mr-2 h-4 w-4" />
-              Lancer le simulateur
-            </Button>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-700 font-poppins">
+                🌐 https://monimpacttransport.fr
+              </p>
+              <p className="text-xs text-gray-500 font-poppins">
+                Service en ligne accessible 7j/7
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -326,16 +207,14 @@ const EcoMobilite = () => {
                 <div key={source.code} className="flex items-start gap-3">
                   <ExternalLink className="w-4 h-4 text-gray-400 shrink-0 mt-1" />
                   <div>
-                    <a
-                      href={source.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-semibold text-blue-600 hover:text-blue-700 font-poppins"
-                    >
+                    <p className="text-sm font-semibold text-gray-700 font-poppins">
                       {source.label}
-                    </a>
+                    </p>
                     <p className="text-xs text-gray-600 mt-0.5 font-poppins">
                       {source.description_parent}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1 font-poppins break-all">
+                      {source.website}
                     </p>
                   </div>
                 </div>

@@ -40,11 +40,22 @@ export interface MobilitySolution {
   name: string;
   short_label: string;
   modes: TransportMode[];
-  description_parent: string;
-  territory_scope: string;
-  primary_cta: CTA;
-  secondary_ctas: CTA[];
-  contacts: Contacts;
+  description_parent?: string;
+  description_courte?: string;
+  category?: string;
+  territory_scope?: string;
+
+  // Actions (optional for backward compatibility)
+  primary_cta?: CTA;
+  secondary_ctas?: CTA[];
+
+  // Contacts (legacy structure)
+  contacts?: Contacts;
+
+  // Plain text contacts (new structure)
+  telephone?: string;
+  permanence?: string;
+  url_info?: string;
 }
 
 export interface DataSource {
