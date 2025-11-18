@@ -166,11 +166,11 @@ export function CompactHeroHeader({
             style={{ filter: "brightness(0.85)" }}
             onError={() => setImgError(true)}
           />
-          {/* Gradient overlay pour lisibilité */}
+          {/* Gradient overlay pour lisibilité - intensité réduite */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%)"
+              background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
             }}
           />
         </>
