@@ -7,12 +7,13 @@
  * - Eligibility indicators
  * - Organizer info
  * - CTA link
+ * Refactored with Tailwind CSS for consistency
  */
 
 import { Baby, Building2, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { FinancialAid } from '@/types/FinancialAid';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 
 interface AidCardProps {
   aid: FinancialAid;
@@ -20,7 +21,6 @@ interface AidCardProps {
 
 export function AidCard({ aid }: AidCardProps) {
   const navigate = useNavigate();
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     // Navigate to aid detail page
@@ -29,185 +29,70 @@ export function AidCard({ aid }: AidCardProps) {
 
   return (
     <div
-      style={{
-        background: '#FFFFFF',
-        border: `2px solid ${isHovered ? '#FF8C42' : '#E5E7EB'}`,
-        borderRadius: '16px',
-        padding: '20px',
-        transition: 'all 0.2s ease',
-        cursor: 'pointer',
-        boxShadow: isHovered ? '0px 8px 24px rgba(255, 140, 66, 0.15)' : 'none',
-        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)'
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="bg-white border-2 border-gray-200 rounded-2xl p-5 transition-all duration-200 cursor-pointer hover:border-[#FF8C42] hover:shadow-[0_8px_24px_rgba(255,140,66,0.15)] hover:-translate-y-1 group"
       onClick={handleClick}
     >
       {/* Header: Title + Amount Badge */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '12px'
-      }}>
+      <div className="flex justify-between items-start mb-3">
         {/* Title */}
-        <h3 style={{
-          flex: 1,
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '17px',
-          fontWeight: 600,
-          color: '#111827',
-          lineHeight: 1.3,
-          marginRight: '8px',
-          margin: 0
-        }}>
+        <h3 className="flex-1 font-poppins text-[17px] font-semibold text-gray-900 leading-snug mr-2">
           {aid.title}
         </h3>
 
         {/* Amount Badge */}
-        <div style={{
-          background: 'linear-gradient(135deg, #DCFCE7 0%, #D1FAE5 100%)',
-          color: '#10B981',
-          padding: '6px 12px',
-          borderRadius: '8px',
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '15px',
-          fontWeight: 700,
-          whiteSpace: 'nowrap',
-          boxShadow: '0px 2px 6px rgba(16, 185, 129, 0.2)'
-        }}>
+        <div className="bg-gradient-to-br from-[#DCFCE7] to-[#D1FAE5] text-emerald-500 px-3 py-1.5 rounded-lg font-poppins text-[15px] font-bold whitespace-nowrap shadow-[0_2px_6px_rgba(16,185,129,0.2)]">
           {aid.amount}
         </div>
       </div>
 
       {/* Meta Chips Row: Age + Type */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        marginBottom: '12px',
-        flexWrap: 'wrap'
-      }}>
+      <div className="flex gap-2 mb-3 flex-wrap">
         {/* Age Chip */}
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          background: '#EFF6FF',
-          color: '#4A90E2',
-          padding: '4px 10px',
-          borderRadius: '6px',
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '13px',
-          fontWeight: 600
-        }}>
+        <Badge variant="secondary" className="inline-flex items-center gap-1 bg-blue-50 text-[#4A90E2] px-2.5 py-1 rounded-md font-poppins text-[13px] font-semibold border-0">
           <Baby size={14} />
           {aid.age_range}
-        </span>
+        </Badge>
 
         {/* Type Chip */}
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          background: '#F3F4F6',
-          color: '#6B7280',
-          padding: '4px 10px',
-          borderRadius: '6px',
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '12px',
-          fontWeight: 500
-        }}>
+        <Badge variant="secondary" className="inline-flex items-center gap-1 bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md font-poppins text-xs font-medium border-0">
           {aid.type}
-        </span>
+        </Badge>
       </div>
 
       {/* Description */}
-      <p style={{
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '14px',
-        fontWeight: 400,
-        color: '#6B7280',
-        lineHeight: 1.6,
-        marginBottom: '12px',
-        margin: '0 0 12px 0',
-        display: '-webkit-box',
-        WebkitLineClamp: 3,
-        WebkitBoxOrient: 'vertical',
-        overflow: 'hidden'
-      }}>
+      <p className="font-poppins text-sm font-normal text-gray-500 leading-relaxed mb-3 line-clamp-3">
         {aid.description}
       </p>
 
       {/* Organizer */}
-      <div style={{
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '13px',
-        fontWeight: 500,
-        color: '#9CA3AF',
-        marginBottom: '16px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
-      }}>
+      <div className="font-poppins text-[13px] font-medium text-gray-400 mb-4 flex items-center gap-1">
         <Building2 size={14} />
         {aid.organizer}
       </div>
 
       {/* Footer: Eligibility + CTA */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: '16px',
-        borderTop: '1px solid #E5E7EB'
-      }}>
+      <div className="flex justify-between items-center pt-4 border-t border-gray-200">
         {/* Eligibility Indicator */}
         {aid.is_eligible && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            fontFamily: 'Poppins, sans-serif',
-            fontSize: '13px',
-            fontWeight: 600,
-            color: '#10B981'
-          }}>
-            <CheckCircle size={16} color="#10B981" />
+          <div className="flex items-center gap-1 font-poppins text-[13px] font-semibold text-emerald-500">
+            <CheckCircle size={16} className="text-emerald-500" />
             Éligible
           </div>
         )}
 
         {aid.check_eligibility_needed && !aid.is_eligible && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            fontFamily: 'Poppins, sans-serif',
-            fontSize: '13px',
-            fontWeight: 600,
-            color: '#F59E0B'
-          }}>
-            <AlertCircle size={16} color="#F59E0B" />
+          <div className="flex items-center gap-1 font-poppins text-[13px] font-semibold text-amber-500">
+            <AlertCircle size={16} className="text-amber-500" />
             Vérifier
           </div>
         )}
 
         {!aid.is_eligible && !aid.check_eligibility_needed && (
-          <div style={{ width: '80px' }}></div>
+          <div className="w-20"></div>
         )}
 
         {/* CTA Link */}
-        <div style={{
-          color: '#FF8C42',
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '14px',
-          fontWeight: 600,
-          textDecoration: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          gap: isHovered ? '8px' : '4px',
-          transition: 'all 0.2s ease'
-        }}>
+        <div className="text-[#FF8C42] font-poppins text-sm font-semibold flex items-center gap-1 transition-all duration-200 group-hover:gap-2">
           En savoir plus
           <ArrowRight size={16} />
         </div>

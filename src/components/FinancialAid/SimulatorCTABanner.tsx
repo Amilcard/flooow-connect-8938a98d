@@ -2,10 +2,12 @@
  * LOT 5 - SimulatorCTABanner Component
  * Prominent blue banner with Calculator icon, GRATUIT badge, and CTA button
  * CRITICAL: Must be impossible to miss - main conversion point
+ * Refactored with Tailwind CSS for consistency
  */
 
 import { Calculator, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export function SimulatorCTABanner() {
   const navigate = useNavigate();
@@ -16,125 +18,43 @@ export function SimulatorCTABanner() {
   };
 
   return (
-    <div style={{
-      margin: '20px 16px',
-      background: 'linear-gradient(135deg, #DBEAFE 0%, #E0E7FF 100%)',
-      border: '2px solid #3B82F6',
-      borderRadius: '16px',
-      padding: '20px',
-      position: 'relative',
-      overflow: 'hidden',
-      boxShadow: '0px 4px 16px rgba(59, 130, 246, 0.15)',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    }}
-    onClick={handleSimulate}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = 'translateY(-2px)';
-      e.currentTarget.style.boxShadow = '0px 6px 20px rgba(59, 130, 246, 0.25)';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = 'translateY(0)';
-      e.currentTarget.style.boxShadow = '0px 4px 16px rgba(59, 130, 246, 0.15)';
-    }}>
+    <div
+      className="mx-4 my-5 bg-gradient-to-br from-[#DBEAFE] to-[#E0E7FF] border-2 border-blue-500 rounded-2xl p-5 relative overflow-hidden shadow-[0_4px_16px_rgba(59,130,246,0.15)] cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(59,130,246,0.25)]"
+      onClick={handleSimulate}
+    >
       {/* GRATUIT Badge */}
-      <span style={{
-        position: 'absolute',
-        top: '12px',
-        right: '12px',
-        background: '#3B82F6',
-        color: '#FFFFFF',
-        padding: '4px 10px',
-        borderRadius: '6px',
-        fontSize: '11px',
-        fontWeight: 700,
-        letterSpacing: '0.5px',
-        textTransform: 'uppercase',
-        fontFamily: 'Poppins, sans-serif'
-      }}>
+      <span className="absolute top-3 right-3 bg-blue-500 text-white px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase font-poppins">
         GRATUIT
       </span>
 
       {/* Large Calculator Icon */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '64px',
-        height: '64px',
-        background: '#FFFFFF',
-        borderRadius: '16px',
-        marginBottom: '16px',
-        boxShadow: '0px 4px 12px rgba(59, 130, 246, 0.2)'
-      }}>
-        <Calculator size={36} color="#3B82F6" />
+      <div className="flex items-center justify-center w-16 h-16 bg-white rounded-2xl mb-4 shadow-[0_4px_12px_rgba(59,130,246,0.2)]">
+        <Calculator size={36} className="text-blue-500" />
       </div>
 
       {/* Title */}
-      <h2 style={{
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '20px',
-        fontWeight: 700,
-        color: '#111827',
-        marginBottom: '8px',
-        lineHeight: 1.3,
-        margin: '0 0 8px 0'
-      }}>
+      <h2 className="font-poppins text-xl font-bold text-gray-900 mb-2 leading-snug">
         Estimez vos aides en quelques clics
       </h2>
 
       {/* Description */}
-      <p style={{
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '14px',
-        fontWeight: 400,
-        color: '#374151',
-        lineHeight: 1.6,
-        marginBottom: '16px',
-        margin: '0 0 16px 0'
-      }}>
+      <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed mb-4">
         Notre simulateur identifie automatiquement les aides auxquelles vous avez droit pour chaque activité.
         Simple, rapide et confidentiel.
       </p>
 
       {/* CTA Button */}
-      <button
-        style={{
-          background: '#FF8C42',
-          color: '#FFFFFF',
-          padding: '14px 24px',
-          borderRadius: '12px',
-          fontFamily: 'Poppins, sans-serif',
-          fontSize: '16px',
-          fontWeight: 600,
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          width: '100%',
-          transition: 'all 0.2s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#FF7A28';
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0px 6px 20px rgba(255, 140, 66, 0.3)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#FF8C42';
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = 'none';
-        }}
+      <Button
         onClick={(e) => {
           e.stopPropagation();
           handleSimulate();
         }}
+        className="w-full bg-[#FF8C42] hover:bg-[#FF7A28] text-white py-3.5 px-6 rounded-xl font-poppins text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,140,66,0.3)] flex items-center justify-center gap-2"
       >
         <Calculator size={20} />
         Estimer mes aides maintenant
         <ArrowRight size={20} />
-      </button>
+      </Button>
     </div>
   );
 }

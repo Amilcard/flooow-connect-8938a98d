@@ -1,7 +1,8 @@
 /**
  * LOT 5 - AidsSectionsList Component
  * Organizes aids into sections (School Year / Vacations)
- * With section headers (icon + title) and grid layout
+ * With section headers (icon + title) and responsive grid
+ * Refactored with Tailwind CSS for consistency
  */
 
 import { GraduationCap, Palmtree } from 'lucide-react';
@@ -20,7 +21,8 @@ export function AidsSectionsList({ schoolYearAids, vacationsAids }: AidsSections
       title: 'Pendant l\'année scolaire',
       icon: GraduationCap,
       color: '#4A90E2',
-      bg_light: '#EFF6FF',
+      bgLight: 'bg-blue-50',
+      iconColor: 'text-[#4A90E2]',
       aids: schoolYearAids
     },
     {
@@ -28,7 +30,8 @@ export function AidsSectionsList({ schoolYearAids, vacationsAids }: AidsSections
       title: 'Vacances & séjours',
       icon: Palmtree,
       color: '#10B981',
-      bg_light: '#DCFCE7',
+      bgLight: 'bg-emerald-50',
+      iconColor: 'text-emerald-500',
       aids: vacationsAids
     }
   ];
@@ -36,68 +39,28 @@ export function AidsSectionsList({ schoolYearAids, vacationsAids }: AidsSections
   return (
     <div>
       {sections.map((section) => (
-        <div key={section.id} style={{ marginBottom: '40px' }}>
+        <div key={section.id} className="mb-10">
           {/* Section Header */}
-          <div style={{
-            margin: '32px 16px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
+          <div className="mx-4 mt-8 mb-4 flex items-center gap-3">
             {/* Icon Container */}
-            <div style={{
-              width: '40px',
-              height: '40px',
-              background: section.bg_light,
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <section.icon size={24} color={section.color} />
+            <div className={`w-10 h-10 ${section.bgLight} rounded-[10px] flex items-center justify-center`}>
+              <section.icon size={24} className={section.iconColor} />
             </div>
 
             {/* Title */}
-            <h2 style={{
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: '20px',
-              fontWeight: 700,
-              color: '#111827',
-              margin: 0
-            }}>
+            <h2 className="font-poppins text-xl font-bold text-gray-900">
               {section.title}
             </h2>
           </div>
 
-          {/* Aids Grid */}
-          <div style={{
-            padding: '0 16px',
-            display: 'grid',
-            gap: '12px',
-            gridTemplateColumns: '1fr'
-          }}
-          className="aids-grid">
+          {/* Aids Grid - Responsive */}
+          <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {section.aids.map((aid) => (
               <AidCard key={aid.id} aid={aid} />
             ))}
           </div>
         </div>
       ))}
-
-      {/* Responsive Grid Styles */}
-      <style>{`
-        @media (min-width: 641px) {
-          .aids-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-
-        @media (min-width: 1025px) {
-          .aids-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
