@@ -9,7 +9,7 @@ import { Lightbulb } from 'lucide-react';
 
 export function AidsInfoBox() {
   return (
-    <div className="mx-4 my-8 bg-gradient-to-br from-[#FEF3E2] to-[#FFE8CC] border-l-4 border-amber-500 rounded-xl p-5 shadow-[0_4px_12px_rgba(245,158,11,0.1)]">
+    <div className="my-8 bg-gradient-to-br from-[#FEF3E2] to-[#FFE8CC] border-l-4 border-amber-500 rounded-xl p-5 shadow-[0_4px_12px_rgba(245,158,11,0.1)]">
       {/* Icon + Title Row */}
       <div className="flex items-center gap-2.5 mb-3">
         <Lightbulb size={24} className="text-amber-500" />

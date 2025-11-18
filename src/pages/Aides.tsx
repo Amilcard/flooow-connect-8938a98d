@@ -152,20 +152,23 @@ const Aides = () => {
       {/* Enhanced Header with Gradient Orange */}
       <FinancialAidHeader />
 
-      {/* Prominent Simulator CTA Banner (Blue) */}
-      <SimulatorCTABanner />
+      {/* Main Content Container with max-width and horizontal padding */}
+      <div className="max-w-[1200px] mx-auto px-4">
+        {/* Prominent Simulator CTA Banner (Blue) */}
+        <SimulatorCTABanner />
 
-      {/* Aids Sections List with Redesigned Cards */}
-      <AidsSectionsList
-        schoolYearAids={schoolYearAids}
-        vacationsAids={vacationsAids}
-      />
+        {/* Aids Sections List with Redesigned Cards */}
+        <AidsSectionsList
+          schoolYearAids={schoolYearAids}
+          vacationsAids={vacationsAids}
+        />
 
-      {/* Info Box - Bon à savoir */}
-      <AidsInfoBox />
+        {/* Info Box - Bon à savoir */}
+        <AidsInfoBox />
+      </div>
 
       {/* Bottom margin for navigation */}
-      <div style={{ height: '80px' }} />
+      <div className="h-20" />
 
       <BottomNavigation />
     </PageLayout>
