@@ -160,32 +160,34 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
 
         {/* PLAIN TEXT MODE CONTACTS */}
         {isPlainTextMode && (
-          <div className="pt-4 border-t border-gray-100 space-y-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-poppins">
+          <div className="pt-4 border-t border-gray-100 space-y-2">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide font-poppins">
               Contact
             </p>
 
             {/* Phone (plain text) */}
             {solution.telephone && (
-              <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
-                <Phone size={14} className="text-gray-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 font-poppins text-xs text-gray-600 leading-snug">
+                <Phone size={12} className="text-gray-400 shrink-0 mt-0.5" />
                 <span>{solution.telephone}</span>
               </div>
             )}
 
             {/* Permanence (plain text) */}
             {solution.permanence && (
-              <div className="flex items-start gap-2 font-poppins text-xs text-gray-500">
-                <Clock size={14} className="text-gray-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 font-poppins text-[11px] text-gray-500 leading-snug">
+                <Clock size={12} className="text-gray-400 shrink-0 mt-0.5" />
                 <span>{solution.permanence}</span>
               </div>
             )}
 
-            {/* URL Info (plain text) */}
+            {/* URL Info (plain text) - truncated for better readability */}
             {solution.url_info && (
-              <div className="flex items-start gap-2 font-poppins text-sm text-gray-700">
-                <Info size={14} className="text-gray-400 shrink-0 mt-0.5" />
-                <span className="break-all">{solution.url_info}</span>
+              <div className="flex items-start gap-2 font-poppins text-xs text-gray-600">
+                <Info size={12} className="text-gray-400 shrink-0 mt-0.5" />
+                <span className="truncate">
+                  {solution.url_info.replace(/^https?:\/\/(www\.)?/, '')}
+                </span>
               </div>
             )}
           </div>
