@@ -38,6 +38,13 @@ const MaVilleMonActu = () => {
     },
   });
 
+  // Mapping des labels de sections
+  const sectionLabels: Record<string, string> = {
+    "cultural_event": "Culture & sorties",
+    "community_info": "Vie de la ville",
+    "workshop": "Ateliers & activités en famille"
+  };
+
   // Grouper les événements par catégorie
   const groupedEvents = events?.reduce((acc, event) => {
     const category = event.event_type || "Autres";
@@ -70,7 +77,7 @@ const MaVilleMonActu = () => {
           subtitle="Chargement..."
           backFallback="/home"
         />
-        <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl">
+        <div className="container mx-auto px-4 py-6 pb-24 max-w-[1200px]">
           <div className="mb-8">
             <Skeleton className="h-32 w-full" />
           </div>
@@ -94,18 +101,12 @@ const MaVilleMonActu = () => {
         backFallback="/home"
       />
 
-      <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl">
-        {/* Bandeau d'intro orange */}
+      <div className="container mx-auto px-4 py-6 pb-24 max-w-[1200px]">
+        {/* Bandeau d'intro beige */}
         <Card className="mb-8 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Retrouve ici les informations de ta ville : actualités, événements sportifs et culturels,
-              temps forts pour les enfants et les familles, ainsi que les annonces importantes de la mairie
-              ou des structures locales.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed mt-3">
-              Ces contenus peuvent évoluer selon ton territoire : consulte régulièrement cette rubrique
-              pour ne rien manquer des activités et infos près de chez toi.
+              Retrouvez ici les sorties, événements et informations utiles près de chez vous.
             </p>
           </CardContent>
         </Card>
@@ -116,7 +117,7 @@ const MaVilleMonActu = () => {
             {Object.entries(groupedEvents).map(([category, categoryEvents]) => (
               <section key={category} className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-2xl font-semibold">{category}</h2>
+                  <h2 className="text-2xl font-semibold">{sectionLabels[category] || category}</h2>
                   <Badge variant="secondary" className={getCategoryColor(category)}>
                     {categoryEvents.length} événement{categoryEvents.length > 1 ? "s" : ""}
                   </Badge>
@@ -129,23 +130,12 @@ const MaVilleMonActu = () => {
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
                         </div>
-                        
-                        {/* Date et heure */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          <span>
-                            {format(parseISO(event.start_date), "EEEE d MMMM yyyy", { locale: fr })}
-                          </span>
-                        </div>
-                        
-                        {event.start_date && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Clock className="h-4 w-4" />
-                            <span>
-                              {format(parseISO(event.start_date), "HH:mm", { locale: fr })}
-                            </span>
-                          </div>
-                        )}
+
+                        {/* Sous-titre : date • lieu */}
+                        <CardDescription className="text-sm">
+                          {format(parseISO(event.start_date), "d MMMM yyyy", { locale: fr })}
+                          {event.location && ` • ${event.location}`}
+                        </CardDescription>
                       </CardHeader>
                       
                       <CardContent className="flex-1 space-y-3">
@@ -163,54 +153,32 @@ const MaVilleMonActu = () => {
                         
                         {/* Description */}
                         {event.description && (
-                          <CardDescription className="text-sm line-clamp-3">
+                          <p className="text-sm text-gray-600 line-clamp-3">
                             {event.description}
-                          </CardDescription>
+                          </p>
                         )}
-                        
-                        {/* Lieu */}
-                        {event.location && (
-                          <div className="flex items-start gap-2 text-sm">
-                            <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                            <span className="text-muted-foreground">{event.location}</span>
-                          </div>
-                        )}
-                        
-                        {/* Contact */}
-                        <div className="space-y-2 pt-2">
+
+                        {/* Contact et CTA */}
+                        <div className="space-y-3 pt-2">
                           {event.organizer_contact && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Phone className="h-4 w-4" />
                               <span>{event.organizer_contact}</span>
                             </div>
                           )}
-                          
-                          {/* Boutons d'action */}
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            {event.booking_url && (
-                              <Button
-                                variant="default"
-                                size="sm"
-                                className="flex-1"
-                                onClick={() => window.open(event.booking_url!, "_blank", "noopener,noreferrer")}
-                              >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Billetterie
-                              </Button>
-                            )}
-                            
-                            {event.external_link && !event.booking_url && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex-1"
-                                onClick={() => window.open(event.external_link!, "_blank", "noopener,noreferrer")}
-                              >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Plus d'infos
-                              </Button>
-                            )}
-                          </div>
+
+                          {/* Bouton d'action unique */}
+                          {(event.booking_url || event.external_link) && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="w-full"
+                              onClick={() => window.open(event.booking_url || event.external_link!, "_blank", "noopener,noreferrer")}
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              En savoir plus
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
