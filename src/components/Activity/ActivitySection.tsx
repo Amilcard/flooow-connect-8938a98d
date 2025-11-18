@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ActivityCard } from "./ActivityCard";
 import { ActivityCarousel } from "./ActivityCarousel";
@@ -47,14 +47,23 @@ export const ActivitySection = ({
   layout = 'grid' // Default to grid for backward compatibility
 }: ActivitySectionProps) => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const periodParam = searchParams.get("period");
 
   const handleActivityClick = (activityId: string) => {
-    const url = periodParam 
+    const url = periodParam
       ? `/activity/${activityId}?period=${periodParam}`
       : `/activity/${activityId}`;
     navigate(url);
+  };
+
+  // Reset all filters to default
+  const handleResetFilters = () => {
+    // Clear all search params except essential ones
+    const newParams = new URLSearchParams();
+    // Keep only the base path without any filters
+    setSearchParams(newParams);
   };
 
   return (
@@ -85,7 +94,9 @@ export const ActivitySection = ({
         <EmptyState
           icon={Search}
           title="Aucune activité trouvée"
-          description="Aucune activité ne correspond aux critères sélectionnés pour le moment."
+          description="Aucune activité ne correspond aux critères sélectionnés. Essayez d'élargir vos critères de recherche."
+          actionLabel="Réinitialiser les filtres"
+          onAction={handleResetFilters}
         />
       ) : (
         <>

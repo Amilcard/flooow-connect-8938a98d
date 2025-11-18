@@ -46,6 +46,11 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
     setCurrentIndex((prev) => Math.min(totalPages - 1, prev + 1));
   };
 
+  // Calculate which activities to show on current page
+  const startIndex = currentIndex * cardsPerView;
+  const endIndex = startIndex + cardsPerView;
+  const currentActivities = activities.slice(startIndex, endIndex);
+
   return (
     <div className="relative">
       {/* Helper text for carousel indication */}
@@ -53,7 +58,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
         Faites défiler pour voir d'autres activités
       </div>
 
-      {/* Desktop: Grid with overflow control */}
+      {/* Desktop: Grid with pagination */}
       <div className="hidden md:block">
         {/* Navigation arrows for desktop */}
         {totalPages > 1 && (
@@ -82,7 +87,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
 
         {/* Grid layout - Desktop (3 cols ≥1200px, 2 cols 768-1199px) */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-          {activities.map((activity) => (
+          {currentActivities.map((activity) => (
             <div key={activity.id} className="w-full">
               <ActivityCard
                 {...activity}
