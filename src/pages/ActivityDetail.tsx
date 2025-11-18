@@ -493,8 +493,14 @@ const ActivityDetail = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
-                <TabsTrigger value="tarifs" className="text-xs md:text-sm">Tarifs & aides</TabsTrigger>
-                <TabsTrigger value="mobilite" className="text-xs md:text-sm">Mobilité</TabsTrigger>
+                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center gap-1.5">
+                  <Euro size={14} className="hidden md:inline" />
+                  Tarifs & aides
+                </TabsTrigger>
+                <TabsTrigger value="mobilite" className="text-xs md:text-sm flex items-center gap-1.5">
+                  <Leaf size={14} className="hidden md:inline" />
+                  Mobilité
+                </TabsTrigger>
               </TabsList>
 
               {/* Onglet Infos */}
@@ -508,61 +514,72 @@ const ActivityDetail = () => {
                   </section>
                 )}
 
-                {/* Informations pratiques - Airbnb style */}
+                {/* Informations pratiques - Layout en colonnes alignées */}
                 <section className="space-y-4">
                   <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                      <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-sm">Tranche d'âge</p>
-                        <p className="text-sm text-muted-foreground">{ageRange}</p>
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Colonne gauche */}
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                        <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Tranche d'âge</p>
+                          <p className="text-sm text-muted-foreground">{ageRange}</p>
+                        </div>
                       </div>
+
+                      {typeof activity.accessibility_checklist === 'object' &&
+                       activity.accessibility_checklist !== null &&
+                       'wheelchair' in activity.accessibility_checklist &&
+                       activity.accessibility_checklist.wheelchair && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Accessibilité PMR</p>
+                            <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    
-                    {activity.structures?.address && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                        <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Lieu</p>
-                          <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
-                        </div>
-                      </div>
-                    )}
 
-                    {activity.covoiturage_enabled && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                        <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Covoiturage</p>
-                          <p className="text-sm text-muted-foreground">Service disponible</p>
+                    {/* Colonne droite */}
+                    <div className="space-y-4">
+                      {activity.structures?.address && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Lieu</p>
+                            <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
+                          </div>
                         </div>
-                      </div>
-                    )}
-
-                    {typeof activity.accessibility_checklist === 'object' && 
-                     activity.accessibility_checklist !== null && 
-                     'wheelchair' in activity.accessibility_checklist &&
-                     activity.accessibility_checklist.wheelchair && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                        <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Accessibilité PMR</p>
-                          <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {activity.payment_echelonned && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                        <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Paiement échelonné</p>
-                          <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
+
+                  {/* Informations supplémentaires en dessous */}
+                  {(activity.covoiturage_enabled || activity.payment_echelonned) && (
+                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                      {activity.covoiturage_enabled && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Covoiturage</p>
+                            <p className="text-sm text-muted-foreground">Service disponible</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {activity.payment_echelonned && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Paiement échelonné</p>
+                            <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </section>
               </TabsContent>
 
