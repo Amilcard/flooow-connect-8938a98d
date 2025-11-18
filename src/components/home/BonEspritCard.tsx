@@ -13,12 +13,12 @@ export const BonEspritCard = () => {
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col"
+      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
       onClick={() => navigate('/bon-esprit')}
       data-tour-id="home-bon-esprit"
     >
-      {/* Image avec ratio 16:10 */}
-      <div className="relative w-full h-[140px] overflow-hidden">
+      {/* Image de fond plein cadre */}
+      <div className="absolute inset-0">
         <img
           src={actualitePrixImg}
           alt="Prix Bon Esprit"
@@ -29,7 +29,7 @@ export const BonEspritCard = () => {
       </div>
 
       {/* Contenu centré */}
-      <div className="flex flex-col items-center justify-center p-6 md:p-8 text-center flex-1">
+      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
         {/* Icône */}
         <div className="mb-4 p-3 rounded-full bg-accent-blue/90 backdrop-blur-sm shadow-lg">
           <Award className="h-6 w-6 text-white" />
