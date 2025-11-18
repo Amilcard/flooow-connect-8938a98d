@@ -1,18 +1,21 @@
 /**
  * Eco-Mobility Page
  * Updated with plain text contacts (telephone, permanence, url_info)
+ * Aligned with FinancialAid page style
  */
 
 import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
-import { PageHeader } from "@/components/PageHeader";
+import { MobilityHeader } from "@/components/EcoMobility/MobilityHeader";
 import { MobilitySolutionCard } from "@/components/EcoMobility/MobilitySolutionCard";
+import { MobilityDataSources } from "@/components/EcoMobility/MobilityDataSources";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calculator, ExternalLink, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calculator, MapPin, Info } from "lucide-react";
 import { MobilitySolution, DataSource } from "@/types/Mobility";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
 
 // Mobility Solutions Data
 const MOBILITY_SOLUTIONS: MobilitySolution[] = [
@@ -113,51 +116,18 @@ const DATA_SOURCES: DataSource[] = [
 
 const EcoMobilite = () => {
   const { data: userTerritory, isLoading } = useUserTerritory();
+  const { isAuthenticated } = useAuth();
 
   // Filtrer les solutions selon le territoire de l'utilisateur
   // Pour l'instant on affiche toutes les solutions
-  // TODO: implémenter la règle hide_if_not_available_for_territory
   const filteredSolutions = MOBILITY_SOLUTIONS;
 
   return (
     <PageLayout showHeader={false}>
-      {/* PageHeader */}
-      <PageHeader
-        title="Solutions de mobilité"
-        subtitle="Découvrez les solutions pour vos déplacements éco-responsables"
-        backFallback="/"
-        tourId="mobility-page-header"
-      />
+      {/* Header */}
+      <MobilityHeader />
 
-      <div className="max-w-[1200px] mx-auto px-4 py-6 pb-24">
-        {/* Intro */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2 font-poppins">Faites du bien à la planète</h2>
-          <p className="text-gray-600 font-poppins">
-            Pour aller à votre activité, plusieurs options de transport s'offrent à vous : transports en commun, vélos en libre-service ou covoiturage.
-          </p>
-        </div>
-
-        {/* Territory indicator */}
-        {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-            <Skeleton className="h-4 w-4" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        ) : userTerritory ? (
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-            <MapPin className="w-4 h-4" />
-            <span className="font-poppins">
-              Territoire : <strong>{userTerritory.label || userTerritory.city || "Saint-Étienne"}</strong>
-            </span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-            <MapPin className="w-4 h-4" />
-            <span className="font-poppins">Solutions de mobilité disponibles</span>
-          </div>
-        )}
-
+      <div className="max-w-[1200px] mx-auto px-4 pb-24">
         {/* Simulateur CO2 - Highlighted Banner */}
         <Card className="mb-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
           <CardHeader>
@@ -166,19 +136,27 @@ const EcoMobilite = () => {
                 <Calculator className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <CardTitle className="text-xl mb-2 font-poppins">Calculer mon impact transport</CardTitle>
+                <div className="flex items-center gap-2 mb-2">
+                  <CardTitle className="text-xl font-poppins">Calculer mon impact transport</CardTitle>
+                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0">
+                    Gratuit
+                  </Badge>
+                </div>
                 <CardDescription className="text-base font-poppins">
-                  Estimez le CO₂ évité grâce à vos déplacements éco-responsables. Utilisez le simulateur pour mesurer votre impact transport.
+                  Estimez le CO₂ évité grâce à vos déplacements éco-responsables.
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm text-gray-700 font-poppins">
-                🌐 https://monimpacttransport.fr
-              </p>
-              <p className="text-xs text-gray-500 font-poppins">
+              <div className="flex items-start gap-2">
+                <Info size={14} className="text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-gray-700 font-poppins">
+                  monimpacttransport.fr
+                </p>
+              </div>
+              <p className="text-xs text-gray-500 font-poppins ml-5">
                 Service en ligne accessible 7j/7
               </p>
             </div>
@@ -187,7 +165,34 @@ const EcoMobilite = () => {
 
         {/* Mobility Solutions Grid */}
         <section className="space-y-6 mb-10">
-          <h2 className="text-2xl font-semibold font-poppins">Solutions de mobilité</h2>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-2xl font-semibold font-poppins mb-1">Aides et mobilité</h2>
+              {!isAuthenticated ? (
+                <p className="text-sm text-gray-600 font-poppins">
+                  Connectez-vous pour voir les solutions disponibles sur votre territoire.
+                </p>
+              ) : userTerritory ? (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span className="font-poppins">
+                    {userTerritory.label || userTerritory.city || "Saint-Étienne"}
+                  </span>
+                </div>
+              ) : null}
+            </div>
+            <Badge variant="outline" className="text-xs whitespace-nowrap">
+              Phase de test
+            </Badge>
+          </div>
+
+          {/* Info note for beta phase */}
+          <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+            <Info size={16} className="text-blue-500 shrink-0 mt-0.5" />
+            <p className="text-xs text-gray-700 font-poppins">
+              En phase de test, seules les données de Saint-Étienne Métropole sont affichées.
+            </p>
+          </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredSolutions.map((solution) => (
@@ -196,32 +201,8 @@ const EcoMobilite = () => {
           </div>
         </section>
 
-        {/* Data Sources */}
-        <Card className="bg-gray-50 border border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-lg font-poppins">Sources des données</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {DATA_SOURCES.map((source) => (
-                <div key={source.code} className="flex items-start gap-3">
-                  <ExternalLink className="w-4 h-4 text-gray-400 shrink-0 mt-1" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-700 font-poppins">
-                      {source.label}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-0.5 font-poppins">
-                      {source.description_parent}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1 font-poppins break-all">
-                      {source.website}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Data Sources - Styled like AidsInfoBox */}
+        <MobilityDataSources sources={DATA_SOURCES} />
       </div>
 
       <BottomNavigation />
