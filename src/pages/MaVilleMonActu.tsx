@@ -167,17 +167,22 @@ const MaVilleMonActu = () => {
                             </div>
                           )}
 
-                          {/* Bouton d'action unique */}
+                          {/* Lien externe désactivé en phase test */}
                           {(event.booking_url || event.external_link) && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="w-full"
-                              onClick={() => window.open(event.booking_url || event.external_link!, "_blank", "noopener,noreferrer")}
-                            >
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              En savoir plus
-                            </Button>
+                            <div className="space-y-2">
+                              <Button
+                                variant="default"
+                                size="sm"
+                                className="w-full"
+                                disabled
+                              >
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                En savoir plus (bientôt disponible)
+                              </Button>
+                              <p className="text-xs text-gray-400 truncate">
+                                Référence : {(event.booking_url || event.external_link)?.replace(/^https?:\/\/(www\.)?/, '')}
+                              </p>
+                            </div>
                           )}
                         </div>
                       </CardContent>

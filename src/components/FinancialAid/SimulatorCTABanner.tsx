@@ -14,7 +14,7 @@ export function SimulatorCTABanner() {
 
   const handleSimulate = () => {
     // Navigate to simulator page
-    navigate('/simulator');
+    navigate('/aides/simulateur');
   };
 
   return (
