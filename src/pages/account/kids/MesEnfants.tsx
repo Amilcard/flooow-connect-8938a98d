@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/PageHeader';
+import { ProfilLayout } from '@/components/ProfilLayout';
+import { EmptyState } from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import PageLayout from '@/components/PageLayout';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -157,27 +157,24 @@ const MesEnfants = () => {
   };
 
   return (
-    <PageLayout showHeader={false}>
-      {/* PageHeader blanc standard */}
-      <PageHeader
-        title="Mes enfants"
-        subtitle={`${children.length} enfant${children.length > 1 ? 's' : ''} enregistré${children.length > 1 ? 's' : ''}`}
-        backFallback="/mon-compte"
-        tourId="children-page-header"
-        rightContent={
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => setIsAddingChild(true)}
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Ajouter
-          </Button>
-        }
-      />
-
-      <div className="container px-4 py-6 space-y-4" data-tour-id="children-list">
+    <ProfilLayout
+      title="Mes enfants"
+      subtitle={`${children.length} enfant${children.length > 1 ? 's' : ''} enregistré${children.length > 1 ? 's' : ''}`}
+      backFallback="/mon-compte"
+      tourId="children-page-header"
+      rightContent={
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => setIsAddingChild(true)}
+          className="bg-white text-primary hover:bg-white/90"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Ajouter
+        </Button>
+      }
+    >
+      <div className="space-y-4" data-tour-id="children-list">
         {isLoading ? (
           <Card className="text-center py-12">
             <CardContent>
@@ -189,19 +186,13 @@ const MesEnfants = () => {
             </CardContent>
           </Card>
         ) : children.length === 0 ? (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Baby className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Aucun enfant enregistré</h3>
-              <p className="text-muted-foreground mb-6">
-                Ajoutez le profil de vos enfants pour personnaliser leur expérience
-              </p>
-              <Button onClick={() => setIsAddingChild(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Ajouter mon premier enfant
-              </Button>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Baby}
+            title="Aucun enfant enregistré"
+            description="Ajoutez le profil de vos enfants pour personnaliser leur expérience"
+            actionLabel="Ajouter mon premier enfant"
+            onAction={() => setIsAddingChild(true)}
+          />
         ) : (
           children.map((child) => {
             const interests = child.needs_json?.interests || [];
@@ -247,8 +238,8 @@ const MesEnfants = () => {
                   </div>
                 </div>
               </CardHeader>
-              
-                <CardContent className="space-y-4">
+
+              <CardContent className="space-y-4">
                   {interests.length > 0 && (
                     <div>
                       <h4 className="font-medium text-sm flex items-center mb-2">
@@ -314,12 +305,12 @@ const MesEnfants = () => {
       </div>
 
       {/* Modal d'ajout d'enfant */}
-      <KidAddModal 
+      <KidAddModal
         open={isAddingChild}
         onOpenChange={setIsAddingChild}
         onChildAdded={loadChildren}
       />
-    </PageLayout>
+    </ProfilLayout>
   );
 };
 

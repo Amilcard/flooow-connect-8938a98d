@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { BackButton } from '@/components/BackButton';
+import { ProfilLayout } from '@/components/ProfilLayout';
+import { EmptyState } from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,6 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
-import PageLayout from '@/components/PageLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
@@ -110,35 +110,25 @@ const MesNotifications = () => {
   };
 
   return (
-    <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-            <div>
-              <h1 className="text-xl font-bold">Mes notifications</h1>
-              <p className="text-white/90 text-sm">
-                {unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : 'Toutes lues'}
-              </p>
-            </div>
-          </div>
-          
-          {unreadCount > 0 && (
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => markAllAsRead.mutate()}
-              disabled={markAllAsRead.isPending}
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Tout lire
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="container px-4 py-6">
+    <ProfilLayout
+      title="Mes notifications"
+      subtitle={unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : 'Toutes lues'}
+      tourId="notifications-page"
+      rightContent={
+        unreadCount > 0 ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => markAllAsRead.mutate()}
+            disabled={markAllAsRead.isPending}
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Tout lire
+          </Button>
+        ) : undefined
+      }
+    >
+      <div>
         <Tabs defaultValue="notifications" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="notifications">
@@ -161,15 +151,11 @@ const MesNotifications = () => {
                 ))}
               </div>
             ) : notifications.length === 0 ? (
-              <Card className="text-center py-12">
-                <CardContent>
-                  <Bell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">Aucune notification</h3>
-                  <p className="text-muted-foreground">
-                    Vous serez notifié des nouveaux événements dans votre territoire ou correspondant à vos centres d'intérêt
-                  </p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={Bell}
+                title="Aucune notification"
+                description="Vous serez notifié des nouveaux événements dans votre territoire ou correspondant à vos centres d'intérêt"
+              />
             ) : (
               notifications.map((notification: any) => (
                 <Card 
@@ -475,7 +461,7 @@ const MesNotifications = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </PageLayout>
+    </ProfilLayout>
   );
 };
 
