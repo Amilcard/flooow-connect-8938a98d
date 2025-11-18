@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, FileText, Calendar, Euro } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
+import { ProfilLayout } from "@/components/ProfilLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -104,20 +104,12 @@ const ProfilEligibilite = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <header className="border-b bg-card">
-        <div className="container flex items-center gap-4 py-4">
-          <BackButton fallback="/mon-compte" className="hover:bg-muted" />
-          <div>
-            <h1 className="text-xl font-semibold">Profil d'éligibilité</h1>
-            <p className="text-sm text-muted-foreground">
-              Estime tes aides potentielles
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <main className="container py-6 space-y-6">
+    <ProfilLayout
+      title="Profil d'éligibilité"
+      subtitle="Estime tes aides potentielles"
+      tourId="profil-eligibilite"
+    >
+      <div className="space-y-6">
         {/* État vide */}
         {!age && !qf && (
           <Card className="bg-muted/50">
@@ -260,8 +252,8 @@ const ProfilEligibilite = () => {
             </Card>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </ProfilLayout>
   );
 };
 
