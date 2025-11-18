@@ -1,14 +1,10 @@
-/**
- * LOT 4 - Homepage Complete Optimized
- * Refactored with new components: HomeHeader, HomeHeroCarousel, QuickAccessCards, RecommendedActivitiesSection
- * CRITICAL: padding 16px consistency, gap 12px carousels, cards 220px width
- */
-
 import { useState, useEffect } from "react";
-import { HomeHeader } from "@/components/Home/HomeHeader";
-import { HomeHeroCarousel } from "@/components/Home/HomeHeroCarousel";
-import { QuickAccessCards } from "@/components/Home/QuickAccessCards";
-import { RecommendedActivitiesSection } from "@/components/Home/RecommendedActivitiesSection";
+import { SearchBar } from "@/components/SearchBar";
+import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
+import { MobiliteCard } from "@/components/home/MobiliteCard";
+import { MaVilleCard } from "@/components/home/MaVilleCard";
+import { BonEspritCard } from "@/components/home/BonEspritCard";
+import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { useUserTerritory } from "@/hooks/useUserTerritory";
@@ -17,7 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
-import { BottomNavigation } from "@/components/BottomNavigation";
+import PageLayout from "@/components/PageLayout";
+import Footer from "@/components/Footer";
 import HelpFloatingButton from "@/components/HelpFloatingButton";
 
 const Index = () => {
@@ -127,56 +124,102 @@ const Index = () => {
 
   if (errorRecommended) {
     return (
-      <div className="min-h-screen bg-white">
-        <HomeHeader />
+      <PageLayout>
+      <SearchBar 
+        placeholder="Rechercher une activité ou un événement pour votre enfant…"
+        onFilterClick={() => console.log("Filter clicked")} 
+      />
         <main className="container px-4 py-6">
-          <ErrorState
-            message="Impossible de charger les activités. Veuillez réessayer."
+          <ErrorState 
+            message="Impossible de charger les activités. Veuillez réessayer." 
             onRetry={() => window.location.reload()}
           />
         </main>
-      </div>
+      </PageLayout>
     );
   }
 
+  const handleActivityClick = (id: string) => {
+    navigate(`/activity/${id}`);
+  };
   return (
-    <div className="min-h-screen bg-white">
-      {/* LOT 4: Sticky Header (logo + search + login) */}
-      <HomeHeader />
-
-      {/* LOT 4: Hero Carousel (180-200px height) */}
-      <HomeHeroCarousel />
-
-      {/* Main Content Container - max-width 1200px */}
-      <main className="max-w-[1200px] mx-auto">
+    <PageLayout>
+      <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+      
+      <main className="max-w-[1200px] mx-auto px-6 pb-24">
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
-          <div className="px-4 md:px-6">
-            <TerritoryCheck postalCode={userProfile.postal_code} />
-          </div>
+          <TerritoryCheck 
+            postalCode={userProfile.postal_code}
+          />
         )}
 
         {/* Show activities only if user has access or not logged in */}
         {(!isLoggedIn || !userProfile?.postal_code || territoryAccess?.hasAccess) && (
           <>
-            {/* LOT 4: Quick Access Cards (4 cards with gradient fallbacks) - CRITICAL: padding handled by component */}
-            <QuickAccessCards />
+            {/* ========== SECTION 1: CARTES PORTRAIT (4 OUTILS) ========== */}
+            <section className="py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div data-tour-id="home-aids-card">
+                  <AidesFinancieresCard />
+                </div>
+                <div data-tour-id="home-mobility-card">
+                  <MobiliteCard />
+                </div>
+                <div data-tour-id="home-ville-card">
+                  <MaVilleCard />
+                </div>
+                <div data-tour-id="home-prix-card">
+                  <BonEspritCard />
+                </div>
+              </div>
+            </section>
 
-            {/* LOT 4: Recommended Activities Section - CRITICAL: gap 12px, cards 220px */}
-            <RecommendedActivitiesSection />
+            {/* ========== SECTION 3: ACTIVITÉS RECOMMANDÉES ========== */}
+            {!loadingRecommended && recommendedActivities.length > 0 && (
+              <section className="py-6" data-tour-id="home-reco-section">
+                <ActivityThematicSection
+                  title="Activités recommandées"
+                  subtitle="Une sélection d'activités adaptées au profil de votre famille."
+                  activities={recommendedActivities}
+                  showSeeAll
+                  onActivityClick={handleActivityClick}
+                  onSeeAllClick={() => navigate('/activities')}
+                />
+              </section>
+            )}
+
+            {/* ========== SECTION 4: PETITS BUDGETS ========== */}
+            {!loadingBudget && budgetActivities.length > 0 && (
+              <section className="py-6">
+                <ActivityThematicSection
+                  title="Petits budgets"
+                  subtitle="Des idées d'activités à coût maîtrisé."
+                  activities={budgetActivities}
+                  badge="Budget maîtrisé"
+                  onActivityClick={handleActivityClick}
+                />
+              </section>
+            )}
+
+            {/* ========== SECTION 5: SPORT & BIEN-ÊTRE ========== */}
+            {!loadingSport && sportActivities.length > 0 && (
+              <section className="py-6">
+                <ActivityThematicSection
+                  title="Sport & bien-être"
+                  subtitle="Bouger, se défouler, se sentir bien."
+                  activities={sportActivities}
+                  badge="Sport"
+                  onActivityClick={handleActivityClick}
+                />
+              </section>
+            )}
           </>
         )}
       </main>
-
-      {/* Bottom margin for navigation */}
-      <div className="h-20" />
-
-      {/* Bottom Navigation */}
-      <BottomNavigation />
-
-      {/* Help Floating Button */}
+      <Footer />
       <HelpFloatingButton />
-    </div>
+    </PageLayout>
   );
 };
 

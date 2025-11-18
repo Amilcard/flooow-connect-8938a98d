@@ -27,7 +27,7 @@ export const PageHeader = ({
   subtitle,
   showBackButton = true,
   onBackClick,
-  backFallback = "/",
+  backFallback = -1,
   rightContent,
   tourId,
 }: PageHeaderProps) => {
