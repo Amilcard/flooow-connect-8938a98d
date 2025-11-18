@@ -13,11 +13,19 @@ interface NavItem {
   requiresAuth?: boolean;
 }
 
+/**
+ * Navigation principale en bas d'écran (5 onglets)
+ * Alignée avec l'onboarding : Mes activités / Mes aides / Mes trajets
+ *
+ * Note: Les tuiles "Ma ville & mon actu" et "Mes aides financières" de la page d'accueil
+ * correspondent respectivement aux onglets "Ma ville" et "Mes aides" ci-dessous.
+ * L'état actif s'allume automatiquement grâce à la correspondance des routes.
+ */
 const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
-  { icon: MapPin, label: "Ma ville", path: "/ma-ville-mon-actu" },
-  { icon: Euro, label: "Mes aides", path: "/aides" },
+  { icon: MapPin, label: "Ma ville", path: "/ma-ville-mon-actu" }, // Correspond à la tuile "Ma ville & mon actu"
+  { icon: Euro, label: "Mes aides", path: "/aides" }, // Correspond à la tuile "Mes aides financières"
   { icon: UserCircle, label: "Mon compte", path: "/mon-compte", requiresAuth: true },
 ];
 
