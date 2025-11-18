@@ -19,7 +19,7 @@ export function SimulatorCTABanner() {
 
   return (
     <div
-      className="mx-4 my-5 bg-gradient-to-br from-[#DBEAFE] to-[#E0E7FF] border-2 border-blue-500 rounded-2xl p-5 relative overflow-hidden shadow-[0_4px_16px_rgba(59,130,246,0.15)] cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(59,130,246,0.25)]"
+      className="my-5 bg-gradient-to-br from-[#DBEAFE] to-[#E0E7FF] border-2 border-blue-500 rounded-2xl p-5 relative overflow-hidden shadow-[0_4px_16px_rgba(59,130,246,0.15)] cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(59,130,246,0.25)]"
       onClick={handleSimulate}
     >
       {/* GRATUIT Badge */}

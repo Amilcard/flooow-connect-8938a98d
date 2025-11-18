@@ -41,7 +41,7 @@ export function AidsSectionsList({ schoolYearAids, vacationsAids }: AidsSections
       {sections.map((section) => (
         <div key={section.id} className="mb-10">
           {/* Section Header */}
-          <div className="mx-4 mt-8 mb-4 flex items-center gap-3">
+          <div className="mt-8 mb-4 flex items-center gap-3">
             {/* Icon Container */}
             <div className={`w-10 h-10 ${section.bgLight} rounded-[10px] flex items-center justify-center`}>
               <section.icon size={24} className={section.iconColor} />
@@ -53,8 +53,8 @@ export function AidsSectionsList({ schoolYearAids, vacationsAids }: AidsSections
             </h2>
           </div>
 
-          {/* Aids Grid - Responsive */}
-          <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Aids Grid - Responsive: 2 cols mobile, 3 cols desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {section.aids.map((aid) => (
               <AidCard key={aid.id} aid={aid} />
             ))}
