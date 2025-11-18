@@ -1,24 +1,61 @@
 /**
- * LOT 5 - Financial Aid Types
- * Interface definitions for Financial Aid Screen
+ * LOT 5 - Financial Aid Types (Updated)
+ * Interface definitions for Financial Aid Screen with contacts and CTAs
  */
 
+export interface CTA {
+  label: string;
+  type: 'link';
+  url: string;
+  open_mode: 'in_app_webview' | 'external';
+}
+
+export interface PhoneContact {
+  display: string;
+  tel_href: string | null;
+  note?: string;
+}
+
+export interface Contacts {
+  website?: string;
+  phone?: PhoneContact;
+  email?: string;
+}
+
 export interface FinancialAid {
-  id: string;
-  title: string;
-  amount: string; // Ex: "50€" ou "70€"
-  age_range: string; // Ex: "6-10 ans"
-  type: string; // Ex: "Saison scolaire", "Vacances"
-  description: string;
-  organizer: string; // Ex: "Ministère des Sports"
-  category: 'school_year' | 'vacations';
-  eligibility_criteria: {
+  // Core identifiers
+  code: string;
+  name: string;
+  short_label: string;
+  category: string;
+
+  // Descriptions
+  who: string;
+  description_parent: string;
+  territory_scope: string;
+
+  // Actions
+  primary_cta: CTA;
+  secondary_ctas: CTA[];
+
+  // Contacts
+  contacts: Contacts;
+
+  // Legacy fields for backward compatibility
+  id?: string;
+  title?: string;
+  amount?: string;
+  age_range?: string;
+  type?: string;
+  description?: string;
+  organizer?: string;
+  eligibility_criteria?: {
     is_qpv_required: boolean;
     income_ceiling?: number;
     other_requirements?: string[];
   };
   external_url?: string;
-  is_eligible?: boolean; // Calculé côté client si profil user disponible
+  is_eligible?: boolean;
   check_eligibility_needed?: boolean;
 }
 
