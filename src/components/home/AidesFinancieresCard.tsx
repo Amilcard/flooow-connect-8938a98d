@@ -1,56 +1,38 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calculator, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
 
 /**
- * Carte portrait "Mes aides financières"
- * Design moderne avec image plein cadre, texte centré sur overlay
+ * Tuile "Nos aides" - Format compact CityCrunch
+ * Grid 2x2 mobile, 4 colonnes desktop
  */
 export const AidesFinancieresCard = () => {
   const navigate = useNavigate();
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
+      className="relative p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border-green-200 cursor-pointer transition-all duration-200 hover:scale-102 hover:shadow-lg active:scale-98 h-full min-h-[140px] flex flex-col justify-between"
       onClick={() => navigate('/aides')}
+      role="link"
+      aria-label="Nos aides - On simule, on économise"
     >
-      {/* Image de fond plein cadre */}
-      <div className="absolute inset-0">
-        <img
-          src={aidesFinancieresImg}
-          alt="Aides financières"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        {/* Gradient overlay pour lisibilité */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-      </div>
+      {/* Badge Stop au non-recours */}
+      <Badge className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] px-2 py-0.5 border-0">
+        Stop au non-recours !
+      </Badge>
 
-      {/* Contenu centré */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
-        {/* Icône */}
-        <div className="mb-4 p-3 rounded-full bg-primary/90 backdrop-blur-sm shadow-lg">
-          <Calculator className="h-6 w-6 text-white" />
-        </div>
+      {/* Icône */}
+      <DollarSign className="w-6 h-6 text-green-700 mb-3" />
 
-        {/* Titre */}
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Mes aides financières
-        </h2>
-
-        {/* Sous-titre */}
-        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
-          Estimez rapidement les aides auxquelles votre famille peut avoir droit
+      {/* Textes */}
+      <div className="space-y-1">
+        <h3 className="text-base font-bold text-gray-900 leading-tight">
+          Nos aides
+        </h3>
+        <p className="text-xs text-gray-600 leading-snug">
+          On simule. On économise.
         </p>
-
-        {/* CTA discret */}
-        <Button
-          className="bg-white/95 hover:bg-white text-primary font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
-        >
-          Découvrir mes aides
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
       </div>
     </Card>
   );
