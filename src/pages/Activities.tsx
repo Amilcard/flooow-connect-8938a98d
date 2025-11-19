@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { BackButton } from "@/components/BackButton";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { ActivityListMobile } from "@/components/Activity/ActivityListMobile";
+import { ZeroResultState } from "@/components/Activity/ZeroResultState";
 import { VacationPeriodFilter } from "@/components/VacationPeriodFilter";
 import { useActivities } from "@/hooks/useActivities";
 import { useMockActivities } from "@/hooks/useMockActivities";
@@ -56,6 +57,7 @@ const Activities = () => {
   };
   
   const [activeTab, setActiveTab] = useState(getInitialTab());
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Mettre à jour l'onglet actif si les paramètres URL changent
   useEffect(() => {
@@ -94,6 +96,19 @@ const Activities = () => {
     setSearchParams(newParams);
   };
 
+  // Fonction pour réinitialiser tous les filtres
+  const handleReset = () => {
+    setSearchTerm("");
+    setSelectedVacationPeriod(undefined);
+    clearChildFilter();
+    setActiveTab("all");
+  };
+
+  // Fonction pour capturer la recherche
+  const handleSearch = (query: string) => {
+    setSearchTerm(query);
+  };
+
   console.log("📊 Activities page state:", { 
     activitiesCount: allActivities.length, 
     mockActivitiesCount: mockActivities.length,
@@ -114,10 +129,13 @@ const Activities = () => {
   if (error) {
     return (
       <PageLayout>
-        <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+        <SearchBar
+          onFilterClick={() => console.log("Filter clicked")}
+          onSearch={handleSearch}
+        />
         <main className="container px-4 py-6">
-          <ErrorState 
-            message="Impossible de charger les activités. Veuillez réessayer." 
+          <ErrorState
+            message="Impossible de charger les activités. Veuillez réessayer."
             onRetry={() => window.location.reload()}
           />
         </main>
@@ -131,7 +149,10 @@ const Activities = () => {
         <div className="container px-4 pt-2">
           <BackButton positioning="relative" size="sm" showSplash={true} fallback="/home" />
         </div>
-        <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+        <SearchBar
+          onFilterClick={() => console.log("Filter clicked")}
+          onSearch={handleSearch}
+        />
       </div>
       
       <main className="container px-4 py-6">
@@ -177,6 +198,13 @@ const Activities = () => {
           <TabsContent value="all">
             {mobileVisualMode ? (
               <ActivityListMobile activities={allActivities} isLoading={isLoading} />
+            ) : allActivities.length === 0 && !isLoading ? (
+              <ZeroResultState
+                searchTerm={searchTerm}
+                suggestions={[]}
+                onReset={handleReset}
+                hasGeoFilter={false}
+              />
             ) : (
               <ActivitySection
                 title={getTitle()}
@@ -188,7 +216,11 @@ const Activities = () => {
 
           {["Sport", "Culture", "Loisirs", "Vacances", "Scolarité"].map((cat) => (
             <TabsContent key={cat} value={cat}>
-              <CategoryActivities category={cat} />
+              <CategoryActivities
+                category={cat}
+                searchTerm={searchTerm}
+                onReset={handleReset}
+              />
             </TabsContent>
           ))}
         </Tabs>
@@ -198,14 +230,34 @@ const Activities = () => {
   );
 };
 
-const CategoryActivities = ({ category }: { category: string }) => {
+const CategoryActivities = ({
+  category,
+  searchTerm,
+  onReset
+}: {
+  category: string;
+  searchTerm?: string;
+  onReset: () => void;
+}) => {
   const [searchParams] = useSearchParams();
   const visualParam = searchParams.get("visual");
   const isMobile = useIsMobile();
   const mobileVisualMode = isMobile && visualParam === "true";
-  
+
   const { data: activities = [], isLoading } = useActivities({ category });
-  
+
+  // Gestion de l'état zéro résultat
+  if (!mobileVisualMode && activities.length === 0 && !isLoading) {
+    return (
+      <ZeroResultState
+        searchTerm={searchTerm}
+        suggestions={[]}
+        onReset={onReset}
+        hasGeoFilter={false}
+      />
+    );
+  }
+
   return mobileVisualMode ? (
     <ActivityListMobile activities={activities} isLoading={isLoading} />
   ) : (
