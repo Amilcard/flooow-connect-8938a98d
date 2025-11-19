@@ -1,33 +1,57 @@
 import { Card } from "@/components/ui/card";
-import { Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Award, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import actualitePrixImg from "@/assets/actualite-prix.jpg";
 
 /**
- * Tuile "Prix Bon Esprit" - Format compact CityCrunch
- * Grid 2x2 mobile, 4 colonnes desktop
+ * Carte portrait "Prix Bon Esprit" - CityCrunch
+ * Design moderne avec image plein cadre, texte centré sur overlay
  */
 export const BonEspritCard = () => {
   const navigate = useNavigate();
 
   return (
     <Card
-      className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 cursor-pointer transition-all duration-200 hover:scale-102 hover:shadow-lg active:scale-98 h-full min-h-[140px] flex flex-col justify-between"
+      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
       onClick={() => navigate('/bon-esprit')}
-      role="link"
-      aria-label="Prix Bon Esprit - On nomme nos héros"
       data-tour-id="home-bon-esprit"
     >
-      {/* Icône */}
-      <Award className="w-6 h-6 text-purple-700 mb-3" />
+      {/* Image de fond plein cadre */}
+      <div className="absolute inset-0">
+        <img
+          src={actualitePrixImg}
+          alt="Prix Bon Esprit"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        />
+        {/* Gradient overlay pour lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      </div>
 
-      {/* Textes */}
-      <div className="space-y-1">
-        <h3 className="text-base font-bold text-gray-900 leading-tight">
+      {/* Contenu centré */}
+      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
+        {/* Icône */}
+        <div className="mb-4 p-3 rounded-full bg-accent-blue/90 backdrop-blur-sm shadow-lg">
+          <Award className="h-6 w-6 text-white" />
+        </div>
+
+        {/* Titre */}
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
           Prix Bon Esprit
-        </h3>
-        <p className="text-xs text-gray-600 leading-snug">
+        </h2>
+
+        {/* Sous-titre */}
+        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
           On nomme nos héros.
         </p>
+
+        {/* CTA discret */}
+        <Button
+          className="bg-white/95 hover:bg-white text-accent-blue font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
+        >
+          Voter pour un héros
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </div>
     </Card>
   );
