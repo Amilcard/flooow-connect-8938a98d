@@ -91,7 +91,7 @@ const Search = () => {
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-10 bg-background border-b">
         <div className="container py-2">
-          <BackButton />
+          <BackButton positioning="relative" size="sm" />
         </div>
         <SearchBar />
       </div>
