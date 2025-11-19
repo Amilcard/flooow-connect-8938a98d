@@ -83,7 +83,7 @@ const Activities = () => {
     return filters;
   };
 
-  const { activities: allActivities = [], isLoading, error } = useActivities(getAllFilters());
+  const { data: allActivities = [], isLoading, error } = useActivities(getAllFilters());
   const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(10);
   
   // Fonction pour retirer le filtre enfant
@@ -244,7 +244,7 @@ const CategoryActivities = ({
   const isMobile = useIsMobile();
   const mobileVisualMode = isMobile && visualParam === "true";
 
-  const { activities = [], isLoading } = useActivities({ category });
+  const { data: activities = [], isLoading } = useActivities({ category });
 
   // Gestion de l'état zéro résultat
   if (!mobileVisualMode && activities.length === 0 && !isLoading) {

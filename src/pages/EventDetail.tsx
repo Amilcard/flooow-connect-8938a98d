@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import PageLayout from "@/components/PageLayout";
-import { BackButton } from "@/components/BackButton";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -122,14 +121,14 @@ const EventDetail = () => {
     <PageLayout>
       <div className="container px-4 py-6 space-y-6 max-w-4xl mx-auto">
         {/* Header avec bouton retour */}
-        {/* Header avec bouton retour */}
-        <div className="mb-4">
-          <BackButton
-            positioning="relative"
-            showText={true}
-            label="Retour"
-          />
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </Button>
 
         {/* Image principale */}
         {event.image_url && (

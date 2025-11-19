@@ -202,6 +202,7 @@ export function CompactHeroHeader({
       {/* Back Button - Top Left avec backdrop blur */}
       <div className="absolute top-4 left-4 z-10">
         <BackButton
+          fallback={backFallback}
           className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full flex items-center justify-center transition-all"
         />
       </div>

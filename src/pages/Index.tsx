@@ -97,27 +97,27 @@ const Index = () => {
   const { data: userTerritory } = useUserTerritory();
 
   // Charger les activités : avec territoire si connecté, sinon toutes les activités
-  const { activities: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({
+  const { data: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({
     limit: 6,
     territoryId: userTerritory?.id || undefined // undefined permet de charger toutes les activités si pas de territoire
   });
 
   // Petits budgets (max 400€)
-  const { activities: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
+  const { data: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
     limit: 6,
     territoryId: userTerritory?.id,
     maxPrice: 400
   });
 
   // Sport & bien-être
-  const { activities: sportActivities = [], isLoading: loadingSport } = useActivities({ 
+  const { data: sportActivities = [], isLoading: loadingSport } = useActivities({ 
     limit: 6,
     territoryId: userTerritory?.id,
     category: 'sport'
   });
 
   // Activités recommandées
-  const { activities: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({ 
+  const { data: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({ 
     limit: 6,
     territoryId: userTerritory?.id
   });

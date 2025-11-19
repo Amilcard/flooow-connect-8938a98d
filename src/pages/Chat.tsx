@@ -1,5 +1,4 @@
 import PageLayout from "@/components/PageLayout";
-import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Users, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +11,17 @@ const Chat = () => {
     <PageLayout>
       <div className="container px-4 py-6">
         {/* Header */}
-        <PageHeader title="Messagerie" />
+        <div className="flex items-center gap-3 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            aria-label="Retour"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="text-2xl font-bold">Messagerie</h1>
+        </div>
 
         {/* Coming Soon Message */}
         <Card className="p-8 text-center space-y-6">

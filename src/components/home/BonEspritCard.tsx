@@ -49,7 +49,7 @@ export const BonEspritCard = () => {
         <Button
           className="bg-white/95 hover:bg-white text-accent-blue font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
         >
-          Proposer un héros
+          Voter pour un héros
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

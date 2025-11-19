@@ -1,5 +1,4 @@
 import { ArrowLeft, Calendar, Users, MapPin, Info, FileText, Car, Accessibility, CreditCard, AlertCircle } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -82,11 +81,15 @@ export const ActivityDetail = ({ activity, onBack, onEnroll }: ActivityDetailPro
       {/* Header with back button */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
         <div className="container px-4 py-3 flex items-center gap-3">
-          <BackButton
-            positioning="relative"
+          <Button
+            variant="ghost"
             size="icon"
+            onClick={onBack}
             className="rounded-full"
-          />
+            aria-label="Retour"
+          >
+            <ArrowLeft size={20} />
+          </Button>
           <h1 className="text-lg font-semibold line-clamp-1">{activity.title}</h1>
         </div>
       </header>

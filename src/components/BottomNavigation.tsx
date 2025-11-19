@@ -1,4 +1,4 @@
-import { Home, Search, MapPin, Building2, UserCircle } from "lucide-react";
+import { Home, Search, MapPin, Euro, UserCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -15,17 +15,17 @@ interface NavItem {
 
 /**
  * Navigation principale en bas d'écran (5 onglets)
- * Alignée avec l'onboarding : Mes activités / Mes services / Mes trajets
+ * Alignée avec l'onboarding : Mes activités / Mes aides / Mes trajets
  *
  * Note: Les tuiles "Ma ville & mon actu" et "Mes aides financières" de la page d'accueil
- * correspondent respectivement aux onglets "Ma ville" et "Mes services" ci-dessous.
+ * correspondent respectivement aux onglets "Ma ville" et "Mes aides" ci-dessous.
  * L'état actif s'allume automatiquement grâce à la correspondance des routes.
  */
 const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
   { icon: MapPin, label: "Ma ville", path: "/ma-ville-mon-actu" }, // Correspond à la tuile "Ma ville & mon actu"
-  { icon: Building2, label: "Mes services", path: "/mes-services" }, // Remplace "Mes aides"
+  { icon: Euro, label: "Mes aides", path: "/aides" }, // Correspond à la tuile "Mes aides financières"
   { icon: UserCircle, label: "Mon compte", path: "/mon-compte", requiresAuth: true },
 ];
 

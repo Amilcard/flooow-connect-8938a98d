@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -87,12 +86,15 @@ export default function SearchFilters() {
         <div className="sticky top-0 z-10 bg-background border-b">
           <div className="container max-w-2xl px-4 py-4">
             <div className="flex items-center justify-between mb-2">
-              <BackButton
-                positioning="relative"
+              <Button
+                variant="ghost"
                 size="sm"
-                showText={true}
-                label="Retour"
-              />
+                onClick={() => navigate(-1)}
+                className="gap-2"
+              >
+                <ArrowLeft size={18} />
+                Retour
+              </Button>
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary">{activeFiltersCount} actif(s)</Badge>
               )}

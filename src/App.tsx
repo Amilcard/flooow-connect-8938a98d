@@ -62,7 +62,6 @@ import AgendaCommunity from "./pages/AgendaCommunity";
 import AidesMobilite from "./pages/AidesMobilite";
 import MesEvenementsFavoris from "./pages/MesEvenementsFavoris";
 import MaVilleMonActu from "./pages/MaVilleMonActu";
-import MesServices from "./pages/MesServices";
 import MaVille from "./pages/MaVille";
 import BonEsprit from "./pages/BonEsprit";
 import Login from "./pages/auth/Login";
@@ -176,7 +175,6 @@ const App = () => (
           <Route path="/aides/simulateur" element={<Simulateur />} />
           <Route path="/aides-mobilite" element={<AidesMobilite />} />
           <Route path="/ma-ville-mon-actu" element={<MaVilleMonActu />} />
-          <Route path="/mes-services" element={<MesServices />} />
           <Route path="/ma-ville" element={<MaVille />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/event/:id" element={<EventDetail />} />
