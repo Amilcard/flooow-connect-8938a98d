@@ -112,7 +112,7 @@ export const MesAidesCalculator = () => {
               )
             `)
             .eq('child_id', child.id)
-            .eq('status', 'confirmed');
+            .eq('status', 'validee');
 
           if (bookingsError) {
             console.error('Erreur bookings:', bookingsError);

@@ -7,13 +7,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { FilterState } from '@/types/searchFilters';
 
 export const buildActivityQuery = (filters: FilterState) => {
-  let query = supabase
+  // Use any to avoid deep type instantiation errors with chained query methods
+  let query: any = supabase
     .from('activities')
-    .select(`
-      *,
-      organizer:organizers(name),
-      location:locations(name, city, address)
-    `);
+    .select('*');
 
   // Text search
   if (filters.searchQuery) {
@@ -24,7 +21,7 @@ export const buildActivityQuery = (filters: FilterState) => {
 
   // Quick Filters
   if (filters.quickFilters.gratuit) {
-    query = query.eq('price_is_free', true);
+    query = query.or('price_base.eq.0,price_base.is.null');
   }
 
   if (filters.quickFilters.vacances_ete) {
@@ -142,7 +139,7 @@ export const buildActivityQuery = (filters: FilterState) => {
 
 export const getResultsCount = async (filters: FilterState): Promise<number> => {
   const query = buildActivityQuery(filters);
-  const { count, error } = await query.select('id', { count: 'exact', head: true });
+  const { count, error } = await query.select('*', { count: 'exact', head: false });
 
   if (error) {
     console.error('Error counting results:', error);
