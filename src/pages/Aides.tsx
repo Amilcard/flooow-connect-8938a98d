@@ -5,7 +5,7 @@
 
 import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
-import { FinancialAidHeader } from "@/components/FinancialAid/FinancialAidHeader";
+import { PageHeader } from "@/components/PageHeader";
 import { SimulatorCTABanner } from "@/components/FinancialAid/SimulatorCTABanner";
 import { MesAidesCalculator } from "@/components/FinancialAid/MesAidesCalculator";
 import { AidsSectionsList } from "@/components/FinancialAid/AidsSectionsList";
@@ -103,8 +103,11 @@ const vacationsAids: FinancialAid[] = [
 const Aides = () => {
   return (
     <PageLayout showHeader={false}>
-      {/* Enhanced Header with Gradient Orange */}
-      <FinancialAidHeader />
+      <PageHeader
+        title="Nos aides"
+        subtitle="On simule. On économise."
+        backFallback="/home"
+      />
 
       {/* Main Content Container with max-width and horizontal padding */}
       <div className="max-w-[1200px] mx-auto px-4">

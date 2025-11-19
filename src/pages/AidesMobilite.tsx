@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
+import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppIcon } from "@/components/ui/app-icon";
-import { HelpCircle, Calculator, ExternalLink, Bus, Bike, UsersRound, MapPin } from "lucide-react";
-import { BackButton } from "@/components/BackButton";
+import { HelpCircle, Calculator, ExternalLink, Bus, Bike, UsersRound, MapPin, Phone, Clock } from "lucide-react";
 
 const AidesMobilite = () => {
   const [searchParams] = useSearchParams();
@@ -70,10 +70,10 @@ const AidesMobilite = () => {
       description: "Abonnement annuel pour publics éligibles",
       mode: "public_transport" as const,
       eligibility: "Étudiants, demandeurs d'emploi, bénéficiaires RSA",
-      cta: "Choisir mon abonnement",
-      links: [
-        { label: "Réseau STAS", url: "https://www.reseau-stas.fr/tarifs" }
-      ]
+      telephone: "0 800 882 224 (gratuit)",
+      horaires: "Lun-Sam 7h-19h",
+      infoContact: "Agences STAS : Châteaucreux, Bellevue, Carnot. Infos et titres de transport en agence.",
+      urlInfo: "reseau-stas.fr/tarifs"
     },
     {
       name: "VéliVert",
@@ -81,44 +81,44 @@ const AidesMobilite = () => {
       description: "30 minutes offertes par trajet • 10 €/an si abonnement STAS annuel",
       mode: "bike" as const,
       eligibility: "Accessible à tous",
-      cta: "Activer VéliVert",
-      links: [
-        { label: "VéliVert STAS", url: "https://www.reseau-stas.fr" }
-      ]
+      telephone: "0 800 882 224 (via STAS)",
+      horaires: "Service 24h/24",
+      infoContact: "Inscription en ligne ou en agence STAS. Application VéliVert pour localiser les vélos.",
+      urlInfo: "reseau-stas.fr/velivert"
     },
     {
-      name: "Moovizy",
+      name: "Mov'ici (covoiturage régional)",
       amount: "Gratuit",
-      description: "Itinéraires multimodaux + achats + post-paiement",
-      mode: "itinerary" as const,
-      eligibility: "Téléchargement gratuit",
-      cta: "En savoir plus",
-      links: [
-        { label: "Transdev", url: "https://www.transdev.com" }
-      ]
-    },
-    {
-      name: "La Ricamarie — Bus M1/70",
-      amount: "Gratuit",
-      description: "Venir en bus depuis/vers La Ricamarie",
-      mode: "bus" as const,
-      eligibility: "Tous les voyageurs STAS",
-      cta: "Voir les horaires",
-      links: [
-        { label: "Réseau STAS", url: "https://www.reseau-stas.fr" }
-      ]
-    },
-    {
-      name: "Covoiturage Mov'ici",
-      amount: "Gratuit",
-      description: "Service régional de covoiturage",
+      description: "Service régional de covoiturage Auvergne-Rhône-Alpes",
       mode: "carpooling" as const,
       eligibility: "Tous les habitants de la région AURA",
-      cta: "Rejoindre Mov'ici",
-      links: [
-        { label: "Région AURA", url: "https://www.auvergnerhonealpes.fr" }
-      ],
+      telephone: "04 26 73 40 00 (Région AURA)",
+      horaires: "Lun-Ven 9h-12h / 14h-17h",
+      infoContact: "Inscription gratuite sur la plateforme. Application mobile disponible.",
+      urlInfo: "movici.auvergnerhonealpes.fr",
       note: "Prime nationale covoiturage terminée au 01/01/2025"
+    },
+    {
+      name: "Citiz (autopartage)",
+      amount: "Variable",
+      description: "Location de voitures partagées à l'heure ou à la journée",
+      mode: "carpooling" as const,
+      eligibility: "À partir de 18 ans",
+      telephone: "04 77 93 30 99",
+      horaires: "Véhicules disponibles 24h/24",
+      infoContact: "Inscription en ligne. Stations à Saint-Étienne centre, Carnot, Châteaucreux.",
+      urlInfo: "citiz.coop"
+    },
+    {
+      name: "MobilisÉ (centrale mobilité)",
+      amount: "Gratuit",
+      description: "Accompagnement personnalisé pour vos solutions de déplacement",
+      mode: "itinerary" as const,
+      eligibility: "Tous publics",
+      telephone: "04 77 49 77 99",
+      horaires: "Lun-Ven 9h-12h / 14h-17h",
+      infoContact: "Rendez-vous sur place ou par téléphone. Conseils transport, covoiturage, vélo.",
+      urlInfo: "Maison des mobilités, place Fourneyron"
     }
   ];
 
@@ -139,19 +139,14 @@ const AidesMobilite = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout showHeader={false}>
+      <PageHeader
+        title="Nos trajets éco-mobilité"
+        subtitle="On pense planète et santé."
+        backFallback="/home"
+      />
+
       <div className="container py-6 space-y-6">
-        {/* Bouton de retour amélioré */}
-        <div className="mb-4">
-          <BackButton fallback="/" showText={true} label="Retour à l'accueil" />
-        </div>
-        
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Mes aides & mobilités</h1>
-          <p className="text-muted-foreground">
-            Découvrez vos aides financières et vos moyens de transport pour accéder aux activités
-          </p>
-        </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -330,45 +325,44 @@ const AidesMobilite = () => {
                     <div className="text-sm text-muted-foreground">
                       <span className="font-medium">Éligibilité :</span> {option.eligibility}
                     </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => {
-                        if (option.links && option.links.length > 0) {
-                          window.open(option.links[0].url, "_blank");
-                        }
-                      }}
-                    >
-                      {option.cta}
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </Button>
 
-                    {option.links && option.links.length > 0 && (
-                      <div className="pt-2 border-t">
-                        <p className="text-xs text-muted-foreground mb-2">
-                          <span className="inline-flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" />
-                            Sources (ouverture externe) :
-                          </span>
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {option.links.map((link) => (
-                            <a
-                              key={link.url}
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline px-2 py-1 rounded bg-primary/5 hover:bg-primary/10 transition-colors"
-                              title="Ouvre un site partenaire dans un nouvel onglet"
-                            >
-                              {link.label}
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          ))}
+                    {/* Contact Information - Text Only */}
+                    <div className="pt-2 border-t space-y-2">
+                      {/* Telephone */}
+                      {'telephone' in option && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Phone className="w-4 h-4 text-primary shrink-0" />
+                          <a
+                            href={`tel:${option.telephone.replace(/\s/g, '')}`}
+                            className="text-primary hover:underline font-medium"
+                          >
+                            {option.telephone}
+                          </a>
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                      {/* Horaires */}
+                      {'horaires' in option && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Clock className="w-4 h-4 shrink-0" />
+                          <span>{option.horaires}</span>
+                        </div>
+                      )}
+
+                      {/* Info Contact */}
+                      {'infoContact' in option && (
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {option.infoContact}
+                        </p>
+                      )}
+
+                      {/* URL Info - Text only, not clickable */}
+                      {'urlInfo' in option && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Infos en ligne : {option.urlInfo}
+                        </p>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               ))}
