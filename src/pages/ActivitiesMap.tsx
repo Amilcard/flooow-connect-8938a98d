@@ -107,7 +107,7 @@ const ActivitiesMap = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback="/activities" />
+          <BackButton positioning="relative" size="sm" fallback="/activities" />
           <h1 className="font-semibold text-lg flex-1">Carte des activités</h1>
           
           {/* Filters sheet */}

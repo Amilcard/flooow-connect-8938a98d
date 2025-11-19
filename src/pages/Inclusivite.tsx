@@ -45,7 +45,7 @@ const Inclusivite = () => {
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b bg-card">
         <div className="container flex items-center gap-4 py-4">
-          <BackButton fallback="/" />
+          <BackButton positioning="relative" size="sm" fallback="/" />
           <div>
             <h1 className="text-xl font-semibold">Inclusivité & Accessibilité</h1>
           </div>
