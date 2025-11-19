@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
-import { BackButton } from "@/components/BackButton";
+import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -182,7 +182,7 @@ const MaVille = () => {
       id: "1",
       nom: "MJC Beaulieu",
       categorie: "MJC",
-      telephone: "04 77 XX XX XX",
+      telephone: "04 77 80 XX XX",
       badgeSolidaire: true,
       lienActivites: "/activities?organizer=mjc-beaulieu",
       lienDon: "https://helloasso.com/mjc-beaulieu",
@@ -192,7 +192,7 @@ const MaVille = () => {
       id: "2",
       nom: "Gymnase Municipal",
       categorie: "Sport",
-      telephone: "04 77 XX XX XX",
+      telephone: "04 77 49 XX XX",
       badgeSolidaire: false,
       lienActivites: "/activities?organizer=gymnase-municipal"
     }
@@ -224,19 +224,13 @@ const MaVille = () => {
 
   return (
     <PageLayout showHeader={false}>
+      <PageHeader
+        title="Notre ville, nos actus"
+        subtitle="Actus, agenda, contacts. On y est."
+        backFallback="/home"
+      />
+
       <div className="min-h-screen bg-background pb-24">
-        {/* Header */}
-        <header className="bg-white border-b sticky top-0 z-10">
-          <div className="container max-w-[1200px] mx-auto px-4 py-4">
-            <div className="flex items-start gap-4">
-              <BackButton positioning="relative" size="sm" fallback="/home" />
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-foreground">Notre ville, nos actus</h1>
-                <p className="text-sm text-muted-foreground">Actus, agenda, contacts. On y est.</p>
-              </div>
-            </div>
-          </div>
-        </header>
 
         <div className="container max-w-[1200px] mx-auto px-4 py-6 space-y-8">
           {/* ========== SECTION 1: ALERTES URGENTES ========== */}
