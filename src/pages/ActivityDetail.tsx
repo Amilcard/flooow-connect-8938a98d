@@ -47,6 +47,7 @@ import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
 import { EnhancedFinancialAidCalculator } from "@/components/activities/EnhancedFinancialAidCalculator";
+import { SimpleAidCalculator } from "@/components/activities/SimpleAidCalculator";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
@@ -617,7 +618,15 @@ const ActivityDetail = () => {
                   )}
                 </section>
 
-                {/* Financial Aids Section with integrated calculator - OPTIONNEL */}
+                {/* LOT A - Calculateur d'aides simplifié basé sur QF */}
+                <section className="space-y-4">
+                  <SimpleAidCalculator
+                    activityPrice={activity.price_base || 0}
+                    userProfile={userProfile}
+                  />
+                </section>
+
+                {/* Financial Aids Section with integrated calculator - OPTIONNEL (ancien système) */}
                 {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
                   <section id="aides-section" className="space-y-4" data-tour-id="aid-simulation-section">
                     <Alert className="bg-muted/50 border-primary/20">
