@@ -1,6 +1,7 @@
 /**
- * LOT A - Simulateur d'aides sur la page d'accueil
+ * LOT A - Simulateur d'aides sur la page d'accueil (refactorisé selon spec)
  * Permet de simuler le montant d'aide selon QF et prix activité
+ * Utilise la fonction pure calculateEstimatedAid
  */
 
 import { useState } from 'react';
@@ -9,9 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Calculator, TrendingUp, Sparkles, ArrowRight, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { calculerAidesParActivite, BAREME_AIDES } from '@/utils/aidesCalculator';
+import {
+  calculateEstimatedAid,
+  calculateResteACharge,
+  calculatePourcentageEconomie,
+  QF_BRACKETS
+} from '@/utils/aidesCalculator';
 
 export const AidSimulator = () => {
   const navigate = useNavigate();
@@ -31,8 +38,21 @@ export const AidSimulator = () => {
       return;
     }
 
-    const calcul = calculerAidesParActivite(prixNum, qfNum, ageNum);
-    setResultat(calcul);
+    const calcul = calculateEstimatedAid({
+      quotientFamilial: qfNum,
+      age: ageNum,
+      prixActivite: prixNum
+    });
+
+    const resteACharge = calculateResteACharge(prixNum, calcul.montantAide);
+    const pourcentageEconomie = calculatePourcentageEconomie(prixNum, calcul.montantAide);
+
+    setResultat({
+      ...calcul,
+      prixInitial: prixNum,
+      resteACharge,
+      pourcentageEconomie
+    });
     setShowResult(true);
   };
 
@@ -138,16 +158,29 @@ export const AidSimulator = () => {
                   Barème des aides
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {Object.entries(BAREME_AIDES).map(([key, tranche]) => (
-                    <div key={key} className="text-center p-2 bg-white rounded border">
-                      <p className="text-xs text-muted-foreground mb-1">{tranche.label}</p>
+                  {QF_BRACKETS.map((bracket, index) => (
+                    <div key={index} className="text-center p-2 bg-white rounded border">
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {bracket.max === null
+                          ? `${bracket.min}€ et +`
+                          : `${bracket.min}–${bracket.max}€`
+                        }
+                      </p>
                       <p className="text-sm font-bold text-primary">
-                        {tranche.montant > 0 ? `${tranche.montant}€` : 'Aucune'}
+                        {bracket.montantAide > 0 ? `${bracket.montantAide}€` : 'Aucune'}
                       </p>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* Message d'avertissement légal (spec) */}
+              <Alert className="bg-blue-50 border-blue-200">
+                <Info className="w-4 h-4 text-blue-600" />
+                <AlertDescription className="text-xs text-blue-900">
+                  <strong>Montant estimé selon votre quotient familial.</strong> Le montant réel pourra varier selon les dispositifs locaux.
+                </AlertDescription>
+              </Alert>
             </>
           ) : (
             <>
@@ -161,7 +194,7 @@ export const AidSimulator = () => {
                       {resultat.montantAide}€
                     </p>
                     <Badge variant="secondary" className="text-sm">
-                      {resultat.trancheQF.replace('TRANCHE_', 'Tranche ')}
+                      Tranche QF {resultat.trancheQF}
                     </Badge>
                   </div>
 
@@ -218,12 +251,13 @@ export const AidSimulator = () => {
                   </Button>
                 </div>
 
-                {/* Info complémentaire */}
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-center text-muted-foreground">
-                    💡 Créez votre compte pour bénéficier automatiquement de ces aides lors de vos inscriptions
-                  </p>
-                </div>
+                {/* Message d'avertissement légal (spec) */}
+                <Alert className="bg-blue-50 border-blue-200">
+                  <Info className="w-4 h-4 text-blue-600" />
+                  <AlertDescription className="text-xs text-blue-900">
+                    <strong>Montant estimé selon votre quotient familial.</strong> Le montant réel pourra varier selon les dispositifs locaux. Créez votre compte pour bénéficier automatiquement de ces aides lors de vos inscriptions.
+                  </AlertDescription>
+                </Alert>
               </div>
             </>
           )}

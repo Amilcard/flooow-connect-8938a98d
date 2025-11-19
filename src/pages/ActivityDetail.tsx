@@ -47,8 +47,8 @@ import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
 import { EnhancedFinancialAidCalculator } from "@/components/activities/EnhancedFinancialAidCalculator";
-import { SimpleAidCalculator } from "@/components/activities/SimpleAidCalculator";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
+import { calculateEstimatedAid, calculateResteACharge } from "@/utils/aidesCalculator";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -618,12 +618,88 @@ const ActivityDetail = () => {
                   )}
                 </section>
 
-                {/* LOT A - Calculateur d'aides simplifié basé sur QF */}
+                {/* LOT A - Calculateur d'aides selon spec (inline, pas de composant séparé) */}
                 <section className="space-y-4">
-                  <SimpleAidCalculator
-                    activityPrice={activity.price_base || 0}
-                    userProfile={userProfile}
-                  />
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold mb-4">Calculer mes aides</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="calc-qf">Quotient Familial (QF)</Label>
+                        <Input
+                          id="calc-qf"
+                          type="number"
+                          placeholder="Ex: 650"
+                          defaultValue={userProfile?.quotient_familial || ''}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {userProfile?.quotient_familial ? 'Pré-rempli depuis votre profil' : 'En euros'}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="calc-age">Âge de l'enfant</Label>
+                        <Input
+                          id="calc-age"
+                          type="number"
+                          placeholder="Ex: 10"
+                          min="3"
+                          max="25"
+                        />
+                        <p className="text-xs text-muted-foreground">Entre 3 et 25 ans</p>
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full mb-4"
+                      onClick={() => {
+                        const qfInput = document.getElementById('calc-qf') as HTMLInputElement;
+                        const ageInput = document.getElementById('calc-age') as HTMLInputElement;
+
+                        const qfVal = parseFloat(qfInput.value);
+                        const ageVal = parseInt(ageInput.value);
+
+                        if (!qfVal || !ageVal || qfVal < 0 || ageVal < 0) {
+                          toast({
+                            title: "Informations manquantes",
+                            description: "Veuillez renseigner le QF et l'âge",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+
+                        const calcul = calculateEstimatedAid({
+                          quotientFamilial: qfVal,
+                          age: ageVal,
+                          prixActivite: activity.price_base || 0
+                        });
+
+                        const resteACharge = calculateResteACharge(activity.price_base || 0, calcul.montantAide);
+
+                        // Mettre à jour aidsData pour afficher dans les blocs prix
+                        setAidsData({
+                          childId: '',
+                          quotientFamilial: qfVal.toString(),
+                          cityCode: '',
+                          aids: [],
+                          totalAids: calcul.montantAide,
+                          remainingPrice: resteACharge
+                        });
+
+                        toast({
+                          title: "Aide calculée",
+                          description: calcul.message,
+                        });
+                      }}
+                    >
+                      Calculer mes aides
+                    </Button>
+
+                    {/* Message d'avertissement légal (spec) */}
+                    <Alert className="bg-blue-50 border-blue-200">
+                      <Info className="w-4 h-4 text-blue-600" />
+                      <AlertDescription className="text-xs text-blue-900">
+                        <strong>Montant estimé selon votre quotient familial.</strong> Le montant réel pourra varier selon les dispositifs locaux.
+                      </AlertDescription>
+                    </Alert>
+                  </Card>
                 </section>
 
                 {/* Financial Aids Section with integrated calculator - OPTIONNEL (ancien système) */}
