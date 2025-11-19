@@ -18,10 +18,13 @@ import { validateCoordinates } from "@/utils/sanitize";
  * Sans modifier le type Activity principal
  */
 interface ActivityWithLocation extends Activity {
-  location?: {
+  location: {
+    nom?: string;
+    adresse: string;
+    codePostal?: string;
+    ville?: string;
     lat: number;
     lng: number;
-    address?: string;
   };
 }
 
@@ -207,10 +210,10 @@ export function InteractiveMapActivities({
                   )}
 
                   {/* Adresse */}
-                  {activity.location?.address && (
+                  {activity.location?.adresse && (
                     <p className="text-xs text-muted-foreground flex items-start gap-1">
                       <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                      <span>{activity.location.address}</span>
+                      <span>{activity.location.adresse}</span>
                     </p>
                   )}
                 </div>

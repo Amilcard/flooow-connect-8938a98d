@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Bell, Calendar, MessageCircle, DollarSign } from "lucide-react";
+import { Bell, Calendar, MessageCircle, DollarSign, LucideIcon } from "lucide-react";
 
 /**
  * Section Actualités - Version LOT 4 Optimisée
@@ -15,7 +15,7 @@ import { Bell, Calendar, MessageCircle, DollarSign } from "lucide-react";
 
 interface ActualiteCardProps {
   gradient: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   text: string;
   onClick: () => void;
 }

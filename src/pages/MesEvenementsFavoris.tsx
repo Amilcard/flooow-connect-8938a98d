@@ -49,7 +49,7 @@ const MesEvenementsFavoris = () => {
       <PageHeader
         title="Mes événements favoris"
         subtitle={events && events.length > 0 ? `${events.length} événement${events.length > 1 ? 's' : ''}` : 'Aucun événement'}
-        backFallback={-1}
+        backFallback="/mon-compte"
         tourId="favorite-events-header"
       />
 

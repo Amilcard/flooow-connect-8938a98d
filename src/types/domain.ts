@@ -62,6 +62,7 @@ export interface Activity {
   priceUnit?: string;          // Unité du prix (par semaine, par jour, par an, etc.)
   durationDays?: number;       // Durée en jours pour les séjours/stages
   hasAccommodation?: boolean;  // Hébergement inclus ou non
+  price_is_free?: boolean;     // Indicateur activité gratuite
 }
 
 /**

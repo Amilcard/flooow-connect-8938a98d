@@ -73,8 +73,7 @@ const Onboarding = () => {
       onNext: handleComplete,
       stepNumber: 4,
       isLastStep: true,
-      primaryCtaLabel: "C'est parti",
-      showSocialIcons: false
+      primaryCtaLabel: "C'est parti"
     },
   };
 
@@ -92,7 +91,6 @@ const Onboarding = () => {
       onSkip={handleSkip}
       isLastStep={currentStepData.isLastStep}
       primaryCtaLabel={currentStepData.primaryCtaLabel}
-      showSocialIcons={currentStepData.showSocialIcons}
     />
   );
 };

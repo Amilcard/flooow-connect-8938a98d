@@ -46,7 +46,11 @@ const SearchResults = () => {
         throw error;
       }
 
-      return data || [];
+      // Map database types to Activity type
+      return (data || []).map((activity: any) => ({
+        ...activity,
+        price_is_free: activity.price_base === 0 || activity.price_base === null,
+      }));
     },
     staleTime: 30000 // 30 seconds
   });
