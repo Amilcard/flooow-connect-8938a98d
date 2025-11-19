@@ -131,7 +131,7 @@ const SignUp = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header avec BackButton */}
       <div className="flex items-center p-4">
-        <BackButton fallback="/home" />
+        <BackButton positioning="relative" size="sm" fallback="/home" />
       </div>
 
       {/* Main Content */}

@@ -129,7 +129,7 @@ const Activities = () => {
     <PageLayout>
       <div className="sticky top-0 z-10 bg-background">
         <div className="container px-4 pt-2">
-          <BackButton showSplash={true} fallback="/home" />
+          <BackButton positioning="relative" size="sm" showSplash={true} fallback="/home" />
         </div>
         <SearchBar onFilterClick={() => console.log("Filter clicked")} />
       </div>
