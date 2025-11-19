@@ -1,6 +1,7 @@
 /**
- * LOT A - Calculateur d'aides personnalisé
+ * LOT A - Calculateur d'aides personnalisé (refactorisé selon spec)
  * Affiche les aides calculées basées sur le QF et les activités inscrites
+ * Utilise la fonction pure calculateEstimatedAid
  */
 
 import { useEffect, useState } from 'react';
@@ -8,10 +9,11 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Euro, TrendingUp, Users, AlertCircle, Settings, Baby } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Euro, TrendingUp, Users, AlertCircle, Settings, Baby, Info } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { calculerAidesTotalesFamille, BAREME_AIDES } from '@/utils/aidesCalculator';
+import { calculateEstimatedAid, QF_BRACKETS } from '@/utils/aidesCalculator';
 
 interface ChildWithActivities {
   id: string;
@@ -24,13 +26,26 @@ interface ChildWithActivities {
   }>;
 }
 
+interface AidesCalculees {
+  montantTotal: number;
+  nombreActivites: number;
+  aidesParEnfant: Array<{
+    enfantId: string;
+    nom: string;
+    age: number;
+    montantTotal: number;
+    nbActivites: number;
+  }>;
+  trancheQF: string;
+}
+
 export const MesAidesCalculator = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [qf, setQf] = useState<number | null>(null);
   const [enfantsAvecActivites, setEnfantsAvecActivites] = useState<ChildWithActivities[]>([]);
-  const [aidesCalculees, setAidesCalculees] = useState<any>(null);
+  const [aidesCalculees, setAidesCalculees] = useState<AidesCalculees | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -126,9 +141,50 @@ export const MesAidesCalculator = () => {
 
       setEnfantsAvecActivites(enfantsData);
 
-      // 4. Calculer les aides avec le calculateur
-      const resultat = calculerAidesTotalesFamille(enfantsData, quotientFamilial);
-      setAidesCalculees(resultat);
+      // 4. Calculer les aides avec la fonction pure calculateEstimatedAid
+      let totalAides = 0;
+      let totalActivites = 0;
+      let trancheQF = '';
+      const aidesParEnfant: Array<{
+        enfantId: string;
+        nom: string;
+        age: number;
+        montantTotal: number;
+        nbActivites: number;
+      }> = [];
+
+      enfantsData.forEach(enfant => {
+        let aidesEnfant = 0;
+        const nbActivitesEnfant = enfant.activites.length;
+
+        enfant.activites.forEach(activite => {
+          const calcul = calculateEstimatedAid({
+            quotientFamilial,
+            age: enfant.age,
+            prixActivite: activite.prix
+          });
+          aidesEnfant += calcul.montantAide;
+          if (!trancheQF) trancheQF = calcul.trancheQF; // Garder la tranche
+        });
+
+        aidesParEnfant.push({
+          enfantId: enfant.id,
+          nom: enfant.prenom,
+          age: enfant.age,
+          montantTotal: aidesEnfant,
+          nbActivites: nbActivitesEnfant
+        });
+
+        totalAides += aidesEnfant;
+        totalActivites += nbActivitesEnfant;
+      });
+
+      setAidesCalculees({
+        montantTotal: totalAides,
+        nombreActivites: totalActivites,
+        aidesParEnfant,
+        trancheQF
+      });
 
     } catch (error) {
       console.error('Erreur lors du calcul des aides:', error);
@@ -178,6 +234,9 @@ export const MesAidesCalculator = () => {
 
   // Cas 2 : QF configuré mais aucune activité inscrite
   if (enfantsAvecActivites.every(e => e.activites.length === 0)) {
+    // Calculer la tranche pour affichage
+    const dummyCalc = calculateEstimatedAid({ quotientFamilial: qf, age: 10, prixActivite: 100 });
+
     return (
       <Card className="mb-6 border-blue-200 bg-blue-50">
         <CardHeader>
@@ -194,16 +253,10 @@ export const MesAidesCalculator = () => {
             <p className="text-sm font-medium mb-1">Votre tranche d'aide</p>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                {BAREME_AIDES.TRANCHE_1.max >= qf && BAREME_AIDES.TRANCHE_1.label}
-                {BAREME_AIDES.TRANCHE_2.max >= qf && qf > BAREME_AIDES.TRANCHE_1.max && BAREME_AIDES.TRANCHE_2.label}
-                {BAREME_AIDES.TRANCHE_3.max >= qf && qf > BAREME_AIDES.TRANCHE_2.max && BAREME_AIDES.TRANCHE_3.label}
-                {qf > BAREME_AIDES.TRANCHE_3.max && BAREME_AIDES.TRANCHE_4.label}
+                QF {dummyCalc.trancheQF}
               </span>
               <Badge variant="secondary">
-                {qf <= BAREME_AIDES.TRANCHE_1.max && `${BAREME_AIDES.TRANCHE_1.montant}€/activité`}
-                {qf <= BAREME_AIDES.TRANCHE_2.max && qf > BAREME_AIDES.TRANCHE_1.max && `${BAREME_AIDES.TRANCHE_2.montant}€/activité`}
-                {qf <= BAREME_AIDES.TRANCHE_3.max && qf > BAREME_AIDES.TRANCHE_2.max && `${BAREME_AIDES.TRANCHE_3.montant}€/activité`}
-                {qf > BAREME_AIDES.TRANCHE_3.max && 'Aucune aide'}
+                {dummyCalc.montantAide > 0 ? `${dummyCalc.montantAide}€/activité` : 'Aucune aide'}
               </Badge>
             </div>
           </div>
@@ -259,7 +312,7 @@ export const MesAidesCalculator = () => {
               <Users className="w-4 h-4" />
               Détail par enfant
             </h4>
-            {aidesCalculees.aidesParEnfant.map((enfantAide: any) => (
+            {aidesCalculees.aidesParEnfant.map((enfantAide) => (
               <div key={enfantAide.enfantId} className="flex items-center justify-between py-2 border-b last:border-0">
                 <div>
                   <p className="font-medium text-sm">{enfantAide.nom}</p>
@@ -280,7 +333,7 @@ export const MesAidesCalculator = () => {
               <TrendingUp className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs font-medium text-primary">
-                  Tranche {aidesCalculees.trancheApplicable.replace('TRANCHE_', '')}
+                  Tranche QF {aidesCalculees.trancheQF}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Les montants ci-dessus sont automatiquement déduits lors de vos inscriptions
@@ -288,6 +341,14 @@ export const MesAidesCalculator = () => {
               </div>
             </div>
           </div>
+
+          {/* Message d'avertissement légal (spec) */}
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="w-4 h-4 text-blue-600" />
+            <AlertDescription className="text-xs text-blue-900">
+              <strong>Montant estimé selon votre quotient familial.</strong> Le montant réel pourra varier selon les dispositifs locaux.
+            </AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
     </div>
