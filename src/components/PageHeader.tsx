@@ -35,7 +35,7 @@ export const PageHeader = ({
     >
       <div className="container flex items-center justify-between px-4 py-3">
         {/* Left: Back button + Title/subtitle */}
-        <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div className="flex items-start gap-5 flex-1 min-w-0">
           {showBackButton && (
             <BackButton
               fallback={backFallback}

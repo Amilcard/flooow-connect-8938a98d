@@ -89,7 +89,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
 };
 
 export const useActivities = (filters?: ActivityFilters) => {
-  return useQuery({
+  const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
     queryKey: ["activities", filters],
     staleTime: 300000, // 5min
     gcTime: 600000, // 10min
@@ -100,18 +100,26 @@ export const useActivities = (filters?: ActivityFilters) => {
       // Date limite dynamique - Activités à partir d'aujourd'hui
       const CUTOFF_DATE = new Date().toISOString().split('T')[0];
       
-      let query = supabase
-        .from("activities")
-        .select(`
-          id, title, description, category, categories, age_min, age_max, price_base,
-          images, accessibility_checklist, accepts_aid_types,
-          capacity_policy, covoiturage_enabled, structure_id, period_type,
-          vacation_periods, price_unit, vacation_type, duration_days, has_accommodation,
-          structures:structure_id (name, address, territory_id, location),
-          availability_slots!inner(start)
-        `)
-        .eq("published", true)
-        .gte("availability_slots.start", CUTOFF_DATE);
+      // Fonction helper pour construire la requête de base
+      const buildBaseQuery = () => {
+        return supabase
+          .from("activities")
+          .select(`
+            id, title, description, category, categories, age_min, age_max, price_base,
+            images, accessibility_checklist, accepts_aid_types, tags,
+            capacity_policy, covoiturage_enabled, structure_id, period_type,
+            vacation_periods, price_unit, vacation_type, duration_days, has_accommodation,
+            structures:structure_id (name, address, territory_id, location),
+            availability_slots(start)
+          `)
+          .eq("published", true);
+          
+        // Only filter by date if availability_slots exists (handled by application logic or specific filter)
+        // For now, we remove the strict inner join date filter to allow activities without slots to appear
+        // .gte("availability_slots.start", CUTOFF_DATE);
+      };
+
+      let query = buildBaseQuery();
 
       // Filtrer par territoire si spécifié
       if (filters?.territoryId) {
@@ -120,12 +128,14 @@ export const useActivities = (filters?: ActivityFilters) => {
 
       // Support both search and searchQuery for compatibility
       const rawSearchTerm = filters?.searchQuery || filters?.search;
+      let searchTerm: string | null = null;
+      
       if (rawSearchTerm) {
         // Sanitize search query to prevent LIKE wildcard abuse
-        const searchTerm = sanitizeSearchQuery(rawSearchTerm);
+        searchTerm = sanitizeSearchQuery(rawSearchTerm);
         if (searchTerm) {
-          // Recherche insensible aux accents et casse dans title ET description
-          query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+          // Recherche insensible aux accents et casse dans title, description ET tags (exact match pour tags)
+          query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
         }
       }
 
@@ -182,22 +192,77 @@ export const useActivities = (filters?: ActivityFilters) => {
         throw error;
       }
 
-      // Dédupliquer les activités par ID (car jointure avec availability_slots peut créer des doublons)
-      const seenIds = new Set<string>();
-      const uniqueActivities = (data || []).filter((activity) => {
-        if (seenIds.has(activity.id)) {
-          return false;
-        }
-        seenIds.add(activity.id);
-        return true;
-      });
-
-      return uniqueActivities.map((activity) =>
-        mapActivityFromDB({
-          ...activity,
-          cover: activity.images?.[0],
-        })
+      // --- LOGIQUE RELAXED SEARCH ---
+      // Si on a 0 résultat, qu'on a un terme de recherche, et qu'on a d'autres filtres actifs
+      const hasOtherFilters = !!(
+        filters?.category || 
+        filters?.maxPrice !== undefined || 
+        filters?.hasAccessibility || 
+        (filters?.ageMin !== undefined && filters?.ageMax !== undefined) ||
+        filters?.vacationPeriod ||
+        filters?.hasCovoiturage ||
+        filters?.hasFinancialAid
       );
+
+      if ((!data || data.length === 0) && searchTerm && hasOtherFilters) {
+        console.log("No strict results, trying relaxed search for:", searchTerm);
+        
+        // On relance une recherche "élargie" : juste le terme, sans les filtres restrictifs
+        let relaxedQuery = buildBaseQuery();
+        
+        // On garde quand même le filtre territoire s'il est là, car c'est structurel
+        if (filters?.territoryId) {
+          relaxedQuery = relaxedQuery.eq("structures.territory_id", filters.territoryId);
+        }
+
+        // On réapplique la recherche texte
+        relaxedQuery = relaxedQuery.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
+        
+        // On limite aussi
+        relaxedQuery = relaxedQuery.limit(10);
+        
+        const { data: relaxedData, error: relaxedError } = await relaxedQuery.order("created_at", { ascending: false });
+        
+        if (!relaxedError && relaxedData && relaxedData.length > 0) {
+          // On a trouvé des résultats en élargissant !
+          return {
+            activities: processActivities(relaxedData),
+            isRelaxed: true
+          };
+        }
+      }
+
+      return {
+        activities: processActivities(data || []),
+        isRelaxed: false
+      };
     },
   });
+
+  return {
+    ...queryInfo,
+    // Helper pour accéder directement aux activités (rétro-compatibilité partielle via destructuring adapté)
+    activities: queryInfo.data?.activities || [],
+    isRelaxed: queryInfo.data?.isRelaxed || false
+  };
+};
+
+// Helper pour traiter les données brutes DB
+const processActivities = (data: any[]): Activity[] => {
+  // Dédupliquer les activités par ID
+  const seenIds = new Set<string>();
+  const uniqueActivities = data.filter((activity) => {
+    if (seenIds.has(activity.id)) {
+      return false;
+    }
+    seenIds.add(activity.id);
+    return true;
+  });
+
+  return uniqueActivities.map((activity) =>
+    mapActivityFromDB({
+      ...activity,
+      cover: activity.images?.[0],
+    })
+  );
 };

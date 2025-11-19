@@ -6,12 +6,12 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SearchPageHeader } from '@/components/Search/SearchPageHeader';
-import { QuickFiltersBar } from '@/components/Search/QuickFiltersBar';
-import { ActiveFiltersDisplay } from '@/components/Search/ActiveFiltersDisplay';
-import { ResultsHeader } from '@/components/Search/ResultsHeader';
-import { ResultsGrid } from '@/components/Search/ResultsGrid';
-import { AdvancedFiltersModal } from '@/components/Search/AdvancedFiltersModal';
+import { SearchPageHeader } from '@/components/search/SearchPageHeader';
+import { QuickFiltersBar } from '@/components/search/QuickFiltersBar';
+import { ActiveFiltersDisplay } from '@/components/search/ActiveFiltersDisplay';
+import { ResultsHeader } from '@/components/search/ResultsHeader';
+import { ResultsGrid } from '@/components/search/ResultsGrid';
+import { AdvancedFiltersModal } from '@/components/search/AdvancedFiltersModal';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
 import { buildActivityQuery, getResultsCount } from '@/utils/buildActivityQuery';
@@ -46,16 +46,32 @@ const SearchResults = () => {
         throw error;
       }
 
-      // Map database types to Activity type
-      return (data || []).map((activity: any) => ({
+      // Map database types to Activity type and deduplicate
+      const mappedActivities = (data || []).map((activity: any) => ({
         ...activity,
         price_is_free: activity.price_base === 0 || activity.price_base === null,
       }));
+
+      // Deduplicate by ID first
+      const uniqueById = mappedActivities.filter((activity: any, index: number, self: any[]) =>
+        index === self.findIndex((t: any) => t.id === activity.id)
+      );
+
+      // Aggressive deduplication by normalized title
+      const uniqueActivities = uniqueById.filter((activity: any, index: number, self: any[]) =>
+        index === self.findIndex((t: any) => 
+          t.title?.trim().toLowerCase() === activity.title?.trim().toLowerCase()
+        )
+      );
+
+      return uniqueActivities;
     },
     staleTime: 30000 // 30 seconds
   });
 
-  // Update results count (debounced)
+  // Update results count (debounced) - REMOVED to avoid race conditions
+  // We rely on activities.length since we fetch all results
+  /*
   useEffect(() => {
     const timer = setTimeout(async () => {
       setIsCountLoading(true);
@@ -66,6 +82,7 @@ const SearchResults = () => {
 
     return () => clearTimeout(timer);
   }, [filterState]);
+  */
 
   // Update results count from actual activities
   useEffect(() => {
