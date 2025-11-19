@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BackButton } from "@/components/BackButton";
+import activitySportImg from "@/assets/activity-sport.jpg";
+import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
+import activityVacancesImg from "@/assets/activity-vacances.jpg";
+import activityCultureImg from "@/assets/activity-culture.jpg";
 import {
   Palette,
   Trophy,
@@ -47,6 +51,20 @@ interface CompactHeroHeaderProps {
    */
   onBack?: () => void;
 }
+
+/**
+ * Récupère l'image de fallback selon la catégorie
+ */
+const getCategoryImage = (category: string): string => {
+  const categoryMap: Record<string, string> = {
+    Sport: activitySportImg,
+    Loisirs: activityLoisirsImg,
+    Vacances: activityVacancesImg,
+    Scolarité: activityCultureImg,
+    Culture: activityCultureImg,
+  };
+  return categoryMap[category] || activityLoisirsImg;
+};
 
 /**
  * Configuration des couleurs et icônes par catégorie
@@ -149,44 +167,37 @@ export function CompactHeroHeader({
     : category;
 
   const categoryConfig = getCategoryConfig(displayCategory);
-  const hasImage = imageUrl && !imgError;
+
+  // Utiliser l'image fournie ou l'image de catégorie comme fallback
+  const fallbackImage = getCategoryImage(displayCategory);
+  const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
 
   return (
     <div
       className="compact-hero-header relative w-full overflow-hidden"
       style={{ height: "160px" }}
     >
-      {/* Image de fond ou Fallback gradient */}
-      {hasImage ? (
-        <>
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-full object-cover object-center"
-            style={{ filter: "brightness(0.85)" }}
-            onError={() => setImgError(true)}
-          />
-          {/* Gradient overlay pour lisibilité - intensité réduite */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
-            }}
-          />
-        </>
-      ) : (
-        <div
-          className="w-full h-full flex items-center justify-center"
-          style={{ background: categoryConfig.gradient }}
-        >
-          <categoryConfig.Icon
-            size={80}
-            color={categoryConfig.accent}
-            style={{ opacity: 0.15 }}
-            strokeWidth={1.5}
-          />
-        </div>
-      )}
+      {/* Image de fond - toujours affichée (avec fallback catégorie) */}
+      <img
+        src={finalImageUrl}
+        alt={title}
+        className="w-full h-full object-cover object-center"
+        style={{ filter: "brightness(0.85)" }}
+        onError={(e) => {
+          // Si erreur de chargement, utiliser l'image de catégorie
+          if (!imgError) {
+            setImgError(true);
+            (e.target as HTMLImageElement).src = fallbackImage;
+          }
+        }}
+      />
+      {/* Gradient overlay pour lisibilité - intensité réduite */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
+        }}
+      />
 
       {/* Back Button - Top Left avec backdrop blur */}
       <div className="absolute top-4 left-4 z-10">
