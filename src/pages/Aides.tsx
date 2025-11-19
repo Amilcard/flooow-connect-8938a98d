@@ -7,6 +7,7 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
 import { FinancialAidHeader } from "@/components/FinancialAid/FinancialAidHeader";
 import { SimulatorCTABanner } from "@/components/FinancialAid/SimulatorCTABanner";
+import { MesAidesCalculator } from "@/components/FinancialAid/MesAidesCalculator";
 import { AidsSectionsList } from "@/components/FinancialAid/AidsSectionsList";
 import { AidsInfoBox } from "@/components/FinancialAid/AidsInfoBox";
 import { FinancialAid } from "@/types/FinancialAid";
@@ -109,6 +110,9 @@ const Aides = () => {
       <div className="max-w-[1200px] mx-auto px-4">
         {/* Prominent Simulator CTA Banner (Blue) */}
         <SimulatorCTABanner />
+
+        {/* LOT A - Calculateur d'aides personnalisé */}
+        <MesAidesCalculator />
 
         {/* Aids Sections List with Redesigned Cards */}
         <AidsSectionsList

@@ -4,6 +4,7 @@ import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
 import { MaVilleCard } from "@/components/home/MaVilleCard";
 import { BonEspritCard } from "@/components/home/BonEspritCard";
+import { AidSimulator } from "@/components/home/AidSimulator";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -174,6 +175,9 @@ const Index = () => {
                 </div>
               </div>
             </section>
+
+            {/* ========== SECTION 2: SIMULATEUR D'AIDES (LOT A) ========== */}
+            <AidSimulator />
 
             {/* ========== SECTION 3: ACTIVITÉS RECOMMANDÉES ========== */}
             {!loadingRecommended && recommendedActivities.length > 0 && (
