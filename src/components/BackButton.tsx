@@ -11,6 +11,12 @@ interface BackButtonProps {
   showText?: boolean;
   label?: string;
   showSplash?: boolean;
+  /**
+   * Positioning mode:
+   * - "absolute": Position absolue (pill floating button) - défaut
+   * - "relative": Position relative (pour usage dans flex/grid)
+   */
+  positioning?: "absolute" | "relative";
 }
 
 export const BackButton = ({
@@ -20,7 +26,8 @@ export const BackButton = ({
   className = "",
   showText = false,
   label = "Retour",
-  showSplash = false
+  showSplash = false,
+  positioning = "absolute"
 }: BackButtonProps) => {
   const handleBack = useSmartBack(fallback);
   const [splashVisible, setSplashVisible] = useState(false);
@@ -37,8 +44,13 @@ export const BackButton = ({
     }
   };
 
-  // Pill style classes for standardized back button
+  // Pill style classes for absolute positioning (floating button)
   const pillClasses = "absolute top-3 left-4 z-10 bg-white border border-gray-200 rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
+
+  // Relative positioning classes for inline usage in headers
+  const inlineClasses = "relative bg-white border border-gray-200 rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
+
+  const baseClasses = positioning === "absolute" ? pillClasses : inlineClasses;
 
   return (
     <>
@@ -57,7 +69,7 @@ export const BackButton = ({
         size={size}
         onClick={handleClick}
         aria-label={label}
-        className={`${pillClasses} ${className}`}
+        className={`${baseClasses} ${className}`}
       >
         <ChevronLeft className={showText ? "mr-2 text-gray-700" : "text-gray-700"} size={24} strokeWidth={2} />
         {showText && label}
