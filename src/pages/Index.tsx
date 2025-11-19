@@ -4,7 +4,6 @@ import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
 import { MaVilleCard } from "@/components/home/MaVilleCard";
 import { BonEspritCard } from "@/components/home/BonEspritCard";
-import { AidSimulator } from "@/components/home/AidSimulator";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -176,10 +175,7 @@ const Index = () => {
               </div>
             </section>
 
-            {/* ========== SECTION 2: SIMULATEUR D'AIDES (LOT A) ========== */}
-            <AidSimulator />
-
-            {/* ========== SECTION 3: ACTIVITÉS RECOMMANDÉES ========== */}
+            {/* ========== SECTION 2: ACTIVITÉS RECOMMANDÉES ========== */}
             {!loadingRecommended && recommendedActivities.length > 0 && (
               <section className="py-6" data-tour-id="home-reco-section">
                 <ActivityThematicSection
@@ -193,7 +189,7 @@ const Index = () => {
               </section>
             )}
 
-            {/* ========== SECTION 4: PETITS BUDGETS ========== */}
+            {/* ========== SECTION 3: PETITS BUDGETS ========== */}
             {!loadingBudget && budgetActivities.length > 0 && (
               <section className="py-6">
                 <ActivityThematicSection
@@ -206,7 +202,7 @@ const Index = () => {
               </section>
             )}
 
-            {/* ========== SECTION 5: SPORT & BIEN-ÊTRE ========== */}
+            {/* ========== SECTION 4: SPORT & BIEN-ÊTRE ========== */}
             {!loadingSport && sportActivities.length > 0 && (
               <section className="py-6">
                 <ActivityThematicSection
