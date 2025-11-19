@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep } from "@/components/onboarding/NewOnboardingStep";
-import onboardingActivites from "@/assets/onboarding-activites.png";
-import onboardingAides from "@/assets/onboarding-aides.png";
-import onboardingMobilite from "@/assets/onboarding-mobilite.png";
-import onboardingCommunity from "@/assets/onboarding-community.png";
-import onboardingMegaphone from "@/assets/onboarding-megaphone.png";
 
-type OnboardingStepType = "decouvrir" | "aides" | "mobilite" | "guichet" | "cest-parti";
+/**
+ * Onboarding 4 écrans - Ton CityCrunch
+ * "Parents pour parents • Sérieux et léger • On construit ensemble"
+ */
+
+type OnboardingStepType = "bienvenue" | "activites" | "aides" | "communaute";
+
+// Placeholder transparent 1x1 pour désactiver les images
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E";
 
 const Onboarding = () => {
-  const [currentStep, setCurrentStep] = useState<OnboardingStepType>("decouvrir");
+  const [currentStep, setCurrentStep] = useState<OnboardingStepType>("bienvenue");
   const navigate = useNavigate();
 
   const handleComplete = () => {
     localStorage.setItem("hasSeenOnboarding", "true");
-    navigate("/home", { replace: true });
+    navigate("/signup", { replace: true });
   };
 
   const handleSkip = () => {
@@ -24,52 +27,46 @@ const Onboarding = () => {
   };
 
   const steps = {
-    decouvrir: {
-      title: "Découvrir facilement",
-      body: "En quelques clics, Flooow géolocalise les activités disponibles autour de chez vous : sport, loisirs, scolarité, culture, insertion… Tout ce dont vos enfants ont besoin, au bon endroit et au bon moment.",
-      illustration: onboardingActivites,
-      accentColor: "blue" as const,
-      onNext: () => setCurrentStep("aides"),
+    bienvenue: {
+      title: "Flooow, c'est nous",
+      body: "Des parents pour des parents.\n\n✨ Stop au non-recours !\n\nVersion test. On construit Flooow avec vous.",
+      illustration: PLACEHOLDER_IMAGE,
+      accentColor: "orange" as const,
+      onNext: () => setCurrentStep("activites"),
       stepNumber: 1,
       isLastStep: false,
+      primaryCtaLabel: "C'est parti"
     },
-    aides: {
-      title: "Vos aides financières estimées",
-      body: "Flooow estime immédiatement vos aides financières possibles (CAF, Pass'Sport, dispositifs locaux…). Plus besoin de démarches multiples : vous gagnez du temps dès le départ.",
-      illustration: onboardingAides,
-      accentColor: "orange" as const,
-      onNext: () => setCurrentStep("mobilite"),
+    activites: {
+      title: "Activités près de chez nous",
+      body: "Sport, culture, loisirs. On trouve en 2 clics.\n\n• 4-17 ans\n• Quartier par quartier\n• Initiations possibles\n\n💡 Infobulles dispo partout",
+      illustration: PLACEHOLDER_IMAGE,
+      accentColor: "blue" as const,
+      onNext: () => setCurrentStep("aides"),
       stepNumber: 2,
       isLastStep: false,
+      primaryCtaLabel: "Suivant"
     },
-    mobilite: {
-      title: "Se rendre à l'activité",
-      body: "Des solutions de trajet adaptées vous sont proposées : transports locaux, vélo, marche… Et bientôt, le covoiturage entre parents pour encore plus de sérénité.",
-      illustration: onboardingMobilite,
-      accentColor: "blue" as const,
-      onNext: () => setCurrentStep("guichet"),
+    aides: {
+      title: "On simule nos aides",
+      body: "1 minute. Gratuit. On y a droit.\n\n• Stop au non-recours\n• Calcul automatique\n• Paiement échelonné possible",
+      illustration: PLACEHOLDER_IMAGE,
+      accentColor: "orange" as const,
+      onNext: () => setCurrentStep("communaute"),
       stepNumber: 3,
       isLastStep: false,
+      primaryCtaLabel: "Suivant"
     },
-    guichet: {
-      title: "Votre guichet du quotidien",
-      body: "Toutes les informations utiles sont réunies au même endroit : activités, disponibilités, créneaux, aides, mobilité… Flooow, votre guichet du quotidien pour accompagner vos enfants.",
-      illustration: onboardingCommunity,
-      accentColor: "orange" as const,
-      onNext: () => setCurrentStep("cest-parti"),
-      stepNumber: 4,
-      isLastStep: false,
-    },
-    "cest-parti": {
-      title: "C'est parti !",
-      body: "Bienvenue dans la communauté FlooowTesteurs ! Merci de nous aider à améliorer la plateforme avec vos retours.\nNananère !",
-      illustration: onboardingMegaphone,
+    communaute: {
+      title: "Bienvenue dans la Family",
+      body: "On partage. On s'entraide. On construit Flooow.\n\n💬 On s'améliore grâce à vous\nBugs, idées, retours. On écoute. On améliore.\n\n• Communauté testeurs\n• Bons plans partagés\n• Questions/réponses",
+      illustration: PLACEHOLDER_IMAGE,
       accentColor: "blue" as const,
       onNext: handleComplete,
-      stepNumber: 5,
+      stepNumber: 4,
       isLastStep: true,
-      primaryCtaLabel: "C'est parti",
-      showSocialIcons: true,
+      primaryCtaLabel: "Créer mon compte",
+      showSocialIcons: false
     },
   };
 
@@ -82,12 +79,12 @@ const Onboarding = () => {
       illustration={currentStepData.illustration}
       accentColor={currentStepData.accentColor}
       currentStep={currentStepData.stepNumber}
-      totalSteps={5}
+      totalSteps={4}
       onNext={currentStepData.onNext}
       onSkip={handleSkip}
       isLastStep={currentStepData.isLastStep}
-      primaryCtaLabel={"primaryCtaLabel" in currentStepData ? currentStepData.primaryCtaLabel : undefined}
-      showSocialIcons={"showSocialIcons" in currentStepData ? currentStepData.showSocialIcons : false}
+      primaryCtaLabel={currentStepData.primaryCtaLabel}
+      showSocialIcons={currentStepData.showSocialIcons}
     />
   );
 };
