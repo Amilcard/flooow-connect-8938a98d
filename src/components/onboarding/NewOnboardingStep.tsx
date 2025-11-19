@@ -77,8 +77,8 @@ export const NewOnboardingStep = ({
           />
         </div>
 
-        {/* 3. Text Section (Aligned Left) */}
-        <div className="flex flex-col items-start text-left space-y-4 mb-8">
+        {/* 3. Text Section (Aligned Left) - Scrollable to keep button visible */}
+        <div className="flex flex-col items-start text-left space-y-4 mb-8 overflow-y-auto flex-1 max-h-[calc(100vh-500px)]">
           {/* Title */}
           <h1 className="text-2xl font-bold text-gray-900 leading-tight">
             {title}
