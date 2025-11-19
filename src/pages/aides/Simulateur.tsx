@@ -1,493 +1,406 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  Euro,
-  CheckCircle2,
   Loader2,
-  AlertCircle,
-  RefreshCw,
   Info,
-  Users,
-  Calendar,
-  UserPlus
+  CreditCard,
+  TrendingDown,
+  Gift,
+  Heart,
+  ChevronDown
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { QF_BRACKETS } from "@/lib/qfBrackets";
+import { calculateEstimatedAid, calculateResteACharge, calculatePourcentageEconomie } from "@/utils/aidesCalculator";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-interface FinancialAid {
-  aid_name: string;
-  amount: number;
-  territory_level: string;
-  official_link: string | null;
-}
+// Générer les options d'âge 4-17 ans
+const AGE_OPTIONS = Array.from({ length: 14 }, (_, i) => i + 4);
 
-interface SimulationForm {
-  quotientFamilialBracket: string;
-  selectedChildId: string;
-  anonymousAge: string;
-}
-
-interface Child {
-  id: string;
-  first_name: string;
-  dob: string;
-  user_id: string;
-}
-
-const TERRITORY_LABELS = {
-  national: "🇫🇷 National",
-  region: "🌍 Régional",
-  metropole: "🏙️ Métropole",
-  commune: "🏘️ Communal"
-} as const;
-
-// Générer les options d'âge pour les utilisateurs anonymes (6-18 ans)
-const AGE_OPTIONS = Array.from({ length: 13 }, (_, i) => i + 6);
+// Prix d'activité par défaut pour la simulation (période test)
+const DEFAULT_ACTIVITY_PRICE = 60;
 
 const Simulateur = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { user } = useAuth();
 
-  // Récupérer les paramètres depuis l'URL
-  const activityPrice = parseFloat(searchParams.get("price") || "0");
-  const activityCategories = searchParams.get("categories")?.split(",") || [];
-  const durationDays = parseInt(searchParams.get("duration") || "1");
-  const activityId = searchParams.get("activityId");
+  // State du formulaire
+  const [quotientFamilial, setQuotientFamilial] = useState("");
+  const [ageEnfant, setAgeEnfant] = useState("");
+  const [codePostal, setCodePostal] = useState("");
 
-  // Fonction pour calculer l'âge à partir de la date de naissance
-  const calculateAge = (dob: string): number => {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
-  // State pour le formulaire
-  const [form, setForm] = useState<SimulationForm>({
-    quotientFamilialBracket: "",
-    selectedChildId: "",
-    anonymousAge: ""
-  });
-
-  // State pour les résultats
-  const [aids, setAids] = useState<FinancialAid[]>([]);
+  // State des résultats
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hasSimulated, setHasSimulated] = useState(false);
-  const [children, setChildren] = useState<Child[]>([]);
+  const [calculationResult, setCalculationResult] = useState<{
+    montantAide: number;
+    montantAPayer: number;
+    pourcentageEconomie: number;
+    message: string;
+  } | null>(null);
 
-  const loadChildren = useCallback(async () => {
-    if (!user) return;
+  // Validation et calcul
+  const handleCalculate = () => {
+    const qf = parseFloat(quotientFamilial);
+    const age = parseInt(ageEnfant);
+    const cp = codePostal;
 
-    try {
-      // Charger les enfants
-      const { data: childrenData, error: childrenError } = await supabase
-        .from('children')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (childrenError) throw childrenError;
-      setChildren(childrenData || []);
-    } catch (err) {
-      console.error('Erreur lors du chargement des enfants:', err);
-    }
-  }, [user]);
-
-  // Charger les enfants au montage si connecté
-  useEffect(() => {
-    if (user) {
-      loadChildren();
-    }
-  }, [user, loadChildren]);
-
-  const handleSimulate = async () => {
-    // Déterminer l'âge : soit depuis l'enfant sélectionné, soit depuis l'âge anonyme
-    let age: number;
-
-    if (user && form.selectedChildId) {
-      const selectedChild = children.find(child => child.id === form.selectedChildId);
-      if (!selectedChild) {
-        setError("Veuillez sélectionner un enfant");
-        return;
-      }
-      age = calculateAge(selectedChild.dob);
-    } else if (form.anonymousAge) {
-      age = parseInt(form.anonymousAge);
-    } else {
-      setError("Veuillez sélectionner l'âge de l'enfant");
+    // Validation
+    if (!qf || qf < 0 || qf > 3000) {
+      alert("Quotient Familial : entre 0 et 3000€");
       return;
     }
 
-    if (age < 6 || age > 18) {
-      setError("L'enfant doit être âgé de 6 à 18 ans pour bénéficier d'aides");
+    if (!age || age < 4 || age > 17) {
+      alert("Âge enfant : entre 4 et 17 ans");
       return;
     }
 
-    if (!form.quotientFamilialBracket) {
-      setError("Veuillez sélectionner votre tranche de quotient familial");
+    if (!cp || !/^[0-9]{5}$/.test(cp)) {
+      alert("Code postal : 5 chiffres requis");
       return;
     }
-
-    const qf = parseInt(form.quotientFamilialBracket);
 
     setIsLoading(true);
-    setError(null);
 
-    try {
-      // Appeler le RPC sans city_code (aides nationales et régionales uniquement)
-      const { data, error: rpcError } = await supabase.rpc('calculate_eligible_aids', {
-        p_age: age,
-        p_qf: qf,
-        p_city_code: "42000", // Code par défaut pour la zone pilote Saint-Étienne
-        p_activity_price: activityPrice,
-        p_duration_days: durationDays,
-        p_categories: activityCategories
+    // Simulation de temps de calcul (500ms)
+    setTimeout(() => {
+      // Calcul dynamique basé sur le barème QF
+      const aidResult = calculateEstimatedAid({
+        quotientFamilial: qf,
+        age: age,
+        prixActivite: DEFAULT_ACTIVITY_PRICE
       });
 
-      if (rpcError) throw rpcError;
+      const resteACharge = calculateResteACharge(DEFAULT_ACTIVITY_PRICE, aidResult.montantAide);
+      const pourcentage = calculatePourcentageEconomie(DEFAULT_ACTIVITY_PRICE, aidResult.montantAide);
 
-      setAids(data || []);
+      setCalculationResult({
+        montantAide: aidResult.montantAide,
+        montantAPayer: resteACharge,
+        pourcentageEconomie: pourcentage,
+        message: aidResult.message
+      });
+
       setHasSimulated(true);
-    } catch (err) {
-      console.error('Erreur lors de la simulation:', err);
-      setError(err instanceof Error ? err.message : "Erreur lors du calcul des aides");
-    } finally {
       setIsLoading(false);
-    }
+    }, 500);
   };
 
   const resetSimulation = () => {
     setHasSimulated(false);
-    setAids([]);
-    setError(null);
+    setCalculationResult(null);
   };
 
-  const handleContinue = () => {
-    if (activityId) {
-      // Retour vers la fiche activité avec les résultats
-      navigate(`/activity/${activityId}?simulationDone=true`);
-    } else {
-      // Retour simple
-      navigate(-1);
-    }
-  };
-
-  const handleSignup = () => {
-    navigate("/signup");
-  };
-
-  const totalAid = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
-  const finalPrice = Math.max(0, activityPrice - totalAid);
-  const savingsPercent = activityPrice > 0 ? Math.round((totalAid / activityPrice) * 100) : 0;
+  const isEligible = calculationResult && calculationResult.montantAide > 0;
 
   return (
     <PageLayout>
-      <div className="container max-w-2xl px-4 py-6 space-y-6">
+      <div className="container max-w-2xl px-4 py-6 space-y-6 pb-24">
         <BackButton positioning="relative" size="sm" fallback="/aides" />
 
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="font-display text-4xl flex items-center gap-3">
-            <Euro className="w-8 h-8 text-primary" />
-            Simulation d'aides financières
-          </h1>
-          <p className="text-muted-foreground">
-            Calculez les aides réelles auxquelles vous pouvez prétendre
+        {/* Header CityCrunch */}
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2 flex-1">
+              <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
+                On simule nos aides
+              </h1>
+              <p className="text-base text-muted-foreground">
+                1 minute. Gratuit. On y a droit.
+              </p>
+            </div>
+            <Badge className="bg-orange-500 text-white text-xs px-3 py-1.5 border-0 whitespace-nowrap">
+              Stop au non-recours !
+            </Badge>
+          </div>
+
+          <p className="text-sm text-gray-600 pb-2">
+            On calcule. On économise. On respire.
           </p>
         </div>
 
-        {/* Informations sur l'activité */}
-        {activityPrice > 0 && (
-          <Card className="bg-muted/50">
-            <CardContent className="p-4 space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-1">
-                  <Info className="w-4 h-4" />
-                  Prix de l'activité
-                </span>
-                <Badge variant="outline">{activityPrice.toFixed(2)}€</Badge>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  Durée
-                </span>
-                <Badge variant="outline">
-                  {durationDays} jour{durationDays > 1 ? 's' : ''}
-                </Badge>
-              </div>
-              {activityCategories.length > 0 && (
-                <div className="flex items-center justify-between text-sm">
-                  <span>Catégories</span>
-                  <div className="flex gap-1">
-                    {activityCategories.map(cat => (
-                      <Badge key={cat} variant="secondary" className="text-xs">
-                        {cat}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
         {/* Formulaire de simulation */}
         {!hasSimulated ? (
-          <div className="space-y-4">
-            {/* Sélection d'âge - conditionnel selon authentification */}
-            <div className="space-y-2">
-              <Label htmlFor="age" className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                {user ? "Enfant concerné" : "Âge de l'enfant"}
-              </Label>
-
-              {user && children.length > 0 ? (
-                // Utilisateur connecté avec enfants : afficher le sélecteur d'enfant
-                <>
-                  <Select
-                    value={form.selectedChildId}
-                    onValueChange={(value) => setForm(prev => ({ ...prev, selectedChildId: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez un enfant" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {children.map(child => {
-                        const age = calculateAge(child.dob);
-                        return (
-                          <SelectItem key={child.id} value={child.id}>
-                            {child.first_name} ({age} ans)
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
+          <Card className="p-6">
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Nos infos</h2>
+            <div className="space-y-4">
+              {/* Champ 1: Quotient Familial */}
+              <div className="space-y-2">
+                <Label htmlFor="qf" className="text-sm font-medium">
+                  Quotient Familial (€)
+                </Label>
+                <Input
+                  id="qf"
+                  type="number"
+                  placeholder="Ex: 650"
+                  value={quotientFamilial}
+                  onChange={(e) => setQuotientFamilial(e.target.value)}
+                  min="0"
+                  max="3000"
+                  className="w-full"
+                />
+                <div className="flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-gray-500" />
                   <p className="text-xs text-muted-foreground">
-                    Seuls les enfants de 6 à 18 ans peuvent bénéficier d'aides
+                    Sur avis CAF ou impôts
                   </p>
-                </>
-              ) : (
-                // Utilisateur anonyme ou sans enfants : afficher le sélecteur d'âge
-                <>
-                  <Select
-                    value={form.anonymousAge}
-                    onValueChange={(value) => setForm(prev => ({ ...prev, anonymousAge: value }))}
-                  >
-                    <SelectTrigger id="age">
-                      <SelectValue placeholder="Sélectionnez l'âge de l'enfant" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AGE_OPTIONS.map(age => (
-                        <SelectItem key={age} value={String(age)}>
-                          {age} ans
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Âge de l'enfant qui participera à l'activité (6-18 ans)
-                  </p>
-                </>
-              )}
-            </div>
+                </div>
+              </div>
 
-            {/* Quotient Familial - Tranches */}
-            <div className="space-y-2">
-              <Label htmlFor="qf" className="flex items-center gap-1">
-                <Euro className="w-4 h-4" />
-                Quotient Familial CAF
-              </Label>
-              <Select
-                value={form.quotientFamilialBracket}
-                onValueChange={(value) => setForm(prev => ({ ...prev, quotientFamilialBracket: value }))}
+              {/* Champ 2: Âge enfant */}
+              <div className="space-y-2">
+                <Label htmlFor="age" className="text-sm font-medium">
+                  Âge enfant
+                </Label>
+                <Select value={ageEnfant} onValueChange={setAgeEnfant}>
+                  <SelectTrigger id="age">
+                    <SelectValue placeholder="Choisir" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AGE_OPTIONS.map(age => (
+                      <SelectItem key={age} value={String(age)}>
+                        {age} ans
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Champ 3: Code postal */}
+              <div className="space-y-2">
+                <Label htmlFor="cp" className="text-sm font-medium">
+                  Code postal
+                </Label>
+                <Input
+                  id="cp"
+                  type="text"
+                  placeholder="42000"
+                  value={codePostal}
+                  onChange={(e) => setCodePostal(e.target.value)}
+                  maxLength={5}
+                  pattern="[0-9]{5}"
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pour aides locales
+                </p>
+              </div>
+
+              {/* Bouton calcul */}
+              <Button
+                onClick={handleCalculate}
+                disabled={isLoading}
+                className="w-full h-12 font-bold bg-primary hover:bg-primary/90"
               >
-                <SelectTrigger id="qf">
-                  <SelectValue placeholder="Sélectionnez votre tranche" />
-                </SelectTrigger>
-                <SelectContent>
-                  {QF_BRACKETS.map(bracket => (
-                    <SelectItem key={bracket.id} value={String(bracket.value)}>
-                      {bracket.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Trouvez votre QF sur votre attestation CAF
-              </p>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    On calcule...
+                  </>
+                ) : (
+                  "On calcule"
+                )}
+              </Button>
             </div>
-
-            {/* Info sur les aides disponibles */}
-            <Alert className="bg-blue-50 border-blue-200">
-              <Info className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-sm text-blue-900">
-                Cette simulation calcule les aides financières disponibles en fonction de l'âge et du quotient familial.
-                Les aides locales peuvent varier selon votre territoire.
-              </AlertDescription>
-            </Alert>
-
-            {/* Bouton simulation */}
-            <Button
-              onClick={handleSimulate}
-              className="w-full h-14"
-              disabled={
-                isLoading ||
-                !form.quotientFamilialBracket ||
-                (user ? !form.selectedChildId : !form.anonymousAge)
-              }
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Calcul en cours...
-                </>
-              ) : (
-                "Calculer mes aides"
-              )}
-            </Button>
-          </div>
+          </Card>
         ) : (
           /* Résultats de la simulation */
-          <div className="space-y-4">
-            {aids.length === 0 ? (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Aucune aide financière n'est disponible pour ces critères.
-                  Vérifiez l'âge et le quotient familial sélectionnés.
-                </AlertDescription>
-              </Alert>
-            ) : (
+          <div className="space-y-6">
+            {isEligible ? (
+              /* État ÉLIGIBLE */
               <>
-                {/* Liste des aides */}
-                <div className="space-y-3">
-                  <h3 className="font-medium text-lg">Aides financières éligibles :</h3>
-                  {aids.map((aid, index) => (
-                    <Card key={index} className="bg-green-50 border-green-200">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-green-600" />
-                            <div>
-                              <div className="font-medium">{aid.aid_name}</div>
-                              <div className="text-sm text-muted-foreground">
-                                {TERRITORY_LABELS[aid.territory_level as keyof typeof TERRITORY_LABELS]}
-                              </div>
-                            </div>
-                          </div>
-                          <Badge className="bg-green-100 text-green-700 border-green-300">
-                            -{aid.amount.toFixed(2)}€
-                          </Badge>
-                        </div>
-                        {aid.official_link && (
-                          <div className="mt-2">
-                            <a
-                              href={aid.official_link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs text-blue-600 hover:underline"
-                            >
-                              📄 Voir les détails officiels
-                            </a>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
+                <div className="text-center space-y-2 py-4">
+                  <h2 className="text-2xl font-bold text-green-600">
+                    Éligible ! 🎉
+                  </h2>
+                  <p className="text-base text-muted-foreground">
+                    On économise. On respire.
+                  </p>
                 </div>
 
-                {/* Récapitulatif financier */}
-                <Card className="bg-primary/5 border-primary/20">
-                  <CardContent className="p-4 space-y-3">
+                {/* Tableau calcul */}
+                <Card className="border-green-200 bg-green-50/50">
+                  <CardContent className="p-6 space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                      <span>Prix initial</span>
-                      <span>{activityPrice.toFixed(2)}€</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm text-green-600">
-                      <span>Total des aides</span>
-                      <span className="font-medium">-{totalAid.toFixed(2)}€</span>
-                    </div>
-                    <div className="border-t pt-3 flex justify-between items-center text-lg font-bold">
-                      <span>Reste à payer</span>
-                      <span className="text-primary">{finalPrice.toFixed(2)}€</span>
-                    </div>
-                    {savingsPercent > 0 && (
-                      <div className="text-center">
-                        <Badge className="bg-green-100 text-green-700">
-                          🎉 Économie de {savingsPercent}% !
-                        </Badge>
+                      <span className="text-gray-700">Activité</span>
+                      <div className="text-right">
+                        <span className="font-medium text-gray-900">{DEFAULT_ACTIVITY_PRICE}€</span>
+                        <span className="text-xs text-gray-500 italic ml-2">Prix indicatif - Test</span>
                       </div>
-                    )}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-700">Aide</span>
+                      <span className="text-lg font-bold text-green-600">
+                        -{calculationResult.montantAide}€
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-3 px-4 bg-orange-50 rounded-lg border border-orange-200">
+                      <span className="text-lg font-bold text-gray-900">On paye</span>
+                      <span className="text-2xl font-extrabold text-orange-600">
+                        {calculationResult.montantAPayer}€
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-700">Économie</span>
+                      <span className="text-lg font-bold text-green-600">
+                        {calculationResult.pourcentageEconomie}% 🎉
+                      </span>
+                    </div>
                   </CardContent>
                 </Card>
+
+                {/* Message paiement échelonné */}
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Paiement échelonné possible.</span>
+                </div>
+
+                {/* CTA principal */}
+                <Button
+                  onClick={() => navigate('/activities')}
+                  className="w-full h-12 font-semibold"
+                >
+                  Voir les activités
+                </Button>
+
+                {/* CTA secondaire */}
+                <Button
+                  onClick={resetSimulation}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Nouvelle simulation
+                </Button>
+              </>
+            ) : (
+              /* État NON ÉLIGIBLE */
+              <>
+                <div className="text-center space-y-2 py-4">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Pas d'aide pour ce QF
+                  </h2>
+                  <p className="text-base text-muted-foreground">
+                    On a d'autres solutions.
+                  </p>
+                </div>
+
+                {/* Liste alternatives */}
+                <Card>
+                  <CardContent className="p-6 space-y-4">
+                    <h3 className="font-semibold text-lg text-foreground mb-3">
+                      Nos alternatives
+                    </h3>
+
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <CreditCard className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Paiement en 3x sans frais</span>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <TrendingDown className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Activités à tarifs réduits</span>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <Gift className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Initiations gratuites possibles</span>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <Heart className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Clubs Solidaires (bourses exceptionnelles)</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* CTA principal */}
+                <Button
+                  onClick={() => navigate('/activities')}
+                  className="w-full h-12 font-semibold"
+                >
+                  Voir les activités
+                </Button>
+
+                {/* CTA secondaire */}
+                <Button
+                  onClick={resetSimulation}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Nouvelle simulation
+                </Button>
               </>
             )}
-
-            {/* CTA Inscription pour utilisateurs anonymes */}
-            {!user && (
-              <Card className="bg-gradient-to-br from-[#FF8A3D] to-[#FF6B1A] border-0 text-white">
-                <CardContent className="p-6 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <UserPlus className="w-6 h-6" />
-                    <h3 className="font-semibold text-lg">Créer mon compte pour garder ces infos</h3>
-                  </div>
-                  <p className="text-sm text-white/90">
-                    Inscrivez-vous pour sauvegarder vos simulations, gérer vos enfants et réserver des activités en toute simplicité.
-                  </p>
-                  <Button
-                    onClick={handleSignup}
-                    className="w-full bg-white text-[#FF8A3D] hover:bg-white/90 font-semibold"
-                  >
-                    Créer mon compte gratuitement
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Boutons d'action */}
-            <div className="flex gap-3">
-              <Button
-                onClick={resetSimulation}
-                variant="outline"
-                className="flex-1"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Nouvelle simulation
-              </Button>
-              {activityId && (
-                <Button
-                  onClick={handleContinue}
-                  className="flex-1"
-                >
-                  Continuer la réservation
-                </Button>
-              )}
-            </div>
           </div>
         )}
 
-        {/* Affichage des erreurs */}
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+        {/* Section barème (accordion) */}
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="bareme" className="border rounded-lg px-4">
+            <AccordionTrigger className="text-base font-semibold hover:no-underline">
+              Nos tranches d'aides
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-2">
+              <p className="text-sm text-muted-foreground">
+                Stop au non-recours. On vérifie nos droits.
+              </p>
+
+              {/* Tableau barème */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center p-3 rounded-lg bg-green-700 text-white">
+                  <span className="font-medium">0 - 450€</span>
+                  <span className="font-bold">50€</span>
+                </div>
+
+                <div className="flex justify-between items-center p-3 rounded-lg bg-green-600 text-white">
+                  <span className="font-medium">451 - 700€</span>
+                  <span className="font-bold">40€</span>
+                </div>
+
+                <div className="flex justify-between items-center p-3 rounded-lg bg-green-400 text-white">
+                  <span className="font-medium">701 - 1000€</span>
+                  <span className="font-bold">25€</span>
+                </div>
+
+                <div className="flex justify-between items-center p-3 rounded-lg bg-gray-300 text-gray-700">
+                  <span className="font-medium">1001€ et +</span>
+                  <span className="font-bold">0€</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500 italic mt-3">
+                Barème indicatif période test. Montants réels selon partenaire.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        {/* Mentions footer */}
+        <div className="text-center space-y-2 py-6 border-t">
+          <p className="text-xs text-gray-500">
+            Simulation indicative. Montants réels confirmés à l'inscription.
+          </p>
+          <p className="text-xs text-gray-500">
+            Prix indicatif - Test. On s'appuie sur infos partenaires.
+          </p>
+        </div>
       </div>
     </PageLayout>
   );
