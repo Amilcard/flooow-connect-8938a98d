@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/NewOnboardingStep";
-
-// Photos réelles pour remplacer les illustrations
-import onboarding1 from "@/assets/actualite-ville.jpg";
-import onboarding2 from "@/assets/activity-sport.jpg";
-import onboarding3 from "@/assets/aides-financieres.jpg";
-import onboarding4 from "@/assets/univers-vacances.jpg";
-
-// Fallback si les images n'existent pas encore
-const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E";
+import { Sparkles, MapPin, Calculator, Smartphone } from "lucide-react";
 
 type OnboardingStepId = 1 | 2 | 3 | 4;
 
@@ -41,11 +33,24 @@ const Onboarding = () => {
     }
   };
 
+  // Composant Icon moderne au lieu des photos
+  const IconIllustration = ({ icon: Icon, gradient }: { icon: any; gradient: string }) => (
+    <div className="relative inline-block mb-6">
+      <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl`}>
+        <Icon className="w-20 h-20 text-white" strokeWidth={1.5} />
+      </div>
+      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
+        <span className="text-white text-sm font-bold">β</span>
+      </div>
+    </div>
+  );
+
   // Configuration des étapes
   const steps: Record<OnboardingStepId, {
     title: string;
     content: OnboardingContent;
-    illustration: string;
+    icon: any;
+    gradient: string;
     navigation: {
       back?: { label: string };
       skip?: { label: string };
@@ -63,7 +68,8 @@ const Onboarding = () => {
         ],
         closing: "Tout n'est pas encore parfait, c'est justement le principe de cette version. Merci de jouer le jeu !"
       },
-      illustration: onboarding1 || PLACEHOLDER_IMAGE,
+      icon: Sparkles,
+      gradient: "bg-gradient-to-br from-orange-500 to-pink-500",
       navigation: {
         continue: { label: "CONTINUER" }
       }
@@ -79,7 +85,8 @@ const Onboarding = () => {
         ],
         highlight: "Économies : temps + trajets = moins de CO₂"
       },
-      illustration: onboarding2 || PLACEHOLDER_IMAGE,
+      icon: MapPin,
+      gradient: "bg-gradient-to-br from-blue-500 to-cyan-500",
       navigation: {
         back: { label: "← Retour" },
         skip: { label: "Passer →" },
@@ -98,7 +105,8 @@ const Onboarding = () => {
         highlight: "Économies : argent + temps",
         ecoMobilite: "Flooow vous propose également les meilleures solutions transport pour rejoindre vos activités : transports en commun, marche santé et covoiturage, lorsque ces informations sont disponibles sur votre territoire."
       },
-      illustration: onboarding3 || PLACEHOLDER_IMAGE,
+      icon: Calculator,
+      gradient: "bg-gradient-to-br from-purple-500 to-indigo-500",
       navigation: {
         back: { label: "← Retour" },
         skip: { label: "Passer →" },
@@ -117,7 +125,8 @@ const Onboarding = () => {
         ],
         closing: "Alors, qu'est-ce qu'on dit ?"
       },
-      illustration: onboarding4 || PLACEHOLDER_IMAGE,
+      icon: Smartphone,
+      gradient: "bg-gradient-to-br from-green-500 to-emerald-500",
       navigation: {
         back: { label: "← Retour" },
         skip: { label: "Passer →" },
@@ -132,7 +141,7 @@ const Onboarding = () => {
     <NewOnboardingStep
       title={currentStepData.title}
       content={currentStepData.content}
-      illustration={currentStepData.illustration}
+      illustration={<IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />}
       currentStep={currentStep}
       totalSteps={4}
       onNext={handleNext}

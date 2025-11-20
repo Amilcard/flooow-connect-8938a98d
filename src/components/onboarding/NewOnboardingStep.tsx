@@ -13,7 +13,7 @@ export interface OnboardingContent {
 interface NewOnboardingStepProps {
   title: string;
   content: OnboardingContent;
-  illustration: string;
+  illustration: string | React.ReactNode; // ✅ Accepte URL ou composant React
   currentStep: number;
   totalSteps: number;
   onNext: () => void;
@@ -71,11 +71,15 @@ export const NewOnboardingStep = ({
         {/* 2. Visual Section (Centered) */}
         <div className="flex justify-center items-center py-6 md:py-10 shrink-0">
           <div className="w-full max-w-xs flex items-center justify-center aspect-square bg-muted/20 rounded-2xl p-4">
-             <img
-              src={illustration}
-              alt=""
-              className="h-full w-full object-contain"
-            />
+            {typeof illustration === 'string' ? (
+              <img
+                src={illustration}
+                alt=""
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              illustration
+            )}
           </div>
         </div>
 
