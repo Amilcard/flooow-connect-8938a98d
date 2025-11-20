@@ -13,7 +13,7 @@ export interface OnboardingContent {
 interface NewOnboardingStepProps {
   title: string;
   content: OnboardingContent;
-  illustration: string;
+  illustration: string | React.ReactNode; // ✅ Accepte URL ou composant React
   currentStep: number;
   totalSteps: number;
   onNext: () => void;
@@ -71,11 +71,15 @@ export const NewOnboardingStep = ({
         {/* 2. Visual Section (Centered) */}
         <div className="flex justify-center items-center py-6 md:py-10 shrink-0">
           <div className="w-full max-w-xs flex items-center justify-center aspect-square bg-muted/20 rounded-2xl p-4">
-             <img
-              src={illustration}
-              alt=""
-              className="h-full w-full object-contain"
-            />
+            {typeof illustration === 'string' ? (
+              <img
+                src={illustration}
+                alt=""
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              illustration
+            )}
           </div>
         </div>
 
@@ -110,20 +114,20 @@ export const NewOnboardingStep = ({
             </ul>
           )}
 
-          {/* Highlight */}
+          {/* Hightlight */}
           {content.highlight && (
-            <div className="mt-2 p-4 bg-accent/10 rounded-xl border border-accent/20 w-full">
-              <p className="text-accent-foreground font-medium text-sm text-center">
-                {content.highlight}
+            <div className="mt-4 mb-4 w-full">
+              <p className="text-gray-900 font-bold text-base text-center">
+                💡 {content.highlight}
               </p>
             </div>
           )}
 
           {/* Eco Mobilite */}
           {content.ecoMobilite && (
-            <div className="mt-2 p-4 bg-primary/5 rounded-xl border border-primary/10 w-full">
-              <p className="text-sm text-foreground leading-relaxed">
-                <span className="font-semibold text-primary">🌿 Éco-mobilité : </span>
+            <div className="mt-4 p-4 bg-white rounded-xl border-2 border-gray-200 w-full shadow-sm">
+              <p className="text-sm text-gray-900 leading-relaxed">
+                <span className="font-bold text-gray-900">🌿 Éco-mobilité : </span>
                 {content.ecoMobilite}
               </p>
             </div>
