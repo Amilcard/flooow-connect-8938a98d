@@ -372,12 +372,12 @@ export const AdvancedFiltersModal = ({
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={localFilters.pmr}
-                  onChange={(e) => setLocalFilters({ ...localFilters, pmr: e.target.checked })}
+                  checked={localFilters.inclusivity}
+                  onChange={(e) => setLocalFilters({ ...localFilters, inclusivity: e.target.checked })}
                   className="w-4 h-4 accent-primary cursor-pointer"
                 />
                 <span className="text-sm font-medium text-gray-900 font-poppins">
-                  Accessible PMR (fauteuil roulant)
+                  INCLUSIVITÉ (fauteuil roulant, handicap)
                 </span>
               </label>
 

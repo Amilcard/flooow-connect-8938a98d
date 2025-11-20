@@ -109,7 +109,7 @@ export const buildActivityQuery = (filters: FilterState) => {
   }
 
   // Advanced Filters - Accessibility
-  if (filters.advancedFilters.pmr) {
+  if (filters.advancedFilters.inclusivity) {
     query = query.eq('pmr_accessible', true);
   }
 

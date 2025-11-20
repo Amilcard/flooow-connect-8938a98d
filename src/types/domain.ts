@@ -48,6 +48,7 @@ export interface Activity {
   categories?: string[];
   price: number;
   hasAccessibility: boolean;
+  paymentEchelonned?: boolean;  // Paiement échelonné disponible
   hasFinancialAid: boolean;
   periodType?: PeriodType | string;
   structureName?: string;

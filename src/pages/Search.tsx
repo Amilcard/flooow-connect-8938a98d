@@ -29,7 +29,7 @@ const Search = () => {
   const maxAge = searchParams.get("maxAge");
   const maxPrice = searchParams.get("maxPrice");
   const hasAid = searchParams.get("hasAid") === "true";
-  const isPMR = searchParams.get("isPMR") === "true";
+  const isInclusive = searchParams.get("isInclusive") === "true";
   const hasCovoiturage = searchParams.get("hasCovoiturage") === "true";
 
   // Build filters object
@@ -39,7 +39,7 @@ const Search = () => {
   if (minAge) filters.ageMin = parseInt(minAge);
   if (maxAge) filters.ageMax = parseInt(maxAge);
   if (maxPrice) filters.maxPrice = parseInt(maxPrice);
-  if (isPMR) filters.hasAccessibility = true;
+  if (isInclusive) filters.hasAccessibility = true;
   if (hasCovoiturage) filters.hasCovoiturage = true;
   if (hasAid) filters.hasFinancialAid = true;
 
@@ -65,7 +65,7 @@ const Search = () => {
   else if (maxAge) activeFilters.push({ key: 'maxAge', label: `Jusqu'à ${maxAge} ans`, param: 'maxAge' });
   if (maxPrice) activeFilters.push({ key: 'maxPrice', label: `Max ${maxPrice}€`, param: 'maxPrice' });
   if (hasAid) activeFilters.push({ key: 'hasAid', label: 'Avec aides financières', param: 'hasAid' });
-  if (isPMR) activeFilters.push({ key: 'isPMR', label: 'Accessible PMR', param: 'isPMR' });
+  if (isInclusive) activeFilters.push({ key: 'isInclusive', label: 'INCLUSIVITÉ', param: 'isInclusive' });
   if (hasCovoiturage) activeFilters.push({ key: 'hasCovoiturage', label: 'Covoiturage dispo', param: 'hasCovoiturage' });
 
   const removeFilter = (paramKey: string) => {

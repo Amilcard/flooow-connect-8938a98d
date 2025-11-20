@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/NewOnboardingStep";
-import { Sparkles, MapPin, Calculator, Smartphone } from "lucide-react";
+import { MapPin, Calculator } from "lucide-react";
+import logoFlooow from "@/assets/logo-flooow.png";
+import logoNananere from "@/assets/logo-nananere.png";
 
 type OnboardingStepId = 1 | 2 | 3 | 4;
 
@@ -10,12 +12,10 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   const handleComplete = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
     navigate("/home", { replace: true });
   };
 
   const handleSkip = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
     navigate("/home", { replace: true });
   };
 
@@ -33,7 +33,19 @@ const Onboarding = () => {
     }
   };
 
-  // Composant Icon moderne au lieu des photos
+  // Composant Logo en transparence pour les écrans 1 et 4
+  const LogoIllustration = ({ logo }: { logo: string; gradient?: string }) => (
+    <div className="relative inline-block mb-6">
+      <div className="w-48 h-48 flex items-center justify-center">
+        <img src={logo} alt="Flooow" className="w-full h-full object-contain" />
+      </div>
+      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
+        <span className="text-white text-sm font-bold">β</span>
+      </div>
+    </div>
+  );
+
+  // Composant Icon pour les écrans 2 et 3
   const IconIllustration = ({ icon: Icon, gradient }: { icon: any; gradient: string }) => (
     <div className="relative inline-block mb-6">
       <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl`}>
@@ -49,7 +61,8 @@ const Onboarding = () => {
   const steps: Record<OnboardingStepId, {
     title: string;
     content: OnboardingContent;
-    icon: any;
+    logo?: string;
+    icon?: any;
     gradient: string;
     navigation: {
       back?: { label: string };
@@ -68,7 +81,7 @@ const Onboarding = () => {
         ],
         closing: "Tout n'est pas encore parfait, c'est justement le principe de cette version. Merci de jouer le jeu !"
       },
-      icon: Sparkles,
+      logo: logoFlooow,
       gradient: "bg-gradient-to-br from-orange-500 to-pink-500",
       navigation: {
         continue: { label: "CONTINUER" }
@@ -125,7 +138,7 @@ const Onboarding = () => {
         ],
         closing: "Alors, qu'est-ce qu'on dit ?"
       },
-      icon: Smartphone,
+      logo: logoNananere,
       gradient: "bg-gradient-to-br from-green-500 to-emerald-500",
       navigation: {
         back: { label: "← Retour" },
@@ -137,11 +150,16 @@ const Onboarding = () => {
 
   const currentStepData = steps[currentStep];
 
+  // Choisir l'illustration appropriée selon l'écran
+  const illustration = currentStepData.logo 
+    ? <LogoIllustration logo={currentStepData.logo} />
+    : <IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />;
+
   return (
     <NewOnboardingStep
       title={currentStepData.title}
       content={currentStepData.content}
-      illustration={<IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />}
+      illustration={illustration}
       currentStep={currentStep}
       totalSteps={4}
       onNext={handleNext}

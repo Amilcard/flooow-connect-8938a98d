@@ -26,7 +26,7 @@ export interface AdvancedFilters {
   max_budget: number;
   financial_aids_accepted: string[];
   qf_based_pricing: boolean;
-  pmr: boolean;
+  inclusivity: boolean;
   public_transport: boolean;
 }
 

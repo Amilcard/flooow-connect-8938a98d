@@ -28,15 +28,9 @@ const Splash = () => {
     // Première visite de la session : montrer le splash
     sessionStorage.setItem("splashShown", "true");
 
-    // Check if user has seen onboarding
-    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
-
+    // Toujours lancer l'onboarding à chaque ouverture de l'application
     const timer = setTimeout(() => {
-      if (hasSeenOnboarding) {
-        navigate("/home", { replace: true });
-      } else {
-        navigate("/onboarding", { replace: true });
-      }
+      navigate("/onboarding", { replace: true });
     }, 2000);
 
     return () => clearTimeout(timer);

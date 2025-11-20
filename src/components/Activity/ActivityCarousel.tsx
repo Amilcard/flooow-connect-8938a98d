@@ -11,6 +11,7 @@ interface Activity {
   category: string;
   price: number;
   hasAccessibility?: boolean;
+  paymentEchelonned?: boolean;
   hasFinancialAid?: boolean;
   periodType?: string;
   structureName?: string;

@@ -107,7 +107,7 @@ export const BudgetAidsFilter = ({
             onCheckedChange={(checked) => onChange({ hasAccessibility: checked as boolean })}
           />
           <Label htmlFor="accessibility" className="text-sm font-normal cursor-pointer">
-            Accessible PMR
+            INCLUSIVITÉ
           </Label>
         </div>
 

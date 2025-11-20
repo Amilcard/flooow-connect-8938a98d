@@ -294,7 +294,7 @@ export const ActivityDetail = ({ activity, onBack, onEnroll }: ActivityDetailPro
                   {value && '✓'}
                 </div>
                 <span>
-                  {key === 'pmr_access' && 'Accès PMR'}
+                  {key === 'pmr_access' && 'Accès INCLUSIVITÉ'}
                   {key === 'adapted_equipment' && 'Équipement adapté'}
                   {key === 'specialized_staff' && 'Personnel formé'}
                   {key === 'sensory_friendly' && 'Adapté sensoriel'}
