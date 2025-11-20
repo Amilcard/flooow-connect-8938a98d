@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Euro, TrendingUp, Users, AlertCircle, Settings, Baby, Info } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { calculateEstimatedAid, QF_BRACKETS } from '@/utils/aidesCalculator';
+import { calculateAidFromQF } from '@/utils/aidesCalculator';
 
 interface ChildWithActivities {
   id: string;
@@ -158,12 +158,11 @@ export const MesAidesCalculator = () => {
         const nbActivitesEnfant = enfant.activites.length;
 
         enfant.activites.forEach(activite => {
-          const calcul = calculateEstimatedAid({
-            quotientFamilial,
-            age: enfant.age,
+          const calcul = calculateAidFromQF({
+            qf: quotientFamilial,
             prixActivite: activite.prix
           });
-          aidesEnfant += calcul.montantAide;
+          aidesEnfant += calcul.aide;
           if (!trancheQF) trancheQF = calcul.trancheQF; // Garder la tranche
         });
 
@@ -235,7 +234,7 @@ export const MesAidesCalculator = () => {
   // Cas 2 : QF configuré mais aucune activité inscrite
   if (enfantsAvecActivites.every(e => e.activites.length === 0)) {
     // Calculer la tranche pour affichage
-    const dummyCalc = calculateEstimatedAid({ quotientFamilial: qf, age: 10, prixActivite: 100 });
+    const dummyCalc = calculateAidFromQF({ qf: qf, prixActivite: 100 });
 
     return (
       <Card className="mb-6 border-blue-200 bg-blue-50">
@@ -256,7 +255,7 @@ export const MesAidesCalculator = () => {
                 QF {dummyCalc.trancheQF}
               </span>
               <Badge variant="secondary">
-                {dummyCalc.montantAide > 0 ? `${dummyCalc.montantAide}€/activité` : 'Aucune aide'}
+                {dummyCalc.aide > 0 ? `${dummyCalc.aide}€/activité` : 'Aucune aide'}
               </Badge>
             </div>
           </div>

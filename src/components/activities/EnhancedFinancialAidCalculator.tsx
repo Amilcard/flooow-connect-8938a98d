@@ -12,6 +12,7 @@ import { Loader2, CheckCircle2, Calculator, Info, UserPlus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
+import { calculateAidFromQF } from "@/utils/aidesCalculator";
 import { useNavigate } from "react-router-dom";
 
 interface Child {
@@ -227,50 +228,26 @@ export const EnhancedFinancialAidCalculator = ({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc('calculate_eligible_aids', {
-        p_age: childAge,
-        p_qf: parseInt(quotientFamilial),
-        p_city_code: cityCode,
-        p_activity_price: activityPrice,
-        p_duration_days: 7, // Défaut pour séjours
-        p_categories: activityCategories,
-        p_period_type: periodType
+      // Utiliser la fonction pure calculateAidFromQF au lieu de l'appel RPC
+      const result = calculateAidFromQF({
+        qf: parseInt(quotientFamilial),
+        prixActivite: activityPrice
       });
 
-      if (error) {
-        console.error("RPC error:", error);
-        // Don't throw - instead, show info message about territory
-        toast({
-          title: "Territoire non couvert",
-          description: "Nous appliquons les aides nationales. Certaines aides locales peuvent ne pas être disponibles pour ce code postal.",
-        });
-      }
-
-      const calculatedAids = (data || []).map((aid: any) => ({
-        ...aid,
-        is_informational: aid.is_informational ?? false
-      }));
-
-      // Filtrer les aides informatives (messages uniquement)
-      const realAids = calculatedAids.filter((aid: FinancialAid) => !aid.is_informational);
-      const infoMessages = calculatedAids.filter((aid: FinancialAid) => aid.is_informational);
+      // Créer l'aide au format attendu
+      const calculatedAids: FinancialAid[] = result.aide > 0 ? [{
+        aid_name: `Aide QF ${result.trancheQF}`,
+        amount: result.aide,
+        territory_level: "commune",
+        official_link: null,
+        is_informational: false
+      }] : [];
 
       setAids(calculatedAids);
       setCalculated(true);
 
-      // S'assurer que les aides ne dépassent pas le prix (exclude informational aids)
-      const totalAidsRaw = realAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
-      const totalAids = Math.min(totalAidsRaw, activityPrice);
-      const remainingPrice = Math.max(0, activityPrice - totalAids);
-
-      // Avertir si les aides dépassent le prix
-      if (totalAidsRaw > activityPrice) {
-        toast({
-          title: "Aides ajustées",
-          description: "Les aides ont été limitées au montant de l'activité",
-          variant: "default"
-        });
-      }
+      const totalAids = result.aide;
+      const remainingPrice = result.resteACharge;
 
       const aidData = {
         childId: selectedChildId,
@@ -287,21 +264,15 @@ export const EnhancedFinancialAidCalculator = ({
       onAidsCalculated(aidData);
 
       // Message adapté selon le résultat
-      if (realAids.length > 0) {
+      if (result.aide > 0) {
         toast({
-          title: "Aides calculées",
-          description: `${realAids.length} aide(s) disponible(s) - Total : ${totalAids.toFixed(2)}€`,
-        });
-      } else if (infoMessages.length > 0) {
-        toast({
-          title: "Simulation effectuée",
-          description: "Aides nationales appliquées. Certaines aides locales peuvent ne pas être disponibles pour votre territoire.",
-          variant: "default"
+          title: "Aide calculée",
+          description: `Aide disponible : ${result.aide.toFixed(2)}€ - Économie de ${result.economiePourcent}%`,
         });
       } else {
         toast({
           title: "Simulation effectuée",
-          description: "Aucune aide disponible pour ce profil",
+          description: "Aucune aide disponible pour ce quotient familial",
           variant: "default"
         });
       }
