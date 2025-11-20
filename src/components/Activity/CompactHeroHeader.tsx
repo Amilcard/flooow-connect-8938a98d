@@ -6,14 +6,7 @@ import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
-import {
-  Palette,
-  Trophy,
-  Lightbulb,
-  BookOpen,
-  Plane,
-  Music
-} from "lucide-react";
+import { getCategoryStyle } from "@/constants/categories";
 
 interface CompactHeroHeaderProps {
   /**
@@ -67,71 +60,6 @@ const getCategoryImage = (category: string): string => {
 };
 
 /**
- * Configuration des couleurs et icônes par catégorie
- */
-const getCategoryConfig = (category: string) => {
-  const configs: Record<string, {
-    gradient: string;
-    accent: string;
-    badgeBg: string;
-    badgeColor: string;
-    Icon: any;
-    label: string;
-  }> = {
-    Sport: {
-      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      accent: "#667eea",
-      badgeBg: "#EEF2FF",
-      badgeColor: "#667eea",
-      Icon: Trophy,
-      label: "Sport"
-    },
-    Culture: {
-      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      accent: "#f093fb",
-      badgeBg: "#FEF3E2",
-      badgeColor: "#F59E0B",
-      Icon: Palette,
-      label: "Culture"
-    },
-    Loisirs: {
-      gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-      accent: "#4facfe",
-      badgeBg: "#EFF6FF",
-      badgeColor: "#4A90E2",
-      Icon: Music,
-      label: "Loisirs"
-    },
-    Scolarité: {
-      gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
-      accent: "#43e97b",
-      badgeBg: "#ECFDF5",
-      badgeColor: "#10B981",
-      Icon: BookOpen,
-      label: "Scolarité"
-    },
-    Vacances: {
-      gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-      accent: "#fa709a",
-      badgeBg: "#FFF7ED",
-      badgeColor: "#FF8C42",
-      Icon: Plane,
-      label: "Vacances"
-    },
-    "Activités Innovantes": {
-      gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
-      accent: "#30cfd0",
-      badgeBg: "#F0F9FF",
-      badgeColor: "#06B6D4",
-      Icon: Lightbulb,
-      label: "Innovant"
-    }
-  };
-
-  return configs[category] || configs["Loisirs"];
-};
-
-/**
  * Header hero compact optimisé pour mobile
  *
  * - Hauteur réduite à 160px (vs ~250px)
@@ -166,7 +94,7 @@ export function CompactHeroHeader({
     ? categories[0]
     : category;
 
-  const categoryConfig = getCategoryConfig(displayCategory);
+
 
   // Utiliser l'image fournie ou l'image de catégorie comme fallback
   const fallbackImage = getCategoryImage(displayCategory);
@@ -210,29 +138,31 @@ export function CompactHeroHeader({
       <div className="absolute top-4 right-4 z-10">
         {rightContent ? (
           <div className="flex items-center gap-2">
-            <Badge
-              style={{
-                background: categoryConfig.badgeBg,
-                color: categoryConfig.badgeColor,
-                backdropFilter: "blur(8px)"
-              }}
-              className="text-xs font-semibold uppercase tracking-wide px-3 py-1 shadow-md border-0"
+            <div
+              className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
             >
-              {categoryConfig.label}
-            </Badge>
+              <span
+                className="text-xs font-bold uppercase font-poppins"
+                style={{ color: getCategoryStyle(displayCategory).color }}
+              >
+                {displayCategory}
+              </span>
+            </div>
             {rightContent}
           </div>
         ) : (
-          <Badge
-            style={{
-              background: categoryConfig.badgeBg,
-              color: categoryConfig.badgeColor,
-              backdropFilter: "blur(8px)"
-            }}
-            className="text-xs font-semibold uppercase tracking-wide px-3 py-1 shadow-md border-0"
+          <div
+            className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
           >
-            {categoryConfig.label}
-          </Badge>
+            <span
+              className="text-xs font-bold uppercase font-poppins"
+              style={{ color: getCategoryStyle(displayCategory).color }}
+            >
+              {displayCategory}
+            </span>
+          </div>
         )}
       </div>
 

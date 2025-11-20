@@ -42,7 +42,7 @@ export const useSearchFilters = () => {
     quickFilters: { ...DEFAULT_QUICK_FILTERS },
     advancedFilters: { ...DEFAULT_ADVANCED_FILTERS },
     sortBy: (searchParams.get('sort') as any) || 'pertinence',
-    viewMode: (searchParams.get('view') as any) || 'grid'
+    viewMode: (searchParams.get('view') as any) || 'list'
   });
 
   // Load filters from URL on mount
@@ -82,7 +82,7 @@ export const useSearchFilters = () => {
 
       if (filterState.searchQuery) params.set('q', filterState.searchQuery);
       if (filterState.sortBy !== 'pertinence') params.set('sort', filterState.sortBy);
-      if (filterState.viewMode !== 'grid') params.set('view', filterState.viewMode);
+      if (filterState.viewMode !== 'list') params.set('view', filterState.viewMode);
 
       // Quick filters
       Object.entries(filterState.quickFilters).forEach(([key, value]) => {
@@ -124,7 +124,7 @@ export const useSearchFilters = () => {
     setFilterState((prev) => ({ ...prev, sortBy: sort as any }));
   }, []);
 
-  const updateViewMode = useCallback((mode: 'grid' | 'list') => {
+  const updateViewMode = useCallback((mode: 'map' | 'list') => {
     setFilterState((prev) => ({ ...prev, viewMode: mode }));
   }, []);
 
@@ -134,7 +134,7 @@ export const useSearchFilters = () => {
       quickFilters: { ...DEFAULT_QUICK_FILTERS },
       advancedFilters: { ...DEFAULT_ADVANCED_FILTERS },
       sortBy: 'pertinence',
-      viewMode: 'grid'
+      viewMode: 'list'
     });
   }, []);
 

@@ -10,7 +10,7 @@ export const buildActivityQuery = (filters: FilterState) => {
   // Use any to avoid deep type instantiation errors with chained query methods
   let query: any = supabase
     .from('activities')
-    .select('*');
+    .select('*, structures(name, location, address)');
 
   // Text search
   if (filters.searchQuery) {

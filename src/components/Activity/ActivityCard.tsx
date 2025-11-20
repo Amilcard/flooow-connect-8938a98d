@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Activity } from "@/types/domain";
+import { getCategoryStyle } from "@/constants/categories";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -101,44 +102,56 @@ export const ActivityCard = ({
         
         {/* Badge GRATUIT */}
         {price === 0 && (
-          <div 
-            className="absolute top-3 right-3 text-white font-bold text-xs uppercase px-3 py-1.5 rounded-full shadow-xl z-10 backdrop-blur-sm"
-            style={{ background: 'var(--gradient-pink)' }}
-          >
-            Gratuit
+          <div className="absolute top-3 right-3 px-3 py-1.5 bg-emerald-500/95 rounded-lg z-10 backdrop-blur-sm">
+            <span className="text-xs font-bold text-white uppercase font-poppins">
+              GRATUIT
+            </span>
           </div>
         )}
         
         {/* BADGES OVERLAY */}
-        <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
-          <Badge
-            className="bg-white/95 backdrop-blur-md text-foreground shadow-md text-xs font-semibold px-2.5 py-1 rounded-full border-0"
-            aria-label={"Catégorie: " + category}
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[calc(100%-4rem)]">
+          <div
+            className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
           >
-            {category}
-          </Badge>
+            <span
+              className="text-xs font-bold uppercase font-poppins"
+              style={{ color: getCategoryStyle(category).color }}
+            >
+              {category}
+            </span>
+          </div>
           
           {vacationType === 'sejour_hebergement' && (
-            <Badge variant="secondary" className="bg-purple-500/90 backdrop-blur-sm text-white shadow-sm text-xs px-2 py-0.5">
-              Séjour
-            </Badge>
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-purple-100/95">
+              <span className="text-xs font-bold uppercase font-poppins text-purple-600">
+                Séjour
+              </span>
+            </div>
           )}
           {vacationType === 'centre_loisirs' && (
-            <Badge variant="secondary" className="bg-blue-500/90 backdrop-blur-sm text-white shadow-sm text-xs px-2 py-0.5">
-              Centre
-            </Badge>
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-blue-100/95">
+              <span className="text-xs font-bold uppercase font-poppins text-blue-600">
+                Centre
+              </span>
+            </div>
           )}
           {vacationType === 'stage_journee' && (
-            <Badge variant="secondary" className="bg-amber-500/90 backdrop-blur-sm text-white shadow-sm text-xs px-2 py-0.5">
-              Stage
-            </Badge>
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-amber-100/95">
+              <span className="text-xs font-bold uppercase font-poppins text-amber-600">
+                Stage
+              </span>
+            </div>
           )}
           
           {hasAccessibility && (
-            <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-foreground shadow-sm text-xs px-2 py-0.5">
-              <Accessibility size={12} className="mr-0.5" />
-              PMR
-            </Badge>
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-white/95 flex items-center gap-1">
+              <Accessibility size={12} className="text-foreground" />
+              <span className="text-xs font-bold uppercase font-poppins text-foreground">
+                PMR
+              </span>
+            </div>
           )}
         </div>
 

@@ -11,6 +11,7 @@ import { QuickFiltersBar } from '@/components/Search/QuickFiltersBar';
 import { ActiveFiltersDisplay } from '@/components/Search/ActiveFiltersDisplay';
 import { ResultsHeader } from '@/components/Search/ResultsHeader';
 import { ResultsGrid } from '@/components/Search/ResultsGrid';
+import { ActivityMap } from '@/components/Search/ActivityMap';
 import { AdvancedFiltersModal } from '@/components/Search/AdvancedFiltersModal';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
@@ -144,12 +145,18 @@ const SearchResults = () => {
         onViewModeChange={updateViewMode}
       />
 
-      {/* Results Grid */}
-      <ResultsGrid
-        activities={activities}
-        isLoading={isActivitiesLoading}
-        onResetFilters={handleClearFilters}
-      />
+      {/* Results Grid or Map */}
+      {filterState.viewMode === 'map' ? (
+        <div className="px-4 pb-8">
+          <ActivityMap activities={activities} />
+        </div>
+      ) : (
+        <ResultsGrid
+          activities={activities}
+          isLoading={isActivitiesLoading}
+          onResetFilters={handleClearFilters}
+        />
+      )}
 
       {/* Bottom margin for navigation */}
       <div className="h-20" />

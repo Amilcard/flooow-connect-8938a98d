@@ -40,7 +40,7 @@ export const NewOnboardingStep = ({
   }
 }: NewOnboardingStepProps) => {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Main Content Wrapper - Max width constraint */}
       <div className="max-w-3xl mx-auto px-4 flex flex-col flex-1 w-full">
         
@@ -50,7 +50,7 @@ export const NewOnboardingStep = ({
           {onBack ? (
             <button
               onClick={onBack}
-              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
               {navigationLabels.back || "← Retour"}
             </button>
@@ -61,7 +61,7 @@ export const NewOnboardingStep = ({
           {onSkip && (
             <button
               onClick={onSkip}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
               {navigationLabels.skip || "Passer →"}
             </button>
@@ -70,37 +70,39 @@ export const NewOnboardingStep = ({
 
         {/* 2. Visual Section (Centered) */}
         <div className="flex justify-center items-center py-6 md:py-10 shrink-0">
-          <img
-            src={illustration}
-            alt=""
-            className="h-[180px] md:h-[240px] w-auto object-contain"
-          />
+          <div className="w-full max-w-xs flex items-center justify-center aspect-square bg-muted/20 rounded-2xl p-4">
+             <img
+              src={illustration}
+              alt=""
+              className="h-full w-full object-contain"
+            />
+          </div>
         </div>
 
         {/* 3. Text Section (Aligned Left) - Scrollable to keep button visible */}
         <div className="flex flex-col items-start text-left space-y-4 mb-8 overflow-y-auto flex-1 max-h-[calc(100vh-500px)]">
           {/* Title */}
-          <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight tracking-tight">
             {title}
           </h1>
 
           {/* Intro */}
-          <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
+          <p className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
             {content.intro}
           </p>
 
           {/* Section Title */}
           {content.sectionTitle && (
-            <h3 className="font-semibold text-lg text-gray-900 mt-2">
+            <h3 className="font-semibold text-lg text-foreground mt-2">
               {content.sectionTitle}
             </h3>
           )}
 
           {/* Bullet Points */}
           {content.bulletPoints && content.bulletPoints.length > 0 && (
-            <ul className="space-y-2 w-full">
+            <ul className="space-y-3 w-full">
               {content.bulletPoints.map((point, index) => (
-                <li key={index} className="flex items-start gap-3 text-gray-600 text-base">
+                <li key={index} className="flex items-start gap-3 text-muted-foreground text-base">
                   <span className="block w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                   <span className="leading-relaxed">{point}</span>
                 </li>
@@ -110,8 +112,8 @@ export const NewOnboardingStep = ({
 
           {/* Highlight */}
           {content.highlight && (
-            <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-100 w-full">
-              <p className="text-orange-700 font-medium text-sm text-center">
+            <div className="mt-2 p-4 bg-accent/10 rounded-xl border border-accent/20 w-full">
+              <p className="text-accent-foreground font-medium text-sm text-center">
                 {content.highlight}
               </p>
             </div>
@@ -119,9 +121,9 @@ export const NewOnboardingStep = ({
 
           {/* Eco Mobilite */}
           {content.ecoMobilite && (
-            <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100 w-full">
-              <p className="text-sm text-blue-800 leading-relaxed">
-                <span className="font-semibold">🌿 Éco-mobilité : </span>
+            <div className="mt-2 p-4 bg-primary/5 rounded-xl border border-primary/10 w-full">
+              <p className="text-sm text-foreground leading-relaxed">
+                <span className="font-semibold text-primary">🌿 Éco-mobilité : </span>
                 {content.ecoMobilite}
               </p>
             </div>
@@ -129,24 +131,24 @@ export const NewOnboardingStep = ({
 
           {/* Closing */}
           {content.closing && (
-            <p className="text-base text-gray-700 font-medium italic mt-4">
+            <p className="text-base text-foreground font-medium italic mt-4">
               {content.closing}
             </p>
           )}
         </div>
 
         {/* 4. CTA Section (Bottom) */}
-        <div className="mt-auto pb-8 pt-4 flex flex-col items-center space-y-6 bg-white">
+        <div className="mt-auto pb-8 pt-4 flex flex-col items-center space-y-6 bg-background">
           {/* Progress Indicator */}
           <div className="flex justify-center gap-2">
             {Array.from({ length: totalSteps }).map((_, index) => (
               <div
                 key={index}
                 className={cn(
-                  "h-2 rounded-full transition-all duration-300",
+                  "h-1.5 rounded-full transition-all duration-300",
                   index + 1 === currentStep
                     ? "w-8 bg-primary"
-                    : "w-2 bg-gray-200"
+                    : "w-1.5 bg-muted"
                 )}
               />
             ))}
@@ -155,7 +157,7 @@ export const NewOnboardingStep = ({
           {/* Primary Button */}
           <Button
             onClick={onNext}
-            className="w-full md:w-[320px] h-12 text-base font-semibold shadow-md"
+            className="w-full md:w-[320px] h-12 text-base font-semibold shadow-sm rounded-full"
             size="lg"
           >
             {navigationLabels.continue}

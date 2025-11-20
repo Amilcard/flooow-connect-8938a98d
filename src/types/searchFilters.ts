@@ -35,7 +35,7 @@ export interface FilterState {
   quickFilters: QuickFilters;
   advancedFilters: AdvancedFilters;
   sortBy: 'pertinence' | 'date_desc' | 'price_asc' | 'distance';
-  viewMode: 'grid' | 'list';
+  viewMode: 'map' | 'list';
 }
 
 export interface QuickFilterChip {

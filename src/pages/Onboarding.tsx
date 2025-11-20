@@ -2,12 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/NewOnboardingStep";
 
-// Placeholder transparent 1x1 pour désactiver les images (en attendant les vraies illustrations)
-// TODO: Remplacer par les vraies illustrations quand disponibles
-import onboarding1 from "@/assets/onboarding-megaphone.png";
-import onboarding2 from "@/assets/onboarding-activites.png";
-import onboarding3 from "@/assets/onboarding-aides.png";
-import onboarding4 from "@/assets/onboarding-community.png";
+// Photos réelles pour remplacer les illustrations
+import onboarding1 from "@/assets/actualite-ville.jpg";
+import onboarding2 from "@/assets/activity-sport.jpg";
+import onboarding3 from "@/assets/aides-financieres.jpg";
+import onboarding4 from "@/assets/univers-vacances.jpg";
 
 // Fallback si les images n'existent pas encore
 const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E";
@@ -54,7 +53,7 @@ const Onboarding = () => {
     };
   }> = {
     1: {
-      title: "Bienvenue dans la bêta Flooow",
+      title: "Bienvenue les Flooow Testeurs",
       content: {
         intro: "Vous faites partie des premiers à tester l'appli. On a une idée simple : vous aider à trouver des activités pour vos enfants sans exploser le budget.",
         bulletPoints: [
@@ -72,7 +71,7 @@ const Onboarding = () => {
     2: {
       title: "On repère les activités près de chez vous",
       content: {
-        intro: "Sport, culture, loisirs, scolarité : tout au même endroit.\n\nVous indiquez votre géolocalisation, on vous montre ce qui existe vraiment autour de vous.",
+        intro: "Sport, culture, loisirs, scolarité : tout au même endroit.\n\nVous vous géolocalisez, on vous montre ce qui existe vraiment autour de vous.",
         bulletPoints: [
           "Activités triées par thématique, âge, secteur et budget",
           "Infos claires : horaires, lieu, contacts",

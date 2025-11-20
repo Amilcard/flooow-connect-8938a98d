@@ -5,6 +5,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
+import { getCategoryStyle } from '@/constants/categories';
 
 interface ActivityResultCardProps {
   id: string;
@@ -18,14 +19,6 @@ interface ActivityResultCardProps {
   location?: string;
   financialAids?: string[];
 }
-
-const CATEGORY_COLORS: Record<string, { color: string; bg: string }> = {
-  sport: { color: '#10B981', bg: '#DCFCE7' },
-  culture: { color: '#F59E0B', bg: '#FEF3E2' },
-  loisirs: { color: '#A855F7', bg: '#F3E8FF' },
-  vacances: { color: '#EF4444', bg: '#FEE2E2' },
-  scolaire: { color: '#4A90E2', bg: '#EFF6FF' }
-};
 
 export const ActivityResultCard = ({
   id,
@@ -41,7 +34,7 @@ export const ActivityResultCard = ({
 }: ActivityResultCardProps) => {
   const navigate = useNavigate();
 
-  const categoryStyle = CATEGORY_COLORS[category] || CATEGORY_COLORS.loisirs;
+  const categoryStyle = getCategoryStyle(category);
 
   const handleClick = () => {
     navigate(`/activity/${id}`);
