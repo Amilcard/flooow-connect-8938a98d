@@ -9,7 +9,7 @@ interface Activity {
   id: string;
   title: string;
   category: string;
-  image_url?: string;
+  images?: string[];
   age_min?: number;
   age_max?: number;
   price_amount?: number;
@@ -67,7 +67,7 @@ export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGr
             id={activity.id}
             title={activity.title}
             category={activity.category}
-            imageUrl={activity.image_url}
+            imageUrl={activity.images?.[0]}
             ageMin={activity.age_min}
             ageMax={activity.age_max}
             price={activity.price_amount}
