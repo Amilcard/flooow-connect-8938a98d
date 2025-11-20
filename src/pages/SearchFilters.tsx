@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import PageLayout from "@/components/PageLayout";
-import { EnhancedSearchFilters } from "@/components/search/types";
-import { WhoFilter } from "@/components/search/WhoFilter";
-import { WhenFilter } from "@/components/search/WhenFilter";
-import { WhereFilter } from "@/components/search/WhereFilter";
-import { WhatFilter } from "@/components/search/WhatFilter";
-import { BudgetAidsFilter } from "@/components/search/BudgetAidsFilter";
+import { EnhancedSearchFilters } from "@/components/Search/types";
+import { WhoFilter } from "@/components/Search/WhoFilter";
+import { WhenFilter } from "@/components/Search/WhenFilter";
+import { WhereFilter } from "@/components/Search/WhereFilter";
+import { WhatFilter } from "@/components/Search/WhatFilter";
+import { BudgetAidsFilter } from "@/components/Search/BudgetAidsFilter";
 import { ArrowLeft } from "lucide-react";
 
 export default function SearchFilters() {
