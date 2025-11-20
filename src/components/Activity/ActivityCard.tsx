@@ -149,7 +149,7 @@ export const ActivityCard = ({
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-white/95 flex items-center gap-1">
               <Accessibility size={12} className="text-foreground" />
               <span className="text-xs font-bold uppercase font-poppins text-foreground">
-                PMR
+                InKlusif
               </span>
             </div>
           )}
@@ -282,9 +282,9 @@ export const ActivityCard = ({
             size="sm"
             className="h-8 text-xs px-3 flex-shrink-0"
             onClick={onRequestClick}
-            aria-label={"Intéressé par " + title}
+            aria-label={"Voir les détails de " + title}
           >
-            Je suis intéressé
+            + de détails
           </Button>
         </div>
       </div>

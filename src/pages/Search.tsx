@@ -65,7 +65,7 @@ const Search = () => {
   else if (maxAge) activeFilters.push({ key: 'maxAge', label: `Jusqu'à ${maxAge} ans`, param: 'maxAge' });
   if (maxPrice) activeFilters.push({ key: 'maxPrice', label: `Max ${maxPrice}€`, param: 'maxPrice' });
   if (hasAid) activeFilters.push({ key: 'hasAid', label: 'Avec aides financières', param: 'hasAid' });
-  if (isPMR) activeFilters.push({ key: 'isPMR', label: 'Accessible PMR', param: 'isPMR' });
+  if (isPMR) activeFilters.push({ key: 'isPMR', label: 'Activité InKlusif', param: 'isPMR' });
   if (hasCovoiturage) activeFilters.push({ key: 'hasCovoiturage', label: 'Covoiturage dispo', param: 'hasCovoiturage' });
 
   const removeFilter = (paramKey: string) => {
