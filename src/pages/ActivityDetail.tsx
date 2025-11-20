@@ -48,7 +48,6 @@ import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
 import { EnhancedFinancialAidCalculator } from "@/components/activities/EnhancedFinancialAidCalculator";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
-import { calculateEstimatedAid, calculateResteACharge } from "@/utils/aidesCalculator";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";

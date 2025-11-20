@@ -14,9 +14,6 @@ export const WelcomeScreen = ({ onNext }: WelcomeScreenProps) => {
           <div className="w-24 h-24 rounded-3xl bg-gradient-hero flex items-center justify-center shadow-lg">
             <Sparkles className="w-14 h-14 text-white" />
           </div>
-          <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gradient-accent flex items-center justify-center shadow-md">
-            <span className="text-white text-xs font-bold">β</span>
-          </div>
         </div>
 
         {/* Titre principal */}

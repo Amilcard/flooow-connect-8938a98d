@@ -4,19 +4,10 @@
  *
  * Spec: CALCULATEUR_AIDES_QF
  * Ne fait AUCUN appel Supabase direct - fonction pure réutilisable
+ *
+ * NOTE: Cette module utilise une seule source de vérité pour les tranches QF
+ * afin de garantir la cohérence entre tous les écrans (simulateur, détail activité, mes aides)
  */
-
-export interface AidCalculationParams {
-  quotientFamilial: number;
-  age: number;
-  prixActivite: number;
-}
-
-export interface AidCalculationResult {
-  montantAide: number;
-  message: string;
-  trancheQF: string;
-}
 
 export interface AidFromQFParams {
   qf: number;
@@ -30,16 +21,9 @@ export interface AidFromQFResult {
   trancheQF: string;
 }
 
-export const QF_BRACKETS = [
-  { min: 0, max: 450, montantAide: 50 },
-  { min: 451, max: 700, montantAide: 40 },
-  { min: 701, max: 1000, montantAide: 25 },
-  { min: 1001, max: null, montantAide: 0 }
-] as const;
-
 /**
- * Barème QF simplifié pour calcul d'aides (version utilisateur)
- * Utilisé par calculateAidFromQF
+ * Barème QF unique - SOURCE DE VÉRITÉ pour toute l'application
+ * Utilisé par calculateAidFromQF et pour l'affichage des tranches
  */
 export const QF_AID_BRACKETS = [
   { qf_min: 0, qf_max: 450, aide_euros: 50 },
@@ -49,81 +33,16 @@ export const QF_AID_BRACKETS = [
 ] as const;
 
 /**
- * Calcule le montant d'aide estimé selon le QF
- * @param params - Paramètres de calcul (QF, âge, prix activité)
- * @returns Résultat avec montant, message et tranche QF
+ * @deprecated Utiliser QF_AID_BRACKETS à la place
+ * Gardé temporairement pour compatibilité avec code existant
  */
-export function calculateEstimatedAid(params: AidCalculationParams): AidCalculationResult {
-  const { quotientFamilial, age, prixActivite } = params;
+export const QF_BRACKETS = [
+  { min: 0, max: 450, montantAide: 50 },
+  { min: 451, max: 700, montantAide: 40 },
+  { min: 701, max: 1000, montantAide: 25 },
+  { min: 1001, max: null, montantAide: 0 }
+] as const;
 
-  // Validation
-  if (quotientFamilial < 0 || age < 0 || prixActivite < 0) {
-    return {
-      montantAide: 0,
-      message: "Paramètres invalides",
-      trancheQF: "N/A"
-    };
-  }
-
-  // Déterminer la tranche QF
-  let bracket = QF_BRACKETS[QF_BRACKETS.length - 1]; // Par défaut: dernière tranche (1001+)
-  let trancheLabel = "1001€ et +";
-
-  for (const b of QF_BRACKETS) {
-    if (b.max === null) {
-      // Dernière tranche (1001+)
-      if (quotientFamilial >= b.min) {
-        bracket = b;
-        trancheLabel = `${b.min}€ et +`;
-        break;
-      }
-    } else {
-      // Tranches avec max défini
-      if (quotientFamilial >= b.min && quotientFamilial <= b.max) {
-        bracket = b;
-        trancheLabel = `${b.min}–${b.max}€`;
-        break;
-      }
-    }
-  }
-
-  const montantAide = bracket.montantAide;
-
-  // Générer le message selon le montant
-  let message: string;
-  if (montantAide === 0) {
-    message = "Aucune aide disponible pour ces critères";
-  } else {
-    message = `Profil QF ${trancheLabel} : aide estimée ${montantAide} €`;
-  }
-
-  return {
-    montantAide,
-    message,
-    trancheQF: trancheLabel
-  };
-}
-
-/**
- * Calcule le reste à charge après application de l'aide
- * @param prixInitial - Prix initial de l'activité
- * @param montantAide - Montant de l'aide calculée
- * @returns Reste à charge (ne peut pas être négatif)
- */
-export function calculateResteACharge(prixInitial: number, montantAide: number): number {
-  return Math.max(0, prixInitial - montantAide);
-}
-
-/**
- * Calcule le pourcentage d'économie
- * @param prixInitial - Prix initial de l'activité
- * @param montantAide - Montant de l'aide
- * @returns Pourcentage d'économie arrondi
- */
-export function calculatePourcentageEconomie(prixInitial: number, montantAide: number): number {
-  if (prixInitial <= 0) return 0;
-  return Math.round((montantAide / prixInitial) * 100);
-}
 
 /**
  * Fonction centralisée pour calculer l'aide basée sur le QF

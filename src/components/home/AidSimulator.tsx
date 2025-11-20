@@ -1,7 +1,7 @@
 /**
  * LOT A - Simulateur d'aides sur la page d'accueil (refactorisé selon spec)
  * Permet de simuler le montant d'aide selon QF et prix activité
- * Utilise la fonction pure calculateEstimatedAid
+ * Utilise la fonction pure calculateAidFromQF
  */
 
 import { useState } from 'react';
@@ -14,10 +14,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Calculator, TrendingUp, Sparkles, ArrowRight, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
-  calculateEstimatedAid,
-  calculateResteACharge,
-  calculatePourcentageEconomie,
-  QF_BRACKETS
+  calculateAidFromQF,
+  QF_AID_BRACKETS
 } from '@/utils/aidesCalculator';
 
 export const AidSimulator = () => {
@@ -38,20 +36,24 @@ export const AidSimulator = () => {
       return;
     }
 
-    const calcul = calculateEstimatedAid({
-      quotientFamilial: qfNum,
-      age: ageNum,
+    // Utiliser la fonction unifiée calculateAidFromQF
+    const calcul = calculateAidFromQF({
+      qf: qfNum,
       prixActivite: prixNum
     });
 
-    const resteACharge = calculateResteACharge(prixNum, calcul.montantAide);
-    const pourcentageEconomie = calculatePourcentageEconomie(prixNum, calcul.montantAide);
+    // Générer un message informatif
+    const message = calcul.aide > 0
+      ? `Profil QF ${calcul.trancheQF} : aide estimée ${calcul.aide} €`
+      : "Aucune aide disponible pour ces critères";
 
     setResultat({
-      ...calcul,
+      montantAide: calcul.aide,
       prixInitial: prixNum,
-      resteACharge,
-      pourcentageEconomie
+      resteACharge: calcul.resteACharge,
+      pourcentageEconomie: calcul.economiePourcent,
+      trancheQF: calcul.trancheQF,
+      message
     });
     setShowResult(true);
   };
@@ -158,16 +160,16 @@ export const AidSimulator = () => {
                   Barème des aides
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {QF_BRACKETS.map((bracket, index) => (
+                  {QF_AID_BRACKETS.map((bracket, index) => (
                     <div key={index} className="text-center p-2 bg-white rounded border">
                       <p className="text-xs text-muted-foreground mb-1">
-                        {bracket.max === null
-                          ? `${bracket.min}€ et +`
-                          : `${bracket.min}–${bracket.max}€`
+                        {bracket.qf_max === null
+                          ? `${bracket.qf_min}€ et +`
+                          : `${bracket.qf_min}–${bracket.qf_max}€`
                         }
                       </p>
                       <p className="text-sm font-bold text-primary">
-                        {bracket.montantAide > 0 ? `${bracket.montantAide}€` : 'Aucune'}
+                        {bracket.aide_euros > 0 ? `${bracket.aide_euros}€` : 'Aucune'}
                       </p>
                     </div>
                   ))}
