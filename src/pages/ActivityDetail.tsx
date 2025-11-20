@@ -535,8 +535,8 @@ const ActivityDetail = () => {
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Accessibilité PMR</p>
-                            <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
+                            <p className="font-medium text-sm">Activité InKlusif</p>
+                            <p className="text-sm text-muted-foreground">Adaptée aux personnes en situation de handicap</p>
                           </div>
                         </div>
                       )}

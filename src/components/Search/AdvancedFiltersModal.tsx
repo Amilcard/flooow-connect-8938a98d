@@ -377,7 +377,7 @@ export const AdvancedFiltersModal = ({
                   className="w-4 h-4 accent-primary cursor-pointer"
                 />
                 <span className="text-sm font-medium text-gray-900 font-poppins">
-                  Accessible PMR (fauteuil roulant)
+                  Activité InKlusif
                 </span>
               </label>
 
