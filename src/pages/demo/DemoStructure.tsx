@@ -69,7 +69,7 @@ export default function DemoStructure() {
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• Créer une nouvelle activité (sport, culture, loisirs)</li>
                 <li>• Définir le prix, la tranche d'âge, les documents requis</li>
-                <li>• Indiquer les critères d'accessibilité (INCLUSIVITÉ, handicaps)</li>
+                <li>• Indiquer les critères d'accessibilité (InKlusif, handicaps)</li>
                 <li>• Ajouter photos et description détaillée</li>
                 <li>• Publier/dépublier les activités</li>
                 <li>• Modifier les informations à tout moment</li>

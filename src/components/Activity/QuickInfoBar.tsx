@@ -134,7 +134,7 @@ export function QuickInfoBar({
         <Badge
           className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-blue-100 text-blue-700 border-0"
         >
-          INCLUSIVITÉ
+          InKlusif
         </Badge>
       )}
 

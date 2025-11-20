@@ -156,6 +156,7 @@ const Onboarding = () => {
 
   return (
     <NewOnboardingStep
+      data-tour-id={`onboarding-step-${currentStep}`}
       title={currentStepData.title}
       content={currentStepData.content}
       illustration={illustration}

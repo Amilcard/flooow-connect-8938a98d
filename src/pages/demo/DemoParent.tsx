@@ -92,7 +92,7 @@ export default function DemoParent() {
               <Badge variant="secondary">📚 Scolarité</Badge>
               <Badge variant="secondary">👶 3-18 ans</Badge>
               <Badge variant="secondary">💰 0-200€</Badge>
-              <Badge variant="secondary">♿ Accessibilité INCLUSIVITÉ</Badge>
+              <Badge variant="secondary">♿ Accessibilité InKlusif</Badge>
               <Badge variant="secondary">🚗 Covoiturage</Badge>
               <Badge variant="secondary">💳 Aides financières</Badge>
               <Badge variant="secondary">🏖️ Vacances scolaires</Badge>
@@ -239,7 +239,7 @@ export default function DemoParent() {
                   <li>✓ Catégories multiples</li>
                   <li>✓ Tranche d'âge précise</li>
                   <li>✓ Budget maximum</li>
-                  <li>✓ Accessibilité INCLUSIVITÉ</li>
+                  <li>✓ Accessibilité InKlusif</li>
                   <li>✓ Aides financières</li>
                   <li>✓ Périodes vacances</li>
                 </ul>
@@ -268,7 +268,7 @@ export default function DemoParent() {
               </CardHeader>
               <CardContent>
                 <ul className="text-sm space-y-2 text-muted-foreground">
-                  <li>✓ Accessibilité INCLUSIVITÉ</li>
+                  <li>✓ Accessibilité InKlusif</li>
                   <li>✓ Handicaps pris en compte</li>
                   <li>✓ Transport adapté</li>
                   <li>✓ Critères QPV</li>

@@ -24,6 +24,7 @@ interface NewOnboardingStepProps {
     skip?: string;
     continue?: string;
   };
+  "data-tour-id"?: string;
 }
 
 export const NewOnboardingStep = ({
@@ -37,10 +38,14 @@ export const NewOnboardingStep = ({
   onSkip,
   navigationLabels = {
     continue: "CONTINUER"
-  }
+  },
+  "data-tour-id": dataTourId
 }: NewOnboardingStepProps) => {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div 
+      className="min-h-screen flex flex-col bg-background text-foreground"
+      data-tour-id={dataTourId}
+    >
       {/* Main Content Wrapper - Max width constraint */}
       <div className="max-w-3xl mx-auto px-4 flex flex-col flex-1 w-full">
         
