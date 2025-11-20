@@ -10,7 +10,7 @@ export function MobilityHeader() {
   return (
     <div className="bg-white px-4 py-6">
       {/* Back Button + Title/Subtitle bloc */}
-      <div className="flex items-start gap-4 mb-2">
+      <div className="flex items-start gap-5 mb-2">
         <BackButton
           positioning="relative"
           className="shrink-0"

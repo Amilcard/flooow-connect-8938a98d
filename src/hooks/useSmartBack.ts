@@ -2,14 +2,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 /**
  * Smart back navigation:
- * - If there is meaningful history (same-origin referrer and history length > 1), go back
- * - Otherwise, navigate to provided fallback or home
+ * - If no fallback is provided, always use navigate(-1) to preserve search context
+ * - If fallback is provided, use it only when there's no meaningful history
  */
 export const useSmartBack = (fallback?: string) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   return () => {
+    // If no fallback provided, always go back - let browser handle edge cases
+    if (!fallback) {
+      navigate(-1);
+      return;
+    }
+
+    // If fallback provided, check if we have meaningful history
     try {
       const state = location.state as any;
       if (state?.from) {
@@ -28,7 +35,7 @@ export const useSmartBack = (fallback?: string) => {
       // noop — fallback below
     }
 
-    if (fallback) navigate(fallback, { replace: true });
-    else navigate("/", { replace: true });
+    // Use fallback only if provided and no history
+    navigate(fallback, { replace: true });
   };
 };

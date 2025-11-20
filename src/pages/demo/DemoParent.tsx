@@ -15,8 +15,8 @@ export default function DemoParent() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Activités pour la démo (limitées)
-  const { data: proximityActivities } = useActivities({ limit: 4 });
-  const { data: budgetActivities } = useActivities({ maxPrice: 50, limit: 4 });
+  const { activities: proximityActivities, isLoading } = useActivities({ limit: 4 });
+  const { activities: budgetActivities } = useActivities({ maxPrice: 50, limit: 4 });
 
   return (
     <div className="min-h-screen bg-background">

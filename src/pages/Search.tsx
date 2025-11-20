@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { MapPin, List, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 import { logSearch } from "@/lib/tracking";
 import type { Activity } from "@/types/domain";
 import { InteractiveMapActivities } from "@/components/Search/InteractiveMapActivities";
@@ -41,7 +43,7 @@ const Search = () => {
   if (hasCovoiturage) filters.hasCovoiturage = true;
   if (hasAid) filters.hasFinancialAid = true;
 
-  const { data: activities, isLoading, error } = useActivities(filters);
+  const { activities, isRelaxed, isLoading, error } = useActivities(filters);
 
   const displayActivities = activities || [];
 
@@ -99,10 +101,18 @@ const Search = () => {
       <div className="container py-4 space-y-4">
         {/* Search query display */}
         {searchQuery && (
-          <div className="mb-2">
+          <div className="mb-2 space-y-2">
             <p className="text-lg font-semibold">
               Résultats pour : <span className="text-primary">"{searchQuery}"</span>
             </p>
+            {isRelaxed && (
+              <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription>
+                  Aucun résultat exact trouvé avec vos filtres. Nous avons élargi la recherche pour vous montrer ces activités correspondantes.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         )}
 

@@ -15,7 +15,7 @@ export const buildActivityQuery = (filters: FilterState) => {
   // Text search
   if (filters.searchQuery) {
     query = query.or(
-      `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
+      `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%,tags.cs.{${filters.searchQuery}}`
     );
   }
 
@@ -130,8 +130,8 @@ export const buildActivityQuery = (filters: FilterState) => {
       query = query.order('created_at', { ascending: false });
       break;
     default:
-      // Pertinence: featured first, then by rating
-      query = query.order('featured', { ascending: false }).order('created_at', { ascending: false });
+      // Pertinence: by creation date
+      query = query.order('created_at', { ascending: false });
   }
 
   return query;
@@ -139,7 +139,7 @@ export const buildActivityQuery = (filters: FilterState) => {
 
 export const getResultsCount = async (filters: FilterState): Promise<number> => {
   const query = buildActivityQuery(filters);
-  const { count, error } = await query.select('*', { count: 'exact', head: false });
+  const { count, error } = await query.select('*', { count: 'exact', head: true });
 
   if (error) {
     console.error('Error counting results:', error);

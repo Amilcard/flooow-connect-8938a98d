@@ -357,7 +357,7 @@ const ActivityDetail = () => {
         title={activity.title}
         category={activity.category}
         categories={activity.categories}
-        backFallback="/activities"
+        backFallback="/home"
         rightContent={
           <div className="relative">
             <TooltipProvider>
