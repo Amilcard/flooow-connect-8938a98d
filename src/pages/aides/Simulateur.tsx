@@ -18,7 +18,7 @@ import {
   Heart,
   ChevronDown
 } from "lucide-react";
-import { calculateEstimatedAid, calculateResteACharge, calculatePourcentageEconomie } from "@/utils/aidesCalculator";
+import { calculateAidFromQF, QF_AID_BRACKETS } from "@/utils/aidesCalculator";
 import {
   Accordion,
   AccordionContent,
@@ -76,21 +76,22 @@ const Simulateur = () => {
 
     // Simulation de temps de calcul (500ms)
     setTimeout(() => {
-      // Calcul dynamique basé sur le barème QF
-      const aidResult = calculateEstimatedAid({
-        quotientFamilial: qf,
-        age: age,
+      // Utiliser la fonction unifiée calculateAidFromQF
+      const aidResult = calculateAidFromQF({
+        qf: qf,
         prixActivite: DEFAULT_ACTIVITY_PRICE
       });
 
-      const resteACharge = calculateResteACharge(DEFAULT_ACTIVITY_PRICE, aidResult.montantAide);
-      const pourcentage = calculatePourcentageEconomie(DEFAULT_ACTIVITY_PRICE, aidResult.montantAide);
+      // Générer un message informatif
+      const message = aidResult.aide > 0
+        ? `Profil QF ${aidResult.trancheQF} : aide estimée ${aidResult.aide} €`
+        : "Aucune aide disponible pour ces critères";
 
       setCalculationResult({
-        montantAide: aidResult.montantAide,
-        montantAPayer: resteACharge,
-        pourcentageEconomie: pourcentage,
-        message: aidResult.message
+        montantAide: aidResult.aide,
+        montantAPayer: aidResult.resteACharge,
+        pourcentageEconomie: aidResult.economiePourcent,
+        message: message
       });
 
       setHasSimulated(true);
@@ -364,25 +365,25 @@ const Simulateur = () => {
 
               {/* Tableau barème */}
               <div className="space-y-2">
-                <div className="flex justify-between items-center p-3 rounded-lg bg-green-700 text-white">
-                  <span className="font-medium">0 - 450€</span>
-                  <span className="font-bold">50€</span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 rounded-lg bg-green-600 text-white">
-                  <span className="font-medium">451 - 700€</span>
-                  <span className="font-bold">40€</span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 rounded-lg bg-green-400 text-white">
-                  <span className="font-medium">701 - 1000€</span>
-                  <span className="font-bold">25€</span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 rounded-lg bg-gray-300 text-gray-700">
-                  <span className="font-medium">1001€ et +</span>
-                  <span className="font-bold">0€</span>
-                </div>
+                {QF_AID_BRACKETS.map((bracket, index) => {
+                  const colorClasses = [
+                    "bg-green-700 text-white",
+                    "bg-green-600 text-white",
+                    "bg-green-400 text-white",
+                    "bg-gray-300 text-gray-700"
+                  ];
+                  return (
+                    <div key={index} className={`flex justify-between items-center p-3 rounded-lg ${colorClasses[index]}`}>
+                      <span className="font-medium">
+                        {bracket.qf_max === null
+                          ? `${bracket.qf_min}€ et +`
+                          : `${bracket.qf_min} - ${bracket.qf_max}€`
+                        }
+                      </span>
+                      <span className="font-bold">{bracket.aide_euros}€</span>
+                    </div>
+                  );
+                })}
               </div>
 
               <p className="text-xs text-gray-500 italic mt-3">
