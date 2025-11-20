@@ -48,7 +48,6 @@ import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
 import { SharedAidCalculator } from "@/components/aids/SharedAidCalculator";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
-import { calculateEstimatedAid, calculateResteACharge } from "@/utils/aidesCalculator";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -543,8 +542,8 @@ const ActivityDetail = () => {
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Accessibilité</p>
-                            <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
+                            <p className="font-medium text-sm">Activité InKlusif</p>
+                            <p className="text-sm text-muted-foreground">Adaptée aux personnes en situation de handicap</p>
                           </div>
                         </div>
                       )}

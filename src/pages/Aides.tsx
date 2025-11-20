@@ -167,6 +167,8 @@ const Aides = () => {
           periodType="vacances"
         />
 
+
+
         {/* Aids Sections List with Redesigned Cards */}
         <AidsSectionsList
           schoolYearAids={schoolYearAids}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/NewOnboardingStep";
-import { MapPin, Calculator } from "lucide-react";
+import { Sparkles, MapPin, Calculator, Smartphone } from "lucide-react";
 import logoFlooow from "@/assets/logo-flooow.png";
 import logoNananere from "@/assets/logo-nananere.png";
 
@@ -51,11 +51,10 @@ const Onboarding = () => {
       <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl`}>
         <Icon className="w-20 h-20 text-white" strokeWidth={1.5} />
       </div>
-      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
-        <span className="text-white text-sm font-bold">β</span>
-      </div>
     </div>
   );
+
+
 
   // Configuration des étapes
   const steps: Record<OnboardingStepId, {
