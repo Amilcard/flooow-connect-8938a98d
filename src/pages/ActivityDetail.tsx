@@ -46,7 +46,7 @@ import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
-import { EnhancedFinancialAidCalculator } from "@/components/activities/EnhancedFinancialAidCalculator";
+import { SharedAidCalculator } from "@/components/aids/SharedAidCalculator";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
@@ -427,6 +427,13 @@ const ActivityDetail = () => {
         ageRange={{ min: activity.age_min, max: activity.age_max }}
         isFree={activity.price_base === 0}
         spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
+        paymentEchelonned={activity.payment_echelonned || false}
+        hasAccessibility={
+          typeof activity.accessibility_checklist === 'object' &&
+          activity.accessibility_checklist !== null &&
+          'wheelchair' in activity.accessibility_checklist &&
+          Boolean((activity.accessibility_checklist as any).wheelchair)
+        }
       />
 
       {/* Main Content Container - Airbnb Style with Grid */}
@@ -535,8 +542,8 @@ const ActivityDetail = () => {
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Accessibilité PMR</p>
-                            <p className="text-sm text-muted-foreground">Adapté aux personnes à mobilité réduite</p>
+                            <p className="font-medium text-sm">Activité InKlusif</p>
+                            <p className="text-sm text-muted-foreground">Adaptée aux personnes en situation de handicap</p>
                           </div>
                         </div>
                       )}
@@ -630,7 +637,8 @@ const ActivityDetail = () => {
                     </Alert>
 
                     <div data-tour-id="aid-simulation-calculator">
-                      <EnhancedFinancialAidCalculator
+                      <SharedAidCalculator
+                        resetOnMount={false}
                         activityId={id!}
                         activityPrice={activity.price_base || 0}
                         activityCategories={activity.categories || [activity.category]}

@@ -30,7 +30,7 @@ const DEFAULT_ADVANCED_FILTERS: AdvancedFilters = {
   max_budget: 200,
   financial_aids_accepted: [],
   qf_based_pricing: false,
-  pmr: false,
+  inclusivity: false,
   public_transport: false
 };
 

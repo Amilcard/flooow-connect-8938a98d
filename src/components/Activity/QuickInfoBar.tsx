@@ -30,6 +30,16 @@ interface QuickInfoBarProps {
   spotsRemaining?: number;
 
   /**
+   * Indique si le paiement échelonné est disponible (badge SOLIDAIRE)
+   */
+  paymentEchelonned?: boolean;
+
+  /**
+   * Indique si l'activité est accessible PMR (badge INCLUSIVITÉ)
+   */
+  hasAccessibility?: boolean;
+
+  /**
    * Classes CSS additionnelles
    */
   className?: string;
@@ -59,6 +69,8 @@ export function QuickInfoBar({
   ageRange,
   isFree,
   spotsRemaining,
+  paymentEchelonned,
+  hasAccessibility,
   className = ""
 }: QuickInfoBarProps) {
   // Déterminer la couleur de l'indicateur de places selon le nombre restant
@@ -105,6 +117,24 @@ export function QuickInfoBar({
           className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-green-100 text-green-700 border-0"
         >
           GRATUIT
+        </Badge>
+      )}
+
+      {/* Badge SOLIDAIRE */}
+      {paymentEchelonned && (
+        <Badge
+          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0"
+        >
+          SOLIDAIRE
+        </Badge>
+      )}
+
+      {/* Badge INCLUSIVITÉ */}
+      {hasAccessibility && (
+        <Badge
+          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-blue-100 text-blue-700 border-0"
+        >
+          INCLUSIVITÉ
         </Badge>
       )}
 

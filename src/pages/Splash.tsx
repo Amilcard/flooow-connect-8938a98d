@@ -28,15 +28,24 @@ const Splash = () => {
     // Première visite de la session : montrer le splash
     sessionStorage.setItem("splashShown", "true");
 
-    // Check if user has seen onboarding
-    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    // ===== MODE TESTS : ONBOARDING SYSTÉMATIQUE =====
+    // Pour la phase de tests bêta, l'onboarding est affiché à CHAQUE ouverture
+    // de l'application, afin de permettre aux testeurs de le valider à chaque fois.
+    // TODO: Décommenter le code ci-dessous pour revenir au mode normal (onboarding une seule fois)
+
+    // Check if user has seen onboarding (DÉSACTIVÉ EN MODE TESTS)
+    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
 
     const timer = setTimeout(() => {
-      if (hasSeenOnboarding) {
-        navigate("/home", { replace: true });
-      } else {
-        navigate("/onboarding", { replace: true });
-      }
+      // MODE TESTS : toujours rediriger vers l'onboarding
+      navigate("/onboarding", { replace: true });
+
+      // MODE NORMAL (à réactiver après les tests) :
+      // if (hasSeenOnboarding) {
+      //   navigate("/home", { replace: true });
+      // } else {
+      //   navigate("/onboarding", { replace: true });
+      // }
     }, 2000);
 
     return () => clearTimeout(timer);

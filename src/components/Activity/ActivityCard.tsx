@@ -21,6 +21,7 @@ interface ActivityCardProps {
   category: string;
   price: number;
   hasAccessibility?: boolean;
+  paymentEchelonned?: boolean;
   hasFinancialAid?: boolean;
   periodType?: string;
   structureName?: string;
@@ -63,6 +64,7 @@ export const ActivityCard = ({
   category,
   price,
   hasAccessibility = false,
+  paymentEchelonned = false,
   hasFinancialAid = false,
   periodType,
   structureName,
@@ -123,6 +125,15 @@ export const ActivityCard = ({
             </span>
           </div>
           
+          {/* Badge SOLIDAIRE */}
+          {paymentEchelonned && (
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-gradient-to-r from-orange-500/95 to-amber-500/95">
+              <span className="text-xs font-bold uppercase font-poppins text-white">
+                SOLIDAIRE
+              </span>
+            </div>
+          )}
+          
           {vacationType === 'sejour_hebergement' && (
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-purple-100/95">
               <span className="text-xs font-bold uppercase font-poppins text-purple-600">
@@ -149,7 +160,7 @@ export const ActivityCard = ({
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-white/95 flex items-center gap-1">
               <Accessibility size={12} className="text-foreground" />
               <span className="text-xs font-bold uppercase font-poppins text-foreground">
-                PMR
+                InKlusif
               </span>
             </div>
           )}
@@ -282,9 +293,9 @@ export const ActivityCard = ({
             size="sm"
             className="h-8 text-xs px-3 flex-shrink-0"
             onClick={onRequestClick}
-            aria-label={"Intéressé par " + title}
+            aria-label={"Voir les détails de " + title}
           >
-            Je suis intéressé
+            + de détails
           </Button>
         </div>
       </div>

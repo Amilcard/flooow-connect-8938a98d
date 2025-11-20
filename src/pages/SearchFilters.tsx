@@ -24,7 +24,7 @@ export default function SearchFilters() {
     const ageMax = searchParams.get("maxAge") ? parseInt(searchParams.get("maxAge")!) : undefined;
     const maxPrice = searchParams.get("maxPrice") ? parseInt(searchParams.get("maxPrice")!) : undefined;
     const hasFinancialAid = searchParams.get("hasAid") === "true";
-    const hasAccessibility = searchParams.get("isPMR") === "true";
+    const hasAccessibility = searchParams.get("isInclusive") === "true";
     const hasCovoiturage = searchParams.get("hasCovoiturage") === "true";
 
     return {
@@ -49,7 +49,7 @@ export default function SearchFilters() {
     if (localFilters.ageMax) params.append("maxAge", localFilters.ageMax.toString());
     if (localFilters.maxPrice) params.append("maxPrice", localFilters.maxPrice.toString());
     if (localFilters.hasFinancialAid) params.append("hasAid", "true");
-    if (localFilters.hasAccessibility) params.append("isPMR", "true");
+    if (localFilters.hasAccessibility) params.append("isInclusive", "true");
     if (localFilters.hasCovoiturage) params.append("hasCovoiturage", "true");
     
     // Navigate to search page with filters

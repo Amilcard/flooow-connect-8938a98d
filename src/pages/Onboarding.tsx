@@ -12,12 +12,10 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   const handleComplete = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
     navigate("/home", { replace: true });
   };
 
   const handleSkip = () => {
-    localStorage.setItem("hasSeenOnboarding", "true");
     navigate("/home", { replace: true });
   };
 
@@ -35,7 +33,19 @@ const Onboarding = () => {
     }
   };
 
-  // Composant Icon moderne au lieu des photos
+  // Composant Logo en transparence pour les écrans 1 et 4
+  const LogoIllustration = ({ logo }: { logo: string; gradient?: string }) => (
+    <div className="relative inline-block mb-6">
+      <div className="w-48 h-48 flex items-center justify-center">
+        <img src={logo} alt="Flooow" className="w-full h-full object-contain" />
+      </div>
+      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
+        <span className="text-white text-sm font-bold">β</span>
+      </div>
+    </div>
+  );
+
+  // Composant Icon pour les écrans 2 et 3
   const IconIllustration = ({ icon: Icon, gradient }: { icon: any; gradient: string }) => (
     <div className="relative inline-block mb-6">
       <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl`}>
@@ -44,21 +54,14 @@ const Onboarding = () => {
     </div>
   );
 
-  // Composant Logo pour afficher les logos Flooow et Nananere
-  const LogoIllustration = ({ logoSrc, gradient }: { logoSrc: string; gradient: string }) => (
-    <div className="relative inline-block mb-6">
-      <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl p-4`}>
-        <img src={logoSrc} alt="Logo" className="w-full h-full object-contain" />
-      </div>
-    </div>
-  );
+
 
   // Configuration des étapes
   const steps: Record<OnboardingStepId, {
     title: string;
     content: OnboardingContent;
-    icon?: any;
     logo?: string;
+    icon?: any;
     gradient: string;
     navigation: {
       back?: { label: string };
@@ -146,9 +149,9 @@ const Onboarding = () => {
 
   const currentStepData = steps[currentStep];
 
-  // Choisir le bon composant d'illustration selon si c'est un logo ou une icône
-  const illustration = currentStepData.logo
-    ? <LogoIllustration logoSrc={currentStepData.logo} gradient={currentStepData.gradient} />
+  // Choisir l'illustration appropriée selon l'écran
+  const illustration = currentStepData.logo 
+    ? <LogoIllustration logo={currentStepData.logo} />
     : <IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />;
 
   return (

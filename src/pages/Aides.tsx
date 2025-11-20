@@ -3,15 +3,16 @@
  * Updated with plain text contacts (telephone, permanence, url_info)
  */
 
+import { useState, useEffect } from "react";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
-import { SimulatorCTABanner } from "@/components/FinancialAid/SimulatorCTABanner";
-import { MesAidesCalculator } from "@/components/FinancialAid/MesAidesCalculator";
-import { StandaloneAidCalculator } from "@/components/FinancialAid/StandaloneAidCalculator";
+import { SharedAidCalculator } from "@/components/aids/SharedAidCalculator";
 import { AidsSectionsList } from "@/components/FinancialAid/AidsSectionsList";
 import { AidsInfoBox } from "@/components/FinancialAid/AidsInfoBox";
 import { FinancialAid } from "@/types/FinancialAid";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 // School Year Aids Data
 const schoolYearAids: FinancialAid[] = [
@@ -101,7 +102,52 @@ const vacationsAids: FinancialAid[] = [
   }
 ];
 
+interface Child {
+  id: string;
+  first_name: string;
+  dob: string;
+}
+
 const Aides = () => {
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<{
+    quotient_familial?: number;
+    postal_code?: string;
+  } | undefined>(undefined);
+  const [children, setChildren] = useState<Child[]>([]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+
+      // Récupérer le profil utilisateur
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('quotient_familial, postal_code')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profile) {
+        setUserProfile({
+          quotient_familial: profile.quotient_familial,
+          postal_code: profile.postal_code
+        });
+      }
+
+      // Récupérer les enfants
+      const { data: childrenData } = await supabase
+        .from('children')
+        .select('id, first_name, dob')
+        .eq('user_id', user.id);
+
+      if (childrenData) {
+        setChildren(childrenData);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
   return (
     <PageLayout showHeader={false}>
       <PageHeader
@@ -112,17 +158,16 @@ const Aides = () => {
 
       {/* Main Content Container with max-width and horizontal padding */}
       <div className="max-w-[1200px] mx-auto px-4">
-        {/* Prominent Simulator CTA Banner (Blue) */}
-        <SimulatorCTABanner />
+        {/* Simulateur d'aides avec reset automatique */}
+        <SharedAidCalculator
+          resetOnMount={true}
+          userProfile={userProfile}
+          children={children}
+          activityPrice={100}
+          periodType="vacances"
+        />
 
-        {/* LOT A - Calculateur d'aides personnalisé */}
-        <MesAidesCalculator />
 
-        {/* Simulateur d'aides - Copie conforme du simulateur du détail activité */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold mb-4">Simuler une aide</h2>
-          <StandaloneAidCalculator />
-        </div>
 
         {/* Aids Sections List with Redesigned Cards */}
         <AidsSectionsList
