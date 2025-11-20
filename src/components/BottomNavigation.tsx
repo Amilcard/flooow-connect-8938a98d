@@ -97,6 +97,7 @@ export const BottomNavigation = () => {
                     }}
                     aria-label={item.label}
                     aria-current={isActive ? "page" : undefined}
+                    data-tour-id={item.path === "/mon-compte" ? "nav-item-dossiers" : undefined}
                   >
                     <Icon 
                       size={22} 

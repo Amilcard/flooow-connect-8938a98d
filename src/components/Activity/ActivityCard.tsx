@@ -42,6 +42,7 @@ interface ActivityCardProps {
   vacationType?: 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
   priceUnit?: string;
   hasAccommodation?: boolean;
+  hasFreeTrial?: boolean; // Nouveau: pour afficher "Initiation gratuite"
 }
 
 const getCategoryImage = (category: string): string => {
@@ -75,6 +76,7 @@ export const ActivityCard = ({
   onRequestClick,
   vacationType,
   priceUnit,
+  hasFreeTrial = false, // Par défaut false si non fourni
 }: ActivityCardProps) => {
   const fallbackImage = getCategoryImage(category);
   const displayImage = image || fallbackImage;
@@ -102,8 +104,17 @@ export const ActivityCard = ({
           }}
         />
         
-        {/* Badge GRATUIT */}
-        {price === 0 && (
+        {/* Badge INITIATION GRATUITE (prioritaire) */}
+        {hasFreeTrial && (
+          <div className="absolute top-3 right-3 px-3 py-1.5 bg-emerald-500/95 rounded-lg z-10 backdrop-blur-sm">
+            <span className="text-xs font-bold text-white uppercase font-poppins">
+              Initiation gratuite
+            </span>
+          </div>
+        )}
+        
+        {/* Badge GRATUIT (seulement si pas de hasFreeTrial) */}
+        {!hasFreeTrial && price === 0 && (
           <div className="absolute top-3 right-3 px-3 py-1.5 bg-emerald-500/95 rounded-lg z-10 backdrop-blur-sm">
             <span className="text-xs font-bold text-white uppercase font-poppins">
               GRATUIT

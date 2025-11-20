@@ -154,6 +154,7 @@ const Search = () => {
               size="sm"
               onClick={() => navigate('/search-filters')}
               className="gap-2"
+              data-tour-id="search-filters-button"
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filtres

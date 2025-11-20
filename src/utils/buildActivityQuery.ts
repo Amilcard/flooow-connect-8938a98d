@@ -42,11 +42,11 @@ export const buildActivityQuery = (filters: FilterState) => {
   }
 
   if (filters.quickFilters.sport) {
-    query = query.eq('category', 'sport');
+    query = query.overlaps('categories', ['Sport']);
   }
 
   if (filters.quickFilters.culture) {
-    query = query.eq('category', 'culture');
+    query = query.overlaps('categories', ['Culture']);
   }
 
   // Advanced Filters - Geographic
@@ -115,6 +115,15 @@ export const buildActivityQuery = (filters: FilterState) => {
 
   if (filters.advancedFilters.public_transport) {
     query = query.eq('public_transport_nearby', true);
+  }
+
+  // NEW: Combined transport/eco-mobility filter for quick chip
+  // When user wants activities with good transport options (TC or covoiturage)
+  if (filters.quickFilters.proche) {
+    // "proche" quick filter can also mean "accessible by eco-transport"
+    query = query.or(
+      'public_transport_nearby.eq.true,covoiturage_enabled.eq.true'
+    );
   }
 
   // Sort
