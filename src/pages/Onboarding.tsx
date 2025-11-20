@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/NewOnboardingStep";
 import { Sparkles, MapPin, Calculator, Smartphone } from "lucide-react";
+import logoFlooow from "@/assets/logo-flooow.png";
+import logoNananere from "@/assets/logo-nananere.png";
 
 type OnboardingStepId = 1 | 2 | 3 | 4;
 
@@ -39,8 +41,14 @@ const Onboarding = () => {
       <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl`}>
         <Icon className="w-20 h-20 text-white" strokeWidth={1.5} />
       </div>
-      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
-        <span className="text-white text-sm font-bold">β</span>
+    </div>
+  );
+
+  // Composant Logo pour afficher les logos Flooow et Nananere
+  const LogoIllustration = ({ logoSrc, gradient }: { logoSrc: string; gradient: string }) => (
+    <div className="relative inline-block mb-6">
+      <div className={`w-32 h-32 rounded-3xl ${gradient} flex items-center justify-center shadow-xl p-4`}>
+        <img src={logoSrc} alt="Logo" className="w-full h-full object-contain" />
       </div>
     </div>
   );
@@ -49,7 +57,8 @@ const Onboarding = () => {
   const steps: Record<OnboardingStepId, {
     title: string;
     content: OnboardingContent;
-    icon: any;
+    icon?: any;
+    logo?: string;
     gradient: string;
     navigation: {
       back?: { label: string };
@@ -68,7 +77,7 @@ const Onboarding = () => {
         ],
         closing: "Tout n'est pas encore parfait, c'est justement le principe de cette version. Merci de jouer le jeu !"
       },
-      icon: Sparkles,
+      logo: logoFlooow,
       gradient: "bg-gradient-to-br from-orange-500 to-pink-500",
       navigation: {
         continue: { label: "CONTINUER" }
@@ -125,7 +134,7 @@ const Onboarding = () => {
         ],
         closing: "Alors, qu'est-ce qu'on dit ?"
       },
-      icon: Smartphone,
+      logo: logoNananere,
       gradient: "bg-gradient-to-br from-green-500 to-emerald-500",
       navigation: {
         back: { label: "← Retour" },
@@ -137,11 +146,16 @@ const Onboarding = () => {
 
   const currentStepData = steps[currentStep];
 
+  // Choisir le bon composant d'illustration selon si c'est un logo ou une icône
+  const illustration = currentStepData.logo
+    ? <LogoIllustration logoSrc={currentStepData.logo} gradient={currentStepData.gradient} />
+    : <IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />;
+
   return (
     <NewOnboardingStep
       title={currentStepData.title}
       content={currentStepData.content}
-      illustration={<IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />}
+      illustration={illustration}
       currentStep={currentStep}
       totalSteps={4}
       onNext={handleNext}
