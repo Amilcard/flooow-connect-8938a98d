@@ -8,6 +8,7 @@ import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { SimulatorCTABanner } from "@/components/FinancialAid/SimulatorCTABanner";
 import { MesAidesCalculator } from "@/components/FinancialAid/MesAidesCalculator";
+import { StandaloneAidCalculator } from "@/components/FinancialAid/StandaloneAidCalculator";
 import { AidsSectionsList } from "@/components/FinancialAid/AidsSectionsList";
 import { AidsInfoBox } from "@/components/FinancialAid/AidsInfoBox";
 import { FinancialAid } from "@/types/FinancialAid";
@@ -116,6 +117,12 @@ const Aides = () => {
 
         {/* LOT A - Calculateur d'aides personnalisé */}
         <MesAidesCalculator />
+
+        {/* Simulateur d'aides - Copie conforme du simulateur du détail activité */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4">Simuler une aide</h2>
+          <StandaloneAidCalculator />
+        </div>
 
         {/* Aids Sections List with Redesigned Cards */}
         <AidsSectionsList
