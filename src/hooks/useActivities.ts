@@ -33,6 +33,8 @@ interface ActivityFilters {
   vacationPeriod?: string;
   searchQuery?: string;
   territoryId?: string; // Nouveau: filtre par territoire
+  categories?: string[]; // Nouveau: support multi-catégories
+  mobilityTypes?: string[]; // Nouveau: support mobilité
 }
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
@@ -140,8 +142,13 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.category) {
-        // Use overlaps for array intersection (at least one match)
+        // Legacy support for single category
         query = query.overlaps("categories", [filters.category]);
+      }
+
+      if (filters?.categories && filters.categories.length > 0) {
+        // Multi-category support
+        query = query.overlaps("categories", filters.categories);
       }
 
       if (filters?.maxPrice !== undefined) {
@@ -172,6 +179,10 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.hasCovoiturage) {
+        query = query.eq("covoiturage_enabled", true);
+      }
+
+      if (filters?.mobilityTypes && filters.mobilityTypes.includes('Covoiturage')) {
         query = query.eq("covoiturage_enabled", true);
       }
 

@@ -28,6 +28,10 @@ export interface AdvancedFilters {
   qf_based_pricing: boolean;
   inclusivity: boolean;
   public_transport: boolean;
+  // New fields for refactoring
+  mobility_types: string[];
+  details: string[];
+  payment_echelon: boolean;
 }
 
 export interface FilterState {

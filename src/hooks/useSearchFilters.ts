@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FilterState, QuickFilters, AdvancedFilters, ActiveFilterTag } from '@/types/searchFilters';
 
-const DEFAULT_QUICK_FILTERS: QuickFilters = {
+export const DEFAULT_QUICK_FILTERS: QuickFilters = {
   gratuit: false,
   vacances_ete: false,
   age_6_12: false,
@@ -18,7 +18,7 @@ const DEFAULT_QUICK_FILTERS: QuickFilters = {
   culture: false
 };
 
-const DEFAULT_ADVANCED_FILTERS: AdvancedFilters = {
+export const DEFAULT_ADVANCED_FILTERS: AdvancedFilters = {
   city: '',
   max_distance: 5,
   period: 'all',
@@ -31,7 +31,10 @@ const DEFAULT_ADVANCED_FILTERS: AdvancedFilters = {
   financial_aids_accepted: [],
   qf_based_pricing: false,
   inclusivity: false,
-  public_transport: false
+  public_transport: false,
+  mobility_types: [],
+  details: [],
+  payment_echelon: false
 };
 
 export const useSearchFilters = () => {
@@ -67,6 +70,9 @@ export const useSearchFilters = () => {
         Number(searchParams.get('age_max'))
       ];
     }
+    if (searchParams.get('payment_echelon') === '1') advancedFilters.payment_echelon = true;
+    if (searchParams.get('mobility')) advancedFilters.mobility_types = searchParams.get('mobility')!.split(',');
+    if (searchParams.get('details')) advancedFilters.details = searchParams.get('details')!.split(',');
 
     setFilterState((prev) => ({
       ...prev,
@@ -95,6 +101,9 @@ export const useSearchFilters = () => {
       if (filterState.advancedFilters.period !== 'all') params.set('period', filterState.advancedFilters.period);
       if (filterState.advancedFilters.age_range[0] !== 4) params.set('age_min', String(filterState.advancedFilters.age_range[0]));
       if (filterState.advancedFilters.age_range[1] !== 17) params.set('age_max', String(filterState.advancedFilters.age_range[1]));
+      if (filterState.advancedFilters.payment_echelon) params.set('payment_echelon', '1');
+      if (filterState.advancedFilters.mobility_types.length > 0) params.set('mobility', filterState.advancedFilters.mobility_types.join(','));
+      if (filterState.advancedFilters.details.length > 0) params.set('details', filterState.advancedFilters.details.join(','));
 
       setSearchParams(params, { replace: true });
     }, 300);
@@ -184,6 +193,15 @@ export const useSearchFilters = () => {
         id: 'adv_period',
         label: periodLabels[filterState.advancedFilters.period] || filterState.advancedFilters.period,
         value: 'period',
+        section: 'advanced'
+      });
+    }
+
+    if (filterState.advancedFilters.payment_echelon) {
+      tags.push({
+        id: 'adv_payment_echelon',
+        label: 'Paiement échelonné',
+        value: 'payment_echelon',
         section: 'advanced'
       });
     }

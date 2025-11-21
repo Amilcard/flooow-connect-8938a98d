@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
 import { ActivitySection } from "@/components/Activity/ActivitySection";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -8,82 +8,59 @@ import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { MapPin, List, X, SlidersHorizontal } from "lucide-react";
+import { MapPin, List, X, SlidersHorizontal, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
 import { logSearch } from "@/lib/tracking";
-import type { Activity } from "@/types/domain";
-import { InteractiveMapActivities } from "@/components/search/InteractiveMapActivities";
+import { InteractiveMapActivities } from "@/components/Search/InteractiveMapActivities";
+import { useSearchFilters } from "@/hooks/useSearchFilters";
+import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
 
 const Search = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
-  // Get filters from URL params
-  const searchQuery = searchParams.get("q") || searchParams.get("query");
-  const category = searchParams.get("category");
-  const minAge = searchParams.get("minAge");
-  const maxAge = searchParams.get("maxAge");
-  const maxPrice = searchParams.get("maxPrice");
-  const hasAid = searchParams.get("hasAid") === "true";
-  const isInclusive = searchParams.get("isInclusive") === "true";
-  const hasCovoiturage = searchParams.get("hasCovoiturage") === "true";
+  // Use the unified hook for filter state management
+  const { 
+    filterState, 
+    updateSearchQuery,
+    updateAdvancedFilters,
+    getActiveFilterTags,
+    removeFilterTag,
+    clearAllFilters,
+    updateViewMode
+  } = useSearchFilters();
 
-  // Build filters object
-  const filters: any = {};
-  if (searchQuery) filters.searchQuery = searchQuery;
-  if (category) filters.category = category;
-  if (minAge) filters.ageMin = parseInt(minAge);
-  if (maxAge) filters.ageMax = parseInt(maxAge);
-  if (maxPrice) filters.maxPrice = parseInt(maxPrice);
-  if (isInclusive) filters.hasAccessibility = true;
-  if (hasCovoiturage) filters.hasCovoiturage = true;
-  if (hasAid) filters.hasFinancialAid = true;
+  const { advancedFilters, viewMode, searchQuery } = filterState;
 
-  const { activities, isRelaxed, isLoading, error } = useActivities(filters);
+  // Map advanced filters to useActivities filters
+  const activityFilters = {
+    searchQuery: searchQuery,
+    categories: advancedFilters.categories,
+    ageMin: advancedFilters.age_range[0],
+    ageMax: advancedFilters.age_range[1],
+    maxPrice: advancedFilters.max_budget,
+    hasAccessibility: advancedFilters.inclusivity || advancedFilters.specific_needs.length > 0,
+    hasFinancialAid: advancedFilters.financial_aids_accepted.length > 0 || advancedFilters.payment_echelon || advancedFilters.qf_based_pricing,
+    mobilityTypes: advancedFilters.mobility_types,
+    vacationPeriod: advancedFilters.period !== 'all' ? advancedFilters.period : undefined,
+    // Add other mappings as needed
+  };
+
+  const { activities, isRelaxed, isLoading, error } = useActivities(activityFilters);
 
   const displayActivities = activities || [];
+  const activeTags = getActiveFilterTags();
 
   // Logger la recherche quand les résultats changent
   useEffect(() => {
     if (activities && !isLoading) {
       logSearch({
-        filtersApplied: filters,
+        filtersApplied: activityFilters,
         resultsCount: activities.length
       });
     }
   }, [activities, isLoading]);
-
-  // Build active filters for display
-  const activeFilters: Array<{ key: string; label: string; param: string }> = [];
-  if (category) activeFilters.push({ key: 'category', label: `Catégorie: ${category}`, param: 'category' });
-  if (minAge && maxAge) activeFilters.push({ key: 'age', label: `Âge: ${minAge}-${maxAge} ans`, param: 'age' });
-  else if (minAge) activeFilters.push({ key: 'minAge', label: `À partir de ${minAge} ans`, param: 'minAge' });
-  else if (maxAge) activeFilters.push({ key: 'maxAge', label: `Jusqu'à ${maxAge} ans`, param: 'maxAge' });
-  if (maxPrice) activeFilters.push({ key: 'maxPrice', label: `Max ${maxPrice}€`, param: 'maxPrice' });
-  if (hasAid) activeFilters.push({ key: 'hasAid', label: 'Avec aides financières', param: 'hasAid' });
-  if (isInclusive) activeFilters.push({ key: 'isInclusive', label: 'Activité InKlusif', param: 'isInclusive' });
-  if (hasCovoiturage) activeFilters.push({ key: 'hasCovoiturage', label: 'Covoiturage dispo', param: 'hasCovoiturage' });
-
-  const removeFilter = (paramKey: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (paramKey === 'age') {
-      newParams.delete('minAge');
-      newParams.delete('maxAge');
-    } else {
-      newParams.delete(paramKey);
-    }
-    setSearchParams(newParams);
-  };
-
-  const clearAllFilters = () => {
-    const newParams = new URLSearchParams();
-    if (searchQuery) newParams.set('q', searchQuery);
-    setSearchParams(newParams);
-  };
 
   if (error) {
     return <ErrorState message="Impossible de charger les activités" />;
@@ -95,7 +72,11 @@ const Search = () => {
         <div className="container py-2">
           <BackButton positioning="relative" size="sm" />
         </div>
-        <SearchBar />
+        <SearchBar 
+          onFilterClick={() => setIsFiltersOpen(true)}
+          onSearch={updateSearchQuery}
+          placeholder="Rechercher..."
+        />
       </div>
       
       <div className="container py-4 space-y-4">
@@ -117,17 +98,17 @@ const Search = () => {
         )}
 
         {/* Active filters pills */}
-        {activeFilters.length > 0 && (
+        {activeTags.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/50 rounded-lg">
             <span className="text-xs font-medium text-muted-foreground">Filtres actifs:</span>
-            {activeFilters.map((filter) => (
+            {activeTags.map((tag) => (
               <Badge 
-                key={filter.key}
+                key={tag.id}
                 variant="secondary"
                 className="gap-2 cursor-pointer hover:bg-destructive/10 transition-colors"
-                onClick={() => removeFilter(filter.param)}
+                onClick={() => removeFilterTag(tag.id)}
               >
-                {filter.label}
+                {tag.label}
                 <X size={12} />
               </Badge>
             ))}
@@ -152,7 +133,7 @@ const Search = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate('/search-filters')}
+              onClick={() => setIsFiltersOpen(true)}
               className="gap-2"
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -161,14 +142,14 @@ const Search = () => {
             <Button
               variant={viewMode === "list" ? "default" : "outline"}
               size="sm"
-              onClick={() => setViewMode("list")}
+              onClick={() => updateViewMode("list")}
             >
               <List className="w-4 h-4" />
             </Button>
             <Button
               variant={viewMode === "map" ? "default" : "outline"}
               size="sm"
-              onClick={() => setViewMode("map")}
+              onClick={() => updateViewMode("map")}
             >
               <MapPin className="w-4 h-4" />
             </Button>
@@ -190,6 +171,17 @@ const Search = () => {
           />
         )}
       </div>
+
+      <AdvancedFiltersModal
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+        filters={advancedFilters}
+        onFiltersChange={updateAdvancedFilters}
+        resultsCount={displayActivities.length}
+        isCountLoading={isLoading}
+        onApply={() => setIsFiltersOpen(false)}
+        onClear={clearAllFilters}
+      />
 
       <BottomNavigation />
     </div>

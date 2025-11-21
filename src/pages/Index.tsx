@@ -14,12 +14,50 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
+import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
+import { useSearchFilters } from "@/hooks/useSearchFilters";
 import Footer from "@/components/Footer";
 import HelpFloatingButton from "@/components/HelpFloatingButton";
 
 const Index = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const { 
+    filterState, 
+    updateAdvancedFilters, 
+    clearAllFilters 
+  } = useSearchFilters();
+
+  const handleSearch = (query: string) => {
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+  };
+
+  const handleApplyFilters = () => {
+    setIsFiltersOpen(false);
+    // Construct URL from filters and navigate
+    const params = new URLSearchParams();
+    // ... (logic handled by useSearchFilters sync, but here we might need to force navigation if not already on search page)
+    // Actually useSearchFilters syncs to URL, but if we are on Index, we want to go to Search.
+    // But useSearchFilters uses useSearchParams which works on current URL.
+    // If we are on Index, updating filters via hook will update Index URL parameters?
+    // Yes, useSearchParams works on current URL.
+    // So if we update filters, the URL of Index will change.
+    // We want to navigate to /search with these parameters.
+    
+    // Better approach:
+    // 1. Let the modal update the local state in useSearchFilters.
+    // 2. On Apply, get the current filter state and navigate to /search with those params.
+    
+    // However, useSearchFilters automatically syncs to URL.
+    // If we use it in Index, it will add params to Index URL.
+    // Maybe we should pass a custom "onApply" that navigates.
+    
+    navigate({
+      pathname: '/search',
+      search: window.location.search // Since useSearchFilters already updated the URL params
+    });
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -144,7 +182,21 @@ const Index = () => {
   };
   return (
     <PageLayout>
-      <SearchBar onFilterClick={() => console.log("Filter clicked")} />
+      <SearchBar 
+        onFilterClick={() => setIsFiltersOpen(true)} 
+        onSearch={handleSearch}
+      />
+      
+      <AdvancedFiltersModal
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+        filters={filterState.advancedFilters}
+        onFiltersChange={updateAdvancedFilters}
+        resultsCount={0} // On Home we don't know count yet, or we could fetch it
+        isCountLoading={false}
+        onApply={handleApplyFilters}
+        onClear={clearAllFilters}
+      />
       
       <main className="max-w-[1200px] mx-auto px-6 pb-24">
         {/* Territory Check for logged-in users */}

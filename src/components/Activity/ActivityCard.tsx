@@ -92,8 +92,8 @@ export const ActivityCard = ({
   
   return (
     <Card className="card-wetransfer group overflow-hidden cursor-pointer h-full flex flex-col">
-      {/* Image Container - Reduced height */}
-      <div className="relative w-full h-[180px] overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft flex-shrink-0">
+      {/* Image Container - Standardized Ratio 4:5 */}
+      <div className="relative w-full aspect-[4/5] overflow-hidden bg-gradient-to-br from-primary-soft to-accent-soft flex-shrink-0">
         <img
           src={displayImage}
           alt={title}

@@ -62,8 +62,11 @@ export const SearchBar = ({
           <button
             type="button"
             onClick={() => {
-              navigate('/search/filters');
-              onFilterClick?.();
+              if (onFilterClick) {
+                onFilterClick();
+              } else {
+                navigate('/search/filters');
+              }
             }}
             aria-label="Filtrer les résultats"
             className="flex items-center justify-center"
