@@ -44,7 +44,7 @@ export const AdvancedFiltersModal = ({
       <div className="relative w-full sm:w-[600px] h-[90vh] sm:h-[85vh] bg-white sm:rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom duration-300">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-          <h2 className="text-xl font-bold font-display text-gray-900">Filtres (V2)</h2>
+          <h2 className="text-xl font-bold font-display text-gray-900">Filtres</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
