@@ -75,7 +75,11 @@ export function toActivity(raw: ActivityRaw): Activity {
   const category = raw.theme || raw.category || 'Loisirs';
   
   // Attribution intelligente de l'image selon thématique et âge
-  const activityImage = (raw.images && raw.images.length > 0) 
+  // Fix: Filtrer les URLs invalides (cdn.example.com) qui causent des erreurs
+  const isValidImage = (url: string | null | undefined) => 
+    url && url.startsWith('http') && !url.includes('cdn.example.com');
+
+  const activityImage = (raw.images && raw.images.length > 0 && isValidImage(raw.images[0])) 
     ? raw.images[0] 
     : getActivityImage(title, category, ageMin, ageMax);
   

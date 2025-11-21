@@ -109,7 +109,7 @@ export const ActivitySection = ({
             />
           ) : (
             <div className="grid-staggered">
-              {activities.map((activity) => (
+              {activities.map((activity, index) => (
                 <ActivityCard
                   key={activity.id}
                   {...activity}
@@ -123,6 +123,7 @@ export const ActivitySection = ({
                   aidesEligibles={activity.aidesEligibles}
                   mobility={activity.mobility}
                   onRequestClick={() => handleActivityClick(activity.id)}
+                  data-tour-id={index === 0 ? "activity-card-first" : undefined}
                 />
               ))}
             </div>

@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { logSearch } from "@/lib/tracking";
 import type { Activity } from "@/types/domain";
-import { InteractiveMapActivities } from "@/components/Search/InteractiveMapActivities";
+import { InteractiveMapActivities } from "@/components/search/InteractiveMapActivities";
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();

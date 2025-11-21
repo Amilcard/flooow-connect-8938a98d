@@ -43,6 +43,7 @@ interface ActivityCardProps {
   priceUnit?: string;
   hasAccommodation?: boolean;
   hasFreeTrial?: boolean; // Nouveau: pour afficher "Initiation gratuite"
+  "data-tour-id"?: string;
 }
 
 const getCategoryImage = (category: string): string => {
