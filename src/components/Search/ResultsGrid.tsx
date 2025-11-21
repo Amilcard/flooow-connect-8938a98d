@@ -1,36 +1,21 @@
 /**
  * LOT 6 - ResultsGrid Component
  * Responsive grid of activity cards with loading and empty states
- * UPDATED: Now uses unified ActivityCard component instead of ActivityResultCard
  */
 
-import { ActivityCard } from '../Activity/ActivityCard';
-import { useNavigate } from 'react-router-dom';
+import { ActivityResultCard } from './ActivityResultCard';
 
 interface Activity {
   id: string;
   title: string;
   category: string;
-  categories?: string[];
   images?: string[];
   age_min?: number;
   age_max?: number;
-  price_base?: number;
   price_amount?: number;
-  price_is_free?: boolean;
-  structures?: {
-    name?: string;
-    address?: string;
-  };
+  price_is_free: boolean;
+  location_name?: string;
   financial_aids_accepted?: string[];
-  pmr_accessible?: boolean;
-  payment_echelonned?: boolean;
-  period_type?: string;
-  vacation_type?: 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
-  price_unit?: string;
-  has_accommodation?: boolean;
-  covoiturage_enabled?: boolean;
-  has_free_trial?: boolean;
 }
 
 interface ResultsGridProps {
@@ -40,7 +25,6 @@ interface ResultsGridProps {
 }
 
 export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGridProps) => {
-  const navigate = useNavigate();
 
   // Loading State
   if (isLoading) {
@@ -74,43 +58,25 @@ export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGr
     );
   }
 
-  // Results Grid - Now using unified ActivityCard
+  // Results Grid
   return (
     <div className="px-4 py-4 bg-white min-h-[60vh]">
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {activities.map((activity) => {
-          // Map SearchResults data structure to ActivityCard props
-          const price = activity.price_base ?? activity.price_amount ?? 0;
-          const ageRange = activity.age_min && activity.age_max 
-            ? `${activity.age_min}-${activity.age_max} ans` 
-            : undefined;
-          
-          return (
-            <ActivityCard
-              key={activity.id}
-              id={activity.id}
-              title={activity.title}
-              image={activity.images?.[0] || ''}
-              category={activity.category}
-              price={price}
-              ageRange={ageRange}
-              structureName={activity.structures?.name}
-              structureAddress={activity.structures?.address}
-              hasAccessibility={activity.pmr_accessible || false}
-              paymentEchelonned={activity.payment_echelonned || false}
-              hasFinancialAid={activity.financial_aids_accepted ? activity.financial_aids_accepted.length > 0 : false}
-              aidesEligibles={activity.financial_aids_accepted}
-              periodType={activity.period_type}
-              vacationType={activity.vacation_type}
-              priceUnit={activity.price_unit}
-              hasAccommodation={activity.has_accommodation}
-              mobility={{
-                covoit: activity.covoiturage_enabled
-              }}
-              onRequestClick={() => navigate(`/activity/${activity.id}`)}
-            />
-          );
-        })}
+        {activities.map((activity) => (
+          <ActivityResultCard
+            key={activity.id}
+            id={activity.id}
+            title={activity.title}
+            category={activity.category}
+            imageUrl={activity.images?.[0]}
+            ageMin={activity.age_min}
+            ageMax={activity.age_max}
+            price={activity.price_amount}
+            priceIsFree={activity.price_is_free}
+            location={activity.location_name}
+            financialAids={activity.financial_aids_accepted}
+          />
+        ))}
       </div>
     </div>
   );
