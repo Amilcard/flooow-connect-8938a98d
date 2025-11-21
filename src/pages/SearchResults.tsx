@@ -12,7 +12,6 @@ import { ActiveFiltersDisplay } from '@/components/search/ActiveFiltersDisplay';
 import { ResultsHeader } from '@/components/search/ResultsHeader';
 import { ResultsGrid } from '@/components/search/ResultsGrid';
 import { ActivityMap } from '@/components/search/ActivityMap';
-import { AdvancedFiltersModal } from '@/components/search/AdvancedFiltersModal';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
 import { buildActivityQuery, getResultsCount } from '@/utils/buildActivityQuery';
@@ -164,7 +163,8 @@ const SearchResults = () => {
       {/* Bottom Navigation */}
       <BottomNavigation />
 
-      {/* Advanced Filters Modal */}
+      {/* Advanced Filters Modal - Temporarily disabled until Lovable syncs components */}
+      {/* 
       <AdvancedFiltersModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -175,6 +175,7 @@ const SearchResults = () => {
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
       />
+      */}
     </div>
   );
 };
