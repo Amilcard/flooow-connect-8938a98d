@@ -73,7 +73,7 @@ const MaVilleMonActu = () => {
 
       <div className="container mx-auto px-4 py-6 pb-24 max-w-[1200px]">
         {/* Section Actus */}
-        <section className="mb-10 space-y-4" data-tour-id="maville-section-actus">
+        <section className="mb-10 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Actus du moment</h2>
           </div>
@@ -105,7 +105,7 @@ const MaVilleMonActu = () => {
         </section>
 
         {/* Section Agenda */}
-        <section className="space-y-4" data-tour-id="maville-section-agenda">
+        <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">À venir près de chez vous</h2>
           </div>
@@ -144,7 +144,6 @@ const MaVilleMonActu = () => {
             onClick={() => navigate('/mes-services')}
             size="lg"
             className="rounded-full px-8"
-            data-tour-id="maville-btn-services"
           >
             Voir tous mes services
             <ArrowRight className="ml-2 h-4 w-4" />

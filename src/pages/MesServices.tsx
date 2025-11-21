@@ -155,11 +155,7 @@ const MesServices = () => {
 
               <div className="grid gap-4 md:grid-cols-2">
                 {service.cards.map((card, index) => (
-                  <Card 
-                    key={index} 
-                    className="border-l-4 border-l-primary/20"
-                    {...(service.id === "ville_saint_etienne" && index === 0 ? { "data-tour-id": "services-card-example" } : {})}
-                  >
+                  <Card key={index} className="border-l-4 border-l-primary/20">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg font-medium flex items-center gap-2">
                         <Building2 className="h-5 w-5 text-primary" />

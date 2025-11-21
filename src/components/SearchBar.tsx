@@ -34,7 +34,7 @@ export const SearchBar = ({
 
 
   return (
-    <header className="w-full bg-white flex justify-center" data-tour-id="global-search-bar">
+    <header className="w-full bg-white flex justify-center">
       <div className="w-full max-w-[940px] px-4 py-3 md:py-4">
         <form onSubmit={handleSearch} className="flex items-center gap-3">
           <div className="relative flex-1 h-12 md:h-[52px]">

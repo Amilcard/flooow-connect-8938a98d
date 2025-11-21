@@ -628,7 +628,7 @@ const ActivityDetail = () => {
                 {Array.isArray(activity.accepts_aid_types) && activity.accepts_aid_types.length > 0 && (
                   <section id="aides-section" className="space-y-4" data-tour-id="aid-simulation-section">
                     <h3 className="text-xl font-semibold text-foreground">Évaluer son aide</h3>
-                    <Alert className="bg-muted/50 border-primary/20" data-tour-id="aid-simulation-alert">
+                    <Alert className="bg-muted/50 border-primary/20">
                       <Info className="h-4 w-4" />
                       <AlertDescription className="text-sm">
                         <strong>L'estimation des aides est facultative.</strong> Inscription directe possible sans calcul préalable.

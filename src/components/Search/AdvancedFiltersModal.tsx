@@ -281,96 +281,93 @@ export const AdvancedFiltersModal = ({
           </FilterSection>
 
           {/* Financial Section */}
-          <div data-tour-id="filter-section-budget">
-            <FilterSection
-              title="Budget & aides"
-              isCollapsed={collapsedSections.financial}
-              onToggle={() => toggleSection('financial')}
-              isCritical
-            >
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
-                    Budget maximum: {localFilters.max_budget === 200 ? '200€+' : `${localFilters.max_budget}€`}
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="200"
-                    step="5"
-                    value={localFilters.max_budget}
-                    onChange={(e) =>
-                      setLocalFilters({ ...localFilters, max_budget: Number(e.target.value) })
-                    }
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1 font-poppins">
-                    <span>Gratuit</span>
-                    <span>50€</span>
-                    <span>100€</span>
-                    <span>200€+</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3 font-poppins">
-                    Aides financières acceptées
-                  </label>
-                  <div className="space-y-2">
-                    {[
-                      { value: 'pass_sport', label: "Pass'Sport (50€)", subtitle: 'Sport, 6-17 ans' },
-                      { value: 'pass_culture', label: 'Pass Culture (20-300€)', subtitle: 'Culture, 15-18 ans' },
-                      { value: 'vacaf', label: 'VACAF / Aides vacances CAF', subtitle: 'Vacances familles allocataires' },
-                      { value: 'pass_colo', label: 'Pass Colo (200-350€)', subtitle: 'Colonies, 11 ans minimum' }
-                    ].map((aid) => (
-                      <label key={aid.value} className="flex items-start gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={localFilters.financial_aids_accepted.includes(aid.value)}
-                          onChange={(e) => {
-                            const newAids = e.target.checked
-                              ? [...localFilters.financial_aids_accepted, aid.value]
-                              : localFilters.financial_aids_accepted.filter((a) => a !== aid.value);
-                            setLocalFilters({ ...localFilters, financial_aids_accepted: newAids });
-                          }}
-                          className="mt-1 w-4 h-4 accent-primary cursor-pointer"
-                        />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900 font-poppins">
-                            {aid.label}
-                          </div>
-                          <div className="text-xs text-gray-500 font-poppins">{aid.subtitle}</div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={localFilters.qf_based_pricing}
-                    onChange={(e) => setLocalFilters({ ...localFilters, qf_based_pricing: e.target.checked })}
-                    className="mt-1 w-4 h-4 accent-primary cursor-pointer"
-                  />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900 font-poppins">
-                      Tarifs modulés selon Quotient Familial
-                    </div>
-                    <div className="text-xs text-gray-500 font-poppins">Prix adapté aux revenus</div>
-                  </div>
+          <FilterSection
+            title="Budget & aides"
+            isCollapsed={collapsedSections.financial}
+            onToggle={() => toggleSection('financial')}
+            isCritical
+          >
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 font-poppins">
+                  Budget maximum: {localFilters.max_budget === 200 ? '200€+' : `${localFilters.max_budget}€`}
                 </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  step="5"
+                  value={localFilters.max_budget}
+                  onChange={(e) =>
+                    setLocalFilters({ ...localFilters, max_budget: Number(e.target.value) })
+                  }
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1 font-poppins">
+                  <span>Gratuit</span>
+                  <span>50€</span>
+                  <span>100€</span>
+                  <span>200€+</span>
+                </div>
               </div>
-            </FilterSection>
-          </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3 font-poppins">
+                  Aides financières acceptées
+                </label>
+                <div className="space-y-2">
+                  {[
+                    { value: 'pass_sport', label: "Pass'Sport (50€)", subtitle: 'Sport, 6-17 ans' },
+                    { value: 'pass_culture', label: 'Pass Culture (20-300€)', subtitle: 'Culture, 15-18 ans' },
+                    { value: 'vacaf', label: 'VACAF / Aides vacances CAF', subtitle: 'Vacances familles allocataires' },
+                    { value: 'pass_colo', label: 'Pass Colo (200-350€)', subtitle: 'Colonies, 11 ans minimum' }
+                  ].map((aid) => (
+                    <label key={aid.value} className="flex items-start gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={localFilters.financial_aids_accepted.includes(aid.value)}
+                        onChange={(e) => {
+                          const newAids = e.target.checked
+                            ? [...localFilters.financial_aids_accepted, aid.value]
+                            : localFilters.financial_aids_accepted.filter((a) => a !== aid.value);
+                          setLocalFilters({ ...localFilters, financial_aids_accepted: newAids });
+                        }}
+                        className="mt-1 w-4 h-4 accent-primary cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900 font-poppins">
+                          {aid.label}
+                        </div>
+                        <div className="text-xs text-gray-500 font-poppins">{aid.subtitle}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={localFilters.qf_based_pricing}
+                  onChange={(e) => setLocalFilters({ ...localFilters, qf_based_pricing: e.target.checked })}
+                  className="mt-1 w-4 h-4 accent-primary cursor-pointer"
+                />
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-gray-900 font-poppins">
+                    Tarifs modulés selon Quotient Familial
+                  </div>
+                  <div className="text-xs text-gray-500 font-poppins">Prix adapté aux revenus</div>
+                </div>
+              </label>
+            </div>
+          </FilterSection>
 
           {/* Accessibility Section */}
-          <div data-tour-id="filter-section-inclusivity">
-            <FilterSection
-              title="Accessibilité"
-              isCollapsed={collapsedSections.accessibility}
-              onToggle={() => toggleSection('accessibility')}
-            >
+          <FilterSection
+            title="Accessibilité"
+            isCollapsed={collapsedSections.accessibility}
+            onToggle={() => toggleSection('accessibility')}
+          >
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input

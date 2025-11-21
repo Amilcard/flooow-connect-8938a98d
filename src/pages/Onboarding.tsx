@@ -39,6 +39,9 @@ const Onboarding = () => {
       <div className="w-48 h-48 flex items-center justify-center">
         <img src={logo} alt="Flooow" className="w-full h-full object-contain" />
       </div>
+      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
+        <span className="text-white text-sm font-bold">β</span>
+      </div>
     </div>
   );
 

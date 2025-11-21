@@ -59,7 +59,6 @@ export const SearchPageHeader = ({
           onClick={onOpenFilters}
           className="relative px-3 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-[10px] transition-all hover:border-primary hover:bg-white"
           aria-label="Ouvrir les filtres"
-          data-tour-id="search-filters-button"
         >
           <span className="text-sm font-semibold text-gray-900 font-poppins">
             Filtres
