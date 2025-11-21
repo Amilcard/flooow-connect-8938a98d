@@ -42,6 +42,8 @@ interface ActivityCardProps {
   vacationType?: 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
   priceUnit?: string;
   hasAccommodation?: boolean;
+  hasFreeTrial?: boolean; // Nouveau: pour afficher "Initiation gratuite"
+  "data-tour-id"?: string;
 }
 
 const getCategoryImage = (category: string): string => {

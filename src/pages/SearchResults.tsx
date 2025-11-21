@@ -6,13 +6,13 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SearchPageHeader } from '@/components/Search/SearchPageHeader';
-import { QuickFiltersBar } from '@/components/Search/QuickFiltersBar';
-import { ActiveFiltersDisplay } from '@/components/Search/ActiveFiltersDisplay';
-import { ResultsHeader } from '@/components/Search/ResultsHeader';
-import { ResultsGrid } from '@/components/Search/ResultsGrid';
-import { ActivityMap } from '@/components/Search/ActivityMap';
-import { AdvancedFiltersModal } from '@/components/Search/AdvancedFiltersModal';
+import { SearchPageHeader } from '@/components/search/SearchPageHeader';
+import { QuickFiltersBar } from '@/components/search/QuickFiltersBar';
+import { ActiveFiltersDisplay } from '@/components/search/ActiveFiltersDisplay';
+import { ResultsHeader } from '@/components/search/ResultsHeader';
+import { ResultsGrid } from '@/components/search/ResultsGrid';
+import { ActivityMap } from '@/components/search/ActivityMap';
+import { AdvancedFiltersModal } from '@/components/search/AdvancedFiltersModal';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
 import { buildActivityQuery, getResultsCount } from '@/utils/buildActivityQuery';

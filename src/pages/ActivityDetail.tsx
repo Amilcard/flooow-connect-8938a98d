@@ -439,7 +439,7 @@ const ActivityDetail = () => {
       {/* Main Content Container - Airbnb Style with Grid */}
       <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
         {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
-        <div className="space-y-4 pb-8 border-b mb-8">
+        <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
           {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
             {activity.title}
@@ -500,7 +500,7 @@ const ActivityDetail = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
-                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center gap-1.5">
+                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center gap-1.5" data-tour-id="tab-tarifs">
                   <Euro size={14} className="hidden md:inline" />
                   Tarifs & aides
                 </TabsTrigger>
@@ -539,7 +539,7 @@ const ActivityDetail = () => {
                        activity.accessibility_checklist !== null &&
                        'wheelchair' in activity.accessibility_checklist &&
                        activity.accessibility_checklist.wheelchair && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors" data-tour-id="inklusif-badge-detail">
                           <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-sm">Activité InKlusif</p>

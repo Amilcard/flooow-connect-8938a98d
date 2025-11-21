@@ -386,7 +386,7 @@ export const SharedAidCalculator = ({
       ) : (
         // Pour les activités de vacances : afficher le formulaire QF
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div className="space-y-2" data-tour-id="qf-selector-container">
             <Label htmlFor="qf">
               Quotient Familial <span className="text-destructive">*</span>
             </Label>
