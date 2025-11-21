@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackButton } from "@/components/BackButton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import PageLayout from "@/components/PageLayout";
 import { AdvancedFilters } from "@/types/searchFilters";
-import { AdvancedFiltersContent } from "@/components/search/AdvancedFiltersContent";
-import { AdvancedFiltersFooter } from "@/components/search/AdvancedFiltersFooter";
 import { useQuery } from "@tanstack/react-query";
 import { buildActivityQuery } from "@/utils/buildActivityQuery";
 
@@ -175,23 +174,84 @@ export default function SearchFilters() {
           </div>
         </div>
 
-        {/* Filters Content */}
-        <div className="flex-1 container max-w-2xl px-0 sm:px-4">
-          <AdvancedFiltersContent
-            filters={localFilters}
-            onFiltersChange={setLocalFilters}
-          />
+        {/* Filters Content - Inline temporaire */}
+        <div className="flex-1 container max-w-2xl px-4 sm:px-4 py-6">
+          <div className="space-y-6 bg-white rounded-lg border p-6">
+            <div>
+              <label className="block text-sm font-semibold mb-2">Ville</label>
+              <input
+                type="text"
+                value={localFilters.city}
+                onChange={(e) => setLocalFilters({ ...localFilters, city: e.target.value })}
+                placeholder="Ex: Saint-Étienne"
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Distance maximum: {localFilters.max_distance} km
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="20"
+                value={localFilters.max_distance}
+                onChange={(e) => setLocalFilters({ ...localFilters, max_distance: Number(e.target.value) })}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Âge: {localFilters.age_range[0]} - {localFilters.age_range[1]} ans
+              </label>
+              <input
+                type="range"
+                min="4"
+                max="17"
+                value={localFilters.age_range[0]}
+                onChange={(e) => setLocalFilters({
+                  ...localFilters,
+                  age_range: [Number(e.target.value), localFilters.age_range[1]]
+                })}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Budget maximum: {localFilters.max_budget}€
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="5"
+                value={localFilters.max_budget}
+                onChange={(e) => setLocalFilters({ ...localFilters, max_budget: Number(e.target.value) })}
+                className="w-full"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="sticky bottom-0">
-          <div className="container max-w-2xl px-0 sm:px-4">
-            <AdvancedFiltersFooter
-              onClear={handleReset}
-              onApply={handleApply}
-              resultsCount={resultsCount}
-              isCountLoading={isCountLoading}
-            />
+        {/* Footer Actions - Inline temporaire */}
+        <div className="sticky bottom-0 border-t bg-white">
+          <div className="container max-w-2xl px-4 py-4 flex gap-3">
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="flex-1"
+            >
+              Réinitialiser
+            </Button>
+            <Button
+              onClick={handleApply}
+              className="flex-[2]"
+            >
+              {isCountLoading ? "Chargement..." : `Voir ${resultsCount} résultats`}
+            </Button>
           </div>
         </div>
       </div>
