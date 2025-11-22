@@ -28,24 +28,24 @@ const Splash = () => {
     // Première visite de la session : montrer le splash
     sessionStorage.setItem("splashShown", "true");
 
-    // ===== MODE TESTS : ONBOARDING SYSTÉMATIQUE =====
-    // Pour la phase de tests bêta, l'onboarding est affiché à CHAQUE ouverture
-    // de l'application, afin de permettre aux testeurs de le valider à chaque fois.
-    // TODO: Décommenter le code ci-dessous pour revenir au mode normal (onboarding une seule fois)
-
-    // Check if user has seen onboarding (DÉSACTIVÉ EN MODE TESTS)
-    // const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    // ===== MODE TESTS BÊTA : ONBOARDING AVEC OPTION DE DÉSACTIVATION =====
+    // Système de comptage des visites pour permettre aux testeurs de désactiver l'onboarding
+    
+    // Récupérer le compteur de visites et le statut de désactivation
+    const viewCount = parseInt(localStorage.getItem("onboardingViewCount") || "0");
+    const hasDisabledOnboarding = localStorage.getItem("hasDisabledOnboarding") === "true";
+    
+    // Incrémenter le compteur de visites
+    localStorage.setItem("onboardingViewCount", String(viewCount + 1));
 
     const timer = setTimeout(() => {
-      // MODE TESTS : toujours rediriger vers l'onboarding
-      navigate("/onboarding", { replace: true });
-
-      // MODE NORMAL (à réactiver après les tests) :
-      // if (hasSeenOnboarding) {
-      //   navigate("/home", { replace: true });
-      // } else {
-      //   navigate("/onboarding", { replace: true });
-      // }
+      // Si l'utilisateur a désactivé l'onboarding, aller directement à l'accueil
+      if (hasDisabledOnboarding) {
+        navigate("/home", { replace: true });
+      } else {
+        // Sinon, afficher l'onboarding (avec option de désactivation dès la 2e visite)
+        navigate("/onboarding", { replace: true });
+      }
     }, 2000);
 
     return () => clearTimeout(timer);

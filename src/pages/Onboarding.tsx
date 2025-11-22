@@ -10,12 +10,21 @@ type OnboardingStepId = 1 | 2 | 3 | 4;
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState<OnboardingStepId>(1);
   const navigate = useNavigate();
+  
+  // Récupérer le compteur de visites pour afficher conditionnellement le bouton de désactivation
+  const viewCount = parseInt(localStorage.getItem("onboardingViewCount") || "0");
+  const showDisableButton = viewCount >= 2;
 
   const handleComplete = () => {
     navigate("/home", { replace: true });
   };
 
   const handleSkip = () => {
+    navigate("/home", { replace: true });
+  };
+
+  const handleDisableOnboarding = () => {
+    localStorage.setItem("hasDisabledOnboarding", "true");
     navigate("/home", { replace: true });
   };
 
@@ -165,6 +174,8 @@ const Onboarding = () => {
       onNext={handleNext}
       onBack={currentStepData.navigation.back ? handleBack : undefined}
       onSkip={currentStepData.navigation.skip ? handleSkip : undefined}
+      onDisable={handleDisableOnboarding}
+      showDisableButton={showDisableButton}
       navigationLabels={{
         back: currentStepData.navigation.back?.label,
         skip: currentStepData.navigation.skip?.label,

@@ -19,6 +19,8 @@ interface NewOnboardingStepProps {
   onNext: () => void;
   onBack?: () => void;
   onSkip?: () => void;
+  onDisable?: () => void; // ✅ Nouveau : fonction pour désactiver l'onboarding
+  showDisableButton?: boolean; // ✅ Nouveau : afficher le bouton de désactivation
   navigationLabels?: {
     back?: string;
     skip?: string;
@@ -36,6 +38,8 @@ export const NewOnboardingStep = ({
   onNext,
   onBack,
   onSkip,
+  onDisable,
+  showDisableButton = false,
   navigationLabels = {
     continue: "CONTINUER"
   },
@@ -171,6 +175,16 @@ export const NewOnboardingStep = ({
           >
             {navigationLabels.continue}
           </Button>
+
+          {/* Disable Onboarding Button - Only shown after 2+ visits */}
+          {showDisableButton && onDisable && (
+            <button
+              onClick={onDisable}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+            >
+              Ne plus afficher cet onboarding
+            </button>
+          )}
         </div>
       </div>
     </div>
