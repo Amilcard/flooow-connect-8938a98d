@@ -130,7 +130,7 @@ export const EcoMobilitySection = ({
   };
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-4" data-tour-id="mobilite-section">
       <div className="flex items-center gap-2">
         <Leaf className="w-6 h-6 text-green-600" />
         <h2 className="text-2xl font-bold text-foreground">
