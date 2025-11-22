@@ -158,6 +158,7 @@ export const OnboardingCarousel = () => {
             illustration={screen.illustration}
             isActive={currentStep === screen.id}
             additionalContent={screen.additionalContent}
+            data-tour-id={`onboarding-step-${screen.id}`}
           />
         ))}
       </div>

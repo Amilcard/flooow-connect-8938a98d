@@ -23,6 +23,7 @@ interface OnboardingScreenProps {
   illustration?: IllustrationConfig;
   isActive: boolean;
   additionalContent?: React.ReactNode;
+  "data-tour-id"?: string;
 }
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
@@ -32,13 +33,17 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   illustration,
   isActive,
   additionalContent,
+  "data-tour-id": dataTourId,
 }) => {
   
   return (
-    <div className={cn(
-      "flex flex-col items-center justify-center px-6 text-center h-full w-full transition-opacity duration-500",
-      isActive ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0"
-    )}>
+    <div 
+      className={cn(
+        "flex flex-col items-center justify-center px-6 text-center h-full w-full transition-opacity duration-500",
+        isActive ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0"
+      )}
+      data-tour-id={dataTourId}
+    >
       {/* Animation / Illustration Area */}
       <div className="relative w-full max-w-[320px] h-[320px] flex items-center justify-center mb-8">
         
