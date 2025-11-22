@@ -5,7 +5,7 @@ import type { Activity } from "@/types/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
-import "../../../node_modules/leaflet/dist/leaflet.css";
+import "leaflet/dist/leaflet.css";
 
 // Import icon fix CRITICAL for Vite/Webpack
 import "@/utils/leafletIconFix";
