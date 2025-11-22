@@ -512,7 +512,7 @@ export const SharedAidCalculator = ({
                 <span>Total aides</span>
                 <span className="font-medium">- {totalAids.toFixed(2)}€</span>
               </div>
-              <div className="flex justify-between text-lg font-bold border-t pt-2">
+              <div className="flex justify-between text-lg font-bold border-t pt-2" data-tour-id="reste-charge-calculator">
                 <span>Reste à charge</span>
                 <span>{remainingPrice.toFixed(2)}€</span>
               </div>

@@ -615,7 +615,7 @@ const ActivityDetail = () => {
                           <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
                         </div>
                         <Separator />
-                        <div className="flex justify-between text-lg font-bold">
+                        <div className="flex justify-between text-lg font-bold" data-tour-id="reste-charge-title">
                           <span>Reste à charge</span>
                           <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
                         </div>
@@ -695,7 +695,7 @@ const ActivityDetail = () => {
                         <span>Aides appliquées</span>
                         <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
                       </div>
-                      <div className="flex justify-between text-lg font-bold border-t pt-2">
+                      <div className="flex justify-between text-lg font-bold border-t pt-2" data-tour-id="reste-charge-sticky">
                         <span>Reste à charge</span>
                         <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
                       </div>
