@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Lottie from "lottie-react";
 
 export interface OnboardingContent {
   intro: string;
@@ -14,6 +15,7 @@ interface NewOnboardingStepProps {
   title: string;
   content: OnboardingContent;
   illustration: string | React.ReactNode; // ✅ Accepte URL ou composant React
+  lottieAnimationData?: any;
   currentStep: number;
   totalSteps: number;
   onNext: () => void;
@@ -43,7 +45,8 @@ export const NewOnboardingStep = ({
   navigationLabels = {
     continue: "CONTINUER"
   },
-  "data-tour-id": dataTourId
+  "data-tour-id": dataTourId,
+  lottieAnimationData
 }: NewOnboardingStepProps) => {
   return (
     <div 
@@ -80,7 +83,9 @@ export const NewOnboardingStep = ({
         {/* 2. Visual Section (Centered) */}
         <div className="flex justify-center items-center py-6 md:py-10 shrink-0">
           <div className="w-full max-w-xs flex items-center justify-center aspect-square bg-muted/20 rounded-2xl p-4">
-            {typeof illustration === 'string' ? (
+            {lottieAnimationData ? (
+              <Lottie animationData={lottieAnimationData} loop={true} className="w-full h-full" />
+            ) : typeof illustration === 'string' ? (
               <img
                 src={illustration}
                 alt=""
