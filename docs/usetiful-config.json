@@ -1,0 +1,172 @@
+{
+  "version": "2.0",
+  "project": "Flooow - InKlusif",
+  "updated": "2025-11-22",
+  "tone": "Courtois + Léger + CityCrunch",
+  
+  "tours": {
+    "main_guide": {
+      "id": "flooow-main-tour",
+      "name": "Découverte de Flooow",
+      "description": "Tour principal pour découvrir les fonctionnalités essentielles de Flooow",
+      "type": "guide",
+      "max_steps": 6,
+      "steps": [
+        {
+          "step": 1,
+          "target": "global-search-bar",
+          "title": "Trouvez l'activité parfaite (sans lancer une expédition)",
+          "description": "Saisissez ce que vous cherchez : sport, ateliers, sorties, soutien scolaire… Nous vous évitons le marathon des onglets : les activités adaptées arrivent directement ici, calmement.",
+          "placement": "bottom",
+          "route": "/home"
+        },
+        {
+          "step": 2,
+          "target": "home-aids-card",
+          "title": "Votre reste à charge… sans la prise de tête",
+          "description": "Ici, vous obtenez une estimation de vos aides et du reste à charge probable. Ce n'est pas un devis officiel, mais cela vous donne une idée claire avant de contacter l'organisme.",
+          "placement": "top",
+          "route": "/home",
+          "disclaimer": "⚠️ Estimation uniquement - À confirmer avec l'organisme"
+        },
+        {
+          "step": 3,
+          "target": "home-mobility-card",
+          "title": "S'y rendre sans stress (et sans ruiner la planète)",
+          "description": "Bus, marche, vélo, covoiturage : nous vous suggérons le trajet le plus simple. Souvent le plus économique… et le plus doux pour la planète.",
+          "placement": "top",
+          "route": "/home"
+        },
+        {
+          "step": 4,
+          "target": "activity-card-first",
+          "title": "Tout ce qu'il faut savoir, d'un seul regard",
+          "description": "Horaires, âge, prix, aides et reste à charge : tout est visible en un coup d'œil. Touchez la carte pour accéder aux détails.",
+          "placement": "top",
+          "route": "/home"
+        },
+        {
+          "step": 5,
+          "target": "nav-item-account",
+          "title": "Votre espace rien qu'à vous",
+          "description": "Informations, enfants, inscriptions, favoris : tout est regroupé ici pour simplifier vos démarches.",
+          "placement": "top",
+          "route": "/home"
+        },
+        {
+          "step": 6,
+          "target": "nav-item-home",
+          "title": "Revenir au point de départ",
+          "description": "Vous êtes un peu perdu(e) ? Ce bouton vous ramène en terrain connu.",
+          "placement": "top",
+          "route": "/home"
+        }
+      ]
+    },
+    
+    "tips": {
+      "id": "flooow-tips",
+      "name": "Astuces Flooow",
+      "description": "Conseils et informations complémentaires pour mieux utiliser Flooow",
+      "type": "tips",
+      "items": [
+        {
+          "target": "reste-charge-title",
+          "title": "💡 Astuce : Simulation personnalisée",
+          "description": "Indiquez quelques informations familiales pour obtenir un reste à charge plus réaliste. La simulation s'actualise automatiquement.",
+          "route": "/activity/:id",
+          "tab": "tarifs"
+        },
+        {
+          "target": "mobilite-section",
+          "title": "💡 Astuce : Trajet simplifié",
+          "description": "Besoin d'un repère pour le trajet ? Les options de mobilité vous montrent le chemin le plus simple, même si vous n'aimez pas improviser.",
+          "route": "/activity/:id",
+          "tab": "mobilite"
+        },
+        {
+          "target": "nav-item-maville",
+          "title": "💡 Astuce : Actualités locales",
+          "description": "Ici, vous retrouvez les actualités de votre commune : événements, activités et infos utiles.",
+          "route": "/home"
+        },
+        {
+          "target": "nav-item-search",
+          "title": "💡 Astuce : Recherche complète",
+          "description": "Envie d'explorer davantage ? La recherche complète vous permet de parcourir toutes les activités disponibles, sans limite.",
+          "route": "/home"
+        },
+        {
+          "target": "nav-item-account",
+          "title": "💡 Astuce : Connexion simplifiée",
+          "description": "En vous connectant, tout devient plus simple : vos favoris, vos inscriptions et vos informations sont accessibles plus rapidement.",
+          "route": "/home"
+        },
+        {
+          "target": "nav-item-home",
+          "title": "💡 Astuce : Navigation principale",
+          "description": "Un doute ? Ce bouton vous ramène toujours à l'écran principal, en un instant.",
+          "route": "*"
+        }
+      ]
+    }
+  },
+  
+  "data_tour_ids": {
+    "home_screen": [
+      "global-search-bar",
+      "home-aids-card",
+      "home-mobility-card",
+      "home-ville-card",
+      "home-prix-card",
+      "home-reco-section",
+      "activity-card-first"
+    ],
+    "activity_detail": [
+      "activity-header",
+      "tab-tarifs",
+      "activity-infos-main",
+      "inklusif-badge-detail",
+      "reste-charge-title",
+      "aid-simulation-section",
+      "aid-simulation-calculator",
+      "reste-charge-sticky",
+      "mobility-cards",
+      "mobilite-section",
+      "aid-creneaux-list"
+    ],
+    "navigation": [
+      "nav-item-home",
+      "nav-item-search",
+      "nav-item-maville",
+      "nav-item-services",
+      "nav-item-account"
+    ],
+    "other_pages": [
+      "local-deals-page",
+      "account-favorites",
+      "account-documents",
+      "children-list",
+      "account-main-list"
+    ]
+  },
+  
+  "implementation_notes": {
+    "disclaimers": [
+      "Les aides financières affichées sont des ESTIMATIONS uniquement",
+      "Toujours préciser qu'il faut confirmer avec l'organisme",
+      "Ne jamais promettre un montant exact ou un engagement officiel"
+    ],
+    "tone_guidelines": [
+      "Courtois : toujours respectueux et bienveillant",
+      "Léger : éviter le jargon administratif, rester accessible",
+      "CityCrunch : ton moderne, décontracté mais professionnel"
+    ],
+    "technical_constraints": [
+      "Maximum 6 bulles dans le tour GUIDE principal",
+      "Les TIPS ne doivent pas apparaître dans les tests utilisateurs",
+      "Tous les data-tour-id doivent exister dans le DOM",
+      "Vérifier la présence des éléments avant de créer les tours"
+    ]
+  }
+}

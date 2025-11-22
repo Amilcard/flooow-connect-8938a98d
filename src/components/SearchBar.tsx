@@ -57,6 +57,7 @@ export const SearchBar = ({
               }}
               className="pl-12 pr-4 h-full rounded-xl text-[15px] font-normal bg-white border border-border-subtle focus-visible:ring-0 focus-visible:border-border-subtle placeholder:text-text-muted"
               aria-label="Rechercher des activités"
+              data-tour-id="global-search-bar"
             />
           </div>
           <button
