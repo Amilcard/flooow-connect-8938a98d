@@ -4,10 +4,6 @@ import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/Ne
 import { Sparkles, MapPin, Calculator, Smartphone } from "lucide-react";
 import logoFlooow from "@/assets/logo-flooow.png";
 import logoNananere from "@/assets/logo-nananere.png";
-import familiaAnimation from "@/assets/lottie/familia.json";
-import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
-import confetiAnimation from "@/assets/lottie/confeti.json";
-import confettiFallback from "@/assets/images/confetti_fallback.png";
 
 type OnboardingStepId = 1 | 2 | 3 | 4;
 
@@ -69,19 +65,13 @@ const Onboarding = () => {
 
 
 
-import confettiFallback from "@/assets/images/confetti_fallback.png";
-
-  // ... existing imports
-
   // Configuration des étapes
   const steps: Record<OnboardingStepId, {
     title: string;
     content: OnboardingContent;
     logo?: string;
     icon?: any;
-    image?: string; // Added image prop
     gradient: string;
-    lottieAnimationData?: any;
     navigation: {
       back?: { label: string };
       skip?: { label: string };
@@ -101,7 +91,6 @@ import confettiFallback from "@/assets/images/confetti_fallback.png";
       },
       logo: logoFlooow,
       gradient: "bg-gradient-to-br from-orange-500 to-pink-500",
-      lottieAnimationData: familiaAnimation,
       navigation: {
         continue: { label: "CONTINUER" }
       }
@@ -119,7 +108,6 @@ import confettiFallback from "@/assets/images/confetti_fallback.png";
       },
       icon: MapPin,
       gradient: "bg-gradient-to-br from-blue-500 to-cyan-500",
-      lottieAnimationData: financeGuruAnimation,
       navigation: {
         back: { label: "← Retour" },
         skip: { label: "Passer →" },
@@ -159,9 +147,7 @@ import confettiFallback from "@/assets/images/confetti_fallback.png";
         closing: "Alors, qu'est-ce qu'on dit ?"
       },
       logo: logoNananere,
-      image: confettiFallback, // Fallback image
       gradient: "bg-gradient-to-br from-green-500 to-emerald-500",
-      lottieAnimationData: confetiAnimation, // Lottie animation
       navigation: {
         back: { label: "← Retour" },
         skip: { label: "Passer →" },
@@ -173,11 +159,9 @@ import confettiFallback from "@/assets/images/confetti_fallback.png";
   const currentStepData = steps[currentStep];
 
   // Choisir l'illustration appropriée selon l'écran
-  const illustration = currentStepData.image
-    ? currentStepData.image
-    : currentStepData.logo 
-      ? <LogoIllustration logo={currentStepData.logo} />
-      : <IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />;
+  const illustration = currentStepData.logo 
+    ? <LogoIllustration logo={currentStepData.logo} />
+    : <IconIllustration icon={currentStepData.icon} gradient={currentStepData.gradient} />;
 
   return (
     <NewOnboardingStep
