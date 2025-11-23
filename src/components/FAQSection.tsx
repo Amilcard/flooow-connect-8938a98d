@@ -36,7 +36,7 @@ const FAQSection = ({ limit = 6 }: { limit?: number }) => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <div className="inline-block bg-orange-50 text-orange-600 px-4 py-1 rounded-full border border-orange-200 mb-4">Questions fréquentes</div>
-          <h2 className="text-4xl font-extrabold mb-2">Tout ce que vous devez savoir</h2>
+          <h2 className="text-4xl font-bold mb-2">Tout ce que vous devez savoir</h2>
           <p className="text-muted-foreground">Nos réponses aux questions les plus fréquentes sur Flooow.</p>
         </div>
 
