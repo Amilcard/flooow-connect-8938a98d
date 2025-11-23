@@ -4,6 +4,7 @@ import { StrictOnboardingScreen, StrictOnboardingScreenConfig } from "./StrictOn
 
 // Assets
 import logoFlooow from "@/assets/logo-flooow.png";
+import familiaAnimation from "@/assets/lottie/familia.json";
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
@@ -55,6 +56,37 @@ export const OnboardingCarousel = () => {
     }
   };
 
+  // Configuration for Screen 2 (Strictly from JSON)
+  const screen2Config: StrictOnboardingScreenConfig = {
+    meta: {
+      important: "Ne pas réutiliser les styles actuels. Antigravity doit respecter le layout vertical simple : illustration 50%, texte 35%, CTA 15%."
+    },
+    screenId: "onboarding_2",
+    layout: {
+      type: "vertical",
+      safeArea: true,
+      paddingHorizontal: 24,
+      spacing: 20
+    },
+    illustration: {
+      file: familiaAnimation, // Correct assignment for Screen 2
+      type: "lottie",
+      heightPercent: 50,
+      loop: true,
+      autoplay: true
+    },
+    title: "Trouvez une activité en quelques clics",
+    body: "Fini de passer votre samedi matin à chercher sur dix sites différents. Tapez un mot-clé, filtrez par âge, budget ou période. On affiche les activités près de chez vous, avec toutes les infos utiles.",
+    cta: {
+      label: "Suivant",
+      action: "next_onboarding"
+    },
+    pagination: {
+      index: 1,
+      total: 4
+    }
+  };
+
   // Placeholders for other screens to ensure build passes
   const placeholderConfig: StrictOnboardingScreenConfig = {
     ...screen1Config,
@@ -63,7 +95,7 @@ export const OnboardingCarousel = () => {
     screenId: "placeholder"
   };
 
-  const screens = [screen1Config, placeholderConfig, placeholderConfig, placeholderConfig];
+  const screens = [screen1Config, screen2Config, placeholderConfig, placeholderConfig];
 
   return (
     <StrictOnboardingScreen 
