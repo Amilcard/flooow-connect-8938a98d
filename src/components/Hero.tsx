@@ -29,7 +29,7 @@ const Hero = () => {
           </h1>
 
           {/* Subheading - More compact */}
-          <p className="text-sm md:text-base text-white/95 max-w-2xl mx-auto leading-snug font-light">
+          <p className="text-sm md:text-base text-white/95 max-w-2xl mx-auto leading-snug font-normal">
             Sport, culture, loisirs, vacances : trouvez l'activité idéale et découvrez les aides auxquelles vous avez droit.
           </p>
 

@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Newspaper, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import actualiteVilleImg from "@/assets/actualite-ville.jpg";
+import actualiteVilleImg from "@/assets/actualite-ville.webp";
 
 /**
  * Carte portrait "Notre ville" - CityCrunch

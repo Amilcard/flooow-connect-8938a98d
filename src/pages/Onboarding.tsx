@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NewOnboardingStep, OnboardingContent } from "@/components/onboarding/NewOnboardingStep";
 import { Sparkles, MapPin, Calculator, Smartphone } from "lucide-react";
-import logoFlooow from "@/assets/logo-flooow.png";
-import logoNananere from "@/assets/logo-nananere.png";
+import logoFlooow from "@/assets/logo-flooow.svg";
+import logoNananere from "@/assets/logo-nananere.svg";
 
 type OnboardingStepId = 1 | 2 | 3 | 4;
 

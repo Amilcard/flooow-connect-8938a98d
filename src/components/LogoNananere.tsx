@@ -1,9 +1,9 @@
 /**
  * Logo NANANERE - Version image
- * Utilise l'image PNG officielle depuis les assets
+ * Utilise l'image SVG officielle depuis les assets
  */
 
-import logoNananere from '@/assets/logo-nananere.png';
+import logoNananere from '@/assets/logo-nananere.svg';
 
 interface LogoNananereProps {
   className?: string;

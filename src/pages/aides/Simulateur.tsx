@@ -251,7 +251,7 @@ const Simulateur = () => {
 
                     <div className="flex justify-between items-center py-3 px-4 bg-orange-50 rounded-lg border border-orange-200">
                       <span className="text-lg font-bold text-gray-900">On paye</span>
-                      <span className="text-2xl font-extrabold text-orange-600">
+                      <span className="text-2xl font-bold text-orange-600">
                         {calculationResult.montantAPayer}€
                       </span>
                     </div>
