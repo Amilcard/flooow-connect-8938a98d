@@ -6,6 +6,8 @@ import { StrictOnboardingScreen, StrictOnboardingScreenConfig } from "./StrictOn
 import logoFlooow from "@/assets/logo-flooow.png";
 import familiaAnimation from "@/assets/lottie/familia.json";
 import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
+import confetiAnimation from "@/assets/lottie/confeti.json";
+import logoNananere from "@/assets/logo-nananere.png";
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ export const OnboardingCarousel = () => {
       heightPercent: 50,
       loop: false,
       autoplay: false,
-      className: "animate-in fade-in zoom-in duration-1000" // Added animation
+      className: "animate-in fade-in zoom-in duration-1000"
     },
     title: "Bienvenue chez les testeurs Flooow",
     body: "Trouver une activité pour son enfant, c'est souvent la course d'obstacles. Infos éparpillées, tarifs flous, aides impossibles à comprendre. Ici, on simplifie tout ça. Vous testez, vous nous dites ce qui coince, on améliore ensemble.",
@@ -70,7 +72,7 @@ export const OnboardingCarousel = () => {
       spacing: 20
     },
     illustration: {
-      file: familiaAnimation, // Correct assignment for Screen 2
+      file: familiaAnimation,
       type: "lottie",
       heightPercent: 50,
       loop: true,
@@ -101,7 +103,7 @@ export const OnboardingCarousel = () => {
       spacing: 20
     },
     illustration: {
-      file: financeGuruAnimation, // JSON says "Finance guru.json", mapped to imported asset
+      file: financeGuruAnimation,
       type: "lottie",
       heightPercent: 50,
       loop: true,
@@ -119,15 +121,56 @@ export const OnboardingCarousel = () => {
     }
   };
 
-  // Placeholders for other screens to ensure build passes
-  const placeholderConfig: StrictOnboardingScreenConfig = {
-    ...screen1Config,
-    title: "Coming Soon",
-    body: "This screen is under construction.",
-    screenId: "placeholder"
+  // Configuration for Screen 4 (Strictly from JSON)
+  const screen4Config: StrictOnboardingScreenConfig = {
+    meta: {
+      important: "Utilisation de l'animation Confetti en fond et du slogan Nananere en illustration."
+    },
+    screenId: "onboarding_4",
+    layout: {
+      type: "vertical",
+      safeArea: true,
+      paddingHorizontal: 24,
+      spacing: 22,
+      background: {
+        type: "lottie",
+        file: confetiAnimation,
+        loop: true,
+        autoplay: true,
+        opacity: 0.35,
+        mode: "cover"
+      }
+    },
+    illustration: {
+      file: logoNananere,
+      type: "image",
+      heightPercent: 45,
+      loop: false,
+      autoplay: false,
+      className: "animate-in slide-in-from-bottom duration-1000 max-w-[300px]"
+    },
+    title: "Flooow, votre outil du quotidien",
+    body: (
+      <span>
+        Trouver une activité, estimer vos aides financières, recevoir les infos locales, organiser vos déplacements : Flooow simplifie vos semaines. Votre quotidien, mais sans la prise de tête.
+        <span className="block mt-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 font-medium text-primary text-lg">
+          Merci d'être là.
+        </span>
+      </span>
+    ),
+    cta: {
+      label: "Commencer",
+      action: "close_onboarding",
+      position: "bottom"
+    },
+    pagination: {
+      index: 3,
+      total: 4,
+      alignment: "center"
+    }
   };
 
-  const screens = [screen1Config, screen2Config, screen3Config, placeholderConfig];
+  const screens = [screen1Config, screen2Config, screen3Config, screen4Config];
 
   return (
     <StrictOnboardingScreen 
