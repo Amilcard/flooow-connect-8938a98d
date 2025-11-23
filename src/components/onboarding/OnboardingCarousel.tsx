@@ -5,6 +5,7 @@ import { StrictOnboardingScreen, StrictOnboardingScreenConfig } from "./StrictOn
 // Assets
 import logoFlooow from "@/assets/logo-flooow.png";
 import familiaAnimation from "@/assets/lottie/familia.json";
+import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
@@ -87,6 +88,37 @@ export const OnboardingCarousel = () => {
     }
   };
 
+  // Configuration for Screen 3 (Strictly from JSON)
+  const screen3Config: StrictOnboardingScreenConfig = {
+    meta: {
+      important: "Respect strict du texte et des proportions. Pas de style hérité du design actuel. Compatibilité Lovable à valider avant écriture."
+    },
+    screenId: "onboarding_3",
+    layout: {
+      type: "vertical",
+      safeArea: true,
+      paddingHorizontal: 24,
+      spacing: 20
+    },
+    illustration: {
+      file: financeGuruAnimation, // JSON says "Finance guru.json", mapped to imported asset
+      type: "lottie",
+      heightPercent: 50,
+      loop: true,
+      autoplay: true
+    },
+    title: "Comprendre enfin les aides disponibles",
+    body: "CAF, aides nationales, dispositifs locaux... On fait le calcul pour vous. Flooow estime ce à quoi vous avez droit selon votre situation familiale. Plus besoin de jongler entre les guichets.",
+    cta: {
+      label: "Suivant",
+      action: "next_onboarding"
+    },
+    pagination: {
+      index: 2,
+      total: 4
+    }
+  };
+
   // Placeholders for other screens to ensure build passes
   const placeholderConfig: StrictOnboardingScreenConfig = {
     ...screen1Config,
@@ -95,7 +127,7 @@ export const OnboardingCarousel = () => {
     screenId: "placeholder"
   };
 
-  const screens = [screen1Config, screen2Config, placeholderConfig, placeholderConfig];
+  const screens = [screen1Config, screen2Config, screen3Config, placeholderConfig];
 
   return (
     <StrictOnboardingScreen 
