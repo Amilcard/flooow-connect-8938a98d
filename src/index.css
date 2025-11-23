@@ -398,4 +398,17 @@
   .animate-fadeIn {
     animation: fadeIn 0.3s ease;
   }
+
+  /* LOT B - Classes standardisées pour uniformiser les titres */
+  .title-page {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  .title-section {
+    @apply text-2xl font-semibold;
+  }
+
+  .title-card {
+    @apply text-xl font-semibold;
+  }
 }
