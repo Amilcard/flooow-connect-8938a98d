@@ -39,13 +39,8 @@ const Splash = () => {
     localStorage.setItem("onboardingViewCount", String(viewCount + 1));
 
     const timer = setTimeout(() => {
-      // Si l'utilisateur a désactivé l'onboarding, aller directement à l'accueil
-      if (hasDisabledOnboarding) {
-        navigate("/home", { replace: true });
-      } else {
-        // Sinon, afficher l'onboarding (avec option de désactivation dès la 2e visite)
-        navigate("/onboarding", { replace: true });
-      }
+      // TOUJOURS afficher l'onboarding (demande utilisateur)
+      navigate("/onboarding", { replace: true });
     }, 2000);
 
     return () => clearTimeout(timer);

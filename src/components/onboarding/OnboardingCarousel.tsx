@@ -22,6 +22,12 @@ export const OnboardingCarousel = () => {
     }
   };
 
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+
   const handleComplete = () => {
     localStorage.setItem("onboardingViewCount", "1");
     navigate("/home", { replace: true });
@@ -176,6 +182,7 @@ export const OnboardingCarousel = () => {
     <StrictOnboardingScreen 
       config={screens[currentStep]} 
       onNext={handleNext}
+      onPrevious={currentStep > 0 ? handlePrevious : undefined}
     />
   );
 };

@@ -56,12 +56,14 @@ export interface StrictOnboardingScreenConfig {
 interface StrictOnboardingScreenProps {
   config: StrictOnboardingScreenConfig;
   onNext: () => void;
-  onSkip?: () => void; // Kept for compatibility, though not in JSON
+  onSkip?: () => void;
+  onPrevious?: () => void; // Added for back navigation
 }
 
 export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
   config,
   onNext,
+  onPrevious,
 }) => {
   const { layout, illustration, title, body, cta, pagination, fallback } = config;
 
@@ -158,10 +160,23 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
         </div>
       </div>
 
+      {/* Previous Button Section (if available) */}
+      {onPrevious && (
+        <div className="flex justify-center items-center w-full z-10 pb-2">
+          <Button
+            onClick={onPrevious}
+            variant="ghost"
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            ← Précédent
+          </Button>
+        </div>
+      )}
+
       {/* CTA Section */}
       <div 
         className="flex justify-center items-center w-full pb-8 z-10"
-        style={{ height: '15%' }}
+        style={{ height: onPrevious ? '13%' : '15%' }}
       >
         <Button
           onClick={onNext}
