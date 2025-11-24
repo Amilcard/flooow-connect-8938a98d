@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight, Lightbulb, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
@@ -87,6 +88,7 @@ export const SharedAidCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
   const [isQuickEstimate, setIsQuickEstimate] = useState(false); // Track if it's a quick estimate
+  const [showAdvancedCriteria, setShowAdvancedCriteria] = useState(false); // Toggle advanced criteria section
 
   // Check if user is logged in based on profile existence
   const isLoggedIn = !!userProfile;
@@ -363,7 +365,7 @@ export const SharedAidCalculator = ({
   return (
     <Card className="p-6 space-y-4 border-2 border-primary/20">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg">💰 Évaluer ton aide (v2)</h3>
+        <h3 className="font-semibold text-lg">💰 Évaluer vos aides</h3>
         {calculated && (
           <Badge variant="secondary" className="gap-1">
             <CheckCircle2 size={14} />
@@ -371,6 +373,14 @@ export const SharedAidCalculator = ({
           </Badge>
         )}
       </div>
+
+      {/* Pedagogical Message */}
+      <Alert className="bg-blue-50 border-blue-200">
+        <Lightbulb className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-sm text-blue-900">
+          <strong>Comment ça marche ?</strong> Flooow analyse automatiquement plusieurs critères (âge, activité, résidence, statut CAF...) pour vous proposer les aides adaptées. <strong>Le Quotient Familial n'est utilisé que pour certaines aides CAF.</strong>
+        </AlertDescription>
+      </Alert>
 
       <Separator />
 
@@ -416,41 +426,51 @@ export const SharedAidCalculator = ({
         </div>
       )}
 
-      {/* QF et Code postal */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2" data-tour-id="qf-selector-container">
-          <Label htmlFor="qf">
-            Quotient Familial <span className="text-muted-foreground text-xs">(optionnel)</span>
-          </Label>
-          <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
-            <SelectTrigger id="qf">
-              <SelectValue placeholder="Je ne sais pas encore" />
-            </SelectTrigger>
-            <SelectContent>
-              {QF_BRACKETS.map(bracket => (
-                <SelectItem key={bracket.id} value={String(bracket.value)}>
-                  {bracket.label}
-                </SelectItem>
-              ))}
-              <SelectItem value="0">Je ne sais pas</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="city">
-            Code postal
-          </Label>
-          <Input
-            id="city"
-            type="text"
-            placeholder="Ex: 42000"
-            maxLength={5}
-            value={cityCode}
-            onChange={(e) => setCityCode(e.target.value)}
-          />
-        </div>
+      {/* Code postal (critère essentiel) */}
+      <div className="space-y-2">
+        <Label htmlFor="city">
+          Code postal <span className="text-muted-foreground text-xs">(pour détecter les aides locales)</span>
+        </Label>
+        <Input
+          id="city"
+          type="text"
+          placeholder="Ex: 42000"
+          maxLength={5}
+          value={cityCode}
+          onChange={(e) => setCityCode(e.target.value)}
+        />
       </div>
+
+      {/* Advanced Criteria Section (Collapsible) */}
+      <Collapsible open={showAdvancedCriteria} onOpenChange={setShowAdvancedCriteria}>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" className="w-full justify-between px-0 hover:bg-transparent">
+            <span className="text-sm font-medium text-muted-foreground">Critères supplémentaires (optionnel)</span>
+            <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedCriteria ? 'rotate-180' : ''}`} />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-4 pt-2">
+          <div className="space-y-2" data-tour-id="qf-selector-container">
+            <Label htmlFor="qf" className="flex items-center gap-2">
+              Quotient Familial
+              <span className="text-xs text-muted-foreground">(utilisé uniquement pour certaines aides CAF)</span>
+            </Label>
+            <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
+              <SelectTrigger id="qf">
+                <SelectValue placeholder="Je ne sais pas" />
+              </SelectTrigger>
+              <SelectContent>
+                {QF_BRACKETS.map(bracket => (
+                  <SelectItem key={bracket.id} value={String(bracket.value)}>
+                    {bracket.label}
+                  </SelectItem>
+                ))}
+                <SelectItem value="0">Je ne sais pas</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Bouton Calculer */}
       <Button

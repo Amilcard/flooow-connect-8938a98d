@@ -7,9 +7,15 @@ import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
 import { useEffect, useState } from "react";
 import { calculateQuickEstimate, QuickEstimateParams } from "@/utils/FinancialAidEngine";
 
-// ...
+interface AidesFinancieresCardProps {
+  userProfile?: any;
+  children?: any[];
+}
 
-// ... inside component
+export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieresCardProps) => {
+  const navigate = useNavigate();
+  const [hasAids, setHasAids] = useState(false);
+  const [estimationText, setEstimationText] = useState("Estimez vos droits en 2 minutes");
 
   useEffect(() => {
     if (userProfile && children && children.length > 0) {
