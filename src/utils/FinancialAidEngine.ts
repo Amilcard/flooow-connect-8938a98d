@@ -598,3 +598,465 @@ export function checkMissingData(params: Partial<EligibilityParams>): string[] {
 
   return missing;
 }
+
+// ============================================================================
+// ESTIMATION PROGRESSIVE : MODE 1 - ULTRA-RAPIDE (30 secondes)
+// ============================================================================
+
+export interface QuickEstimateParams {
+  age: number;
+  type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs';
+  prix_activite: number;
+  ville?: string;
+  code_postal?: string;
+}
+
+export interface EstimateResult {
+  aides_detectees: CalculatedAid[];
+  montant_min: number;
+  montant_max: number;
+  aides_potentielles: {
+    name: string;
+    montant_possible: string;
+    criteres_requis: string[];
+  }[];
+  message_incitation: string;
+  niveau_confiance: 'faible' | 'moyen' | 'élevé';
+}
+
+/**
+ * MODE 1 : ESTIMATION ULTRA-RAPIDE
+ * Avec seulement 3-4 champs (âge, type activité, prix, ville)
+ * Retourne les aides certaines + les aides potentielles
+ */
+export function calculateQuickEstimate(params: QuickEstimateParams): EstimateResult {
+  const aides_detectees: CalculatedAid[] = [];
+  const aides_potentielles: EstimateResult['aides_potentielles'] = [];
+
+  // Déterminer le département depuis le code postal (si fourni)
+  const departement = params.code_postal ? parseInt(params.code_postal.substring(0, 2)) : 0;
+
+  // 1. Pass Culture (certain si âge 15-17 + culture)
+  if (params.age >= 15 && params.age <= 17 && params.type_activite === 'culture') {
+    const montant = params.age === 15 ? 20 : 30;
+    aides_detectees.push({
+      id: 'pass_culture',
+      code: 'PASS_CULTURE',
+      name: 'Pass Culture',
+      montant: Math.min(montant, params.prix_activite),
+      eligible: true,
+      niveau: 'national',
+      message: 'Aide nationale automatique',
+    });
+  }
+
+  // 2. Carte BÔGE (certain si âge 13-29)
+  if (params.age >= 13 && params.age <= 29) {
+    aides_detectees.push({
+      id: 'carte_boge',
+      code: 'CARTE_BOGE',
+      name: 'Carte BÔGE',
+      montant: Math.min(10, params.prix_activite),
+      eligible: true,
+      niveau: 'communal',
+      message: 'Carte jeune Saint-Étienne Métropole',
+    });
+  }
+
+  // 3. Tarifs sociaux Saint-Étienne (si ville mentionnée)
+  if (params.ville) {
+    const villeLower = params.ville.toLowerCase().replace(/[éè]/g, 'e').replace(/[àâ]/g, 'a');
+    if (villeLower.includes('saint') && villeLower.includes('etienne')) {
+      aides_potentielles.push({
+        name: 'Tarifs sociaux Saint-Étienne',
+        montant_possible: '15-70€ selon QF',
+        criteres_requis: ['Renseignez votre Quotient Familial'],
+      });
+    }
+  }
+
+  // 4. AIDES POTENTIELLES selon l'âge et le type d'activité
+
+  // Pass'Sport (potentiel si 6-17 ans + sport)
+  if (params.age >= 6 && params.age <= 17 && params.type_activite === 'sport') {
+    aides_potentielles.push({
+      name: "Pass'Sport",
+      montant_possible: '50€',
+      criteres_requis: ['Bénéficier d\'une aide sociale (ARS, AEEH, bourse scolaire...)'],
+    });
+  }
+
+  // Pass Colo (potentiel si 11 ans + vacances)
+  if (params.age === 11 && params.type_activite === 'vacances') {
+    aides_potentielles.push({
+      name: 'Pass Colo',
+      montant_possible: '200-350€ selon QF',
+      criteres_requis: ['Renseignez votre Quotient Familial'],
+    });
+  }
+
+  // VACAF (potentiel si vacances)
+  if (params.type_activite === 'vacances') {
+    aides_potentielles.push({
+      name: 'VACAF (CAF)',
+      montant_possible: '100-400€',
+      criteres_requis: ['Être allocataire CAF', 'QF ≤ 900€', 'Séjour labellisé VACAF'],
+    });
+  }
+
+  // CAF Loire (potentiel si âge 3-17)
+  if (params.age >= 3 && params.age <= 17) {
+    aides_potentielles.push({
+      name: 'CAF Loire – Temps Libre',
+      montant_possible: '20-80€ selon QF',
+      criteres_requis: ['Être allocataire CAF', 'QF ≤ 850€'],
+    });
+  }
+
+  // Chèques Loisirs 42 (potentiel si département 42)
+  if (departement === 42) {
+    aides_potentielles.push({
+      name: 'Chèques Loisirs Loire',
+      montant_possible: '30€',
+      criteres_requis: ['QF ≤ 900€'],
+    });
+  }
+
+  // Pass'Région (potentiel si âge lycéen probable)
+  if (params.age >= 15 && params.age <= 18) {
+    aides_potentielles.push({
+      name: "Pass'Région",
+      montant_possible: '30€',
+      criteres_requis: ['Être lycéen'],
+    });
+  }
+
+  // Bonus QPV (potentiel toujours)
+  aides_potentielles.push({
+    name: 'Bonus QPV',
+    montant_possible: '20€',
+    criteres_requis: ['Résider en Quartier Prioritaire de la Ville'],
+  });
+
+  // Réduction fratrie (potentiel)
+  aides_potentielles.push({
+    name: 'Réduction fratrie',
+    montant_possible: '10% du prix',
+    criteres_requis: ['Avoir 2 enfants ou plus dans la famille'],
+  });
+
+  // Calcul des montants
+  const montant_detecte = aides_detectees.reduce((sum, aid) => sum + aid.montant, 0);
+  const montant_potentiel_min = aides_potentielles.length > 0 ? 20 : 0;
+  const montant_potentiel_max = aides_potentielles.reduce((sum, aid) => {
+    const matches = aid.montant_possible.match(/(\d+)/g);
+    if (matches) {
+      return sum + parseInt(matches[matches.length - 1]);
+    }
+    return sum;
+  }, 0);
+
+  // Message d'incitation
+  let message_incitation = '';
+  if (aides_detectees.length === 0 && aides_potentielles.length > 0) {
+    message_incitation = `⚠️ Vous pourriez être éligible à **${aides_potentielles.length} aides** (jusqu'à ${montant_potentiel_max}€). Répondez à 4 questions supplémentaires pour découvrir vos droits !`;
+  } else if (aides_detectees.length > 0 && aides_potentielles.length > 0) {
+    message_incitation = `💡 Vous avez **${montant_detecte}€ d'aides confirmées**, mais pourriez obtenir **${montant_potentiel_min}-${montant_potentiel_max}€ de plus** ! Affinez votre estimation en 2 minutes.`;
+  } else if (aides_detectees.length > 0) {
+    message_incitation = `✅ Vous avez **${montant_detecte}€ d'aides disponibles** pour cette activité.`;
+  } else {
+    message_incitation = `📋 Aucune aide automatique détectée. Vérifiez votre éligibilité en renseignant quelques informations supplémentaires.`;
+  }
+
+  return {
+    aides_detectees,
+    montant_min: montant_detecte,
+    montant_max: montant_detecte + montant_potentiel_max,
+    aides_potentielles,
+    message_incitation,
+    niveau_confiance: aides_detectees.length > 0 ? 'moyen' : 'faible',
+  };
+}
+
+// ============================================================================
+// ESTIMATION PROGRESSIVE : MODE 2 - RAPIDE (2 minutes)
+// ============================================================================
+
+export interface FastEstimateParams extends QuickEstimateParams {
+  quotient_familial?: number;
+  allocataire_caf?: boolean;
+  a_condition_sociale?: boolean; // Simplifié (au lieu de détailler ARS/AEEH/etc.)
+  statut_scolaire?: 'primaire' | 'college' | 'lycee';
+  nb_enfants?: number;
+}
+
+/**
+ * MODE 2 : ESTIMATION RAPIDE
+ * Avec 8-10 champs (ajout de QF, CAF, condition sociale simplifiée, scolarité, fratrie)
+ * Calcule plus d'aides avec une meilleure précision
+ */
+export function calculateFastEstimate(params: FastEstimateParams): EstimateResult {
+  const aides_detectees: CalculatedAid[] = [];
+  const aides_potentielles: EstimateResult['aides_potentielles'] = [];
+
+  // Déterminer le département depuis le code postal
+  const departement = params.code_postal ? parseInt(params.code_postal.substring(0, 2)) : 0;
+
+  // 1. Pass Culture (certain si âge 15-17 + culture)
+  if (params.age >= 15 && params.age <= 17 && params.type_activite === 'culture') {
+    const montant = params.age === 15 ? 20 : 30;
+    aides_detectees.push({
+      id: 'pass_culture',
+      code: 'PASS_CULTURE',
+      name: 'Pass Culture',
+      montant: Math.min(montant, params.prix_activite),
+      eligible: true,
+      niveau: 'national',
+      message: 'Aide nationale automatique',
+    });
+  }
+
+  // 2. Pass'Sport (si condition sociale + sport + âge 6-17)
+  if (
+    params.a_condition_sociale &&
+    params.type_activite === 'sport' &&
+    params.age >= 6 &&
+    params.age <= 17
+  ) {
+    aides_detectees.push({
+      id: 'pass_sport',
+      code: 'PASS_SPORT',
+      name: "Pass'Sport",
+      montant: Math.min(50, params.prix_activite),
+      eligible: true,
+      niveau: 'national',
+      message: 'Aide nationale pour la rentrée sportive',
+    });
+  } else if (
+    !params.a_condition_sociale &&
+    params.type_activite === 'sport' &&
+    params.age >= 6 &&
+    params.age <= 17
+  ) {
+    aides_potentielles.push({
+      name: "Pass'Sport",
+      montant_possible: '50€',
+      criteres_requis: ['Précisez vos aides sociales (ARS, AEEH, AESH, bourse, ASE)'],
+    });
+  }
+
+  // 3. Pass Colo (si 11 ans + QF + vacances)
+  if (params.age === 11 && params.type_activite === 'vacances' && params.quotient_familial) {
+    let montant = 0;
+    if (params.quotient_familial <= 200) {
+      montant = 350;
+    } else if (params.quotient_familial <= 500) {
+      montant = 300;
+    } else if (params.quotient_familial <= 700) {
+      montant = 250;
+    } else {
+      montant = 200;
+    }
+    aides_detectees.push({
+      id: 'pass_colo',
+      code: 'PASS_COLO',
+      name: 'Pass Colo',
+      montant: Math.min(montant, params.prix_activite),
+      eligible: true,
+      niveau: 'national',
+      message: `Aide pour enfant de 11 ans (QF ${params.quotient_familial}€)`,
+    });
+  }
+
+  // 4. VACAF (si CAF + QF + vacances)
+  if (params.allocataire_caf && params.type_activite === 'vacances' && params.quotient_familial) {
+    if (params.quotient_familial <= 800) {
+      // VACAF AVF
+      let montant = 0;
+      if (params.quotient_familial <= 400) {
+        montant = 400;
+      } else if (params.quotient_familial <= 600) {
+        montant = 300;
+      } else {
+        montant = 200;
+      }
+      aides_detectees.push({
+        id: 'vacaf_avf',
+        code: 'VACAF_AVF',
+        name: 'VACAF AVF',
+        montant: Math.min(montant, params.prix_activite),
+        eligible: true,
+        niveau: 'caf',
+        message: 'Aide CAF vacances familles (sous réserve)',
+      });
+    }
+
+    // VACAF AVE (potentiel si séjour labellisé)
+    if (params.quotient_familial <= 900 && params.age >= 3 && params.age <= 17) {
+      aides_potentielles.push({
+        name: 'VACAF AVE',
+        montant_possible: '100-200€',
+        criteres_requis: ['Séjour labellisé VACAF'],
+      });
+    }
+  }
+
+  // 5. Pass'Région (si lycéen)
+  if (params.statut_scolaire === 'lycee') {
+    aides_detectees.push({
+      id: 'pass_region',
+      code: 'PASS_REGION',
+      name: "Pass'Région",
+      montant: Math.min(30, params.prix_activite),
+      eligible: true,
+      niveau: 'regional',
+      message: 'Aide régionale Auvergne-Rhône-Alpes pour lycéens',
+    });
+  }
+
+  // 6. CAF Loire Temps Libre (si CAF + QF ≤850 + âge 3-17)
+  if (
+    params.allocataire_caf &&
+    params.quotient_familial &&
+    params.quotient_familial <= 850 &&
+    params.age >= 3 &&
+    params.age <= 17
+  ) {
+    let montant = 0;
+    if (params.quotient_familial <= 350) {
+      montant = 80;
+    } else if (params.quotient_familial <= 550) {
+      montant = 60;
+    } else if (params.quotient_familial <= 700) {
+      montant = 40;
+    } else {
+      montant = 20;
+    }
+    aides_detectees.push({
+      id: 'caf_loire_temps_libre',
+      code: 'CAF_LOIRE_TEMPS_LIBRE',
+      name: 'CAF Loire – Temps Libre',
+      montant: Math.min(montant, params.prix_activite),
+      eligible: true,
+      niveau: 'caf',
+      message: `Aide CAF Loire (QF ${params.quotient_familial}€)`,
+    });
+  }
+
+  // 7. Chèques Loisirs 42 (si département 42 + QF ≤900)
+  if (departement === 42 && params.quotient_familial && params.quotient_familial <= 900) {
+    aides_detectees.push({
+      id: 'cheques_loisirs_42',
+      code: 'CHEQUES_LOISIRS_42',
+      name: 'Chèques Loisirs Loire',
+      montant: Math.min(30, params.prix_activite),
+      eligible: true,
+      niveau: 'departemental',
+      message: 'Aide du Conseil Départemental de la Loire',
+    });
+  }
+
+  // 8. Tarifs sociaux Saint-Étienne (si ville + QF)
+  if (params.ville && params.quotient_familial) {
+    const villeLower = params.ville.toLowerCase().replace(/[éè]/g, 'e').replace(/[àâ]/g, 'a');
+    if (villeLower.includes('saint') && villeLower.includes('etienne')) {
+      let reduction = 0;
+      if (params.quotient_familial <= 400) {
+        reduction = params.type_activite === 'sport' ? 60 : params.type_activite === 'culture' ? 70 : 50;
+      } else if (params.quotient_familial <= 700) {
+        reduction = params.type_activite === 'sport' ? 40 : params.type_activite === 'culture' ? 50 : 30;
+      } else if (params.quotient_familial <= 1000) {
+        reduction = params.type_activite === 'sport' ? 20 : params.type_activite === 'culture' ? 30 : 15;
+      }
+
+      if (reduction > 0) {
+        aides_detectees.push({
+          id: 'tarifs_sociaux_st_etienne',
+          code: 'TARIFS_SOCIAUX_STE',
+          name: 'Tarifs sociaux Saint-Étienne',
+          montant: Math.min(reduction, params.prix_activite),
+          eligible: true,
+          niveau: 'communal',
+          message: `Réduction ${params.type_activite}`,
+        });
+      }
+    }
+  }
+
+  // 9. Carte BÔGE (si âge 13-29)
+  if (params.age >= 13 && params.age <= 29) {
+    aides_detectees.push({
+      id: 'carte_boge',
+      code: 'CARTE_BOGE',
+      name: 'Carte BÔGE',
+      montant: Math.min(10, params.prix_activite),
+      eligible: true,
+      niveau: 'communal',
+      message: 'Carte jeune Saint-Étienne Métropole',
+    });
+  }
+
+  // 10. Réduction fratrie (si 2+ enfants)
+  if (params.nb_enfants && params.nb_enfants >= 2) {
+    const reduction = params.prix_activite * 0.1;
+    aides_detectees.push({
+      id: 'reduction_fratrie',
+      code: 'REDUCTION_FRATRIE',
+      name: 'Réduction fratrie',
+      montant: reduction,
+      eligible: true,
+      niveau: 'organisateur',
+      type_montant: 'pourcentage',
+      message: `10% de réduction (${params.nb_enfants} enfants)`,
+    });
+  }
+
+  // AIDES POTENTIELLES (données manquantes)
+
+  // Bonus QPV (potentiel toujours)
+  aides_potentielles.push({
+    name: 'Bonus QPV',
+    montant_possible: '20€',
+    criteres_requis: ['Vérifier si vous résidez en Quartier Prioritaire'],
+  });
+
+  // Si pas de condition sociale renseignée et âge éligible
+  if (!params.a_condition_sociale && params.age >= 6 && params.age <= 17) {
+    aides_potentielles.push({
+      name: 'Aides sociales complémentaires',
+      montant_possible: 'Variable',
+      criteres_requis: ['Préciser les aides dont vous bénéficiez (ARS, AEEH, etc.)'],
+    });
+  }
+
+  // Calcul des montants
+  const montant_total = aides_detectees.reduce((sum, aid) => sum + aid.montant, 0);
+  const montant_potentiel_max = aides_potentielles.reduce((sum, aid) => {
+    const matches = aid.montant_possible.match(/(\d+)/g);
+    if (matches) {
+      return sum + parseInt(matches[matches.length - 1]);
+    }
+    return sum + 20; // Default pour "Variable"
+  }, 0);
+
+  // Message d'incitation
+  let message_incitation = '';
+  if (aides_detectees.length > 0 && aides_potentielles.length > 0) {
+    message_incitation = `✅ Vous avez **${Math.round(montant_total)}€ d'aides confirmées**. Complétez votre profil pour débloquer jusqu'à **${montant_potentiel_max}€ supplémentaires** !`;
+  } else if (aides_detectees.length > 0) {
+    message_incitation = `✅ Vous bénéficiez de **${Math.round(montant_total)}€ d'aides** pour cette activité.`;
+  } else if (aides_potentielles.length > 0) {
+    message_incitation = `📋 Complétez quelques informations pour découvrir vos aides potentielles (jusqu'à ${montant_potentiel_max}€).`;
+  } else {
+    message_incitation = `📋 Aucune aide détectée avec les informations fournies.`;
+  }
+
+  return {
+    aides_detectees,
+    montant_min: montant_total,
+    montant_max: montant_total + montant_potentiel_max,
+    aides_potentielles,
+    message_incitation,
+    niveau_confiance: aides_detectees.length >= 2 ? 'élevé' : aides_detectees.length === 1 ? 'moyen' : 'faible',
+  };
+}
