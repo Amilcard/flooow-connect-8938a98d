@@ -145,24 +145,9 @@ export const SharedAidCalculator = ({
     return age;
   };
 
-import { calculateAllAids, SimulationContext } from "@/utils/FinancialAidEngine";
 
-// ... imports
 
-const TERRITORY_ICONS = {
-  national: "🇫🇷",
-  regional: "🌍",
-  region: "🌍",
-  departement: "🏢",
-  metropole: "🏙️",
-  commune: "🏘️",
-  ville: "🏘️",
-  caf: "🏦",
-  caf_local: "🏦",
-  organisateur: "🤝"
-} as const;
 
-// ... inside component
 
   const handleCalculate = async () => {
     console.log("Calculating aids...", { isLoggedIn, showChildSelector, manualChildAge, selectedChildId });
