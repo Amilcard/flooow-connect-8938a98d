@@ -160,22 +160,7 @@ const Index = () => {
     territoryId: userTerritory?.id
   });
 
-  if (errorRecommended) {
-    return (
-      <PageLayout>
-      <SearchBar 
-        placeholder="Rechercher une activité ou un événement pour votre enfant…"
-        onFilterClick={() => console.log("Filter clicked")} 
-      />
-        <main className="container px-4 py-6">
-          <ErrorState 
-            message="Impossible de charger les activités. Veuillez réessayer." 
-            onRetry={() => window.location.reload()}
-          />
-        </main>
-      </PageLayout>
-    );
-  }
+
 
   const handleActivityClick = (id: string) => {
     navigate(`/activity/${id}`);
@@ -228,17 +213,37 @@ const Index = () => {
             </section>
 
             {/* ========== SECTION 2: ACTIVITÉS RECOMMANDÉES ========== */}
-            {!loadingRecommended && recommendedActivities.length > 0 && (
-              <section className="py-6" data-tour-id="home-reco-section">
-                <ActivityThematicSection
-                  title="Activités recommandées"
-                  subtitle="Une sélection d'activités adaptées au profil de votre famille."
-                  activities={recommendedActivities}
-                  showSeeAll
-                  onActivityClick={handleActivityClick}
-                  onSeeAllClick={() => navigate('/activities')}
-                />
+            {errorRecommended ? (
+              <section className="py-6 px-4">
+                <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-center gap-3">
+                  <div className="p-2 bg-red-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-800">Impossible de charger les suggestions</p>
+                    <p className="text-xs text-red-600 mt-0.5">Vérifiez votre connexion ou réessayez plus tard.</p>
+                  </div>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className="text-xs font-semibold text-red-700 hover:text-red-800 px-3 py-1.5 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                  >
+                    Réessayer
+                  </button>
+                </div>
               </section>
+            ) : (
+              !loadingRecommended && recommendedActivities.length > 0 && (
+                <section className="py-6" data-tour-id="home-reco-section">
+                  <ActivityThematicSection
+                    title="Activités recommandées"
+                    subtitle="Une sélection d'activités adaptées au profil de votre famille."
+                    activities={recommendedActivities}
+                    showSeeAll
+                    onActivityClick={handleActivityClick}
+                    onSeeAllClick={() => navigate('/activities')}
+                  />
+                </section>
+              )
             )}
 
             {/* ========== SECTION 3: PETITS BUDGETS ========== */}

@@ -199,7 +199,11 @@ export const useActivities = (filters?: ActivityFilters) => {
       const { data, error } = await query.order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching activities:", error);
+        console.error("[useActivities] Error fetching activities:", {
+          error,
+          filters,
+          timestamp: new Date().toISOString()
+        });
         throw error;
       }
 
