@@ -8,13 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info, UserPlus } from "lucide-react";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 import { calculateAidFromQF } from "@/utils/aidesCalculator";
 import { useNavigate } from "react-router-dom";
-import { calculateAllAids, SimulationContext } from "@/utils/FinancialAidEngine";
+import { calculateAllEligibleAids, calculateQuickEstimate, EligibilityParams, QuickEstimateParams, CalculatedAid } from "@/utils/FinancialAidEngine";
 
 interface Child {
   id: string;
@@ -28,6 +28,7 @@ interface FinancialAid {
   territory_level: string;
   official_link: string | null;
   is_informational: boolean;
+  is_potential?: boolean; // New field for potential aids
 }
 
 interface Props {
@@ -85,6 +86,7 @@ export const SharedAidCalculator = ({
   const [cityCode, setCityCode] = useState<string>("");
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
+  const [isQuickEstimate, setIsQuickEstimate] = useState(false); // Track if it's a quick estimate
 
   // Check if user is logged in based on profile existence
   const isLoggedIn = !!userProfile;
@@ -100,6 +102,7 @@ export const SharedAidCalculator = ({
       setCityCode("");
       setAids([]);
       setCalculated(false);
+      setIsQuickEstimate(false);
     }
   }, [resetOnMount]);
 
@@ -181,15 +184,8 @@ export const SharedAidCalculator = ({
       return;
     }
 
-    // Pour les activités de vacances, on demande le QF
-    if (periodType === "vacances" && (!quotientFamilial || !cityCode)) {
-      toast({
-        title: "Informations manquantes",
-        description: "Veuillez renseigner le quotient familial et le code postal",
-        variant: "destructive"
-      });
-      return;
-    }
+    // QF is now OPTIONAL for Quick Estimate
+    const hasQF = !!quotientFamilial && quotientFamilial !== "0";
 
     // Déterminer l'âge de l'enfant
     let childAge: number;
@@ -225,47 +221,86 @@ export const SharedAidCalculator = ({
       else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) type_activite = 'culture';
       else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) type_activite = 'vacances';
 
-      // Préparation du contexte pour le moteur V2
-      const context: EligibilityParams = {
-        age: childAge,
-        quotient_familial: parseInt(quotientFamilial) || 0,
-        code_postal: cityCode || "00000",
-        ville: "", // Non disponible dans ce formulaire simplifié
-        departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
-        prix_activite: activityPrice,
-        type_activite: type_activite,
-        periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire',
-        nb_fratrie: nbFratrie,
-        allocataire_caf: !!quotientFamilial, // Heuristique : si QF renseigné, probablement allocataire
-        est_qpv: false, // Non demandé
-        conditions_sociales: {
-          beneficie_ARS: false,
-          beneficie_AEEH: false,
-          beneficie_AESH: false,
-          beneficie_bourse: false,
-          beneficie_ASE: false
-        }
-      };
+      let calculatedAids: FinancialAid[] = [];
 
-      console.log("Engine V2 context:", context);
+      if (hasQF) {
+        // FULL ESTIMATION (Mode 3)
+        setIsQuickEstimate(false);
+        const context: EligibilityParams = {
+          age: childAge,
+          quotient_familial: parseInt(quotientFamilial) || 0,
+          code_postal: cityCode || "00000",
+          ville: "", 
+          departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+          prix_activite: activityPrice,
+          type_activite: type_activite,
+          periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire',
+          nb_fratrie: nbFratrie,
+          allocataire_caf: !!quotientFamilial, 
+          est_qpv: false, 
+          conditions_sociales: {
+            beneficie_ARS: false,
+            beneficie_AEEH: false,
+            beneficie_AESH: false,
+            beneficie_bourse: false,
+            beneficie_ASE: false
+          }
+        };
+        const engineResults = calculateAllEligibleAids(context);
+        calculatedAids = engineResults.map(res => ({
+          aid_name: res.name,
+          amount: res.amount,
+          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+          official_link: null,
+          is_informational: false,
+          is_potential: false
+        }));
 
-      // Appel du moteur V2
-      const engineResults = calculateAllEligibleAids(context);
-      console.log("Engine V2 results:", engineResults);
+      } else {
+        // QUICK ESTIMATION (Mode 1)
+        setIsQuickEstimate(true);
+        const params: QuickEstimateParams = {
+          age: childAge,
+          type_activite: type_activite,
+          prix_activite: activityPrice,
+          code_postal: cityCode || undefined
+        };
+        const result = calculateQuickEstimate(params);
+        
+        // Add detected aids
+        const detected = result.aides_detectees.map(res => ({
+          aid_name: res.name,
+          amount: res.amount,
+          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+          official_link: null,
+          is_informational: false,
+          is_potential: false
+        }));
 
-      // Mapping vers le format attendu par le composant
-      const calculatedAids: FinancialAid[] = engineResults.map(res => ({
-        aid_name: res.name,
-        amount: res.amount,
-        territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
-        official_link: null,
-        is_informational: false // Le moteur V2 retourne des aides éligibles
-      }));
+        // Add potential aids
+        const potential = result.aides_potentielles.map(res => {
+           // Extract max amount from string "20-80€" -> 80
+           const matches = res.montant_possible.match(/(\d+)/g);
+           const amount = matches ? parseInt(matches[matches.length - 1]) : 0;
+           
+           return {
+            aid_name: res.name,
+            amount: amount,
+            territory_level: 'national', // Default for potential
+            official_link: null,
+            is_informational: true,
+            is_potential: true
+           };
+        });
+
+        calculatedAids = [...detected, ...potential];
+      }
 
       setAids(calculatedAids);
       setCalculated(true);
 
-      const totalAids = calculatedAids.reduce((sum, aid) => sum + aid.amount, 0);
+      // Only count CONFIRMED aids for total
+      const totalAids = calculatedAids.filter(a => !a.is_potential).reduce((sum, aid) => sum + aid.amount, 0);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
       const economiePourcent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
 
@@ -293,6 +328,12 @@ export const SharedAidCalculator = ({
           title: "Aides calculées",
           description: `Aide totale : ${totalAids.toFixed(2)}€ - Économie de ${economiePourcent}%`,
         });
+      } else if (calculatedAids.some(a => a.is_potential)) {
+        toast({
+          title: "Aides potentielles détectées",
+          description: "Affinez votre simulation pour confirmer ces aides !",
+          variant: "default"
+        });
       } else {
         toast({
           title: "Simulation effectuée",
@@ -312,7 +353,8 @@ export const SharedAidCalculator = ({
     }
   };
 
-  const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
+  const totalAids = aids.filter(a => !a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
+  const potentialTotal = aids.filter(a => a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
 
@@ -374,82 +416,48 @@ export const SharedAidCalculator = ({
         </div>
       )}
 
-      {/* QF et Code postal - affichage conditionnel selon le type d'activité */}
-      {periodType === "saison_scolaire" ? (
-        // Pour les activités de saison : afficher info Pass'Sport uniquement
-        <Alert className="bg-primary/10 border-primary/20">
-          <Info className="h-4 w-4" />
-          <AlertDescription className="text-sm">
-            <strong>Pass'Sport (70€)</strong> : Cette aide nationale est automatiquement appliquée pour les licences sportives. 
-            Si le tarif est inférieur à 70€, la réduction est limitée au prix de l'activité.
-          </AlertDescription>
-        </Alert>
-      ) : (
-        // Pour les activités de vacances : afficher le formulaire QF
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2" data-tour-id="qf-selector-container">
-            <Label htmlFor="qf">
-              Quotient Familial <span className="text-destructive">*</span>
-            </Label>
-            <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
-              <SelectTrigger id="qf">
-                <SelectValue placeholder="Choisir votre tranche" />
-              </SelectTrigger>
-              <SelectContent>
-                {QF_BRACKETS.map(bracket => (
-                  <SelectItem key={bracket.id} value={String(bracket.value)}>
-                    {bracket.label}
-                  </SelectItem>
-                ))}
-                <SelectItem value="0">Je ne sais pas</SelectItem>
-              </SelectContent>
-            </Select>
-            {userProfile?.quotient_familial && (
-              <p className="text-xs text-muted-foreground">
-                Pré-rempli depuis votre profil ({userProfile.quotient_familial}€)
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="city">
-              Code postal
-            </Label>
-            <Input
-              id="city"
-              type="text"
-              placeholder="Ex: 42000"
-              maxLength={5}
-              value={cityCode}
-              onChange={(e) => setCityCode(e.target.value)}
-            />
-            {userProfile?.postal_code && (
-              <p className="text-xs text-muted-foreground">
-                Pré-rempli depuis votre profil
-              </p>
-            )}
-          </div>
+      {/* QF et Code postal */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2" data-tour-id="qf-selector-container">
+          <Label htmlFor="qf">
+            Quotient Familial <span className="text-muted-foreground text-xs">(optionnel)</span>
+          </Label>
+          <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
+            <SelectTrigger id="qf">
+              <SelectValue placeholder="Je ne sais pas encore" />
+            </SelectTrigger>
+            <SelectContent>
+              {QF_BRACKETS.map(bracket => (
+                <SelectItem key={bracket.id} value={String(bracket.value)}>
+                  {bracket.label}
+                </SelectItem>
+              ))}
+              <SelectItem value="0">Je ne sais pas</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      )}
 
-      {/* Message CAF si "Je ne sais pas" - uniquement pour les activités de vacances */}
-      {periodType === "vacances" && quotientFamilial === "0" && (
-        <Alert className="bg-blue-50 border-blue-200">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-sm text-blue-900">
-            Pour connaître votre quotient familial, rapprochez-vous de votre CAF (Caisse d'Allocations Familiales). 
-            Cette information figure sur votre attestation CAF.
-          </AlertDescription>
-        </Alert>
-      )}
+        <div className="space-y-2">
+          <Label htmlFor="city">
+            Code postal
+          </Label>
+          <Input
+            id="city"
+            type="text"
+            placeholder="Ex: 42000"
+            maxLength={5}
+            value={cityCode}
+            onChange={(e) => setCityCode(e.target.value)}
+          />
+        </div>
+      </div>
 
-      {/* Bouton Calculer - validation selon mode logged in/out */}
+      {/* Bouton Calculer */}
       <Button
         onClick={handleCalculate}
         disabled={
           loading ||
-          (showChildSelector ? !selectedChildId : !manualChildAge) ||
-          (periodType === "vacances" && (!quotientFamilial || !cityCode))
+          (showChildSelector ? !selectedChildId : !manualChildAge)
         }
         className="w-full"
         size="lg"
@@ -476,29 +484,26 @@ export const SharedAidCalculator = ({
             {aids.map((aid, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 bg-accent/50 rounded-lg"
+                className={`flex items-center justify-between p-3 rounded-lg ${aid.is_potential ? 'bg-yellow-50 border border-yellow-200' : 'bg-accent/50'}`}
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">{aid.aid_name}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS]}{" "}
-                      {aid.territory_level}
-                    </Badge>
+                    {aid.is_potential && (
+                      <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-700 bg-yellow-100">
+                        Potentiel
+                      </Badge>
+                    )}
+                    {!aid.is_potential && (
+                      <Badge variant="secondary" className="text-xs">
+                        {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS]}{" "}
+                        {aid.territory_level}
+                      </Badge>
+                    )}
                   </div>
-                  {aid.official_link && (
-                    <a
-                      href={aid.official_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline"
-                    >
-                      En savoir plus →
-                    </a>
-                  )}
                 </div>
-                <div className="text-lg font-bold text-primary">
-                  {Number(aid.amount).toFixed(2)}€
+                <div className={`text-lg font-bold ${aid.is_potential ? 'text-yellow-600' : 'text-primary'}`}>
+                  {aid.is_potential ? `~${Number(aid.amount).toFixed(0)}€` : `${Number(aid.amount).toFixed(2)}€`}
                 </div>
               </div>
             ))}
@@ -510,41 +515,45 @@ export const SharedAidCalculator = ({
                 <span className="font-medium">{activityPrice.toFixed(2)}€</span>
               </div>
               <div className="flex justify-between text-sm text-primary">
-                <span>Total aides</span>
+                <span>Total aides confirmées</span>
                 <span className="font-medium">- {totalAids.toFixed(2)}€</span>
               </div>
+              
+              {potentialTotal > 0 && (
+                <div className="flex justify-between text-sm text-yellow-600">
+                  <span>Aides potentielles</span>
+                  <span className="font-medium">~ {potentialTotal.toFixed(0)}€</span>
+                </div>
+              )}
+
               <div className="flex justify-between text-lg font-bold border-t pt-2" data-tour-id="reste-charge-calculator">
-                <span>Reste à charge</span>
+                <span>Reste à charge (confirmé)</span>
                 <span>{remainingPrice.toFixed(2)}€</span>
               </div>
 
-              {savingsPercent >= 30 && (
-                <div className="flex justify-center pt-2">
-                  <Badge variant="default" className="text-sm">
-                    🎉 Économie de {savingsPercent}% !
-                  </Badge>
-                </div>
+              {isQuickEstimate && potentialTotal > 0 && (
+                <Alert className="bg-blue-50 border-blue-200 mt-4">
+                  <Sparkles className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-sm text-blue-900 space-y-2">
+                    <p><strong>Vous pourriez payer encore moins !</strong></p>
+                    <p>En renseignant votre Quotient Familial, vous pourriez débloquer jusqu'à {potentialTotal}€ d'aides supplémentaires.</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full mt-2 bg-white hover:bg-blue-50 text-blue-700 border-blue-200"
+                      onClick={() => {
+                        const qfSelect = document.getElementById('qf');
+                        if (qfSelect) qfSelect.focus();
+                        toast({ title: "Renseignez votre QF ci-dessus" });
+                      }}
+                    >
+                      Affiner mon résultat <ArrowRight className="ml-2 h-3 w-3" />
+                    </Button>
+                  </AlertDescription>
+                </Alert>
               )}
             </div>
           </div>
-
-          {/* Alerte limitations estimation */}
-          <Alert className="bg-blue-50 border-blue-200">
-            <Info className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-sm text-blue-900">
-              <strong>⚠️ Estimation indicative.</strong> Cette simulation se base sur votre Quotient Familial.
-              Certains critères complémentaires (résidence en QPV, statut scolaire, fratrie) peuvent donner accès à des aides supplémentaires non affichées ici.
-            </AlertDescription>
-          </Alert>
-
-          {/* Message rappel pièces justificatives */}
-          <Alert className="bg-amber-50 border-amber-200">
-            <Info className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-sm text-amber-900">
-              <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription
-              (attestation CAF, justificatif de domicile, etc.)
-            </AlertDescription>
-          </Alert>
 
           {/* CTA Signup pour utilisateurs non connectés */}
           {!isLoggedIn && (
@@ -573,25 +582,17 @@ export const SharedAidCalculator = ({
       {calculated && aids.length === 0 && (
         <>
           <div className="text-center py-4 text-muted-foreground text-sm">
-            Aucune aide disponible pour cette activité selon votre QF
+            Aucune aide détectée pour le moment.
           </div>
-
-          {/* Alerte limitations estimation */}
-          <Alert className="bg-blue-50 border-blue-200">
-            <Info className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-sm text-blue-900">
-              <strong>⚠️ Vérifiez vos droits.</strong> Cette estimation se base uniquement sur votre Quotient Familial.
-              D'autres aides (nationales, régionales, QPV) peuvent exister selon votre situation. Renseignez-vous auprès de l'organisateur.
-            </AlertDescription>
-          </Alert>
-
-          {/* Message rappel pièces justificatives même sans aides */}
-          <Alert className="bg-amber-50 border-amber-200">
-            <Info className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-sm text-amber-900">
-              <strong>N'oubliez pas :</strong> Munissez-vous des pièces justificatives nécessaires lors de votre inscription.
-            </AlertDescription>
-          </Alert>
+          
+          {isQuickEstimate && (
+             <Alert className="bg-blue-50 border-blue-200">
+             <Info className="h-4 w-4 text-blue-600" />
+             <AlertDescription className="text-sm text-blue-900">
+               <strong>Conseil :</strong> Renseignez votre Quotient Familial pour vérifier si vous avez droit à des aides locales ou de la CAF.
+             </AlertDescription>
+           </Alert>
+          )}
 
           {/* CTA Signup pour utilisateurs non connectés même sans aides */}
           {!isLoggedIn && (
@@ -615,18 +616,6 @@ export const SharedAidCalculator = ({
             </div>
           )}
         </>
-      )}
-
-      {/* Informations complémentaires pour les activités de saison */}
-      {periodType === "saison_scolaire" && (
-        <Alert className="bg-muted/50 border-muted">
-          <Info className="h-4 w-4" />
-          <AlertDescription className="text-sm">
-            <strong>Autres aides possibles :</strong> Pass Culture, PASS'Région, bons plans locaux... 
-            Ces aides ne sont pas calculées automatiquement mais peuvent réduire votre reste à charge. 
-            Renseignez-vous auprès de votre collectivité !
-          </AlertDescription>
-        </Alert>
       )}
     </Card>
   );
