@@ -527,6 +527,15 @@ export const SharedAidCalculator = ({
             </div>
           </div>
 
+          {/* Alerte limitations estimation */}
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-sm text-blue-900">
+              <strong>⚠️ Estimation indicative.</strong> Cette simulation se base sur votre Quotient Familial.
+              Certains critères complémentaires (résidence en QPV, statut scolaire, fratrie) peuvent donner accès à des aides supplémentaires non affichées ici.
+            </AlertDescription>
+          </Alert>
+
           {/* Message rappel pièces justificatives */}
           <Alert className="bg-amber-50 border-amber-200">
             <Info className="h-4 w-4 text-amber-600" />
@@ -563,8 +572,17 @@ export const SharedAidCalculator = ({
       {calculated && aids.length === 0 && (
         <>
           <div className="text-center py-4 text-muted-foreground text-sm">
-            Aucune aide disponible pour cette activité
+            Aucune aide disponible pour cette activité selon votre QF
           </div>
+
+          {/* Alerte limitations estimation */}
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-sm text-blue-900">
+              <strong>⚠️ Vérifiez vos droits.</strong> Cette estimation se base uniquement sur votre Quotient Familial.
+              D'autres aides (nationales, régionales, QPV) peuvent exister selon votre situation. Renseignez-vous auprès de l'organisateur.
+            </AlertDescription>
+          </Alert>
 
           {/* Message rappel pièces justificatives même sans aides */}
           <Alert className="bg-amber-50 border-amber-200">
