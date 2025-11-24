@@ -7,6 +7,7 @@ import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
 import { getCategoryStyle } from "@/constants/categories";
+import { HERO_IMAGE_CLASSES } from "@/lib/responsive";
 
 interface CompactHeroHeaderProps {
   /**
@@ -60,9 +61,10 @@ const getCategoryImage = (category: string): string => {
 };
 
 /**
- * Header hero compact optimisé pour mobile
+ * Header hero compact optimisé pour mobile et responsive
  *
- * - Hauteur réduite à 160px (vs ~250px)
+ * - Hauteur responsive : 240px (mobile) → 320px (tablet) → 400px (desktop)
+ * - Protection aspect ratio pour images portrait (objectPosition: center 30%)
  * - Gradient amélioré pour lisibilité texte
  * - Fallback élégant si pas d'image
  * - Back button avec backdrop blur
@@ -101,31 +103,34 @@ export function CompactHeroHeader({
   const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
 
   return (
-    <div
-      className="compact-hero-header relative w-full overflow-hidden"
-      style={{ height: "160px" }}
-    >
-      {/* Image de fond - toujours affichée (avec fallback catégorie) */}
-      <img
-        src={finalImageUrl}
-        alt={title}
-        className="w-full h-full object-cover object-center"
-        style={{ filter: "brightness(0.85)" }}
-        onError={(e) => {
-          // Si erreur de chargement, utiliser l'image de catégorie
-          if (!imgError) {
-            setImgError(true);
-            (e.target as HTMLImageElement).src = fallbackImage;
-          }
-        }}
-      />
-      {/* Gradient overlay pour lisibilité - intensité réduite */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
-        }}
-      />
+    <div className="compact-hero-header relative w-full overflow-hidden">
+      {/* Conteneur responsive avec dimensions standardisées */}
+      <div className={`relative w-full ${HERO_IMAGE_CLASSES.compact}`}>
+        {/* Image de fond - toujours affichée (avec fallback catégorie) */}
+        <img
+          src={finalImageUrl}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ 
+            filter: "brightness(0.85)",
+            objectPosition: "center 30%" // Meilleur cadrage pour images portrait
+          }}
+          onError={(e) => {
+            // Si erreur de chargement, utiliser l'image de catégorie
+            if (!imgError) {
+              setImgError(true);
+              (e.target as HTMLImageElement).src = fallbackImage;
+            }
+          }}
+        />
+        {/* Gradient overlay pour lisibilité - intensité réduite */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
+          }}
+        />
+      </div>
 
       {/* Back Button - Top Left avec backdrop blur */}
       <div className="absolute top-4 left-4 z-10">

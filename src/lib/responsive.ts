@@ -16,16 +16,27 @@ export const BREAKPOINTS = {
 /**
  * Hero image heights
  * Consistent across all pages with hero images
+ * Updated to match graphic charter specifications
  */
 export const HERO_IMAGE_CLASSES = {
-  // Mobile: 40vh max
-  // Tablet: 45vh max
-  // Desktop: 480px max
-  // Min height: 240px to ensure visibility
-  default: "h-[40vh] md:h-[45vh] lg:h-[480px] min-h-[240px]",
+  // Compact hero (activity details) - Progressive: 240px → 320px → 400px
+  compact: "h-[240px] md:h-[320px] lg:h-[400px]",
   
-  // For hero sections with content overlay (like landing page)
-  withOverlay: "h-[40vh] md:h-[45vh] lg:h-[480px] min-h-[320px]",
+  // Default hero (pages) - Progressive: 240px → 360px → 480px
+  default: "h-[240px] md:h-[360px] lg:h-[480px] min-h-[240px]",
+  
+  // With overlay (landing page) - Progressive: 320px → 400px → 480px
+  withOverlay: "h-[320px] md:h-[400px] lg:h-[480px] min-h-[320px]",
+} as const;
+
+/**
+ * Hero aspect ratios for image protection
+ * Prevents portrait images from being stretched
+ */
+export const HERO_ASPECT_RATIO = {
+  landscape: "aspect-[16/9]",
+  wide: "aspect-[21/9]",
+  square: "aspect-[1/1]",
 } as const;
 
 /**
