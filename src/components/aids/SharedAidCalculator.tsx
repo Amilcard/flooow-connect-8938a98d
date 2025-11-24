@@ -14,6 +14,7 @@ import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 import { calculateAidFromQF } from "@/utils/aidesCalculator";
 import { useNavigate } from "react-router-dom";
+import { calculateAllAids, SimulationContext } from "@/utils/FinancialAidEngine";
 
 interface Child {
   id: string;
@@ -52,9 +53,15 @@ interface Props {
 
 const TERRITORY_ICONS = {
   national: "🇫🇷",
+  regional: "🌍",
   region: "🌍",
+  departement: "🏢",
   metropole: "🏙️",
-  commune: "🏘️"
+  commune: "🏘️",
+  ville: "🏘️",
+  caf: "🏦",
+  caf_local: "🏦",
+  organisateur: "🤝"
 } as const;
 
 export const SharedAidCalculator = ({
@@ -136,6 +143,25 @@ export const SharedAidCalculator = ({
     return age;
   };
 
+
+
+// ... imports
+
+const TERRITORY_ICONS = {
+  national: "🇫🇷",
+  regional: "🌍", // Changed from region to match engine
+  region: "🌍",   // Keep for backward compat if needed
+  departement: "🏢",
+  metropole: "🏙️",
+  commune: "🏘️",
+  ville: "🏘️",    // Alias for commune
+  caf: "🏦",
+  caf_local: "🏦",
+  organisateur: "🤝"
+} as const;
+
+// ... inside component
+
   const handleCalculate = async () => {
     // Validation: soit un enfant sélectionné (logged in), soit un âge manuel (not logged in)
     if (isLoggedIn && !selectedChildId) {
@@ -166,49 +192,8 @@ export const SharedAidCalculator = ({
       return;
     }
 
-    // Pour les activités de saison scolaire, on calcule directement le Pass'Sport
-    if (periodType === "saison_scolaire") {
-      const passSportAmount = Math.min(70, activityPrice);
-      const calculatedAids: FinancialAid[] = [{
-        aid_name: "Pass'Sport",
-        amount: passSportAmount,
-        territory_level: "national",
-        official_link: "https://www.sports.gouv.fr/pass-sport",
-        is_informational: false
-      }];
-      
-      setAids(calculatedAids);
-      setCalculated(true);
-
-      const totalAids = passSportAmount;
-      const remainingPrice = Math.max(0, activityPrice - totalAids);
-
-      const aidData = {
-        childId: selectedChildId,
-        quotientFamilial: "N/A",
-        cityCode: cityCode || "N/A",
-        aids: calculatedAids,
-        totalAids,
-        remainingPrice
-      };
-
-      if (activityId) {
-        saveAidCalculation(aidData);
-      }
-      
-      if (onAidsCalculated) {
-        onAidsCalculated(aidData);
-      }
-
-      toast({
-        title: "Aide calculée",
-        description: `Pass'Sport : ${passSportAmount}€`,
-      });
-      return;
-    }
-
     // Pour les activités de vacances, on demande le QF
-    if (!quotientFamilial || !cityCode) {
+    if (periodType === "vacances" && (!quotientFamilial || !cityCode)) {
       toast({
         title: "Informations manquantes",
         description: "Veuillez renseigner le quotient familial et le code postal",
@@ -217,22 +202,15 @@ export const SharedAidCalculator = ({
       return;
     }
 
-    // Validation du code postal (format français)
-    if (!/^[0-9]{5}$/.test(cityCode)) {
-      toast({
-        title: "Code postal invalide",
-        description: "Veuillez saisir un code postal français valide (5 chiffres)",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Déterminer l'âge de l'enfant: depuis profil (logged in) ou manuel (not logged in)
+    // Déterminer l'âge de l'enfant
     let childAge: number;
+    let nbFratrie = 0;
+    
     if (isLoggedIn) {
       const selectedChild = children.find(c => c.id === selectedChildId);
       if (!selectedChild) return;
       childAge = calculateAge(selectedChild.dob);
+      nbFratrie = children.length;
     } else {
       childAge = parseInt(manualChildAge);
       if (isNaN(childAge) || childAge < 0 || childAge > 18) {
@@ -247,31 +225,44 @@ export const SharedAidCalculator = ({
 
     setLoading(true);
     try {
-      // Utiliser la fonction pure calculateAidFromQF au lieu de l'appel RPC
-      const result = calculateAidFromQF({
-        qf: parseInt(quotientFamilial),
-        prixActivite: activityPrice
-      });
+      // Préparation du contexte pour le moteur
+      const context: SimulationContext = {
+        age: childAge,
+        qf: parseInt(quotientFamilial) || 0, // 0 si NaN (cas Pass'Sport saison scolaire sans QF)
+        cityCode: cityCode || "00000",
+        activityPrice: activityPrice,
+        activityType: 'loisirs', // Par défaut, à affiner si on avait le type précis
+        nbFratrie: nbFratrie
+      };
 
-      // Créer l'aide au format attendu
-      const calculatedAids: FinancialAid[] = result.aide > 0 ? [{
-        aid_name: `Aide QF ${result.trancheQF}`,
-        amount: result.aide,
-        territory_level: "commune",
-        official_link: null,
-        is_informational: false
-      }] : [];
+      // Tentative de déduction du type d'activité depuis les catégories
+      if (activityCategories.some(c => c.toLowerCase().includes('sport'))) context.activityType = 'sport';
+      else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) context.activityType = 'culture';
+      else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) context.activityType = 'colo';
+
+      // Appel du moteur
+      const engineResults = calculateAllAids(context);
+
+      // Mapping vers le format attendu par le composant
+      const calculatedAids: FinancialAid[] = engineResults.map(res => ({
+        aid_name: res.name,
+        amount: res.amount,
+        territory_level: res.type,
+        official_link: null, // Le moteur ne fournit pas encore de lien
+        is_informational: res.isEstimate || false
+      }));
 
       setAids(calculatedAids);
       setCalculated(true);
 
-      const totalAids = result.aide;
-      const remainingPrice = result.resteACharge;
+      const totalAids = calculatedAids.reduce((sum, aid) => sum + aid.amount, 0);
+      const remainingPrice = Math.max(0, activityPrice - totalAids);
+      const economiePourcent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
 
       const aidData = {
         childId: selectedChildId,
-        quotientFamilial,
-        cityCode,
+        quotientFamilial: quotientFamilial || "N/A",
+        cityCode: cityCode || "N/A",
         aids: calculatedAids,
         totalAids,
         remainingPrice
@@ -287,15 +278,15 @@ export const SharedAidCalculator = ({
       }
 
       // Message adapté selon le résultat
-      if (result.aide > 0) {
+      if (totalAids > 0) {
         toast({
-          title: "Aide calculée",
-          description: `Aide disponible : ${result.aide.toFixed(2)}€ - Économie de ${result.economiePourcent}%`,
+          title: "Aides calculées",
+          description: `Aide totale : ${totalAids.toFixed(2)}€ - Économie de ${economiePourcent}%`,
         });
       } else {
         toast({
           title: "Simulation effectuée",
-          description: "Aucune aide disponible pour ce quotient familial",
+          description: "Aucune aide disponible pour ce profil",
           variant: "default"
         });
       }

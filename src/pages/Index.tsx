@@ -121,6 +121,24 @@ const Index = () => {
     refetchOnMount: false
   });
 
+  // Fetch user's children for aid simulation
+  const { data: children = [] } = useQuery({
+    queryKey: ["user-children-index"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from("children")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: isLoggedIn
+  });
+
   // Redirect logged-in non-family users away from home
   useEffect(() => {
     if (isLoggedIn && userRole && userRole !== 'family') {
@@ -198,7 +216,10 @@ const Index = () => {
             <section className="py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div data-tour-id="home-aids-card">
-                  <AidesFinancieresCard />
+                  <AidesFinancieresCard 
+                    userProfile={userProfile}
+                    children={children}
+                  />
                 </div>
                 <div data-tour-id="home-mobility-card">
                   <MobiliteCard />

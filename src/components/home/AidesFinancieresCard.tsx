@@ -4,13 +4,58 @@ import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
+import { useEffect, useState } from "react";
+import { calculateAllAids, SimulationContext } from "@/utils/FinancialAidEngine";
+
+interface AidesFinancieresCardProps {
+  userProfile?: any;
+  children?: any[];
+}
 
 /**
  * Carte portrait "Nos aides" - CityCrunch
  * Design moderne avec image plein cadre, texte centré sur overlay
  */
-export const AidesFinancieresCard = () => {
+export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieresCardProps) => {
   const navigate = useNavigate();
+  const [estimationText, setEstimationText] = useState("On simule. On économise.");
+  const [hasAids, setHasAids] = useState(false);
+
+  useEffect(() => {
+    if (userProfile && children && children.length > 0) {
+      // Simulation pour le premier enfant avec une activité "Sport" (cas le plus courant)
+      const child = children[0];
+      const age = calculateAge(child.dob);
+      
+      const context: SimulationContext = {
+        age,
+        qf: parseInt(userProfile.quotient_familial) || 0,
+        cityCode: userProfile.postal_code || "00000",
+        activityPrice: 200, // Prix fictif pour déclencher les aides au %
+        activityType: 'sport',
+        nbFratrie: children.length
+      };
+
+      const aids = calculateAllAids(context);
+      const total = aids.reduce((sum, a) => sum + a.amount, 0);
+
+      if (total > 0) {
+        setHasAids(true);
+        setEstimationText(`Jusqu'à ${total}€ d'aides pour ${child.first_name || "votre enfant"} !`);
+      }
+    }
+  }, [userProfile, children]);
+
+  const calculateAge = (dob: string) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
   return (
     <Card
@@ -46,8 +91,8 @@ export const AidesFinancieresCard = () => {
         </h2>
 
         {/* Sous-titre */}
-        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
-          On simule. On économise.
+        <p className={`text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed ${hasAids ? 'font-semibold text-yellow-300' : ''}`}>
+          {estimationText}
         </p>
 
         {/* CTA discret */}
