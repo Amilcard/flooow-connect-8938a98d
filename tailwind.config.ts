@@ -100,7 +100,7 @@ export default {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
       fontFamily: {
-        display: ['DM Serif Display', 'Playfair Display', 'Georgia', 'serif'],
+        display: ['Poppins', 'system-ui', '-apple-system'],
         sans: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         body: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },

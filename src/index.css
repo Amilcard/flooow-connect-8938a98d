@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -397,5 +397,18 @@
 
   .animate-fadeIn {
     animation: fadeIn 0.3s ease;
+  }
+
+  /* LOT B - Classes standardisées pour uniformiser les titres */
+  .title-page {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  .title-section {
+    @apply text-2xl font-semibold;
+  }
+
+  .title-card {
+    @apply text-xl font-semibold;
   }
 }

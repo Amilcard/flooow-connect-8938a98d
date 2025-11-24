@@ -441,7 +441,7 @@ const ActivityDetail = () => {
         {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
         <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
           {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+          <h1 className="title-page md:text-4xl">
             {activity.title}
           </h1>
           

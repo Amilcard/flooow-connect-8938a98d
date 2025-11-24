@@ -39,6 +39,7 @@ const Simulateur = () => {
   const [quotientFamilial, setQuotientFamilial] = useState("");
   const [ageEnfant, setAgeEnfant] = useState("");
   const [codePostal, setCodePostal] = useState("");
+  const [prixActivite, setPrixActivite] = useState<string>(String(DEFAULT_ACTIVITY_PRICE));
 
   // State des résultats
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +56,7 @@ const Simulateur = () => {
     const qf = parseFloat(quotientFamilial);
     const age = parseInt(ageEnfant);
     const cp = codePostal;
+    const prix = parseFloat(prixActivite);
 
     // Validation
     if (!qf || qf < 0 || qf > 3000) {
@@ -72,14 +74,19 @@ const Simulateur = () => {
       return;
     }
 
+    if (!prix || prix < 0 || prix > 10000) {
+      alert("Prix activité : entre 0 et 10000€");
+      return;
+    }
+
     setIsLoading(true);
 
     // Simulation de temps de calcul (500ms)
     setTimeout(() => {
-      // Utiliser la fonction unifiée calculateAidFromQF
+      // Utiliser la fonction unifiée calculateAidFromQF avec prix saisi
       const aidResult = calculateAidFromQF({
         qf: qf,
-        prixActivite: DEFAULT_ACTIVITY_PRICE
+        prixActivite: prix
       });
 
       // Générer un message informatif
@@ -102,6 +109,8 @@ const Simulateur = () => {
   const resetSimulation = () => {
     setHasSimulated(false);
     setCalculationResult(null);
+    // Réinitialiser aussi le prix par défaut
+    setPrixActivite(String(DEFAULT_ACTIVITY_PRICE));
   };
 
   const isEligible = calculationResult && calculationResult.montantAide > 0;
@@ -199,6 +208,26 @@ const Simulateur = () => {
                 </p>
               </div>
 
+              {/* Champ 4: Prix activité (nouveau) */}
+              <div className="space-y-2">
+                <Label htmlFor="prix" className="text-sm font-medium">
+                  Prix activité (€)
+                </Label>
+                <Input
+                  id="prix"
+                  type="number"
+                  placeholder="60"
+                  value={prixActivite}
+                  onChange={(e) => setPrixActivite(e.target.value)}
+                  min="0"
+                  max="10000"
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Prix de l'activité souhaitée
+                </p>
+              </div>
+
               {/* Bouton calcul */}
               <Button
                 onClick={handleCalculate}
@@ -237,8 +266,7 @@ const Simulateur = () => {
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-gray-700">Activité</span>
                       <div className="text-right">
-                        <span className="font-medium text-gray-900">{DEFAULT_ACTIVITY_PRICE}€</span>
-                        <span className="text-xs text-gray-500 italic ml-2">Prix indicatif - Test</span>
+                        <span className="font-medium text-gray-900">{calculationResult.prixInitial}€</span>
                       </div>
                     </div>
 
@@ -251,7 +279,7 @@ const Simulateur = () => {
 
                     <div className="flex justify-between items-center py-3 px-4 bg-orange-50 rounded-lg border border-orange-200">
                       <span className="text-lg font-bold text-gray-900">On paye</span>
-                      <span className="text-2xl font-extrabold text-orange-600">
+                      <span className="text-2xl font-bold text-orange-600">
                         {calculationResult.montantAPayer}€
                       </span>
                     </div>
@@ -393,15 +421,18 @@ const Simulateur = () => {
           </AccordionItem>
         </Accordion>
 
-        {/* Mentions footer */}
-        <div className="text-center space-y-2 py-6 border-t">
-          <p className="text-xs text-gray-500">
-            Simulation indicative. Montants réels confirmés à l'inscription.
-          </p>
-          <p className="text-xs text-gray-500">
-            Prix indicatif - Test. On s'appuie sur infos partenaires.
-          </p>
-        </div>
+        {/* Mentions footer améliorées */}
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-xs text-blue-900 space-y-2">
+            <p>
+              <strong>⚠️ Estimation basée sur le Quotient Familial uniquement.</strong> Cette simulation ne prend pas en compte certains critères spécifiques (QPV, statut scolaire, labellisation séjour).
+            </p>
+            <p>
+              Les aides réelles peuvent varier selon votre situation et les dispositifs locaux. Montants définitifs confirmés lors de l'inscription auprès de l'organisateur.
+            </p>
+          </AlertDescription>
+        </Alert>
       </div>
     </PageLayout>
   );

@@ -214,34 +214,52 @@ export const SharedAidCalculator = ({
 
     setLoading(true);
     try {
-      // Préparation du contexte pour le moteur
-      const context: SimulationContext = {
+      // Déduction du statut scolaire
+      let statut_scolaire: 'primaire' | 'college' | 'lycee' = 'primaire';
+      if (childAge >= 11 && childAge <= 14) statut_scolaire = 'college';
+      if (childAge >= 15) statut_scolaire = 'lycee';
+
+      // Déduction du type d'activité
+      let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';
+      if (activityCategories.some(c => c.toLowerCase().includes('sport'))) type_activite = 'sport';
+      else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) type_activite = 'culture';
+      else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) type_activite = 'vacances';
+
+      // Préparation du contexte pour le moteur V2
+      const context: EligibilityParams = {
         age: childAge,
-        qf: parseInt(quotientFamilial) || 0, // 0 si NaN (cas Pass'Sport saison scolaire sans QF)
-        cityCode: cityCode || "00000",
-        activityPrice: activityPrice,
-        activityType: 'loisirs', // Par défaut, à affiner si on avait le type précis
-        nbFratrie: nbFratrie
+        quotient_familial: parseInt(quotientFamilial) || 0,
+        code_postal: cityCode || "00000",
+        ville: "", // Non disponible dans ce formulaire simplifié
+        departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+        prix_activite: activityPrice,
+        type_activite: type_activite,
+        periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire',
+        nb_fratrie: nbFratrie,
+        allocataire_caf: !!quotientFamilial, // Heuristique : si QF renseigné, probablement allocataire
+        est_qpv: false, // Non demandé
+        conditions_sociales: {
+          beneficie_ARS: false,
+          beneficie_AEEH: false,
+          beneficie_AESH: false,
+          beneficie_bourse: false,
+          beneficie_ASE: false
+        }
       };
 
-      // Tentative de déduction du type d'activité depuis les catégories
-      if (activityCategories.some(c => c.toLowerCase().includes('sport'))) context.activityType = 'sport';
-      else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) context.activityType = 'culture';
-      else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) context.activityType = 'colo';
+      console.log("Engine V2 context:", context);
 
-      console.log("Engine context:", context);
-
-      // Appel du moteur
-      const engineResults = calculateAllAids(context);
-      console.log("Engine results:", engineResults);
+      // Appel du moteur V2
+      const engineResults = calculateAllEligibleAids(context);
+      console.log("Engine V2 results:", engineResults);
 
       // Mapping vers le format attendu par le composant
       const calculatedAids: FinancialAid[] = engineResults.map(res => ({
         aid_name: res.name,
         amount: res.amount,
-        territory_level: res.type,
-        official_link: null, // Le moteur ne fournit pas encore de lien
-        is_informational: res.isEstimate || false
+        territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+        official_link: null,
+        is_informational: false // Le moteur V2 retourne des aides éligibles
       }));
 
       setAids(calculatedAids);
@@ -510,6 +528,15 @@ export const SharedAidCalculator = ({
             </div>
           </div>
 
+          {/* Alerte limitations estimation */}
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-sm text-blue-900">
+              <strong>⚠️ Estimation indicative.</strong> Cette simulation se base sur votre Quotient Familial.
+              Certains critères complémentaires (résidence en QPV, statut scolaire, fratrie) peuvent donner accès à des aides supplémentaires non affichées ici.
+            </AlertDescription>
+          </Alert>
+
           {/* Message rappel pièces justificatives */}
           <Alert className="bg-amber-50 border-amber-200">
             <Info className="h-4 w-4 text-amber-600" />
@@ -546,8 +573,17 @@ export const SharedAidCalculator = ({
       {calculated && aids.length === 0 && (
         <>
           <div className="text-center py-4 text-muted-foreground text-sm">
-            Aucune aide disponible pour cette activité
+            Aucune aide disponible pour cette activité selon votre QF
           </div>
+
+          {/* Alerte limitations estimation */}
+          <Alert className="bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-sm text-blue-900">
+              <strong>⚠️ Vérifiez vos droits.</strong> Cette estimation se base uniquement sur votre Quotient Familial.
+              D'autres aides (nationales, régionales, QPV) peuvent exister selon votre situation. Renseignez-vous auprès de l'organisateur.
+            </AlertDescription>
+          </Alert>
 
           {/* Message rappel pièces justificatives même sans aides */}
           <Alert className="bg-amber-50 border-amber-200">
