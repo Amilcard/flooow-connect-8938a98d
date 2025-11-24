@@ -87,6 +87,7 @@ import Cookies from "./pages/legal/Cookies";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CGU from "./pages/legal/CGU";
 import Simulateur from "./pages/aides/Simulateur";
+import SimulateurV2 from "./pages/aides/SimulateurV2";
 import SearchFilters from "./pages/SearchFilters";
 
 const queryClient = new QueryClient();
@@ -174,6 +175,7 @@ const App = () => (
           <Route path="/mon-compte" element={<MonCompte />} />
           <Route path="/aides" element={<Aides />} />
           <Route path="/aides/simulateur" element={<Simulateur />} />
+          <Route path="/aides/simulateur-v2" element={<SimulateurV2 />} />
           <Route path="/aides-mobilite" element={<AidesMobilite />} />
           <Route path="/ma-ville-mon-actu" element={<MaVilleMonActu />} />
           <Route path="/mes-services" element={<MesServices />} />
