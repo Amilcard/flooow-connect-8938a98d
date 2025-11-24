@@ -7,7 +7,7 @@ import logoFlooow from "@/assets/logo-flooow.svg";
 import familiaAnimation from "@/assets/lottie/familia.json";
 import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
 import confetiAnimation from "@/assets/lottie/confeti.json";
-import logoNananere from "@/assets/logo-nananere.png";
+import logoNananere from "@/assets/logo-nananere.svg";
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
