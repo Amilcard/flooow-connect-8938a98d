@@ -86,8 +86,10 @@ export const SharedAidCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
 
-  // Check if user is logged in
-  const isLoggedIn = children.length > 0;
+  // Check if user is logged in based on profile existence
+  const isLoggedIn = !!userProfile;
+  // If logged in but no children, fall back to manual mode
+  const showChildSelector = isLoggedIn && children.length > 0;
 
   // Reset automatique au montage si resetOnMount est true
   useEffect(() => {
@@ -143,18 +145,18 @@ export const SharedAidCalculator = ({
     return age;
   };
 
-
+import { calculateAllAids, SimulationContext } from "@/utils/FinancialAidEngine";
 
 // ... imports
 
 const TERRITORY_ICONS = {
   national: "🇫🇷",
-  regional: "🌍", // Changed from region to match engine
-  region: "🌍",   // Keep for backward compat if needed
+  regional: "🌍",
+  region: "🌍",
   departement: "🏢",
   metropole: "🏙️",
   commune: "🏘️",
-  ville: "🏘️",    // Alias for commune
+  ville: "🏘️",
   caf: "🏦",
   caf_local: "🏦",
   organisateur: "🤝"
@@ -163,8 +165,10 @@ const TERRITORY_ICONS = {
 // ... inside component
 
   const handleCalculate = async () => {
-    // Validation: soit un enfant sélectionné (logged in), soit un âge manuel (not logged in)
-    if (isLoggedIn && !selectedChildId) {
+    console.log("Calculating aids...", { isLoggedIn, showChildSelector, manualChildAge, selectedChildId });
+    
+    // Validation: soit un enfant sélectionné (mode selecteur), soit un âge manuel (mode manuel)
+    if (showChildSelector && !selectedChildId) {
       toast({
         title: "Enfant requis",
         description: "Veuillez sélectionner un enfant",
@@ -173,7 +177,7 @@ const TERRITORY_ICONS = {
       return;
     }
 
-    if (!isLoggedIn && !manualChildAge) {
+    if (!showChildSelector && !manualChildAge) {
       toast({
         title: "Âge requis",
         description: "Veuillez indiquer l'âge de votre enfant",
@@ -206,7 +210,7 @@ const TERRITORY_ICONS = {
     let childAge: number;
     let nbFratrie = 0;
     
-    if (isLoggedIn) {
+    if (showChildSelector) {
       const selectedChild = children.find(c => c.id === selectedChildId);
       if (!selectedChild) return;
       childAge = calculateAge(selectedChild.dob);
@@ -240,8 +244,11 @@ const TERRITORY_ICONS = {
       else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) context.activityType = 'culture';
       else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) context.activityType = 'colo';
 
+      console.log("Engine context:", context);
+
       // Appel du moteur
       const engineResults = calculateAllAids(context);
+      console.log("Engine results:", engineResults);
 
       // Mapping vers le format attendu par le composant
       const calculatedAids: FinancialAid[] = engineResults.map(res => ({
@@ -309,9 +316,9 @@ const TERRITORY_ICONS = {
   if (activityPrice <= 0) return null;
 
   return (
-    <Card className="p-6 space-y-4">
+    <Card className="p-6 space-y-4 border-2 border-primary/20">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg">💰 Évaluer ton aide</h3>
+        <h3 className="font-semibold text-lg">💰 Évaluer ton aide (v2)</h3>
         {calculated && (
           <Badge variant="secondary" className="gap-1">
             <CheckCircle2 size={14} />
@@ -322,8 +329,8 @@ const TERRITORY_ICONS = {
 
       <Separator />
 
-      {/* Sélecteur d'enfant (logged in) OU âge manuel (not logged in) */}
-      {isLoggedIn ? (
+      {/* Sélecteur d'enfant (si enfants dispos) OU âge manuel */}
+      {showChildSelector ? (
         <div className="space-y-2">
           <Label htmlFor="child-select">
             Enfant concerné <span className="text-destructive">*</span>
@@ -438,7 +445,7 @@ const TERRITORY_ICONS = {
         onClick={handleCalculate}
         disabled={
           loading ||
-          (isLoggedIn ? !selectedChildId : !manualChildAge) ||
+          (showChildSelector ? !selectedChildId : !manualChildAge) ||
           (periodType === "vacances" && (!quotientFamilial || !cityCode))
         }
         className="w-full"

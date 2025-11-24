@@ -87,7 +87,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
 
         {/* Titre */}
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Nos aides
+          Nos aides (v2)
         </h2>
 
         {/* Sous-titre */}
