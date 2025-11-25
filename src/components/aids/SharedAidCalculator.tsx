@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight, Lightbulb, ChevronDown } from "lucide-react";
@@ -16,6 +17,15 @@ import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 import { calculateAidFromQF } from "@/utils/aidesCalculator";
 import { useNavigate } from "react-router-dom";
 import { calculateAllEligibleAids, calculateQuickEstimate, EligibilityParams, QuickEstimateParams, CalculatedAid } from "@/utils/FinancialAidEngine";
+import { 
+  getTypeActivite, 
+  shouldShowQF, 
+  shouldShowConditionSociale,
+  shouldShowAllocataireCAF,
+  getQFSectionTitle,
+  getQFJustification,
+  getContextualMessage
+} from "@/utils/AidCalculatorHelpers";
 
 interface Child {
   id: string;
@@ -89,6 +99,15 @@ export const SharedAidCalculator = ({
   const [calculated, setCalculated] = useState(false);
   const [isQuickEstimate, setIsQuickEstimate] = useState(false); // Track if it's a quick estimate
   const [showAdvancedCriteria, setShowAdvancedCriteria] = useState(false); // Toggle advanced criteria section
+  const [activityPeriod, setActivityPeriod] = useState<'scolaire'|'vacances'>('scolaire'); // Activity period
+  
+  // Nouveaux states pour conditions sociales (Étape 2.4)
+  const [hasARS, setHasARS] = useState(false);
+  const [hasAEEH, setHasAEEH] = useState(false);
+  const [hasBourse, setHasBourse] = useState(false);
+  
+  // Nouveau state pour allocataire CAF (Étape 2.5)
+  const [isAllocataireCaf, setIsAllocataireCaf] = useState<'oui'|'non'|''>('');
 
   // Check if user is logged in based on profile existence
   const isLoggedIn = !!userProfile;
@@ -217,7 +236,12 @@ export const SharedAidCalculator = ({
       if (childAge >= 11 && childAge <= 14) statut_scolaire = 'college';
       if (childAge >= 15) statut_scolaire = 'lycee';
 
-      // Déduction du type d'activité
+      // Déduction du type d'activité (NOUVEAU - Étape 2.2)
+      const typeActivite = getTypeActivite(activityCategories);
+      console.log('🎯 Type activité détecté:', typeActivite, 'Catégories:', activityCategories);
+      console.log('📅 Période:', activityPeriod, 'Âge:', childAge, 'CP:', cityCode);
+
+      // Déduction du type d'activité (ANCIEN CODE - à supprimer plus tard)
       let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';
       if (activityCategories.some(c => c.toLowerCase().includes('sport'))) type_activite = 'sport';
       else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) type_activite = 'culture';
@@ -238,7 +262,8 @@ export const SharedAidCalculator = ({
           type_activite: type_activite,
           periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire',
           nb_fratrie: nbFratrie,
-          allocataire_caf: !!quotientFamilial, 
+          allocataire_caf: !!quotientFamilial,
+          statut_scolaire: statut_scolaire, // Ajout pour corriger l'erreur TypeScript
           est_qpv: false, 
           conditions_sociales: {
             beneficie_ARS: false,
@@ -251,7 +276,7 @@ export const SharedAidCalculator = ({
         const engineResults = calculateAllEligibleAids(context);
         calculatedAids = engineResults.map(res => ({
           aid_name: res.name,
-          amount: res.amount,
+          amount: res.montant, // Correction: utiliser montant au lieu de amount
           territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
           official_link: null,
           is_informational: false,
@@ -272,7 +297,7 @@ export const SharedAidCalculator = ({
         // Add detected aids
         const detected = result.aides_detectees.map(res => ({
           aid_name: res.name,
-          amount: res.amount,
+          amount: res.montant, // Correction: utiliser montant
           territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
           official_link: null,
           is_informational: false,
@@ -441,36 +466,161 @@ export const SharedAidCalculator = ({
         />
       </div>
 
-      {/* Advanced Criteria Section (Collapsible) */}
-      <Collapsible open={showAdvancedCriteria} onOpenChange={setShowAdvancedCriteria}>
-        <CollapsibleTrigger asChild>
-          <Button variant="ghost" className="w-full justify-between px-0 hover:bg-transparent">
-            <span className="text-sm font-medium text-muted-foreground">Critères supplémentaires (optionnel)</span>
-            <ChevronDown className={`h-4 w-4 transition-transform ${showAdvancedCriteria ? 'rotate-180' : ''}`} />
-          </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-4 pt-2">
-          <div className="space-y-2" data-tour-id="qf-selector-container">
-            <Label htmlFor="qf" className="flex items-center gap-2">
-              Quotient Familial
-              <span className="text-xs text-muted-foreground">(utilisé uniquement pour certaines aides CAF)</span>
+      {/* Période de l'activité (nouveau champ) */}
+      <div className="space-y-2">
+        <Label htmlFor="activity-period">
+          Quand a lieu l'activité ? <span className="text-destructive">*</span>
+        </Label>
+        <RadioGroup value={activityPeriod} onValueChange={(value) => setActivityPeriod(value as 'scolaire'|'vacances')}>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="scolaire" id="period-scolaire" />
+            <Label htmlFor="period-scolaire" className="font-normal cursor-pointer">
+              Pendant l'année scolaire (septembre-juin)
             </Label>
-            <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
-              <SelectTrigger id="qf">
-                <SelectValue placeholder="Je ne sais pas" />
-              </SelectTrigger>
-              <SelectContent>
-                {QF_BRACKETS.map(bracket => (
-                  <SelectItem key={bracket.id} value={String(bracket.value)}>
-                    {bracket.label}
-                  </SelectItem>
-                ))}
-                <SelectItem value="0">Je ne sais pas</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="vacances" id="period-vacances" />
+            <Label htmlFor="period-vacances" className="font-normal cursor-pointer">
+              Pendant les vacances scolaires
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {/* Bloc Condition Sociale - Affichage conditionnel (NOUVEAU - Étape 2.4) */}
+      {(() => {
+        const typeAct = getTypeActivite(activityCategories);
+        const childAgeForDisplay = showChildSelector && selectedChildId 
+          ? calculateAge(children.find(c => c.id === selectedChildId)?.dob || '')
+          : parseInt(manualChildAge) || 0;
+        
+        return shouldShowConditionSociale(typeAct, childAgeForDisplay) && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium">
+                Critères nécessaires pour Pass'Sport (50€)
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label>Avez-vous une aide sociale ?</Label>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="ars"
+                    checked={hasARS}
+                    onChange={(e) => setHasARS(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="ars" className="font-normal cursor-pointer">
+                    Allocation de rentrée scolaire (ARS)
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="aeeh"
+                    checked={hasAEEH}
+                    onChange={(e) => setHasAEEH(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="aeeh" className="font-normal cursor-pointer">
+                    Allocation enfant handicapé (AEEH)
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="bourse"
+                    checked={hasBourse}
+                    onChange={(e) => setHasBourse(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="bourse" className="font-normal cursor-pointer">
+                    Bourse scolaire
+                  </Label>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* QF Section - Affichage conditionnel (NOUVEAU - Étape 2.3) */}
+      {(() => {
+        // Calculer le type d'activité pour l'affichage conditionnel
+        const typeAct = getTypeActivite(activityCategories);
+        const childAgeForDisplay = showChildSelector && selectedChildId 
+          ? calculateAge(children.find(c => c.id === selectedChildId)?.dob || '')
+          : parseInt(manualChildAge) || 0;
+        
+        return shouldShowQF(typeAct, activityPeriod, childAgeForDisplay, cityCode) && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium">
+                {getQFSectionTitle(typeAct, activityPeriod)}
+              </p>
+            </div>
+            <div className="space-y-2" data-tour-id="qf-selector-container">
+              <Label htmlFor="qf" className="flex items-center gap-2">
+                Quotient Familial
+              </Label>
+              <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
+                <SelectTrigger id="qf">
+                  <SelectValue placeholder="Je ne sais pas" />
+                </SelectTrigger>
+                <SelectContent>
+                  {QF_BRACKETS.map(bracket => (
+                    <SelectItem key={bracket.id} value={String(bracket.value)}>
+                      {bracket.label}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="0">Je ne sais pas</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {getQFJustification(typeAct, activityPeriod)}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Bloc Allocataire CAF - Affichage conditionnel (NOUVEAU - Étape 2.5) */}
+      {(() => {
+        const typeAct = getTypeActivite(activityCategories);
+        
+        return shouldShowAllocataireCAF(typeAct, activityPeriod) && (
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium">
+                Statut allocataire CAF (requis pour aides vacances)
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label>Êtes-vous allocataire CAF ?</Label>
+              <RadioGroup value={isAllocataireCaf} onValueChange={(value) => setIsAllocataireCaf(value as 'oui'|'non')}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="oui" id="caf-oui" />
+                  <Label htmlFor="caf-oui" className="font-normal cursor-pointer">
+                    Oui
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="non" id="caf-non" />
+                  <Label htmlFor="caf-non" className="font-normal cursor-pointer">
+                    Non
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+        );
+      })()}
+
 
       {/* Bouton Calculer */}
       <Button
