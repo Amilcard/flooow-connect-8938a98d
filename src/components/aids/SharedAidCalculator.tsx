@@ -101,13 +101,14 @@ export const SharedAidCalculator = ({
   const [showAdvancedCriteria, setShowAdvancedCriteria] = useState(false); // Toggle advanced criteria section
   // Initialiser depuis periodType prop (si l'activité a déjà une période définie)
   const [activityPeriod, setActivityPeriod] = useState<'scolaire'|'vacances'>(() => {
-    if (periodType) {
-      const p = periodType.toLowerCase();
+    // Safety check: ensure periodType is a valid string
+    if (periodType && typeof periodType === 'string' && periodType.trim() !== '') {
+      const p = periodType.toLowerCase().trim();
       if (p === 'vacances' || p === 'school_holidays' || p.includes('vacances')) {
         return 'vacances';
       }
     }
-    return 'scolaire';
+    return 'scolaire'; // Safe fallback
   });
   
   // Nouveaux states pour conditions sociales (Étape 2.4)
