@@ -99,7 +99,16 @@ export const SharedAidCalculator = ({
   const [calculated, setCalculated] = useState(false);
   const [isQuickEstimate, setIsQuickEstimate] = useState(false); // Track if it's a quick estimate
   const [showAdvancedCriteria, setShowAdvancedCriteria] = useState(false); // Toggle advanced criteria section
-  const [activityPeriod, setActivityPeriod] = useState<'scolaire'|'vacances'>('scolaire'); // Activity period
+  // Initialiser depuis periodType prop (si l'activité a déjà une période définie)
+  const [activityPeriod, setActivityPeriod] = useState<'scolaire'|'vacances'>(() => {
+    if (periodType) {
+      const p = periodType.toLowerCase();
+      if (p === 'vacances' || p === 'school_holidays' || p.includes('vacances')) {
+        return 'vacances';
+      }
+    }
+    return 'scolaire';
+  });
   
   // Nouveaux states pour conditions sociales (Étape 2.4)
   const [hasARS, setHasARS] = useState(false);
@@ -468,26 +477,28 @@ export const SharedAidCalculator = ({
         />
       </div>
 
-      {/* Période de l'activité (nouveau champ) */}
-      <div className="space-y-2">
-        <Label htmlFor="activity-period">
-          Quand a lieu l'activité ? <span className="text-destructive">*</span>
-        </Label>
-        <RadioGroup value={activityPeriod} onValueChange={(value) => setActivityPeriod(value as 'scolaire'|'vacances')}>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="scolaire" id="period-scolaire" />
-            <Label htmlFor="period-scolaire" className="font-normal cursor-pointer">
-              Pendant l'année scolaire (septembre-juin)
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="vacances" id="period-vacances" />
-            <Label htmlFor="period-vacances" className="font-normal cursor-pointer">
-              Pendant les vacances scolaires
-            </Label>
-          </div>
-        </RadioGroup>
-      </div>
+      {/* Période de l'activité - Masquer si déjà définie par l'activité */}
+      {!periodType && (
+        <div className="space-y-2">
+          <Label htmlFor="activity-period">
+            Quand a lieu l'activité ? <span className="text-destructive">*</span>
+          </Label>
+          <RadioGroup value={activityPeriod} onValueChange={(value) => setActivityPeriod(value as 'scolaire'|'vacances')}>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="scolaire" id="period-scolaire" />
+              <Label htmlFor="period-scolaire" className="font-normal cursor-pointer">
+                Pendant l'année scolaire (septembre-juin)
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="vacances" id="period-vacances" />
+              <Label htmlFor="period-vacances" className="font-normal cursor-pointer">
+                Pendant les vacances scolaires
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+      )}
 
       {/* Bloc Condition Sociale - Affichage conditionnel (NOUVEAU - Étape 2.4) */}
       {(() => {
@@ -591,10 +602,12 @@ export const SharedAidCalculator = ({
       })()}
 
       {/* Bloc Allocataire CAF - Affichage conditionnel (NOUVEAU - Étape 2.5) */}
+      {/* Masquer si QF déjà renseigné (déduction automatique : QF implique CAF) */}
       {(() => {
         const typeAct = getTypeActivite(activityCategories);
+        const hasQF = !!quotientFamilial && quotientFamilial !== '';
         
-        return shouldShowAllocataireCAF(typeAct, activityPeriod) && (
+        return shouldShowAllocataireCAF(typeAct, activityPeriod) && !hasQF && (
           <div className="space-y-4 border-t pt-4">
             <div className="flex items-center gap-2">
               <Info className="h-4 w-4 text-primary" />
