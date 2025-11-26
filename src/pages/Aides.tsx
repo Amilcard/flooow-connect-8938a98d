@@ -164,9 +164,8 @@ const Aides = () => {
           userProfile={userProfile}
           children={children}
           activityPrice={100}
-          periodType="vacances"
+          {/* periodType removed: user chooses scolaire or vacances */}
         />
-
 
 
         {/* Aids Sections List with Redesigned Cards */}
