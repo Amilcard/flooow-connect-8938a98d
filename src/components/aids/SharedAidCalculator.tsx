@@ -299,7 +299,8 @@ export const SharedAidCalculator = ({
           age: childAge,
           type_activite: type_activite,
           prix_activite: activityPrice,
-          code_postal: cityCode || undefined
+          code_postal: cityCode || undefined,
+          periode: activityPeriod // CRITICAL: Filter aids by period
         };
         const result = calculateQuickEstimate(params);
         
