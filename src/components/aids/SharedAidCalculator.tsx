@@ -80,7 +80,7 @@ export const SharedAidCalculator = ({
   activityId = "",
   activityPrice = 100,
   activityCategories = [],
-  periodType = "vacances",
+  periodType, // No default: undefined allows user to choose period
   userProfile,
   children = [],
   onAidsCalculated,
