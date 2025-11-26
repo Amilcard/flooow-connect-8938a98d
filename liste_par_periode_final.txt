@@ -1,0 +1,76 @@
+📋 Classification des activités par période...
+
+====================================================================================================
+🏫 ACTIVITÉS PÉRIODE SCOLAIRE
+====================================================================================================
+Total: 152 activités
+
+• Atelier Photo & Création - 150€ (Culture)
+• Éveil Musique - Conservatoire - 60€ (Culture)
+• Atelier Orientation & Aide Parcours - 60€ (Scolarité)
+• Programme Prépa Brevet - Intensif - 60€ (Scolarité)
+• Club Sciences - Expériences - 120€ (Scolarité)
+• Atelier Langues - Anglais Débutant - 100€ (Scolarité)
+• Atelier Arts Plastiques - 80€ (Culture, Loisirs)
+• Stage Remise à Niveau Maths - 20€ (Scolarité)
+• Atelier Cuisine Junior - 80€ (Loisirs)
+• Randonnée Nature Week-end - 60€ (Loisirs)
+• Atelier Lecture & Compréhension - 120€ (Scolarité)
+• Parcours Ninja & Parkour - 120€ (Sport)
+• Atelier Hip-Hop - CréaRythme - 60€ (Culture)
+• Club Échecs - Débutants - 150€ (Loisirs)
+• Parcours Aventure en Forêt - 20€ (Loisirs)
+• Aide aux Devoirs - Primaire - 20€ (Scolarité)
+• Atelier Soutien Scolaire - Méthodo - 20€ (Scolarité)
+• Atelier Robotique Ludique - 150€ (Loisirs)
+• École Multisports - Découverte - 90€ (Sport)
+• Club Natation - Initiation & Perfectionnement - 80€ (Sport)
+• Atelier Escalade Ados - 120€ (Sport)
+• Stage Danse Urban Sports - 180€ (Sport, Vacances)
+• Cycle Judo Enfants - 150€ (Sport)
+• Stage Foot - Académie Juniors - 120€ (Sport, Vacances)
+• Chorale Enfants - Initiation - 60€ (Culture)
+• Atelier Basket Jeunes - 120€ (Sport)
+• Studio Ciné Kids - Initiation - 100€ (Culture)
+• Stage Musique Électro Teens - 100€ (Culture)
+
+====================================================================================================
+🏖️ ACTIVITÉS PÉRIODE VACANCES
+====================================================================================================
+Total: 29 activités
+
+• Centre Aéré - Mini-aventures - 150€ (Loisirs)
+• Colonie Multi-activités - Vacances - 600€ (Vacances)
+• Club Jeux de Société - Après-midi - 70€ (Loisirs)
+• Séjour Linguistique Court - Vacances - 680€ (Vacances)
+• Stage Football Été - 120€ (Sport, Vacances)
+
+====================================================================================================
+⚠️ ACTIVITÉS MIXTES (À CORRIGER)
+====================================================================================================
+Total: 44 activités
+
+• Stage Cirque - Vacances - 150€ (Vacances)
+  → 1 sessions scolaires, 3 sessions vacances
+• Camp Sport/Loisirs - Vacances - 520€ (Loisirs, Vacances)
+  → 1 sessions scolaires, 4 sessions vacances
+• Séjour Culturel - Musées & Théâtre - 580€ (Vacances)
+  → 2 sessions scolaires, 4 sessions vacances
+• Atelier Jardinage Urbain - 150€ (Loisirs)
+  → 23 sessions scolaires, 4 sessions vacances
+• Stage Théâtre Intensif - Vacances - 60€ (Vacances)
+  → 2 sessions scolaires, 2 sessions vacances
+• Colonie Thématique Science & Découvertes - 650€ (Vacances)
+  → 2 sessions scolaires, 4 sessions vacances
+• Séjour Nature & Survie - Vacances - 550€ (Vacances)
+  → 2 sessions scolaires, 4 sessions vacances
+• Cours de Théâtre Jeune Public - 80€ (Culture)
+  → 50 sessions scolaires, 8 sessions vacances
+
+====================================================================================================
+📊 RÉSUMÉ
+====================================================================================================
+Activités scolaires: 28
+Activités vacances: 5
+Activités mixtes: 8
+TOTAL: 41 activités distinctes
