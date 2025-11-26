@@ -270,7 +270,7 @@ export const SharedAidCalculator = ({
           departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
           prix_activite: activityPrice,
           type_activite: type_activite,
-          periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire',
+          periode: activityPeriod === 'vacances' ? 'vacances' : 'saison_scolaire',
           nb_fratrie: nbFratrie,
           allocataire_caf: !!quotientFamilial,
           statut_scolaire: statut_scolaire, // Ajout pour corriger l'erreur TypeScript

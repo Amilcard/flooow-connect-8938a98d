@@ -625,6 +625,7 @@ export interface QuickEstimateParams {
   prix_activite: number;
   ville?: string;
   code_postal?: string;
+  periode?: 'vacances' | 'saison_scolaire'; // Added for strict period filtering
 }
 
 export interface EstimateResult {
@@ -703,7 +704,8 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
   }
 
   // Pass Colo (potentiel si 11 ans + vacances)
-  if (params.age === 11 && params.type_activite === 'vacances') {
+  // CRITICAL: Check period strictly
+  if (params.age === 11 && params.type_activite === 'vacances' && params.periode !== 'saison_scolaire') {
     aides_potentielles.push({
       name: 'Pass Colo',
       montant_possible: '200-350€ selon QF',
@@ -712,7 +714,8 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
   }
 
   // VACAF (potentiel si vacances)
-  if (params.type_activite === 'vacances') {
+  // CRITICAL: Check period strictly
+  if (params.type_activite === 'vacances' && params.periode !== 'saison_scolaire') {
     aides_potentielles.push({
       name: 'VACAF (CAF)',
       montant_possible: '100-400€',
@@ -720,12 +723,13 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
     });
   }
 
-  // CAF Loire (potentiel si âge 3-17)
-  if (params.age >= 3 && params.age <= 17) {
+  // CAF Loire (potentiel si âge 3-17 + vacances)
+  // CRITICAL: Check period strictly (Vacation aid only)
+  if (params.age >= 3 && params.age <= 17 && params.periode !== 'saison_scolaire') {
     aides_potentielles.push({
       name: 'CAF Loire – Temps Libre',
       montant_possible: '20-80€ selon QF',
-      criteres_requis: ['Être allocataire CAF', 'QF ≤ 850€'],
+      criteres_requis: ['Être allocataire CAF', 'QF ≤ 850€', 'Période vacances scolaires'],
     });
   }
 

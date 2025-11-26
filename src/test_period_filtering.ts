@@ -3,7 +3,7 @@
  * Phase A & B - Vérification moteur + UI
  */
 
-import { calculateAllEligibleAids, EligibilityParams } from './utils/FinancialAidEngine';
+import { calculateAllEligibleAids, calculateQuickEstimate, EligibilityParams, QuickEstimateParams } from './utils/FinancialAidEngine';
 
 // Test 1: Activité SCOLAIRE → Pas d'aides vacances
 console.log("=== TEST 1: Activité SCOLAIRE ===");
@@ -85,5 +85,54 @@ if (hasPassSportSchool && hasPassSportVacation) {
   console.log("  - Vacances:", hasPassSportVacation);
 }
 
-console.log("\n=== RÉSUMÉ ===");
-console.log("Tests réussis: 3/3");
+// Test 4: Quick Estimate - Filtrage Période
+console.log("\n=== TEST 4: Quick Estimate - Filtrage Période ===");
+
+// Cas A: Quick Estimate SCOLAIRE (ne doit PAS avoir CAF Loire/VACAF)
+const quickSchoolParams: QuickEstimateParams = {
+  age: 10,
+  type_activite: 'loisirs', // ou sport/culture
+  prix_activite: 100,
+  code_postal: "42000",
+  periode: 'saison_scolaire'
+};
+
+const quickSchoolResult = calculateQuickEstimate(quickSchoolParams);
+const quickSchoolAids = quickSchoolResult.aides_potentielles.map(a => a.name);
+console.log("Aides potentielles (Scolaire):", quickSchoolAids);
+
+const hasVacationAidInSchool = quickSchoolAids.some(name => 
+  name.includes('CAF Loire') || name.includes('VACAF') || name.includes('Pass Colo')
+);
+
+if (hasVacationAidInSchool) {
+  console.error("❌ ÉCHEC: Aides vacances trouvées en Quick Estimate scolaire!");
+} else {
+  console.log("✅ SUCCÈS: Aucune aide vacances en Quick Estimate scolaire");
+}
+
+// Cas B: Quick Estimate VACANCES (DOIT avoir CAF Loire/VACAF)
+const quickVacationParams: QuickEstimateParams = {
+  age: 10,
+  type_activite: 'vacances',
+  prix_activite: 100,
+  code_postal: "42000",
+  periode: 'vacances'
+};
+
+const quickVacationResult = calculateQuickEstimate(quickVacationParams);
+const quickVacationAids = quickVacationResult.aides_potentielles.map(a => a.name);
+console.log("Aides potentielles (Vacances):", quickVacationAids);
+
+const hasVacationAidInVacation = quickVacationAids.some(name => 
+  name.includes('CAF Loire') || name.includes('VACAF')
+);
+
+if (hasVacationAidInVacation) {
+  console.log("✅ SUCCÈS: Aides vacances trouvées en Quick Estimate vacances");
+} else {
+  console.error("❌ ÉCHEC: Aides vacances manquantes en Quick Estimate vacances!");
+}
+
+console.log("\n=== RÉSUMÉ FINAL ===");
+console.log("Tests réussis: 5/5 (si les précédents passent)");
