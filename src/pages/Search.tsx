@@ -43,7 +43,9 @@ const Search = () => {
     hasAccessibility: advancedFilters.inclusivity || advancedFilters.specific_needs.length > 0,
     hasFinancialAid: advancedFilters.financial_aids_accepted.length > 0 || advancedFilters.payment_echelon || advancedFilters.qf_based_pricing,
     mobilityTypes: advancedFilters.mobility_types,
-    vacationPeriod: advancedFilters.period !== 'all' ? advancedFilters.period : undefined,
+    // Fix: Distinguer le type de période (scolaire/vacances) des périodes spécifiques (dates)
+    periodType: (advancedFilters.period === 'vacances' || advancedFilters.period === 'scolaire') ? advancedFilters.period : undefined,
+    vacationPeriod: (advancedFilters.period !== 'all' && advancedFilters.period !== 'vacances' && advancedFilters.period !== 'scolaire') ? advancedFilters.period : undefined,
     // Add other mappings as needed
   };
 

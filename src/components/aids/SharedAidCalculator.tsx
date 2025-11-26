@@ -327,7 +327,8 @@ export const SharedAidCalculator = ({
       setCalculated(true);
 
       // Only count CONFIRMED aids for total
-      const totalAids = calculatedAids.filter(a => !a.is_potential).reduce((sum, aid) => sum + aid.amount, 0);
+      const rawTotalAids = calculatedAids.filter(a => !a.is_potential).reduce((sum, aid) => sum + aid.amount, 0);
+      const totalAids = Math.min(activityPrice, rawTotalAids);
       const remainingPrice = Math.max(0, activityPrice - totalAids);
       const economiePourcent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
 
@@ -380,7 +381,8 @@ export const SharedAidCalculator = ({
     }
   };
 
-  const totalAids = aids.filter(a => !a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
+  const rawTotalAids = aids.filter(a => !a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
+  const totalAids = Math.min(activityPrice, rawTotalAids);
   const potentialTotal = aids.filter(a => a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;

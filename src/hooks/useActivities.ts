@@ -35,6 +35,8 @@ interface ActivityFilters {
   territoryId?: string; // Nouveau: filtre par territoire
   categories?: string[]; // Nouveau: support multi-catégories
   mobilityTypes?: string[]; // Nouveau: support mobilité
+  periodType?: 'vacances' | 'scolaire' | 'all'; // Nouveau: filtre par type de période
+  financialAidsAccepted?: string[]; // Fix: Ajout de la propriété manquante
 }
 
 const mapActivityFromDB = (dbActivity: any): Activity => {
@@ -161,6 +163,19 @@ export const useActivities = (filters?: ActivityFilters) => {
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
         query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
+      }
+
+      // Filtrer par type de période (scolaire vs vacances)
+      if (filters?.periodType && filters.periodType !== 'all') {
+        // Mapping pour gérer les incohérences potentielles de la BDD (ex: 'school_holidays' vs 'vacances')
+        if (filters.periodType === 'vacances') {
+          query = query.in('period_type', ['vacances', 'school_holidays']);
+        } else if (filters.periodType === 'scolaire') {
+          // Mapping robuste pour la période scolaire
+          query = query.in('period_type', ['scolaire', 'school_period', 'annee_scolaire', 'school']);
+        } else {
+          query = query.eq('period_type', filters.periodType);
+        }
       }
 
       // Filtrer par période selon les DATES réelles des sessions

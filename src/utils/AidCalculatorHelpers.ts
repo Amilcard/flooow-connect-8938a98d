@@ -7,11 +7,11 @@
  * Determine activity type from categories
  * Priority: vacances > sport > culture > loisir
  */
-export function getTypeActivite(categories: string[]): 'sport' | 'culture' | 'vacances' | 'loisir' {
+export function getTypeActivite(categories: string[]): 'sport' | 'culture' | 'vacances' | 'loisirs' {
   if (categories.some(c => c.toLowerCase().includes('vacances'))) return 'vacances';
   if (categories.some(c => c.toLowerCase().includes('sport'))) return 'sport';
   if (categories.some(c => c.toLowerCase().includes('culture'))) return 'culture';
-  return 'loisir';
+  return 'loisirs';
 }
 
 /**
@@ -70,9 +70,12 @@ export function shouldShowQF(
   if (typeAct === 'vacances') return true;
 
   // Show for Loire (42) during school period if age 3-17
+  // REMOVED per user request: CAF aids should only appear for vacation activities
+  /*
   if (periode === 'scolaire' && cp.startsWith('42') && age >= 3 && age <= 17) {
     return true; // CAF Loire Temps Libre
   }
+  */
 
   // Hide for all other cases
   return false;
@@ -185,6 +188,8 @@ export function getAidesEligibles(context: {
   }
 
   // CAF Loire Temps Libre (school period, Loire)
+  // REMOVED per user request: CAF aids should only appear for vacation activities
+  /*
   if (
     context.cp.startsWith('42') &&
     context.periode === 'scolaire' &&
@@ -193,6 +198,7 @@ export function getAidesEligibles(context: {
   ) {
     output.push('CAF Temps Libre Loire');
   }
+  */
 
   return output;
 }

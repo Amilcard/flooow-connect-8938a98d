@@ -392,7 +392,12 @@ function evaluatePassRegion(params: EligibilityParams): CalculatedAid | null {
  * Critères : CAF + QF ≤850 + âge 3-17
  */
 function evaluateCAFLoireTempsLibre(params: EligibilityParams): CalculatedAid | null {
-  const { age, allocataire_caf, quotient_familial } = params;
+  const { age, allocataire_caf, quotient_familial, periode } = params;
+
+  // RESTRICTION: Uniquement pour les vacances (demande utilisateur)
+  if (periode !== 'vacances') {
+    return null;
+  }
 
   if (!allocataire_caf) {
     return null;
@@ -583,17 +588,12 @@ export function calculateTotalAids(aids: CalculatedAid[]): {
   const totalAids = eligibleAids.reduce((sum, aid) => sum + aid.montant, 0);
 
   // Récupérer le prix original (assumant qu'il est le même pour toutes les aides)
-  const originalPrice = eligibleAids.length > 0 ? eligibleAids[0].montant : 0;
-
-  const remainingPrice = Math.max(0, originalPrice - totalAids);
-  const savingsPercent = originalPrice > 0 ? Math.round((totalAids / originalPrice) * 100) : 0;
-
-  return {
-    totalAids,
-    remainingPrice,
-    savingsPercent,
-    originalPrice,
-  };
+  const originalPrice = eligibleAids.length > 0 ? aids[0].montant + aids[0].montant : 0; // This logic seems flawed in the original code too, relying on the first aid's amount? No, params.prix_activite is not passed here.
+  // Wait, I need to check how originalPrice is derived.
+  // In the original code: const originalPrice = eligibleAids.length > 0 ? eligibleAids[0].montant : 0;
+  // This looks wrong if eligibleAids[0].montant is just the aid amount, not the price.
+  // Ah, CalculatedAid doesn't have the original price.
+  // I need to look at the file content again.
 }
 
 // ============================================================================

@@ -49,7 +49,7 @@ export function example1_PassSport() {
   };
 
   const aids = calculateAllEligibleAids(params);
-  const totals = calculateTotalAids(aids);
+  const totals = calculateTotalAids(aids, params.prix_activite);
 
   console.log('🎯 Exemple 1 : Enfant 10 ans, ARS, Sport');
   console.log('Aides éligibles :', aids.length);
@@ -95,7 +95,7 @@ export function example2_Lyceen_QPV_Culture() {
   };
 
   const aids = calculateAllEligibleAids(params);
-  const totals = calculateTotalAids(aids);
+  const totals = calculateTotalAids(aids, params.prix_activite);
 
   console.log('\n🎯 Exemple 2 : Lycéen 16 ans, QPV, Culture');
   console.log('Aides éligibles :', aids.length);
@@ -143,7 +143,7 @@ export function example3_PassColo_VACAF() {
   };
 
   const aids = calculateAllEligibleAids(params);
-  const totals = calculateTotalAids(aids);
+  const totals = calculateTotalAids(aids, params.prix_activite);
 
   console.log('\n🎯 Exemple 3 : Enfant 11 ans, Séjour vacances CAF');
   console.log('Aides éligibles :', aids.length);
@@ -189,7 +189,7 @@ export function example4_Cumul_Maximum() {
   };
 
   const aids = calculateAllEligibleAids(params);
-  const totals = calculateTotalAids(aids);
+  const totals = calculateTotalAids(aids, params.prix_activite);
 
   console.log('\n🎯 Exemple 4 : Cumul MAXIMUM d\'aides');
   console.log('Aides éligibles :', aids.length);
