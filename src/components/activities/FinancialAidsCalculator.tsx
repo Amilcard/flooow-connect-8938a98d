@@ -94,8 +94,18 @@ export const FinancialAidsCalculator = ({
         // Exécution du moteur de calcul unifié
         const engineResults = calculateAllEligibleAids(params);
 
+        // PHASE B: Filtrage UI contextuel (défense en profondeur)
+        // Masquer les aides vacances si activité en période scolaire
+        const VACATION_ONLY_AIDS = ['Pass Colo', 'VACAF AVE', 'VACAF AVF', 'CAF Loire', 'ANCV'];
+        
+        const contextualResults = mappedPeriod === 'saison_scolaire'
+          ? engineResults.filter(aid => 
+              !VACATION_ONLY_AIDS.some(vacAid => aid.name.includes(vacAid))
+            )
+          : engineResults;
+
         // Mapping vers le format d'affichage local
-        const mappedAids: FinancialAid[] = engineResults.map(res => ({
+        const mappedAids: FinancialAid[] = contextualResults.map(res => ({
           aid_name: res.name,
           amount: res.montant,
           territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
