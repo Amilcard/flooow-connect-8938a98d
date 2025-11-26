@@ -83,9 +83,18 @@ const Activities = () => {
     return filters;
   };
 
-  const { activities: allActivities = [], isLoading, error } = useActivities(getAllFilters());
-  const { data: mockActivities = [], isLoading: loadingMocks, error: mockError } = useMockActivities(10);
+  // Feature flag pour la migration progressive (Option B)
+  // Mettre à true pour revenir aux données mockées en cas de problème
+  const USE_MOCK_DATA = false;
+
+  const { activities: realActivities = [], isLoading: loadingReal, error: errorReal } = useActivities(getAllFilters());
+  const { data: mockActivitiesData = [], isLoading: loadingMock, error: errorMock } = useMockActivities(10);
   
+  // Choix de la source de données selon le flag
+  const allActivities = USE_MOCK_DATA ? mockActivitiesData : realActivities;
+  const isLoading = USE_MOCK_DATA ? loadingMock : loadingReal;
+  const error = USE_MOCK_DATA ? errorMock : errorReal;
+
   // Fonction pour retirer le filtre enfant
   const clearChildFilter = () => {
     const newParams = new URLSearchParams(searchParams);
@@ -110,10 +119,8 @@ const Activities = () => {
   };
 
   console.log("📊 Activities page state:", { 
+    mode: USE_MOCK_DATA ? 'MOCK' : 'REAL',
     activitiesCount: allActivities.length, 
-    mockActivitiesCount: mockActivities.length,
-    loadingMocks,
-    mockError,
     activeTab,
     universeFromUrl
   });

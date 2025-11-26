@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
+import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
+import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
 
 interface Props {
   activityPrice: number;
@@ -26,7 +27,9 @@ const TERRITORY_ICONS = {
   national: "🇫🇷",
   region: "🌍",
   metropole: "🏙️",
-  commune: "🏘️"
+  commune: "🏘️",
+  caf: "🏦",
+  organisateur: "🤝"
 } as const;
 
 export const FinancialAidsCalculator = ({
@@ -48,41 +51,72 @@ export const FinancialAidsCalculator = ({
   }
 
   useEffect(() => {
-    const fetchEligibleAids = async () => {
+    const calculateAids = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const { data, error: rpcError } = await supabase.rpc('calculate_eligible_aids', {
-          p_age: childAge,
-          p_qf: quotientFamilial,
-          p_city_code: cityCode,
-          p_activity_price: activityPrice,
-          p_duration_days: durationDays,
-          p_categories: activityCategories,
-          p_period_type: periodType
-        });
+        // Simulation d'un délai pour l'UX (optionnel, peut être retiré pour instantanéité)
+        await new Promise(resolve => setTimeout(resolve, 300));
 
-        if (rpcError) throw rpcError;
-        const aidsData = (data || []).map((aid: any) => ({
-          ...aid,
-          is_informational: aid.is_informational ?? false
+        // Mapping robuste des périodes (DB vs Engine)
+        let mappedPeriod: 'vacances' | 'saison_scolaire' = 'saison_scolaire';
+        if (periodType) {
+            const p = periodType.toLowerCase();
+            if (p === 'vacances' || p === 'school_holidays' || p.includes('vacances')) {
+                mappedPeriod = 'vacances';
+            }
+        }
+
+        // Préparation des paramètres pour le moteur TypeScript
+        const params: EligibilityParams = {
+          age: childAge,
+          quotient_familial: quotientFamilial,
+          code_postal: cityCode,
+          ville: "", // Non disponible dans les props actuelles, impact mineur sur aides ville
+          departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+          prix_activite: activityPrice,
+          type_activite: getTypeActivite(activityCategories),
+          periode: mappedPeriod,
+          nb_fratrie: 0, // Non disponible, par défaut 0
+          allocataire_caf: !!quotientFamilial, // Déduit si QF présent
+          statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
+          est_qpv: false, // Non disponible
+          conditions_sociales: {
+            beneficie_ARS: false,
+            beneficie_AEEH: false,
+            beneficie_AESH: false,
+            beneficie_bourse: false,
+            beneficie_ASE: false
+          }
+        };
+
+        // Exécution du moteur de calcul unifié
+        const engineResults = calculateAllEligibleAids(params);
+
+        // Mapping vers le format d'affichage local
+        const mappedAids: FinancialAid[] = engineResults.map(res => ({
+          aid_name: res.name,
+          amount: res.montant,
+          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+          official_link: res.official_link || null,
+          is_informational: false
         }));
-        setAids(aidsData);
+
+        setAids(mappedAids);
       } catch (err) {
-        console.error("Error fetching financial aids:", err);
+        console.error("Error calculating financial aids:", err);
         setError("Impossible de calculer les aides disponibles");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEligibleAids();
+    calculateAids();
   }, [activityPrice, activityCategories, childAge, quotientFamilial, cityCode, durationDays, periodType]);
 
   // Calculate totals - exclude informational aids
   const calculableAids = aids.filter(aid => !aid.is_informational);
-  const informationalAids = aids.filter(aid => aid.is_informational);
   const totalAids = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
@@ -125,11 +159,11 @@ export const FinancialAidsCalculator = ({
                 key={index}
                 className="flex items-center justify-between p-3 bg-accent/50 rounded-lg"
               >
-                <div className="flex-1">
+              <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{aid.aid_name}</span>
                     <Badge variant="secondary" className="text-xs">
-                      {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS]}{" "}
+                      {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS] || "🔹"}{" "}
                       {aid.territory_level}
                     </Badge>
                   </div>

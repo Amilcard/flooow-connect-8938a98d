@@ -11,6 +11,7 @@ interface BudgetAidsFilterData {
   vacationType?: string;
   schoolType?: string;
   activityType?: string;
+  financialAidsAccepted?: string[]; // Nouveau: aides spécifiques
 }
 
 interface BudgetAidsFilterProps extends BudgetAidsFilterData {
@@ -26,8 +27,18 @@ export const BudgetAidsFilter = ({
   vacationType,
   schoolType,
   activityType,
+  financialAidsAccepted = [],
   onChange
 }: BudgetAidsFilterProps) => {
+  
+  // Helper pour toggle une aide spécifique
+  const toggleAid = (aidId: string) => {
+    const current = financialAidsAccepted || [];
+    const updated = current.includes(aidId)
+      ? current.filter(a => a !== aidId)
+      : [...current, aidId];
+    onChange({ financialAidsAccepted: updated });
+  };
   // Déterminer le libellé du budget selon le type d'activité
   let priceLabel = "par activité";
   let maxBudget = 200;
@@ -120,6 +131,98 @@ export const BudgetAidsFilter = ({
           <Label htmlFor="covoiturage" className="text-sm font-normal cursor-pointer">
             Covoiturage / transport éco-responsable disponible
           </Label>
+        </div>
+      </div>
+
+      {/* Section Aides Financières */}
+      <div className="space-y-3 pt-4 border-t">
+        <Label className="text-sm font-medium">Aides financières acceptées</Label>
+        
+        {/* Aides nationales */}
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground font-normal">Aides nationales</Label>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-pass-sport"
+              checked={financialAidsAccepted.includes("pass_sport")}
+              onCheckedChange={() => toggleAid("pass_sport")}
+            />
+            <Label htmlFor="aid-pass-sport" className="text-sm font-normal cursor-pointer">
+              ⚽ Pass'Sport (50€)
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-pass-culture"
+              checked={financialAidsAccepted.includes("pass_culture")}
+              onCheckedChange={() => toggleAid("pass_culture")}
+            />
+            <Label htmlFor="aid-pass-culture" className="text-sm font-normal cursor-pointer">
+              🎭 Pass Culture (15-17 ans)
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-pass-colo"
+              checked={financialAidsAccepted.includes("pass_colo")}
+              onCheckedChange={() => toggleAid("pass_colo")}
+            />
+            <Label htmlFor="aid-pass-colo" className="text-sm font-normal cursor-pointer">
+              🏕️ Pass Colo (11 ans)
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-ancv"
+              checked={financialAidsAccepted.includes("ancv")}
+              onCheckedChange={() => toggleAid("ancv")}
+            />
+            <Label htmlFor="aid-ancv" className="text-sm font-normal cursor-pointer">
+              🎫 ANCV (Chèques Vacances)
+            </Label>
+          </div>
+        </div>
+        
+        {/* Aides locales (Loire) */}
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground font-normal">Aides Loire (42)</Label>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-caf-loire"
+              checked={financialAidsAccepted.includes("caf_loire_temps_libre")}
+              onCheckedChange={() => toggleAid("caf_loire_temps_libre")}
+            />
+            <Label htmlFor="aid-caf-loire" className="text-sm font-normal cursor-pointer">
+              🏦 CAF Loire Temps Libre
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-vacaf-ave"
+              checked={financialAidsAccepted.includes("vacaf_ave")}
+              onCheckedChange={() => toggleAid("vacaf_ave")}
+            />
+            <Label htmlFor="aid-vacaf-ave" className="text-sm font-normal cursor-pointer">
+              🏖️ VACAF - AVE (Enfants)
+            </Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aid-vacaf-avf"
+              checked={financialAidsAccepted.includes("vacaf_avf")}
+              onCheckedChange={() => toggleAid("vacaf_avf")}
+            />
+            <Label htmlFor="aid-vacaf-avf" className="text-sm font-normal cursor-pointer">
+              👨‍👩‍👧 VACAF - AVF (Familles)
+            </Label>
+          </div>
         </div>
       </div>
     </div>

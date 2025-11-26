@@ -28,6 +28,10 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { KidQuickAddModal } from "@/components/KidQuickAddModal";
+import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
+import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
+import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
 
 interface GeneralSimulateAidModalProps {
   open: boolean;
@@ -229,22 +233,47 @@ export const GeneralSimulateAidModal = ({
         qfValue = parseInt(form.quotientFamilial);
       }
 
-      const { data, error } = await supabase.rpc('calculate_eligible_aids', {
-        p_qf: qfValue,
-        p_age: childAge,
-        p_city_code: form.cityCode || null,
-        p_categories: [form.activityCategory],
-        p_activity_price: parseFloat(form.activityPrice),
-        p_duration_days: parseInt(form.durationDays) || 1
-      });
+      // Simulation d'un délai pour l'UX
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (error) throw error;
+      // Préparation des paramètres pour le moteur TypeScript
+      const params: EligibilityParams = {
+        age: childAge,
+        quotient_familial: qfValue,
+        code_postal: form.cityCode || "",
+        ville: "", // Non disponible, impact mineur
+        departement: form.cityCode ? parseInt(form.cityCode.substring(0, 2)) : 0,
+        prix_activite: parseFloat(form.activityPrice),
+        type_activite: getTypeActivite([form.activityCategory]), // Utilisation du helper
+        periode: 'saison_scolaire', // Par défaut pour le simulateur général
+        nb_fratrie: 0,
+        allocataire_caf: !!qfValue,
+        statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
+        est_qpv: false,
+        conditions_sociales: {
+          beneficie_ARS: false,
+          beneficie_AEEH: false,
+          beneficie_AESH: false,
+          beneficie_bourse: false,
+          beneficie_ASE: false
+        }
+      };
 
-      if (!data || data.length === 0) {
+      // Exécution du moteur de calcul unifié
+      const engineResults = calculateAllEligibleAids(params);
+
+      if (engineResults.length === 0) {
         setAids([]);
         setError("Aucune aide disponible pour ces critères");
       } else {
-        setAids(data);
+        // Mapping vers le format d'affichage local
+        const mappedAids: FinancialAid[] = engineResults.map(res => ({
+          aid_name: res.name,
+          amount: res.montant,
+          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+          official_link: res.official_link || null
+        }));
+        setAids(mappedAids);
       }
 
       setHasSimulated(true);

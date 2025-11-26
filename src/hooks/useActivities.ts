@@ -190,10 +190,21 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.not("accepts_aid_types", "is", null);
       }
 
+      // Filtre par aides financières spécifiques (OR logic)
+      if (filters?.financialAidsAccepted && filters.financialAidsAccepted.length > 0) {
+        // Construire une requête OR pour chaque aide
+        // Format: accepts_aid_types @> '["pass_sport"]' OR accepts_aid_types @> '["pass_culture"]'
+        const aidsConditions = filters.financialAidsAccepted.map(aid => 
+          `accepts_aid_types.cs.{"${aid}"}`
+        ).join(',');
+        
+        query = query.or(aidsConditions);
+      }
+
       if (filters?.limit) {
         query = query.limit(filters.limit);
       } else {
-        query = query.limit(10);
+        query = query.limit(50); // Augmenté pour afficher toutes les activités réelles
       }
 
       const { data, error } = await query.order("created_at", { ascending: false });

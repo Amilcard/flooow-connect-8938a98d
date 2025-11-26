@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
+import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
 
 interface SimulateAidModalProps {
   open: boolean;
@@ -198,25 +200,51 @@ export const SimulateAidModal = ({
 
       const qf = parseInt(form.quotientFamilial) || 0;
 
-      const { data, error: rpcError } = await supabase.rpc('calculate_eligible_aids', {
-        p_age: childAge,
-        p_qf: qf,
-        p_city_code: form.cityCode,
-        p_activity_price: activityPrice,
-        p_duration_days: durationDays,
-        p_categories: activityCategories
-      });
+      // Simulation d'un délai pour l'UX
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (rpcError) throw rpcError;
+      // Préparation des paramètres pour le moteur TypeScript
+      const params: EligibilityParams = {
+        age: childAge,
+        quotient_familial: qf,
+        code_postal: form.cityCode || "",
+        ville: "", // Non disponible
+        departement: form.cityCode ? parseInt(form.cityCode.substring(0, 2)) : 0,
+        prix_activite: activityPrice,
+        type_activite: getTypeActivite(activityCategories), // Utilisation du helper
+        periode: 'saison_scolaire', // Par défaut
+        nb_fratrie: 0,
+        allocataire_caf: !!qf,
+        statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
+        est_qpv: false,
+        conditions_sociales: {
+          beneficie_ARS: false,
+          beneficie_AEEH: false,
+          beneficie_AESH: false,
+          beneficie_bourse: false,
+          beneficie_ASE: false
+        }
+      };
+
+      // Exécution du moteur de calcul unifié
+      const engineResults = calculateAllEligibleAids(params);
       
-      setAids(data || []);
+      // Mapping vers le format d'affichage local
+      const mappedAids: FinancialAid[] = engineResults.map(res => ({
+        aid_name: res.name,
+        amount: res.montant,
+        territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+        official_link: res.official_link || null
+      }));
+
+      setAids(mappedAids);
       setHasSimulated(true);
       
       // Notify parent of simulation result
-      if (onSimulationComplete && data) {
-        const totalAid = data.reduce((sum: number, aid: FinancialAid) => sum + Number(aid.amount), 0);
+      if (onSimulationComplete) {
+        const totalAid = mappedAids.reduce((sum: number, aid: FinancialAid) => sum + Number(aid.amount), 0);
         const calculatedFinalPrice = Math.max(0, activityPrice - totalAid);
-        onSimulationComplete(calculatedFinalPrice, data);
+        onSimulationComplete(calculatedFinalPrice, mappedAids);
       }
     } catch (err) {
       console.error('Erreur lors de la simulation:', err);

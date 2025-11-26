@@ -59,6 +59,7 @@ export interface CalculatedAid {
   criteres_manquants?: string[];
   message?: string;
   type_montant?: 'fixe' | 'pourcentage' | 'reduction';
+  official_link?: string;
 }
 
 // ============================================================================
@@ -140,6 +141,7 @@ function evaluatePassSport(params: EligibilityParams): CalculatedAid | null {
       eligible: false,
       niveau: 'national',
       criteres_manquants: ['Âge 6-17 ans requis'],
+      official_link: 'https://www.sports.gouv.fr/pass-sport',
     };
   }
 
@@ -165,6 +167,7 @@ function evaluatePassSport(params: EligibilityParams): CalculatedAid | null {
       eligible: false,
       niveau: 'national',
       criteres_manquants: ['Condition sociale requise (ARS, AEEH, AESH, Bourse, ASE)'],
+      official_link: 'https://www.sports.gouv.fr/pass-sport',
     };
   }
 
@@ -176,6 +179,7 @@ function evaluatePassSport(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'national',
     message: 'Aide nationale pour la rentrée sportive',
+    official_link: 'https://www.sports.gouv.fr/pass-sport',
   };
 }
 
@@ -210,6 +214,7 @@ function evaluatePassCulture(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'national',
     message: `${montant}€ pour un jeune de ${age} ans`,
+    official_link: 'https://pass.culture.fr',
   };
 }
 
@@ -247,6 +252,7 @@ function evaluatePassColo(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'national',
     message: `Aide pour enfant de 11 ans (QF ${quotient_familial}€)`,
+    official_link: 'https://www.jeunes.gouv.fr/pass-colo',
   };
 }
 
@@ -278,6 +284,7 @@ function evaluateVACAFAVE(params: EligibilityParams): CalculatedAid | null {
       eligible: false,
       niveau: 'caf',
       criteres_manquants: ['Séjour labellisé VACAF requis'],
+      official_link: 'https://www.vacaf.org',
     };
   }
 
@@ -290,6 +297,7 @@ function evaluateVACAFAVE(params: EligibilityParams): CalculatedAid | null {
       eligible: false,
       niveau: 'caf',
       criteres_manquants: ['QF maximum 900€'],
+      official_link: 'https://www.vacaf.org',
     };
   }
 
@@ -311,6 +319,7 @@ function evaluateVACAFAVE(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'caf',
     message: 'Aide CAF pour séjours labellisés',
+    official_link: 'https://www.vacaf.org',
   };
 }
 
@@ -351,6 +360,7 @@ function evaluateVACAFAVF(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'caf',
     message: 'Aide CAF vacances familles',
+    official_link: 'https://www.vacaf.org',
   };
 }
 
@@ -373,6 +383,7 @@ function evaluatePassRegion(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'regional',
     message: 'Aide régionale Auvergne-Rhône-Alpes pour lycéens',
+    official_link: 'https://www.auvergnerhonealpes.fr/pass-region',
   };
 }
 
@@ -414,6 +425,7 @@ function evaluateCAFLoireTempsLibre(params: EligibilityParams): CalculatedAid | 
     eligible: true,
     niveau: 'caf',
     message: `Aide CAF Loire (QF ${quotient_familial}€)`,
+    official_link: 'https://www.caf.fr/allocataires/caf-de-la-loire',
   };
 }
 
@@ -440,6 +452,7 @@ function evaluateChequesLoisirs42(params: EligibilityParams): CalculatedAid | nu
     eligible: true,
     niveau: 'departemental',
     message: 'Aide du Conseil Départemental de la Loire',
+    official_link: 'https://www.loire.fr',
   };
 }
 
@@ -481,6 +494,7 @@ function evaluateTarifsSociauxSaintEtienne(params: EligibilityParams): Calculate
     eligible: true,
     niveau: 'communal',
     message: `Tranche ${tranche} - Réduction ${type_activite}`,
+    official_link: 'https://www.saint-etienne.fr',
   };
 }
 
@@ -503,6 +517,7 @@ function evaluateCarteBOGE(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'communal',
     message: 'Carte jeune Saint-Étienne Métropole',
+    official_link: 'https://www.saint-etienne-metropole.fr',
   };
 }
 
@@ -525,6 +540,7 @@ function evaluateBonusQPV(params: EligibilityParams): CalculatedAid | null {
     eligible: true,
     niveau: 'communal',
     message: `Bonus Quartier Prioritaire (${type_activite})`,
+    official_link: 'https://www.saint-etienne-metropole.fr',
   };
 }
 
