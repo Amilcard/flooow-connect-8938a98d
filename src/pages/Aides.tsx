@@ -158,13 +158,12 @@ const Aides = () => {
 
       {/* Main Content Container with max-width and horizontal padding */}
       <div className="max-w-[1200px] mx-auto px-4">
-        {/* Simulateur d'aides avec reset automatique */}
+        {/* Simulateur d'aides avec reset automatique - periodType removed: user chooses period */}
         <SharedAidCalculator
           resetOnMount={true}
           userProfile={userProfile}
           children={children}
           activityPrice={100}
-          {/* periodType removed: user chooses scolaire or vacances */}
         />
 
 
