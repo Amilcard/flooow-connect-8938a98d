@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight, Lightbulb, ChevronDown } from "lucide-react";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight, Lightbulb, ChevronDown, Trash2 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
@@ -88,7 +88,7 @@ export const SharedAidCalculator = ({
 }: Props) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { state: savedState, saveAidCalculation } = useActivityBookingState(activityId);
+  const { state: savedState, saveAidCalculation, clearState } = useActivityBookingState(activityId);
 
   const [loading, setLoading] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string>("");
@@ -167,6 +167,16 @@ export const SharedAidCalculator = ({
       }
     }
   }, [userProfile, savedState?.calculated, quotientFamilial, cityCode, resetOnMount]);
+
+  // PROTECTION CONFIDENTIALITÉ: Effacement automatique à la fermeture
+  useEffect(() => {
+    return () => {
+      // Cleanup: effacer les données quand le composant est démonté
+      if (activityId && clearState) {
+        clearState();
+      }
+    };
+  }, [activityId, clearState]);
 
   const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
@@ -390,6 +400,32 @@ export const SharedAidCalculator = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  // PROTECTION CONFIDENTIALITÉ: Fonction de réinitialisation manuelle
+  const handleReset = () => {
+    // Effacer l'état persisté
+    if (clearState) {
+      clearState();
+    }
+    
+    // Réinitialiser tous les champs
+    setSelectedChildId("");
+    setManualChildAge("");
+    setQuotientFamilial("");
+    setCityCode("");
+    setAids([]);
+    setCalculated(false);
+    setIsQuickEstimate(false);
+    setHasARS(false);
+    setHasAEEH(false);
+    setHasBourse(false);
+    setIsAllocataireCaf("");
+    
+    toast({
+      title: "Données effacées",
+      description: "Vos informations ont été supprimées pour protéger votre confidentialité",
+    });
   };
 
   const rawTotalAids = aids.filter(a => !a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
@@ -661,6 +697,19 @@ export const SharedAidCalculator = ({
           </>
         )}
       </Button>
+
+      {/* Bouton Effacer (Protection confidentialité) */}
+      {calculated && (
+        <Button
+          variant="outline"
+          onClick={handleReset}
+          className="w-full"
+          size="sm"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Effacer mes données
+        </Button>
+      )}
 
       {/* Résultats */}
       {calculated && aids.length > 0 && (

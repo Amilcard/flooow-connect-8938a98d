@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info, UserPlus } from "lucide-react";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
@@ -71,7 +71,7 @@ export const EnhancedFinancialAidCalculator = ({
 }: Props) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { state: savedState, saveAidCalculation } = useActivityBookingState(activityId);
+  const { state: savedState, saveAidCalculation, clearState } = useActivityBookingState(activityId);
 
   const [loading, setLoading] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string>("");
@@ -114,6 +114,16 @@ export const EnhancedFinancialAidCalculator = ({
       }
     }
   }, [userProfile, savedState?.calculated, quotientFamilial, cityCode]);
+
+  // PROTECTION CONFIDENTIALITÉ: Effacement automatique à la fermeture
+  useEffect(() => {
+    return () => {
+      // Cleanup: effacer les données quand le composant est démonté
+      if (clearState) {
+        clearState();
+      }
+    };
+  }, [clearState]);
 
   const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
@@ -289,6 +299,27 @@ export const EnhancedFinancialAidCalculator = ({
     }
   };
 
+  // PROTECTION CONFIDENTIALITÉ: Fonction de réinitialisation manuelle
+  const handleReset = () => {
+    // Effacer l'état persisté
+    if (clearState) {
+      clearState();
+    }
+    
+    // Réinitialiser tous les champs
+    setSelectedChildId("");
+    setManualChildAge("");
+    setQuotientFamilial("");
+    setCityCode("");
+    setAids([]);
+    setCalculated(false);
+    
+    toast({
+      title: "Données effacées",
+      description: "Vos informations ont été supprimées pour protéger votre confidentialité",
+    });
+  };
+
   const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
@@ -443,6 +474,19 @@ export const EnhancedFinancialAidCalculator = ({
           </>
         )}
       </Button>
+
+      {/* Bouton Effacer (Protection confidentialité) */}
+      {calculated && (
+        <Button
+          variant="outline"
+          onClick={handleReset}
+          className="w-full"
+          size="sm"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Effacer mes données
+        </Button>
+      )}
 
       {/* Résultats */}
       {calculated && aids.length > 0 && (
