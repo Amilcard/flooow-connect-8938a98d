@@ -62,6 +62,10 @@ export interface Activity {
   vacationType?: VacationType; // Type d'accueil vacances
   priceUnit?: string;          // Unité du prix (par semaine, par jour, par an, etc.)
   durationDays?: number;       // Durée en jours pour les séjours/stages
+  dateDebut?: string;          // Date de début (YYYY-MM-DD)
+  dateFin?: string;            // Date de fin (YYYY-MM-DD)
+  joursHoraires?: string;      // Jours et horaires (scolaire)
+  sessions?: string;           // Sessions (vacances)
   hasAccommodation?: boolean;  // Hébergement inclus ou non
   price_is_free?: boolean;     // Indicateur activité gratuite
 }

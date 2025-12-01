@@ -60,6 +60,10 @@ export const ActivityDomainSchema = z.object({
   priceUnit: z.string().optional(),
   durationDays: z.number().optional(),
   hasAccommodation: z.boolean().optional(),
+  dateDebut: z.string().optional(),
+  dateFin: z.string().optional(),
+  joursHoraires: z.string().optional(),
+  sessions: z.string().optional(),
 });
 
 /**
@@ -104,6 +108,10 @@ export function toActivity(raw: ActivityRaw): Activity {
     vacationPeriods: raw.vacation_periods || [],
     description: raw.description,
     aidesEligibles: raw.aidesEligibles || raw.accepts_aid_types || [],
+    dateDebut: raw.date_debut,
+    dateFin: raw.date_fin,
+    joursHoraires: raw.jours_horaires,
+    sessions: raw.sessions,
   };
 
   // Nouveaux champs tarification vacances

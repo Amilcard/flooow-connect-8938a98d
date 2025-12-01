@@ -59,6 +59,11 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
       location_lng: dbActivity.longitude,
     },
     vacation_periods: dbActivity.vacation_periods,
+    date_debut: dbActivity.date_debut,
+    date_fin: dbActivity.date_fin,
+    jours_horaires: dbActivity.jours_horaires,
+    sessions: dbActivity.sessions,
+    price_unit: dbActivity.price_unit,
     covoiturage_enabled: false,
   };
   return toActivity(raw);
@@ -76,7 +81,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit")
           .eq("is_published", true);
       };
 
