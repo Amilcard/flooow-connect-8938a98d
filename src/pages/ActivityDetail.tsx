@@ -132,10 +132,10 @@ const ActivityDetail = () => {
         .from("activities")
         .select(`
           *,
-          structures:structure_id (
+          organisms:organism_id (
             name,
             address,
-            contact_json
+            phone
           )
         `)
         .eq("id", id)
@@ -463,21 +463,21 @@ const ActivityDetail = () => {
               </span>
             )}
             
-            {activity.structures?.address && (
+            {activity.organisms?.address && (
               <span className="flex items-center gap-2">
                 <MapPin size={20} className="text-primary" />
-                <span className="text-muted-foreground">{activity.structures.address}</span>
+                <span className="text-muted-foreground">{activity.organisms.address}</span>
               </span>
             )}
           </div>
 
           {/* Organisateur avec lien contact discret */}
-          {activity.structures?.name && (
+          {activity.organisms?.name && (
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
                 <Building2 size={20} className="text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">
-                  Organisé par {activity.structures.name}
+                  Organisé par {activity.organisms.name}
                 </span>
               </div>
               <Button
@@ -551,12 +551,12 @@ const ActivityDetail = () => {
 
                     {/* Colonne droite */}
                     <div className="space-y-4">
-                      {activity.structures?.address && (
+                      {activity.organisms?.address && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-sm">Lieu</p>
-                            <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
+                            <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
                           </div>
                         </div>
                       )}
@@ -657,9 +657,9 @@ const ActivityDetail = () => {
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
                     activityId={activity.id}
-                    activityAddress={activity.structures?.address}
-                    structureName={activity.structures?.name}
-                    structureContactJson={activity.structures?.contact_json}
+                    activityAddress={activity.organisms?.address}
+                    structureName={activity.organisms?.name}
+                    structureContactJson={activity.organisms?.phone}
                     onTransportModeSelected={(mode) => {
                       console.log('Transport mode selected:', mode);
                     }}
@@ -801,13 +801,13 @@ const ActivityDetail = () => {
       </div>
 
 
-      {activity.structures && typeof activity.structures.contact_json === 'object' && activity.structures.contact_json !== null && (
+      {activity.organisms && typeof activity.organisms.phone === 'object' && activity.organisms.phone !== null && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
-          organizerName={activity.structures.name}
-          organizerEmail={'email' in activity.structures.contact_json ? String(activity.structures.contact_json.email) : ''}
-          organizerPhone={'phone' in activity.structures.contact_json ? String(activity.structures.contact_json.phone) : undefined}
+          organizerName={activity.organisms.name}
+          organizerEmail={'email' in activity.organisms.phone ? String(activity.organisms.phone.email) : ''}
+          organizerPhone={'phone' in activity.organisms.phone ? String(activity.organisms.phone.phone) : undefined}
           activityTitle={activity.title}
         />
       )}
