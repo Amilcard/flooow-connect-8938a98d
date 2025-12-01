@@ -246,10 +246,29 @@ export const ActivityCard = ({
                  'par période'}
               </p>
             )}
-            {(hasFinancialAid || aidesEligibles.length > 0) && !estimatedAidAmount && !hasAids && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 mt-0.5 bg-green-100 text-green-700">
-                💰 Aides dispo
-              </Badge>
+            {aidesEligibles && aidesEligibles.length > 0 && (
+              <div className="flex items-center gap-1 mt-1 flex-wrap">
+                {aidesEligibles.slice(0, 2).map((aide, index) => {
+                  const aideConfig: Record<string, { label: string; bg: string; text: string }> = {
+                    'pass_sport': { label: "Pass'Sport", bg: 'bg-blue-50', text: 'text-blue-600' },
+                    'pass_culture': { label: 'Pass Culture', bg: 'bg-purple-50', text: 'text-purple-600' },
+                    'caf_loire_temps_libre': { label: 'CAF', bg: 'bg-orange-50', text: 'text-orange-600' },
+                    'vacaf_ave': { label: 'VACAF', bg: 'bg-amber-50', text: 'text-amber-600' },
+                    'ancv': { label: 'ANCV', bg: 'bg-teal-50', text: 'text-teal-600' },
+                    'pass_colo': { label: 'Pass Colo', bg: 'bg-green-50', text: 'text-green-600' },
+                    'aides_municipales_saint_etienne': { label: 'Ville', bg: 'bg-slate-50', text: 'text-slate-600' },
+                  };
+                  const config = aideConfig[aide] || { label: aide.replace(/_/g, ' '), bg: 'bg-gray-50', text: 'text-gray-600' };
+                  return (
+                    <span key={index} className={"px-1.5 py-0.5 rounded text-[9px] font-medium " + config.bg + " " + config.text}>
+                      {config.label}
+                    </span>
+                  );
+                })}
+                {aidesEligibles.length > 2 && (
+                  <span className="text-[9px] text-muted-foreground">+{aidesEligibles.length - 2}</span>
+                )}
+              </div>
             )}
           </div>
 

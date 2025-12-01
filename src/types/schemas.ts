@@ -103,7 +103,7 @@ export function toActivity(raw: ActivityRaw): Activity {
     structureAddress: raw.lieu?.adresse || raw.structures?.address,
     vacationPeriods: raw.vacation_periods || [],
     description: raw.description,
-    aidesEligibles: raw.aidesEligibles || [],
+    aidesEligibles: raw.aidesEligibles || raw.accepts_aid_types || [],
   };
 
   // Nouveaux champs tarification vacances

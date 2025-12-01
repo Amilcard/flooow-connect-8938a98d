@@ -118,7 +118,7 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.limit(50);
       }
 
-      const { data, error } = await query.order("created_at", { ascending: false });
+      const { data, error } = await query.order("title", { ascending: true });
 
       if (error) {
         console.error("[useActivities] Error fetching activities:", { error, filters, timestamp: new Date().toISOString() });
