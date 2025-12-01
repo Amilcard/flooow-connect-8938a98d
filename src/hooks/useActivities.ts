@@ -51,7 +51,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
     structures: {
-      name: null,
+      name: dbActivity.organisms?.name || null,
       address: dbActivity.address,
       city: dbActivity.city,
       postal_code: dbActivity.postal_code,
@@ -81,7 +81,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit, organisms(name)")
           .eq("is_published", true);
       };
 
