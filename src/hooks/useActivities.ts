@@ -44,7 +44,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     images: [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
-    price_base: 0,
+    price_base: dbActivity.price_base || 0,
     category: null,
     categories: dbActivity.categories,
     accessibility_checklist: null,
@@ -76,7 +76,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities")
-          .select("id, title, description, categories, age_min, age_max, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude")
           .eq("is_published", true);
       };
 

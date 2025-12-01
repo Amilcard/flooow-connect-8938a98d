@@ -1,4 +1,5 @@
 import { MapPin, Users, Accessibility, Heart } from "lucide-react";
+import { getMainCategory, getPeriodLabel } from "@/utils/categoryMapping";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,10 +124,28 @@ export const ActivityCard = ({
               className="text-xs font-bold uppercase font-poppins"
               style={{ color: getCategoryStyle(category).color }}
             >
-              {category}
+              {getMainCategory(undefined, category)}
             </span>
           </div>
           
+
+          {/* Pilule Période */}
+          {periodType && (
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-amber-100/95">
+              <span className="text-xs font-bold uppercase font-poppins text-amber-700">
+                {getPeriodLabel(periodType)}
+              </span>
+            </div>
+          )}
+
+          {/* Pilule Âge */}
+          {ageRange && (
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-slate-100/95">
+              <span className="text-xs font-bold uppercase font-poppins text-slate-600">
+                {ageRange.replace(/ ans$/, "")}
+              </span>
+            </div>
+          )}
           {/* Badge SOLIDAIRE */}
           {paymentEchelonned && (
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-gradient-to-r from-orange-500/95 to-amber-500/95">
@@ -202,68 +221,12 @@ export const ActivityCard = ({
               </span>
             </div>
           )}
-
-          <div className="flex items-center gap-2 text-xs flex-wrap">
-            {ageRange && (
-              <div className="flex items-center gap-0.5">
-                <Users className="w-3 h-3" aria-hidden="true" />
-                <span>{ageRange}</span>
-              </div>
-            )}
-
-            {periodType && (
-              <>
-                <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
-                <span className="text-muted-foreground text-xs">
-                  {periodType === 'annual' || periodType === 'trimester' 
-                    ? 'Année scolaire' 
-                    : 'Vacances'}
-                </span>
-              </>
-            )}
-
-            {distance && (
-              <>
-                <span className="w-1 h-1 rounded-full bg-muted-foreground/40" aria-hidden="true" />
-                <span className="text-xs">{distance}</span>
-              </>
-            )}
-          </div>
         </div>
 
         {/* PRICING + CTA - Reduced spacing */}
         <div className="flex items-end justify-between pt-2 border-t border-border mt-auto">
           <div className="space-y-0">
-            {estimatedAidAmount && estimatedAidAmount > 0 ? (
-              <>
-                <div className="text-xs line-through text-muted-foreground">
-                  {price}€
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-lg font-bold text-foreground">
-                    {Math.max(0, price - estimatedAidAmount)}€
-                  </span>
-                  <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-green-100 text-green-700">
-                    -{estimatedAidAmount}€
-                  </Badge>
-                </div>
-              </>
-            ) : hasAids ? (
-              <>
-                <div className="text-xs line-through text-muted-foreground">
-                  {price}€
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-lg font-bold text-primary">
-                    {priceAfterAids}€
-                  </span>
-                  <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-green-100 text-green-700">
-                    -30%
-                  </Badge>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-baseline gap-1">
+            <div className="flex items-baseline gap-1">
                 <span className="text-lg font-bold text-foreground">
                   {price === 0 ? 'Gratuit' : price + '€'}
                 </span>
@@ -273,7 +236,6 @@ export const ActivityCard = ({
                   </span>
                 )}
               </div>
-            )}
             {!priceUnit && price > 0 && (
               <p className="text-[10px] text-muted-foreground">
                 {periodType === 'annual' ? 'par an' : 
