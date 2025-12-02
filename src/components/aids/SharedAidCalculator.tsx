@@ -716,7 +716,7 @@ export const SharedAidCalculator = ({
         <>
           <Separator />
           <div className="space-y-3">
-            <h4 className="font-medium text-sm">Aides disponibles</h4>
+            <h4 className="font-medium text-sm">Aides estimées</h4>
             {aids.map((aid, index) => (
               <div
                 key={index}
@@ -763,7 +763,7 @@ export const SharedAidCalculator = ({
               )}
 
               <div className="flex justify-between text-lg font-bold border-t pt-2" data-tour-id="reste-charge-calculator">
-                <span>Reste à charge (confirmé)</span>
+                <span>Reste à charge estimé</span>
                 <span>{remainingPrice.toFixed(2)}€</span>
               </div>
 
@@ -790,6 +790,15 @@ export const SharedAidCalculator = ({
               )}
             </div>
           </div>
+
+          {/* Disclaimer légal */}
+          <Alert className="bg-muted border-muted-foreground/20">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              <strong>Montants indicatifs</strong> - Sous réserve d'éligibilité et de validation
+              auprès des organismes payeurs. Confirmation nécessaire avant inscription définitive.
+            </AlertDescription>
+          </Alert>
 
           {/* CTA Signup pour utilisateurs non connectés */}
           {!isLoggedIn && (
