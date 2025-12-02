@@ -29,7 +29,8 @@ export const OnboardingCarousel = () => {
   };
 
   const handleComplete = () => {
-    localStorage.setItem("onboardingViewCount", "1");
+    // Le compteur est déjà incrémenté dans Splash.tsx
+    // Pas besoin de le modifier ici
     navigate("/home", { replace: true });
   };
 

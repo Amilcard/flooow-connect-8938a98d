@@ -28,19 +28,24 @@ const Splash = () => {
     // Première visite de la session : montrer le splash
     sessionStorage.setItem("splashShown", "true");
 
-    // ===== MODE TESTS BÊTA : ONBOARDING AVEC OPTION DE DÉSACTIVATION =====
-    // Système de comptage des visites pour permettre aux testeurs de désactiver l'onboarding
-    
-    // Récupérer le compteur de visites et le statut de désactivation
+    // ===== MODE TESTS BÊTA : ONBOARDING POUR LES 8 PREMIÈRES VISITES =====
+    // Système de comptage des visites : onboarding affiché 8 fois maximum
+
+    // Récupérer le compteur de visites
     const viewCount = parseInt(localStorage.getItem("onboardingViewCount") || "0");
-    const hasDisabledOnboarding = localStorage.getItem("hasDisabledOnboarding") === "true";
-    
-    // Incrémenter le compteur de visites
-    localStorage.setItem("onboardingViewCount", String(viewCount + 1));
 
     const timer = setTimeout(() => {
-      // TOUJOURS afficher l'onboarding (demande utilisateur)
-      navigate("/onboarding", { replace: true });
+      // Afficher l'onboarding UNIQUEMENT pendant les 8 premières visites
+      if (viewCount < 8) {
+        // Incrémenter le compteur AVANT de naviguer
+        localStorage.setItem("onboardingViewCount", String(viewCount + 1));
+        console.log(`[Onboarding] Affiché (visite ${viewCount + 1}/8)`);
+        navigate("/onboarding", { replace: true });
+      } else {
+        // Après 8 visites, aller directement à /home
+        console.log("[Onboarding] Visites max (8) atteintes, passage direct à /home");
+        navigate("/home", { replace: true });
+      }
     }, 2000);
 
     return () => clearTimeout(timer);
