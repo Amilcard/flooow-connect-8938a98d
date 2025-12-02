@@ -683,6 +683,8 @@ const ActivityDetail = () => {
                         activityPrice={activity.price_base || 0}
                         activityCategories={activity.categories || [activity.category]}
                         periodType={activity.period_type}
+                        ageMin={activity.age_min || 3}
+                        ageMax={activity.age_max || 17}
                         userProfile={userProfile}
                         children={children}
                         onAidsCalculated={handleAidsCalculated}

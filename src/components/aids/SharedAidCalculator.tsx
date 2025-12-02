@@ -47,6 +47,8 @@ interface Props {
   activityPrice?: number;
   activityCategories?: string[];
   periodType?: string;
+  ageMin?: number;
+  ageMax?: number;
   userProfile?: {
     quotient_familial?: number;
     postal_code?: string;
@@ -80,7 +82,9 @@ export const SharedAidCalculator = ({
   activityId = "",
   activityPrice = 100,
   activityCategories = [],
-  periodType, // No default: undefined allows user to choose period
+  periodType,
+  ageMin = 3,
+  ageMax = 17, // No default: undefined allows user to choose period
   userProfile,
   children = [],
   onAidsCalculated,
@@ -772,7 +776,7 @@ export const SharedAidCalculator = ({
                 <span>{remainingPrice.toFixed(2)}€</span>
               </div>
 
-              {isQuickEstimate && potentialTotal > 0 && (
+              {isQuickEstimate && potentialTotal > 0 && activityPeriod === 'vacances' && (
                 <Alert className="bg-blue-50 border-blue-200 mt-4">
                   <Sparkles className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-sm text-blue-900 space-y-2">
