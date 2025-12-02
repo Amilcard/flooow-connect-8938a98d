@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import actualitePrixImg from "@/assets/actualite-prix.jpg";
 
 /**
- * Carte portrait "Prix Bon Esprit" - CityCrunch
+ * Carte portrait "Clubs solidaires" - CityCrunch
  * Design moderne avec image plein cadre, texte centré sur overlay
  */
 export const BonEspritCard = () => {
@@ -21,7 +21,7 @@ export const BonEspritCard = () => {
       <div className="absolute inset-0">
         <img
           src={actualitePrixImg}
-          alt="Prix Bon Esprit"
+          alt="Clubs solidaires"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradient overlay pour lisibilité */}
@@ -37,7 +37,7 @@ export const BonEspritCard = () => {
 
         {/* Titre */}
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Prix Bon Esprit
+          Clubs solidaires
         </h2>
 
         {/* Sous-titre */}

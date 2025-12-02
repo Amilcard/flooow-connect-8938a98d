@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import actualiteVilleImg from "@/assets/actualite-ville.webp";
 
 /**
- * Carte portrait "Notre ville" - CityCrunch
+ * Carte portrait "Ma ville" - CityCrunch
  * Design moderne avec image plein cadre, texte centré sur overlay
  */
 export const MaVilleCard = () => {
@@ -21,7 +21,7 @@ export const MaVilleCard = () => {
       <div className="absolute inset-0">
         <img
           src={actualiteVilleImg}
-          alt="Notre ville"
+          alt="Ma ville"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradient overlay pour lisibilité */}
@@ -37,7 +37,7 @@ export const MaVilleCard = () => {
 
         {/* Titre */}
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Notre ville
+          Ma ville
         </h2>
 
         {/* Sous-titre */}

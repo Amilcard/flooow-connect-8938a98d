@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ecoMobiliteImg from "@/assets/eco-mobilite.jpg";
 
 /**
- * Carte portrait "Nos trajets" - CityCrunch
+ * Carte portrait "Mes trajets" - CityCrunch
  * Design moderne avec image plein cadre, texte centré sur overlay
  */
 export const MobiliteCard = () => {
@@ -20,7 +20,7 @@ export const MobiliteCard = () => {
       <div className="absolute inset-0">
         <img
           src={ecoMobiliteImg}
-          alt="Nos trajets éco-mobilité"
+          alt="Mes trajets éco-mobilité"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradient overlay pour lisibilité */}
@@ -36,7 +36,7 @@ export const MobiliteCard = () => {
 
         {/* Titre */}
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Nos trajets
+          Mes trajets
         </h2>
 
         {/* Sous-titre */}

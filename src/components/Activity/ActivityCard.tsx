@@ -146,11 +146,19 @@ export const ActivityCard = ({
               </span>
             </div>
           )}
-          {/* Badge SOLIDAIRE */}
+          {/* Badge 🗓️ Échelonné */}
           {paymentEchelonned && (
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-gradient-to-r from-orange-500/95 to-amber-500/95">
               <span className="text-xs font-bold uppercase font-poppins text-white">
-                SOLIDAIRE
+                🗓️ Échelonné
+              </span>
+            </div>
+          )}
+          
+          {aidesEligibles && aidesEligibles.length > 0 && (
+            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-green-100/95">
+              <span className="text-xs font-bold uppercase font-poppins text-green-700">
+                💶 Aides possibles
               </span>
             </div>
           )}

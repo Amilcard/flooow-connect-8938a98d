@@ -61,7 +61,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
       <div className="absolute inset-0">
         <img
           src={aidesFinancieresImg}
-          alt="Nos aides financières"
+          alt="Mes aides"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradient overlay pour lisibilité */}
@@ -82,7 +82,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
 
         {/* Titre */}
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Nos aides (v2)
+          Mes aides
         </h2>
 
         {/* Sous-titre */}
