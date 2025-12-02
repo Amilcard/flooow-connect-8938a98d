@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { logEvent } from "@/hooks/useEventLogger";
 import { SearchBar } from "@/components/SearchBar";
 import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
@@ -30,6 +31,7 @@ const Index = () => {
   } = useSearchFilters();
 
   const handleSearch = (query: string) => {
+    logEvent({ eventType: "search", metadata: { query } });
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 

@@ -1,4 +1,5 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { logEvent } from "@/hooks/useEventLogger";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VACATION_PERIOD_DATES } from "@/components/VacationPeriodFilter";
@@ -146,6 +147,22 @@ const ActivityDetail = () => {
     }
   });
 
+
+  // Log consultation activité
+  useEffect(() => {
+    if (activity && id) {
+      logEvent({
+        eventType: "view_activity",
+        activityId: id,
+        metadata: {
+          title: activity.title,
+          category: activity.categories?.[0],
+          periodType: activity.period_type,
+          price: activity.price_base
+        }
+      });
+    }
+  }, [activity, id]);
   // Fetch availability slots
   const { data: allSlots = [] } = useQuery({
     queryKey: ["slots", id],
