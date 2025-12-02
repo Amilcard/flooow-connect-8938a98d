@@ -115,8 +115,8 @@ export const OnboardingCarousel = () => {
       loop: true,
       autoplay: true
     },
-    title: "Les aides, sans prise de tête",
-    body: "Pass'Sport, CAF, aides territoriales... On vous dit à quoi vous avez peut-être droit, sans décrypter 50 sigles ni naviguer entre 10 sites.",
+    title: "Comprendre enfin vos aides",
+    body: "Pass'Sport, CAF, aides locales... Flooow estime ce à quoi vous pourriez prétendre selon votre situation. Vous ne savez pas si vous avez des aides ? Flooow est là pour ça. Plus besoin de jongler entre les guichets.",
     cta: {
       label: "Suivant",
       action: "next_onboarding"

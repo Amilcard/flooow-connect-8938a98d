@@ -700,15 +700,20 @@ export const SharedAidCalculator = ({
 
       {/* Bouton Effacer (Protection confidentialité) */}
       {calculated && (
-        <Button
-          variant="outline"
-          onClick={handleReset}
-          className="w-full"
-          size="sm"
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Effacer mes données
-        </Button>
+        <div className="space-y-2">
+          <Button
+            variant="outline"
+            onClick={handleReset}
+            className="w-full"
+            size="sm"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Effacer mes données
+          </Button>
+          <p className="text-xs text-center text-muted-foreground">
+            Vos données restent sur votre appareil et ne sont pas partagées.
+          </p>
+        </div>
       )}
 
       {/* Résultats */}
