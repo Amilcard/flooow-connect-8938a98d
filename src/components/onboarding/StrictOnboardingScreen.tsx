@@ -64,21 +64,34 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
   config,
   onNext,
   onPrevious,
+  onSkip,
 }) => {
   const { layout, illustration, title, body, cta, pagination, fallback } = config;
 
   return (
     <div className="flex flex-col h-screen bg-white text-foreground overflow-hidden relative">
+      {/* Skip Button - Top Right */}
+      {onSkip && (
+        <div className="absolute top-4 right-4 z-20">
+          <button
+            onClick={onSkip}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Passer
+          </button>
+        </div>
+      )}
+
       {/* Background Animation Layer - Rendered FIRST to be behind content */}
       {layout.background && layout.background.type === 'lottie' && (
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none"
-          style={{ 
+          style={{
             zIndex: 0, // Ensure it's above the bg-white but below content (z-10)
             opacity: layout.background.opacity
           }}
         >
-           <Lottie 
+           <Lottie
               animationData={layout.background.file}
               loop={layout.background.loop}
               autoplay={layout.background.autoplay}

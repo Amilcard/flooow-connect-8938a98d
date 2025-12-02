@@ -53,8 +53,8 @@ export const OnboardingCarousel = () => {
       autoplay: false,
       className: "animate-in fade-in zoom-in duration-1000"
     },
-    title: "Bienvenue chez les testeurs Flooow",
-    body: "Trouver une activité pour son enfant, c'est souvent la course d'obstacles. Infos éparpillées, tarifs flous, aides impossibles à comprendre. Ici, on simplifie tout ça. Vous testez, vous nous dites ce qui coince, on améliore ensemble.",
+    title: "Bienvenue parmi les Flooow-testeurs",
+    body: "Vous êtes officiellement nos cobayes préférés. Vous testez une version en cours de construction : il peut rester des bugs, mais vos retours nous aident à améliorer l'appli pour toutes les familles. Merci de jouer le jeu (et de nous le dire quand ça coince).",
     cta: {
       label: "Continuer",
       action: "next_onboarding"
@@ -84,8 +84,8 @@ export const OnboardingCarousel = () => {
       loop: true,
       autoplay: true
     },
-    title: "Trouvez une activité en quelques clics",
-    body: "Fini de passer votre samedi matin à chercher sur dix sites différents. Tapez un mot-clé, filtrez par âge, budget ou période. On affiche les activités près de chez vous, avec toutes les infos utiles.",
+    title: "Des activités, sans chasse au trésor administrative",
+    body: "Flooow rassemble pour vous les activités sport, culture, loisirs, scolarité et vacances autour de chez vous. Vous filtrez par âge, envies, budget… et l'appli vous évite de partir à la pêche aux infos sur dix sites différents.",
     cta: {
       label: "Suivant",
       action: "next_onboarding"
@@ -115,8 +115,8 @@ export const OnboardingCarousel = () => {
       loop: true,
       autoplay: true
     },
-    title: "Comprendre enfin les aides disponibles",
-    body: "CAF, aides nationales, dispositifs locaux... On fait le calcul pour vous. Flooow estime ce à quoi vous avez droit selon votre situation familiale. Plus besoin de jongler entre les guichets.",
+    title: "Les aides, sans prise de tête",
+    body: "Pass'Sport, CAF, aides territoriales... On vous dit à quoi vous avez peut-être droit, sans décrypter 50 sigles ni naviguer entre 10 sites.",
     cta: {
       label: "Suivant",
       action: "next_onboarding"
@@ -155,10 +155,10 @@ export const OnboardingCarousel = () => {
       autoplay: false,
       className: "animate-in slide-in-from-bottom duration-1000 max-w-[300px]"
     },
-    title: "Flooow, votre outil du quotidien",
+    title: "Vous testez, nous corrigeons (promis, on essaie vite)",
     body: (
       <span>
-        Trouver une activité, estimer vos aides financières, recevoir les infos locales, organiser vos déplacements : Flooow simplifie vos semaines. Votre quotidien, mais sans la prise de tête.
+        Vous naviguez, vous cherchez, vous cliquez… et si quelque chose vous semble bizarre, manquant ou incomplet, c'est normal : vous êtes en terrain d'expérimentation. Grâce à vos retours, nous ajustons les infos, les écrans et les parcours pour que les familles suivantes aient un trajet beaucoup plus fluide.
         <span className="block mt-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 font-medium text-primary text-lg">
           Merci d'être là.
         </span>
@@ -179,10 +179,11 @@ export const OnboardingCarousel = () => {
   const screens = [screen1Config, screen2Config, screen3Config, screen4Config];
 
   return (
-    <StrictOnboardingScreen 
-      config={screens[currentStep]} 
+    <StrictOnboardingScreen
+      config={screens[currentStep]}
       onNext={handleNext}
       onPrevious={currentStep > 0 ? handlePrevious : undefined}
+      onSkip={handleComplete}
     />
   );
 };
