@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Calculateur aides financières', () => {
   
   test('Activité scolaire → bloc QF non visible', async ({ page }) => {
-    await page.goto('/activity/football-club');
+    await page.goto('/activity/1a96a4e5-7cc0-43d5-a6ad-67d81657c1fc');
     await page.waitForLoadState('networkidle');
     
     const qfBlock = page.locator('text=/quotient familial/i').first();
@@ -11,7 +11,7 @@ test.describe('Calculateur aides financières', () => {
   });
 
   test('Activité vacances → bloc QF visible', async ({ page }) => {
-    await page.goto('/activity/camp-ski');
+    await page.goto('/activity/d930f154-0d6c-4d99-a682-a511b98ebc7e');
     await page.waitForLoadState('networkidle');
     
     const qfBlock = page.locator('text=/quotient familial/i').first();
@@ -19,7 +19,7 @@ test.describe('Calculateur aides financières', () => {
   });
 
   test('Âge hors tranche → message erreur', async ({ page }) => {
-    await page.goto('/activity/football-club');
+    await page.goto('/activity/1a96a4e5-7cc0-43d5-a6ad-67d81657c1fc');
     await page.waitForLoadState('networkidle');
     
     // Saisir un âge hors tranche (ex: 2 ans pour activité 3-17)
@@ -36,7 +36,7 @@ test.describe('Calculateur aides financières', () => {
   });
 
   test('Âge OK → calcul fonctionne', async ({ page }) => {
-    await page.goto('/activity/football-club');
+    await page.goto('/activity/1a96a4e5-7cc0-43d5-a6ad-67d81657c1fc');
     await page.waitForLoadState('networkidle');
     
     // Saisir un âge valide
