@@ -80,7 +80,7 @@ export const useActivities = (filters?: ActivityFilters) => {
     queryFn: async () => {
       const buildBaseQuery = () => {
         return supabase
-          .from("activities")
+          .from("activities_with_sessions")
           .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit, organisms(name)")
           .eq("is_published", true);
       };
@@ -106,7 +106,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
+        query = query.lte("session_age_min", filters.ageMax).gte("session_age_max", filters.ageMin);
       }
 
       if (filters?.periodType && filters.periodType !== 'all') {
