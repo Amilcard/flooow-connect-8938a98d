@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight } from "lucide-react";
+import smileyIcon from "@/assets/smiley.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
 import { useNavigate } from "react-router-dom";
@@ -75,7 +76,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
       <Badge 
         onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }} 
         className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 animate-pulse flex items-center gap-1.5">
-        💡 Stop au non-recours !
+        <img src={smileyIcon} alt="" className="h-5 w-5" /> Stop au non-recours !
       </Badge>
 
       {/* Contenu centré */}
