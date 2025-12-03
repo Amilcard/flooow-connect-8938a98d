@@ -2,6 +2,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight } from "lucide-react";
+import { Shield } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
 import { useNavigate } from "react-router-dom";
 import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
 import { useEffect, useState } from "react";
@@ -15,7 +18,9 @@ interface AidesFinancieresCardProps {
 export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieresCardProps) => {
   const navigate = useNavigate();
   const [hasAids, setHasAids] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [estimationText, setEstimationText] = useState("Estimez vos droits en 2 minutes");
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   useEffect(() => {
     if (userProfile && children && children.length > 0) {
@@ -69,8 +74,10 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
       </div>
 
       {/* Badge Stop au non-recours */}
-      <Badge className="absolute top-4 right-4 bg-orange-500 text-white text-xs px-3 py-1 border-0 shadow-lg z-10">
-        Stop au non-recours !
+      <Badge 
+        onClick={() => setIsQuizOpen(true)} 
+        className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-1.5">
+        <Shield className="h-3 w-3" /> Stop au non-recours !
       </Badge>
 
       {/* Contenu centré */}
@@ -100,4 +107,13 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
       </div>
     </Card>
   );
+
+      <Dialog open={isQuizOpen} onOpenChange={setIsQuizOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Évaluez vos droits</DialogTitle>
+          </DialogHeader>
+          <NonRecoursQuiz />
+        </DialogContent>
+      </Dialog>
 };
