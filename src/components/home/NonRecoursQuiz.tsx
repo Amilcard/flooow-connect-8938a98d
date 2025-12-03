@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
+import confetiAnimation from "@/assets/lottie/confeti.json";
+import smileyIcon from "@/assets/smiley.png";
 
 type Answer = "Oui" | "Non" | "Pas sûr" | null;
 
@@ -24,15 +27,12 @@ export default function NonRecoursQuiz() {
   };
 
   const allAnswered = Object.values(answers).every(a => a !== null);
-
   const handleValidate = () => setShowResult(true);
-
-  // Compter les réponses
   const ouiCount = Object.values(answers).filter(a => a === "Oui").length;
   const isDejaAuClair = ouiCount >= 3;
 
   return (
-    <div className="p-4 max-w-2xl">
+    <div className="p-4 max-w-2xl relative">
       {!showResult ? (
         <>
           <div className="space-y-6">
@@ -70,13 +70,16 @@ export default function NonRecoursQuiz() {
           )}
         </>
       ) : (
-        <div className="space-y-6 text-center py-6">
+        <div className="space-y-4 text-center py-4 relative">
           {isDejaAuClair ? (
             <>
-              <div className="text-4xl mb-2">🎉</div>
+              <div className="absolute inset-0 pointer-events-none">
+                <Lottie animationData={confetiAnimation} loop={false} className="w-full h-full" />
+              </div>
+              <img src={smileyIcon} alt="" className="h-16 w-16 mx-auto animate-bounce-slow" />
               <h3 className="text-xl font-bold text-gray-900">Bravo, vous êtes au taquet sur les aides</h3>
-              <p className="text-gray-600">
-                Vous connaissez déjà bien les bons plans pour les activités, centres aérés et séjours. On vous aide maintenant à trouver les activités qui collent à votre famille.
+              <p className="text-gray-600 text-sm">
+                Vous connaissez déjà bien les bons plans. On vous aide à trouver les activités qui collent à votre famille.
               </p>
               <Button
                 type="button"
@@ -96,9 +99,10 @@ export default function NonRecoursQuiz() {
             </>
           ) : (
             <>
+              <img src={smileyIcon} alt="" className="h-12 w-12 mx-auto" />
               <h3 className="text-xl font-bold text-gray-900">Zéro non-recours, on s'y met ?</h3>
-              <p className="text-gray-600">
-                Vous passez peut-être à côté de coups de pouce pour les activités, centres aérés ou séjours de vos enfants. On vous aide à faire le tri.
+              <p className="text-gray-600 text-sm">
+                Vous passez peut-être à côté de coups de pouce. On vous aide à faire le tri.
               </p>
               <Button
                 type="button"
