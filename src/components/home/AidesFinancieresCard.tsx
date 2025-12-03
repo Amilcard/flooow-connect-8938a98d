@@ -97,21 +97,24 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
 
         {/* CTA discret */}
         <Button
-          className="bg-white/95 hover:bg-white text-primary font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
         >
           Découvrir mes aides
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
-    </Card>
-  );
 
+      {/* Dialog Quiz */}
       <Dialog open={isQuizOpen} onOpenChange={setIsQuizOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Évaluez vos droits</DialogTitle>
           </DialogHeader>
-          <p className="text-xs text-muted-foreground mb-2 animate-pulse">Passez-vous à côté d'aides ? Testez en 30 secondes.</p><NonRecoursQuiz />
+          <p className="text-xs text-muted-foreground mb-2 animate-pulse">Passez-vous à côté d'aides ? Testez en 30 secondes.</p>
+          <NonRecoursQuiz />
         </DialogContent>
       </Dialog>
+    </Card>
+  );
 };
+
+export default AidesFinancieresCard;
