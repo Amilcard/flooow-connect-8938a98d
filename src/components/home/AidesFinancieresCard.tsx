@@ -2,7 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight } from "lucide-react";
-import { Shield } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
 import { useNavigate } from "react-router-dom";
@@ -76,8 +75,8 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
       {/* Badge Stop au non-recours */}
       <Badge 
         onClick={() => setIsQuizOpen(true)} 
-        className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-1.5">
-        <Shield className="h-3 w-3" /> Stop au non-recours !
+        className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 animate-bounce flex items-center gap-1.5">
+        💡 Stop au non-recours !
       </Badge>
 
       {/* Contenu centré */}
