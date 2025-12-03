@@ -19,7 +19,6 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
   const [hasAids, setHasAids] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [estimationText, setEstimationText] = useState("Estimez vos droits en 2 minutes");
-  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   useEffect(() => {
     if (userProfile && children && children.length > 0) {
