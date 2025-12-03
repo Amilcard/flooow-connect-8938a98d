@@ -113,7 +113,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
           <DialogHeader>
             <DialogTitle>Évaluez vos droits</DialogTitle>
           </DialogHeader>
-          <NonRecoursQuiz />
+          <p className="text-xs text-muted-foreground mb-2 animate-pulse">Passez-vous à côté d'aides ? Testez en 30 secondes.</p><NonRecoursQuiz />
         </DialogContent>
       </Dialog>
 };
