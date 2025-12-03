@@ -2,13 +2,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight } from "lucide-react";
-import smileyIcon from "@/assets/smiley.png";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
 import { useNavigate } from "react-router-dom";
 import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
 import { useEffect, useState } from "react";
 import { calculateQuickEstimate, QuickEstimateParams } from "@/utils/FinancialAidEngine";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
+import smileyIcon from "@/assets/smiley.png";
 
 interface AidesFinancieresCardProps {
   userProfile?: any;
@@ -18,8 +18,8 @@ interface AidesFinancieresCardProps {
 export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieresCardProps) => {
   const navigate = useNavigate();
   const [hasAids, setHasAids] = useState(false);
-  const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [estimationText, setEstimationText] = useState("Estimez vos droits en 2 minutes");
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
 
   useEffect(() => {
     if (userProfile && children && children.length > 0) {
@@ -57,66 +57,67 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
   };
 
   return (
-    <Card
-      className="group relative overflow-hidden rounded-3xl cursor-pointer h-[340px] md:h-[400px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
-      onClick={() => navigate('/aides')}
-    >
-      {/* Image de fond plein cadre */}
-      <div className="absolute inset-0">
-        <img
-          src={aidesFinancieresImg}
-          alt="Mes aides"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        {/* Gradient overlay pour lisibilité */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-      </div>
-
-      {/* Badge Stop au non-recours */}
-      <Badge 
-        onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }} 
-        className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-1.5">
-        <img src={smileyIcon} alt="" className="h-5 w-5 animate-bounce" /> Stop au non-recours !
-      </Badge>
-
-
-      {/* Contenu centré */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
-        {/* Icône */}
-        <div className="mb-4 p-3 rounded-full bg-primary/90 backdrop-blur-sm shadow-lg">
-          <Calculator className="h-6 w-6 text-white" />
+    <>
+      <Card
+        className="group relative overflow-hidden rounded-3xl cursor-pointer h-[340px] md:h-[400px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
+        onClick={() => navigate('/aides')}
+      >
+        {/* Image de fond plein cadre */}
+        <div className="absolute inset-0">
+          <img
+            src={aidesFinancieresImg}
+            alt="Mes aides"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+          {/* Gradient overlay pour lisibilité */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         </div>
 
-        {/* Titre */}
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-          Mes aides
-        </h2>
-
-        {/* Sous-titre */}
-        <p className={`text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed ${hasAids ? 'font-semibold text-yellow-300' : ''}`}>
-          {estimationText}
-        </p>
-
-        {/* CTA discret */}
-        <Button
+        {/* Badge Stop au non-recours avec smiley intégré */}
+        <Badge 
+          onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }}
+          className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-2"
         >
-          Découvrir mes aides
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+          <img src={smileyIcon} alt="" className="h-5 w-5 animate-bounce" />
+          Stop au non-recours !
+        </Badge>
+
+        {/* Contenu centré */}
+        <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
+          {/* Icône */}
+          <div className="mb-4 p-3 rounded-full bg-primary/90 backdrop-blur-sm shadow-lg">
+            <Calculator className="h-6 w-6 text-white" />
+          </div>
+
+          {/* Titre */}
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+            Mes aides
+          </h2>
+
+          {/* Sous-titre */}
+          <p className={`text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed ${hasAids ? 'font-semibold text-yellow-300' : ''}`}>
+            {estimationText}
+          </p>
+
+          {/* CTA discret */}
+          <Button
+            className="bg-white/95 hover:bg-white text-primary font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
+          >
+            Découvrir mes aides
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </Card>
 
       {/* Dialog Quiz */}
       <Dialog open={isQuizOpen} onOpenChange={setIsQuizOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Évaluez vos droits</DialogTitle>
+            <DialogTitle className="sr-only">Quiz Zéro non-recours</DialogTitle>
           </DialogHeader>
-          <p className="text-xs text-muted-foreground mb-2 animate-pulse">Passez-vous à côté d'aides ? Testez en 30 secondes.</p>
           <NonRecoursQuiz />
         </DialogContent>
       </Dialog>
-    </Card>
+    </>
   );
 };
-
-export default AidesFinancieresCard;

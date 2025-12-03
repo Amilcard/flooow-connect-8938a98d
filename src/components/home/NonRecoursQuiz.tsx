@@ -58,7 +58,7 @@ export default function NonRecoursQuiz() {
                           ? "bg-orange-500 text-white border-orange-500"
                           : "bg-white text-gray-700 border-gray-200 hover:border-orange-300"
                       }`}
-                      variant="outline"
+                      type="button"
                     >
                       {option}
                     </Button>
