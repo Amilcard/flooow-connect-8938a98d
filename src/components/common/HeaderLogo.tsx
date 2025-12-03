@@ -24,7 +24,7 @@ export const HeaderLogo = ({ className = "", to = "/" }: HeaderLogoProps) => {
       <img
         src={logoFlooow}
         alt="Flooow - Mes activités, mes aides, mes trajets"
-        className="w-[280px] md:w-[400px] h-auto max-h-20 object-contain object-contain"
+        className="h-10 w-auto object-contain"
       />
     </Link>
   );
