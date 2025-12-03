@@ -1,3 +1,5 @@
+// Flooow v1.1 - 2025-12-03
+// Flooow v1.1 - 2025-12-03
 import { useState, useEffect } from "react";
 import { logEvent } from "@/hooks/useEventLogger";
 import { SearchBar } from "@/components/SearchBar";
