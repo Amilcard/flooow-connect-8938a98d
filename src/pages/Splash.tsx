@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { Users, Euro, Search, Bus } from "lucide-react";
 import logoFlooow from "@/assets/logo-flooow.png";
+import logoNananere from "@/assets/logo-nananere.svg";
 
 const Splash = () => {
   const navigate = useNavigate();
