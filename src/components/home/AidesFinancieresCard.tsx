@@ -75,17 +75,10 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
       {/* Badge Stop au non-recours */}
       <Badge 
         onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }} 
-        className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 animate-pulse flex items-center gap-1.5">
-        Stop au non-recours !
+        className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-1.5">
+        <img src={smileyIcon} alt="" className="h-5 w-5 animate-bounce" /> Stop au non-recours !
       </Badge>
 
-      {/* Smiley animé */}
-      <div 
-        onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }}
-        className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-lg z-20 cursor-pointer hover:scale-110 transition-all animate-bounce-slow"
-      >
-        <img src={smileyIcon} alt="Quiz" className="h-6 w-6" />
-      </div>
 
       {/* Contenu centré */}
       <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
