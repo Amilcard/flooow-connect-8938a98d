@@ -148,6 +148,21 @@ const ActivityDetail = () => {
   });
 
 
+  // Fetch sessions pour cette activité
+  const { data: sessions = [] } = useQuery({
+    queryKey: ["activity_sessions", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activity_sessions")
+        .select("*")
+        .eq("activity_id", id)
+        .order("age_min", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id
+  });
+
   // Log consultation activité
   useEffect(() => {
     if (activity && id) {
