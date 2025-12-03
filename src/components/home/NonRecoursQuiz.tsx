@@ -73,7 +73,7 @@ export default function NonRecoursQuiz() {
         <div className="space-y-4 text-center py-4 relative">
           {isDejaAuClair ? (
             <>
-              <div className="absolute inset-0 pointer-events-none">
+              <div className="fixed inset-0 pointer-events-none z-50">
                 <Lottie animationData={confetiAnimation} loop={false} className="w-full h-full" />
               </div>
               <img src={smileyIcon} alt="" className="h-16 w-16 mx-auto animate-bounce-slow" />
