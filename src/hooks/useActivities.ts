@@ -113,6 +113,18 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.eq("period_type", filters.periodType);
       }
 
+      if (filters?.maxPrice) {
+        query = query.lte("price_base", filters.maxPrice);
+      }
+
+      if (filters?.hasAccessibility) {
+        query = query.eq("has_accessibility", true);
+      }
+
+      if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
+        query = query.overlaps("mobility_types", filters.mobilityTypes);
+      }
+
       if (filters?.hasFinancialAid) {
         query = query.not("accepts_aid_types", "is", null);
       }
