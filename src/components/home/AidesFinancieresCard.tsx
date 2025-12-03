@@ -73,7 +73,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
 
       {/* Badge Stop au non-recours */}
       <Badge 
-        onClick={() => setIsQuizOpen(true)} 
+        onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }} 
         className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 animate-bounce flex items-center gap-1.5">
         💡 Stop au non-recours !
       </Badge>
