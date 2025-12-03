@@ -7,11 +7,7 @@ type Answer = "Oui" | "Non" | "Pas sûr" | null;
 export default function NonRecoursQuiz() {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<{[key: string]: Answer}>({
-    q1: null,
-    q2: null,
-    q3: null,
-    q4: null,
-    q5: null
+    q1: null, q2: null, q3: null, q4: null, q5: null
   });
   const [showResult, setShowResult] = useState(false);
 
@@ -29,38 +25,33 @@ export default function NonRecoursQuiz() {
 
   const allAnswered = Object.values(answers).every(a => a !== null);
 
-  const handleValidate = () => {
-    setShowResult(true);
-  };
+  const handleValidate = () => setShowResult(true);
 
-  const hasUncertainty = Object.values(answers).some(a => a === "Non" || a === "Pas sûr");
+  // Compter les réponses
+  const ouiCount = Object.values(answers).filter(a => a === "Oui").length;
+  const isDejaAuClair = ouiCount >= 3;
 
   return (
-    <div className="p-6 max-w-2xl">
-      <h2 className="text-2xl font-bold mb-2">💡 Zéro non-recours</h2>
-      <p className="text-gray-600 mb-8">5 questions pour faire le point sur vos droits</p>
-
+    <div className="p-4 max-w-2xl">
       {!showResult ? (
         <>
           <div className="space-y-6">
-            {questions.map((question, index) => (
-              <div key={question.id} className="space-y-3">
-                <p className="font-medium text-base leading-relaxed">
-                  {index + 1}. {question.text}
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  {["Oui", "Non", "Pas sûr"].map((option) => (
+            {questions.map((q, i) => (
+              <div key={q.id} className="space-y-3">
+                <p className="font-medium text-base">{i + 1}. {q.text}</p>
+                <div className="flex flex-wrap gap-2">
+                  {(["Oui", "Non", "Pas sûr"] as Answer[]).map((opt) => (
                     <Button
-                      key={option}
-                      onClick={() => handleAnswer(question.id, option as Answer)}
-                      className={`min-h-12 px-6 rounded-full border-2 transition-all ${
-                        answers[question.id] === option
+                      key={opt}
+                      type="button"
+                      onClick={() => handleAnswer(q.id, opt)}
+                      className={`min-h-11 px-5 rounded-full border-2 transition-all ${
+                        answers[q.id] === opt
                           ? "bg-orange-500 text-white border-orange-500"
                           : "bg-white text-gray-700 border-gray-200 hover:border-orange-300"
                       }`}
-                      type="button"
                     >
-                      {option}
+                      {opt}
                     </Button>
                   ))}
                 </div>
@@ -70,6 +61,7 @@ export default function NonRecoursQuiz() {
 
           {allAnswered && (
             <Button
+              type="button"
               onClick={handleValidate}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full py-4 mt-8 text-lg font-semibold"
             >
@@ -78,29 +70,50 @@ export default function NonRecoursQuiz() {
           )}
         </>
       ) : (
-        <div className="space-y-6 text-center py-8">
-          {hasUncertainty ? (
+        <div className="space-y-6 text-center py-6">
+          {isDejaAuClair ? (
             <>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                Vous passez peut-être à côté d'aides. On vous aide à y voir clair.
+              <div className="text-4xl mb-2">🎉</div>
+              <h3 className="text-xl font-bold text-gray-900">Bravo, vous êtes au taquet sur les aides</h3>
+              <p className="text-gray-600">
+                Vous connaissez déjà bien les bons plans pour les activités, centres aérés et séjours. On vous aide maintenant à trouver les activités qui collent à votre famille.
               </p>
               <Button
-                onClick={() => navigate('/aides')}
+                type="button"
+                onClick={() => navigate('/search')}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full py-4 text-lg font-semibold"
               >
-                Découvrir mes aides →
+                C'est parti pour les activités
+              </Button>
+              <Button
+                type="button"
+                onClick={() => navigate('/aides')}
+                variant="ghost"
+                className="w-full text-orange-500 hover:text-orange-600"
+              >
+                Refaire une estimation de mes aides
               </Button>
             </>
           ) : (
             <>
-              <p className="text-lg text-green-600 leading-relaxed">
-                ✓ Bravo, vous avez les bons réflexes ! Flooow regroupe tout au même endroit.
+              <h3 className="text-xl font-bold text-gray-900">Zéro non-recours, on s'y met ?</h3>
+              <p className="text-gray-600">
+                Vous passez peut-être à côté de coups de pouce pour les activités, centres aérés ou séjours de vos enfants. On vous aide à faire le tri.
               </p>
               <Button
-                onClick={() => window.location.reload()}
+                type="button"
+                onClick={() => navigate('/aides')}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full py-4 text-lg font-semibold"
               >
-                Explorer Flooow
+                Découvrir mes aides
+              </Button>
+              <Button
+                type="button"
+                onClick={() => navigate('/search')}
+                variant="ghost"
+                className="w-full text-orange-500 hover:text-orange-600"
+              >
+                Voir les activités près de chez moi
               </Button>
             </>
           )}
