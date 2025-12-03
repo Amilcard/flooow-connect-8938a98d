@@ -7,6 +7,7 @@ import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
 import { MaVilleCard } from "@/components/home/MaVilleCard";
 import { BonEspritCard } from "@/components/home/BonEspritCard";
+import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
@@ -274,6 +275,12 @@ const Index = () => {
                   <BonEspritCard />
                 </div>
               </div>
+            </section>
+
+
+            {/* ========== QUIZ ANTI NON-RECOURS ========== */}
+            <section className="py-6 px-4">
+              <NonRecoursQuiz />
             </section>
 
             {/* ========== SECTION 2: ACTIVITÉS RECOMMANDÉES ========== */}
