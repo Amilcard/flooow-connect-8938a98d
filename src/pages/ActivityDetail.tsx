@@ -488,7 +488,7 @@ const ActivityDetail = () => {
               <span className="flex items-center gap-2">
                 <CalendarRange size={20} className="text-primary" />
                 <span className="text-muted-foreground">
-                  {activity.period_type === 'annual' || activity.period_type === 'trimester' 
+                  {activity.period_type === 'scolaire' 
                     ? 'Année scolaire' 
                     : 'Vacances scolaires'}
                 </span>
@@ -538,7 +538,7 @@ const ActivityDetail = () => {
                 </TabsTrigger>
                 <TabsTrigger value="trajets" className="text-xs md:text-sm flex items-center gap-1.5">
                   <Leaf size={14} className="hidden md:inline" />
-                  Mobilité
+                  Trajets
                 </TabsTrigger>
               </TabsList>
 
@@ -726,7 +726,7 @@ const ActivityDetail = () => {
                 )}
               </TabsContent>
 
-              {/* Onglet Mobilité */}
+              {/* Onglet Trajets */}
               <TabsContent value="trajets" className="mt-0">
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
@@ -780,7 +780,7 @@ const ActivityDetail = () => {
               </div>
 
               {/* Créneaux disponibles */}
-              {slots.length > 0 && (
+              {(activity.period_type === "scolaire" ? sessions.length > 0 : slots.length > 0) && (
                 <>
                   <Separator />
                   <div className="space-y-4" data-tour-id="aid-creneaux-list">
@@ -793,6 +793,20 @@ const ActivityDetail = () => {
                       )}
                     </div>
                     
+                    {activity.period_type === "scolaire" ? (
+                    <div className="space-y-2">
+                      {sessions.map((s, idx) => (
+                        <Card key={idx} className="p-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
+                            <span className="text-sm text-muted-foreground">
+                              {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
+                            </span>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
                     <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
                       {slots.map(slot => {
                         const startDate = new Date(slot.start);
@@ -836,7 +850,7 @@ const ActivityDetail = () => {
                         );
                       })}
                     </div>
-
+                  )}
                     <Button
                       onClick={handleBooking}
                       disabled={!selectedSlotId}
