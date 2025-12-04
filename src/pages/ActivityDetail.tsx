@@ -378,7 +378,7 @@ const ActivityDetail = () => {
 
   const fallbackImage = getCategoryImage(activity.category);
   const displayImage = activity.images?.[0] || fallbackImage;
-  const ageRange = `${activity.age_min}-${activity.age_max} ans`;
+  const ageRange = sessions.length > 0 ? sessions.map(s => `${s.age_min}-${s.age_max} ans`).filter((v, i, a) => a.indexOf(v) === i).join(" / ") : `${activity.age_min}-${activity.age_max} ans`;
 
   return (
     <div className="min-h-screen bg-background pb-24">
