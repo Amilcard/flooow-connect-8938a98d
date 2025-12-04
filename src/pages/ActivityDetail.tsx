@@ -406,6 +406,24 @@ const ActivityDetail = () => {
     today.getMonth() > INSCRIPTION_END_MONTH - 1 || 
     (today.getMonth() === INSCRIPTION_END_MONTH - 1 && today.getDate() > INSCRIPTION_END_DAY)
   );
+
+  // Fetch activités alternatives si inscription fermée
+  const { data: alternatives = [] } = useQuery({
+    queryKey: ["alternatives", activity.id, activity.categories, activity.age_min, activity.age_max],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activities")
+        .select("id, title, categories, age_min, age_max, price_base, period_type, images")
+        .neq("id", activity.id)
+        .eq("is_published", true)
+        .lte("age_min", activity.age_max)
+        .gte("age_max", activity.age_min)
+        .limit(3);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isInscriptionClosed
+  });
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Compact Hero Header (160px optimisé) */}
@@ -877,8 +895,24 @@ const ActivityDetail = () => {
 
                     {isInscriptionClosed && (
                       <p className="text-xs text-center text-orange-600 font-medium">
-                        ⚠️ Inscriptions terminées pour cette saison. Contactez l'organisateur pour une liste d'attente.
+                        Inscription hélas terminée, mais on ne vous laisse pas tomber 💪
                       </p>
+                    )}
+                    {isInscriptionClosed && alternatives.length > 0 && (
+                      <div className="mt-4 space-y-3">
+                        <p className="text-sm font-medium text-center">Découvrez ces alternatives :</p>
+                        {alternatives.map((alt: any) => (
+                          <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate(`/activity/${alt.id}`)}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-sm font-medium">{alt.title}</p>
+                                <p className="text-xs text-muted-foreground">{alt.age_min}-{alt.age_max} ans</p>
+                              </div>
+                              <span className="text-sm font-bold text-primary">{alt.price_base === 0 ? "Gratuit" : `${alt.price_base}€`}</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
                     )}
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
