@@ -746,6 +746,7 @@ const ActivityDetail = () => {
           {/* Right Column - Sticky Booking Card (4/12) */}
           <div className="md:col-span-4">
             <Card className="p-6 md:sticky md:top-24 space-y-6">
+              <h3 className="font-bold text-lg">Tarifs & créneaux disponibles</h3>
               {/* Prix et aides */}
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
