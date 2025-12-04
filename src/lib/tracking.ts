@@ -1,3 +1,4 @@
+import { useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -25,7 +26,7 @@ export const logSearch = async (params: {
 }) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     await supabase.from('search_logs').insert({
       user_id: user?.id || null,
       session_id: getSessionId(),
@@ -49,7 +50,7 @@ export const logActivityView = async (params: {
 }) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     await supabase.from('activity_views').insert({
       activity_id: params.activityId,
       user_id: user?.id || null,
@@ -70,13 +71,13 @@ export const useActivityViewTracking = (
   activityId: string | undefined,
   source: 'search' | 'home' | 'direct' | 'favorites' = 'direct'
 ) => {
-  const startTime = Date.now();
+  const startTimeRef = useRef(Date.now());
 
-  return () => {
+  return useCallback(() => {
     if (!activityId) return;
-    
-    const durationSeconds = Math.floor((Date.now() - startTime) / 1000);
-    
+
+    const durationSeconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+
     // Logger seulement si durée > 2 secondes (évite les bounces)
     if (durationSeconds > 2) {
       logActivityView({
@@ -85,5 +86,5 @@ export const useActivityViewTracking = (
         viewDurationSeconds: durationSeconds
       });
     }
-  };
+  }, [activityId, source]);
 };
