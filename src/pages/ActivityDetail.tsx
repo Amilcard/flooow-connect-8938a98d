@@ -397,6 +397,15 @@ const ActivityDetail = () => {
     return dates;
   };
   const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
+
+  // Logique inscription saison : fenêtre août-octobre pour activités scolaires
+  const INSCRIPTION_END_MONTH = 10; // Octobre (0-indexed = 9, mais on veut fin octobre donc 10)
+  const INSCRIPTION_END_DAY = 31;
+  const today = new Date();
+  const isInscriptionClosed = activity.period_type === "scolaire" && (
+    today.getMonth() > INSCRIPTION_END_MONTH - 1 || 
+    (today.getMonth() === INSCRIPTION_END_MONTH - 1 && today.getDate() > INSCRIPTION_END_DAY)
+  );
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Compact Hero Header (160px optimisé) */}
@@ -857,7 +866,7 @@ const ActivityDetail = () => {
                   )}
                     <Button
                       onClick={handleBooking}
-                      disabled={activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId}
+                      disabled={isInscriptionClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
                       className="w-full h-12 text-base font-semibold"
                       size="lg"
                     >
@@ -866,6 +875,11 @@ const ActivityDetail = () => {
                         : "Inscrire mon enfant"}
                     </Button>
 
+                    {isInscriptionClosed && (
+                      <p className="text-xs text-center text-orange-600 font-medium">
+                        ⚠️ Inscriptions terminées pour cette saison. Contactez l'organisateur pour une liste d'attente.
+                      </p>
+                    )}
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
                         {activeTab === "infos" ? "💡 Avant de confirmer, estimez vos aides dans l'onglet « Tarifs & aides »." : activeTab === "trajets" ? "💡 Estimez vos aides dans « Tarifs & aides » puis choisissez votre trajet." : "💡 Utilisez le calculateur ci-dessus pour estimer vos aides."}
@@ -912,7 +926,7 @@ const ActivityDetail = () => {
         priceUnit={activity.price_note || "par activité"}
         onBook={handleBooking}
         onShare={handleShare}
-        disabled={activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId}
+        disabled={isInscriptionClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
         buttonText={(activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
         mobileOnly={true}
       />
