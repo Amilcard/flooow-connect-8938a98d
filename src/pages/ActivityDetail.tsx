@@ -230,7 +230,9 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000, // 5min cache
+    gcTime: 600000
   });
 
 
@@ -248,7 +250,9 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000,
+    gcTime: 600000
   });
 
   // Nettoyer les données persistées si l'utilisateur n'est pas connecté
