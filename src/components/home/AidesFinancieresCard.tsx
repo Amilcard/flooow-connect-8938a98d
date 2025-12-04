@@ -81,7 +81,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
           
           Stop au non-recours !
         </Badge>
-        <img src={smileyIcon} alt="" className="absolute top-1 right-[-16px] h-12 w-12 animate-bounce z-20" />
+        <img src={smileyIcon} alt="" className="absolute -top-4 right-8 h-12 w-12 animate-bounce z-20" />
 
         {/* Contenu centré */}
         <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
