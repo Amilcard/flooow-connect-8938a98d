@@ -785,7 +785,7 @@ const ActivityDetail = () => {
                   <Separator />
                   <div className="space-y-4" data-tour-id="aid-creneaux-list">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg">Créneaux disponibles</h3>
+                      <h3 className="font-semibold text-lg">Horaires</h3>
                       {periodFilter && (
                         <Badge variant="secondary" className="text-xs">
                           {periodFilter === "printemps_2026" ? "🌸 Printemps" : "☀️ Été"}
