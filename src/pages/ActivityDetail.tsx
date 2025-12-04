@@ -77,7 +77,7 @@ const ActivityDetail = () => {
   const tabParam = searchParams.get("tab");
   const visualParam = searchParams.get("visual");
   const [activeTab, setActiveTab] = useState<string>(
-    ["infos", "tarifs", "mobilite"].includes(tabParam || "")
+    ["infos", "tarifs", "trajets"].includes(tabParam || "")
       ? tabParam!
       : "infos"
   );
@@ -536,7 +536,7 @@ const ActivityDetail = () => {
                   <Euro size={14} className="hidden md:inline" />
                   Tarifs & aides
                 </TabsTrigger>
-                <TabsTrigger value="mobilite" className="text-xs md:text-sm flex items-center gap-1.5">
+                <TabsTrigger value="trajets" className="text-xs md:text-sm flex items-center gap-1.5">
                   <Leaf size={14} className="hidden md:inline" />
                   Mobilité
                 </TabsTrigger>
@@ -727,7 +727,7 @@ const ActivityDetail = () => {
               </TabsContent>
 
               {/* Onglet Mobilité */}
-              <TabsContent value="mobilite" className="mt-0">
+              <TabsContent value="trajets" className="mt-0">
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
                     activityId={activity.id}
@@ -849,7 +849,7 @@ const ActivityDetail = () => {
 
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
-                        💡 Vous pouvez calculer vos aides dans l'onglet "Tarifs" (optionnel)
+                        💡 Vous pouvez calculer vos aides dans l'onglet « Tarifs & aides » (optionnel)
                       </p>
                     )}
                   </div>
