@@ -35,7 +35,8 @@ export default function NonRecoursQuiz() {
     <div className="p-4 max-w-2xl relative">
       {!showResult ? (
         <>
-          <div className="space-y-6">
+          <p className="text-gray-600 text-sm mb-6 italic">Flooow, c'est l'appli qui vous aide à ne pas passer à côté des aides pour les activités de vos enfants.</p>
+          <div className="space-y-8">
             {questions.map((q, i) => (
               <div key={q.id} className="space-y-3">
                 <p className="font-medium text-base">{i + 1}. {q.text}</p>
