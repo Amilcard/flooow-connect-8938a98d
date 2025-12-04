@@ -73,16 +73,6 @@ const ActivityDetail = () => {
   const navigate = useNavigate();
   
   // Guard: id requis
-  if (!id) {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Activité non trouvée</p>
-          <Button onClick={() => navigate("/home")} className="mt-4">Retour à l'accueil</Button>
-        </div>
-      </div>
-    );
-  }
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const periodFilter = searchParams.get("period") || undefined;
@@ -104,7 +94,7 @@ const ActivityDetail = () => {
   const mobileVisualMode = visualParam === "true";
   
   // Hook pour la persistance des données d'aides et de transport
-  const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id!);
+  const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id || "");
   
   // États pour les aides calculées
   const [aidsData, setAidsData] = useState<{
@@ -141,6 +131,7 @@ const ActivityDetail = () => {
   // Fetch activity details
   const { data: activity, isLoading, error } = useQuery({
     queryKey: ["activity", id],
+    enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("activities")
@@ -164,6 +155,7 @@ const ActivityDetail = () => {
   // Fetch sessions pour cette activité
   const { data: sessions = [] } = useQuery({
     queryKey: ["activity_sessions", id],
+    enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("activity_sessions")
@@ -194,6 +186,7 @@ const ActivityDetail = () => {
   // Fetch availability slots
   const { data: allSlots = [] } = useQuery({
     queryKey: ["slots", id],
+    enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("availability_slots")
