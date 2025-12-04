@@ -381,18 +381,22 @@ const ActivityDetail = () => {
   const displayImage = activity.images?.[0] || fallbackImage;
   const ageRange = sessions.length > 0 ? sessions.map(s => `${s.age_min}-${s.age_max} ans`).filter((v, i, a) => a.indexOf(v) === i).join(" / ") : `${activity.age_min}-${activity.age_max} ans`;
 
-  // Calculer la prochaine date pour un jour de semaine donné
-  const getNextDate = (dayOfWeek: number | null): string => {
-    if (dayOfWeek === null) return "";
+  // Calculer les prochaines dates pour un jour de semaine donné
+  const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+    if (dayOfWeek === null) return [];
+    const dates: string[] = [];
     const today = new Date();
     const currentDay = today.getDay();
     let daysUntil = dayOfWeek - currentDay;
     if (daysUntil <= 0) daysUntil += 7;
-    const nextDate = new Date(today);
-    nextDate.setDate(today.getDate() + daysUntil);
-    return nextDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+    for (let i = 0; i < count; i++) {
+      const nextDate = new Date(today);
+      nextDate.setDate(today.getDate() + daysUntil + (i * 7));
+      dates.push(nextDate.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }));
+    }
+    return dates;
   };
-
+  const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Compact Hero Header (160px optimisé) */}
@@ -802,7 +806,7 @@ const ActivityDetail = () => {
                               {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
                             </span>
                           </div>
-                          {s.day_of_week !== null && <p className="text-xs text-primary mt-1">Prochaine séance : {getNextDate(s.day_of_week)}</p>}
+                          {s.day_of_week !== null && <p className="text-xs text-primary mt-1">Prochaines séances : {getNextDates(s.day_of_week).join(", ")}</p>}
                         </Card>
                       ))}
                     </div>
