@@ -78,9 +78,10 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
           onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }}
           className="absolute top-4 right-4 bg-orange-500 hover:bg-orange-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-2"
         >
-          <img src={smileyIcon} alt="" className="h-8 w-8 animate-bounce" />
+          
           Stop au non-recours !
         </Badge>
+        <img src={smileyIcon} alt="" className="absolute top-1 right-[-16px] h-12 w-12 animate-bounce z-20" />
 
         {/* Contenu centré */}
         <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
