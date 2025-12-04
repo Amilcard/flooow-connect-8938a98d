@@ -82,6 +82,7 @@ const ActivityDetail = () => {
       : "infos"
   );
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
+  const [selectedSessionIdx, setSelectedSessionIdx] = useState<number | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -559,31 +560,17 @@ const ActivityDetail = () => {
                   <div className="grid sm:grid-cols-2 gap-6">
                     {/* Colonne gauche */}
                     <div className="space-y-4">
-                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                        <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Tranche d'âge</p>
-                          <p className="text-sm text-muted-foreground">{ageRange}</p>
-                        </div>
-                      </div>
-                      {/* Créneaux par tranche âge */}
                       {sessions.length > 0 && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div className="w-full">
-                            <p className="font-medium text-sm mb-2">Créneaux par tranche d'âge</p>
-                            <div className="space-y-2">
-                              {sessions.map((s, idx) => (
-                                <div key={idx} className="text-sm text-muted-foreground flex justify-between items-center">
-                                  <span className="font-medium text-foreground">{s.age_min}-{s.age_max} ans</span>
-                                  <span>{s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}</span>
-                                </div>
-                              ))}
-                            </div>
+                          <div>
+                            <p className="font-medium text-sm">Rythme</p>
+                            <p className="text-sm text-muted-foreground">
+                              {activity.period_type === "scolaire" ? "Atelier hebdomadaire" : "Stage vacances"} — voir créneaux disponibles
+                            </p>
                           </div>
                         </div>
                       )}
-
 
 
 
@@ -796,7 +783,7 @@ const ActivityDetail = () => {
                     {activity.period_type === "scolaire" ? (
                     <div className="space-y-2">
                       {sessions.map((s, idx) => (
-                        <Card key={idx} className="p-3">
+                        <Card key={idx} className={`p-3 cursor-pointer transition-all ${selectedSessionIdx === idx ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"}`} onClick={() => setSelectedSessionIdx(idx)}>
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
                             <span className="text-sm text-muted-foreground">
@@ -853,11 +840,11 @@ const ActivityDetail = () => {
                   )}
                     <Button
                       onClick={handleBooking}
-                      disabled={!selectedSlotId}
+                      disabled={activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId}
                       className="w-full h-12 text-base font-semibold"
                       size="lg"
                     >
-                      {!selectedSlotId 
+                      {(activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) 
                         ? "Sélectionnez un créneau"
                         : "Inscrire mon enfant"}
                     </Button>
@@ -908,8 +895,8 @@ const ActivityDetail = () => {
         priceUnit={activity.price_note || "par activité"}
         onBook={handleBooking}
         onShare={handleShare}
-        disabled={!selectedSlotId}
-        buttonText={!selectedSlotId ? "Sélectionnez un créneau" : "Réserver"}
+        disabled={activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId}
+        buttonText={(activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
         mobileOnly={true}
       />
 
