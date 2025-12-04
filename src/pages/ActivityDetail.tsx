@@ -566,29 +566,46 @@ const ActivityDetail = () => {
                           <p className="text-sm text-muted-foreground">{ageRange}</p>
                         </div>
                       </div>
-                      {/* Dates et horaires */}
-                      {(activity.dateDebut || activity.sessions) && (
+                      {/* Créneaux par tranche âge */}
+                      {sessions.length > 0 && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">
-                              {activity.periodType === "scolaire" ? "Période et horaires" : "Sessions"}
-                            </p>
-                            {activity.periodType === "scolaire" ? (
-                              <div className="text-sm text-muted-foreground">
-                                <p>Du {new Date(activity.dateDebut).toLocaleDateString("fr-FR")} au {new Date(activity.dateFin).toLocaleDateString("fr-FR")}</p>
-                                {activity.joursHoraires && <p className="mt-1">{activity.joursHoraires.replace(/;/g, " • ")}</p>}
-                              </div>
-                            ) : (
-                              <div className="text-sm text-muted-foreground">
-                                {activity.sessions?.split(";").map((session, idx) => (
-                                  <p key={idx} className="mt-1">{session.trim()}</p>
-                                ))}
-                              </div>
-                            )}
+                          <div className="w-full">
+                            <p className="font-medium text-sm mb-2">Créneaux par tranche d'âge</p>
+                            <div className="space-y-2">
+                              {sessions.map((s, idx) => (
+                                <div key={idx} className="text-sm text-muted-foreground flex justify-between items-center">
+                                  <span className="font-medium text-foreground">{s.age_min}-{s.age_max} ans</span>
+                                  <span>{s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                       {typeof activity.accessibility_checklist === 'object' &&
                        activity.accessibility_checklist !== null &&
