@@ -275,7 +275,7 @@ const ActivityDetail = () => {
   }
 
   const handleBooking = () => {
-    if (!selectedSlotId) {
+    if (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) {
       toast({
         title: "Créneau requis",
         description: "Veuillez sélectionner un créneau",
@@ -286,7 +286,7 @@ const ActivityDetail = () => {
 
     // Rediriger vers la page d'inscription
     // Les aides sont optionnelles, elles seront reprises si calculées
-    navigate(`/booking/${id}?slotId=${selectedSlotId}`);
+    const bookingUrl = activity.period_type === "scolaire" && selectedSessionIdx !== null ? `/booking/${id}?sessionIdx=${selectedSessionIdx}` : `/booking/${id}?slotId=${selectedSlotId}`; navigate(bookingUrl);
   };
 
   const handleAidsCalculated = (data: {
