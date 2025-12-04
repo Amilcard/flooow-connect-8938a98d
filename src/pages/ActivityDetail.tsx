@@ -71,6 +71,18 @@ const getCategoryImage = (category: string): string => {
 const ActivityDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
+  // Guard: id requis
+  if (!id) {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Activité non trouvée</p>
+          <Button onClick={() => navigate("/home")} className="mt-4">Retour à l'accueil</Button>
+        </div>
+      </div>
+    );
+  }
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const periodFilter = searchParams.get("period") || undefined;
