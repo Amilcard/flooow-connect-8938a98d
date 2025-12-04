@@ -670,8 +670,8 @@ const ActivityDetail = () => {
                     <span className="text-3xl font-bold text-primary">
                       {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
                     </span>
-                    {activity.price_note && (
-                      <span className="text-sm text-muted-foreground">{activity.price_note}</span>
+                    {(activity.price_note || activity.period_type) && (
+                      <span className="text-sm text-muted-foreground">{activity.price_note || (activity.period_type === "scolaire" ? "la saison" : "le séjour")}</span>
                     )}
                   </div>
 
@@ -753,8 +753,8 @@ const ActivityDetail = () => {
                   <span className="text-3xl font-bold">
                     {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
                   </span>
-                  {activity.price_note && (
-                    <span className="text-sm text-muted-foreground">{activity.price_note}</span>
+                  {(activity.price_note || activity.period_type) && (
+                    <span className="text-sm text-muted-foreground">{activity.price_note || (activity.period_type === "scolaire" ? "la saison" : "le séjour")}</span>
                   )}
                 </div>
 
@@ -850,7 +850,7 @@ const ActivityDetail = () => {
 
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
-                        💡 Vous pouvez calculer vos aides dans l'onglet « Tarifs & aides » (optionnel)
+                        {activeTab === "infos" ? "💡 Avant de confirmer, estimez vos aides dans l'onglet « Tarifs & aides »." : activeTab === "trajets" ? "💡 Estimez vos aides dans « Tarifs & aides » puis choisissez votre trajet." : "💡 Utilisez le calculateur ci-dessus pour estimer vos aides."}
                       </p>
                     )}
                   </div>
