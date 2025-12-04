@@ -218,6 +218,16 @@ export const SharedAidCalculator = ({
       });
       return;
     }
+    // Validation âge vs tranche activité
+    const checkAge = showChildSelector ? children?.find(c => c.id === selectedChildId)?.age : parseInt(manualChildAge);
+    if (checkAge && (checkAge < ageMin || checkAge > ageMax)) {
+      toast({
+        title: "Âge non compatible",
+        description: `Cette activité est prévue pour les enfants de ${ageMin} à ${ageMax} ans.`,
+        variant: "destructive"
+      });
+      return;
+    }
 
     // Validate postal code format (5 digits for French postal codes)
     if (cityCode && !/^\d{5}$/.test(cityCode)) {
