@@ -834,6 +834,14 @@ const ActivityDetail = () => {
                         </Badge>
                       )}
                     </div>
+
+                    {/* Notice: saison déjà commencée mais inscription possible */}
+                    {activity.period_type === "scolaire" && !isActivityClosed && (
+                      <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+                        <Info size={14} />
+                        <span>Saison en cours · Inscription toujours possible</span>
+                      </div>
+                    )}
                     
                     {activity.period_type === "scolaire" ? (
                     <div className="space-y-2">
@@ -904,6 +912,30 @@ const ActivityDetail = () => {
                       })}
                     </div>
                   )}
+                    
+                    {/* Récap "Votre choix" avant le bouton */}
+                    {activity.period_type === "scolaire" && selectedSessionIdx !== null && sessions[selectedSessionIdx] && (
+                      <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg space-y-1">
+                        <p className="text-xs font-medium text-primary">✓ Votre choix</p>
+                        <p className="text-sm font-medium">{activity.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {sessions[selectedSessionIdx].age_min}-{sessions[selectedSessionIdx].age_max} ans · {sessions[selectedSessionIdx].day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][sessions[selectedSessionIdx].day_of_week] : "Vacances"} {sessions[selectedSessionIdx].start_time?.slice(0,5)}-{sessions[selectedSessionIdx].end_time?.slice(0,5)}
+                        </p>
+                      </div>
+                    )}
+                    {activity.period_type !== "scolaire" && selectedSlotId && slots.find(s => s.id === selectedSlotId) && (() => {
+                      const selectedSlot = slots.find(s => s.id === selectedSlotId)!;
+                      return (
+                        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg space-y-1">
+                          <p className="text-xs font-medium text-primary">✓ Votre choix</p>
+                          <p className="text-sm font-medium">{activity.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(selectedSlot.start).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} · {new Date(selectedSlot.start).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - {new Date(selectedSlot.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      );
+                    })()}
+
                     <Button
                       onClick={handleBooking}
                       disabled={isActivityClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
