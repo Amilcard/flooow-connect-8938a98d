@@ -164,8 +164,7 @@ const ActivityDetail = () => {
         .order("age_min", { ascending: true });
       if (error) throw error;
       return data;
-    },
-    enabled: !!id
+    }
   });
 
   // Log consultation activité
@@ -197,8 +196,7 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    },
-    enabled: !!id
+    }
   });
 
   // Filtrer les créneaux selon la période sélectionnée
