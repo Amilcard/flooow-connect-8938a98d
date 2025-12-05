@@ -108,7 +108,7 @@ const ActivityDetail = () => {
 
   // Restaurer les données d'aides depuis le state persisté
   useEffect(() => {
-    if (bookingState?.calculated) {
+    if (bookingState?.calculated && !aidsData) {
       setAidsData({
         childId: bookingState.childId,
         quotientFamilial: bookingState.quotientFamilial,
@@ -118,15 +118,15 @@ const ActivityDetail = () => {
         remainingPrice: bookingState.remainingPrice
       });
     }
-  }, [bookingState?.calculated]);
+  }, [bookingState, aidsData]);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
-  
+
   useEffect(() => {
     // Cleanup: logger la durée de consultation à la fermeture
     return trackActivityView;
-  }, [id]);
+  }, [trackActivityView]);
 
   // Fetch activity details
   const { data: activity, isLoading, error } = useQuery({
@@ -148,7 +148,9 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000,
+    gcTime: 600000
   });
 
 
@@ -164,7 +166,9 @@ const ActivityDetail = () => {
         .order("age_min", { ascending: true });
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000,
+    gcTime: 600000
   });
 
   // Log consultation activité
@@ -196,7 +200,9 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000,
+    gcTime: 600000
   });
 
   // Filtrer les créneaux selon la période sélectionnée
