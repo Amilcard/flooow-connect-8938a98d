@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
+import { WaitlistRequestModal } from "@/components/FlooowFamily/WaitlistRequestModal";
 import { EcoMobilitySection } from "@/components/Activity/EcoMobilitySection";
 import { useActivityViewTracking } from "@/lib/tracking";
 import { SharedAidCalculator } from "@/components/aids/SharedAidCalculator";
@@ -86,6 +87,9 @@ const ActivityDetail = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [selectedSessionIdx, setSelectedSessionIdx] = useState<number | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [waitlistSlotId, setWaitlistSlotId] = useState<string | undefined>();
+  const [waitlistSlotLabel, setWaitlistSlotLabel] = useState<string | undefined>();
   const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -919,9 +923,20 @@ const ActivityDetail = () => {
                                 })}
                               </div>
                               {isFull && (
-                                <p className="text-xs text-primary mt-1 ml-5">
+                                <button
+                                  type="button"
+                                  className="text-xs text-primary mt-1 ml-5 hover:underline text-left"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const d = new Date(slot.start);
+                                    const label = `${d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })} ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+                                    setWaitlistSlotId(slot.id);
+                                    setWaitlistSlotLabel(label);
+                                    setShowWaitlistModal(true);
+                                  }}
+                                >
                                   → Demander une place via la Flooow Family
-                                </p>
+                                </button>
                               )}
                             </div>
                           </Card>
@@ -978,22 +993,32 @@ const ActivityDetail = () => {
                     {isActivityClosed && (
                       <div className="mt-4 p-4 bg-accent/50 rounded-lg space-y-3">
                         <p className="text-sm font-medium text-center">
-                          L'atelier affiche complet, mais on ne vous laisse pas tomber 💪
+                          Ça se bouscule pour cet atelier... mais on a encore des cartes en main ! 💪
                         </p>
-                        <div className="text-xs text-center text-muted-foreground space-y-1">
-                          <p>Vous pouvez demander une place sur liste d'attente via la <strong className="text-primary">Flooow Family</strong>.</p>
-                          <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowContactModal(true)}>
-                            <MessageCircle size={14} className="mr-1" />
-                            Contacter via Flooow Family
+                        <div className="text-xs text-center text-muted-foreground space-y-2">
+                          <p>La <strong className="text-primary">Flooow Family</strong> peut vous trouver une place.</p>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => {
+                              setWaitlistSlotId(undefined);
+                              setWaitlistSlotLabel(undefined);
+                              setShowWaitlistModal(true);
+                            }}
+                          >
+                            Demander une place
                           </Button>
                         </div>
                       </div>
                     )}
                     {isActivityClosed && alternatives.length > 0 && (
                       <div className="mt-4 space-y-3">
-                        <p className="text-sm font-medium text-center">Autres idées pour votre enfant :</p>
-                        {alternatives.map((alt: any) => (
-                          <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate(`/activity/${alt.id}`)}>
+                        <p className="text-sm font-medium text-center">
+                          La <span className="text-primary">Flooow Family</span> a d'autres idées pour vous :
+                        </p>
+                        {alternatives.slice(0, 3).map((alt: any) => (
+                          <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate(`/activity/${alt.id}`)}>
                             <div className="flex justify-between items-center">
                               <div>
                                 <p className="text-sm font-medium">{alt.title}</p>
@@ -1003,6 +1028,14 @@ const ActivityDetail = () => {
                             </div>
                           </Card>
                         ))}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full text-xs text-muted-foreground hover:text-primary"
+                          onClick={() => navigate(`/home?ageMin=${activity.age_min}&ageMax=${activity.age_max}`)}
+                        >
+                          Voir d'autres activités pour cette tranche d'âge →
+                        </Button>
                       </div>
                     )}
                     {!aidsData && (
@@ -1043,6 +1076,17 @@ const ActivityDetail = () => {
           activityTitle={activity.title}
         />
       )}
+
+      {/* Modale Flooow Family - Liste d'attente */}
+      <WaitlistRequestModal
+        open={showWaitlistModal}
+        onOpenChange={setShowWaitlistModal}
+        activityId={activity.id}
+        activityTitle={activity.title}
+        slotId={waitlistSlotId}
+        slotLabel={waitlistSlotLabel}
+        ageRange={ageRange}
+      />
 
       {/* Sticky Booking CTA - Mobile only */}
       <StickyBookingCTA
