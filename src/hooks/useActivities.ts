@@ -79,9 +79,11 @@ export const useActivities = (filters?: ActivityFilters) => {
     retry: false,
     queryFn: async () => {
       const buildBaseQuery = () => {
+        // IMPORTANT: Utiliser la table 'activities' directement
+        // La vue 'activities_with_sessions' n'existe pas ou est incomplète dans Supabase
         return supabase
-          .from("activities_with_sessions")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit, organisms(name)")
+          .from("activities")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, price_unit, organisms:organism_id(name)")
           .eq("is_published", true);
       };
 
@@ -106,7 +108,9 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("session_age_min", filters.ageMax).gte("session_age_max", filters.ageMin);
+        // Filtre d'âge: l'activité doit chevaucher la tranche demandée
+        // age_min de l'activité <= ageMax demandé ET age_max de l'activité >= ageMin demandé
+        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
       }
 
       if (filters?.periodType && filters.periodType !== 'all') {
@@ -117,13 +121,14 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.lte("price_base", filters.maxPrice);
       }
 
-      if (filters?.hasAccessibility) {
-        query = query.eq("has_accessibility", true);
-      }
-
-      if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
-        query = query.overlaps("mobility_types", filters.mobilityTypes);
-      }
+      // Note: has_accessibility et mobility_types ne sont pas dans la table activities
+      // Ces filtres sont désactivés jusqu'à ajout des colonnes ou utilisation d'une vue
+      // if (filters?.hasAccessibility) {
+      //   query = query.eq("has_accessibility", true);
+      // }
+      // if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
+      //   query = query.overlaps("mobility_types", filters.mobilityTypes);
+      // }
 
       if (filters?.hasFinancialAid) {
         query = query.not("accepts_aid_types", "is", null);
