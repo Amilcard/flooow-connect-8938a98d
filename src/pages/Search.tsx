@@ -34,12 +34,16 @@ const Search = () => {
   const { advancedFilters, viewMode, searchQuery } = filterState;
 
   // Map advanced filters to useActivities filters
+  // Fix: Ne pas appliquer maxPrice si c'est la valeur par défaut (200€)
+  // Cela permet d'afficher toutes les activités sans restriction de prix par défaut
+  const isMaxPriceModified = advancedFilters.max_budget !== 200;
+
   const activityFilters = {
     searchQuery: searchQuery,
     categories: advancedFilters.categories,
     ageMin: advancedFilters.age_range[0],
     ageMax: advancedFilters.age_range[1],
-    maxPrice: advancedFilters.max_budget,
+    maxPrice: isMaxPriceModified ? advancedFilters.max_budget : undefined,
     hasAccessibility: advancedFilters.inclusivity || advancedFilters.specific_needs.length > 0,
     hasFinancialAid: advancedFilters.financial_aids_accepted.length > 0 || advancedFilters.payment_echelon || advancedFilters.qf_based_pricing,
     mobilityTypes: advancedFilters.mobility_types,
