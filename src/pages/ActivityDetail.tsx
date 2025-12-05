@@ -137,6 +137,9 @@ const ActivityDetail = () => {
     queryKey: ["activity", id],
     enabled: !!id,
     queryFn: async () => {
+      // Debug: log l'ID recherché
+      console.log("[ActivityDetail] Fetching activity with ID:", id);
+
       const { data, error } = await supabase
         .from("activities")
         .select(`
@@ -148,9 +151,18 @@ const ActivityDetail = () => {
           )
         `)
         .eq("id", id)
+        .eq("is_published", true) // Cohérence avec la liste
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("[ActivityDetail] Error fetching activity:", { id, error });
+        throw error;
+      }
+
+      if (!data) {
+        console.warn("[ActivityDetail] No activity found for ID:", id);
+      }
+
       return data;
     },
     staleTime: 300000,
@@ -306,12 +318,38 @@ const ActivityDetail = () => {
 
   if (isLoading) return <LoadingState />;
   if (error || !activity) {
+    // Log pour debug
+    console.error("[ActivityDetail] Activity not found or error:", { id, error });
+
     return (
-      <div className="min-h-screen bg-background p-4">
-        <ErrorState 
-          message="Activité introuvable" 
-          onRetry={() => navigate("/home")} 
-        />
+      <div className="min-h-screen bg-background p-4 pb-24">
+        <PageHeader title="Activité" />
+        <div className="container max-w-lg mx-auto mt-8 space-y-6">
+          <Card className="p-6 text-center space-y-4">
+            <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+              <Info size={32} className="text-muted-foreground" />
+            </div>
+            <h1 className="text-xl font-bold">Cette activité n'est plus disponible</h1>
+            <p className="text-sm text-muted-foreground">
+              L'activité que vous cherchez a peut-être été retirée ou n'est plus ouverte aux inscriptions pour cette saison.
+            </p>
+            <div className="pt-4 space-y-2">
+              <Button onClick={() => navigate("/search")} className="w-full">
+                Voir d'autres activités
+              </Button>
+              <Button variant="outline" onClick={() => navigate("/home")} className="w-full">
+                Retour à l'accueil
+              </Button>
+            </div>
+          </Card>
+          {/* Debug info en dev */}
+          {import.meta.env.DEV && (
+            <p className="text-xs text-muted-foreground text-center">
+              Debug: ID demandé = {id}
+            </p>
+          )}
+        </div>
+        <BottomNavigation />
       </div>
     );
   }
