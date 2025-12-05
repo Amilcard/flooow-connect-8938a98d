@@ -834,6 +834,14 @@ const ActivityDetail = () => {
                         </Badge>
                       )}
                     </div>
+
+                    {/* Notice: saison déjà commencée mais inscription possible */}
+                    {activity.period_type === "scolaire" && !isActivityClosed && (
+                      <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+                        <Info size={14} />
+                        <span>Saison en cours · Inscription toujours possible</span>
+                      </div>
+                    )}
                     
                     {activity.period_type === "scolaire" ? (
                     <div className="space-y-2">
