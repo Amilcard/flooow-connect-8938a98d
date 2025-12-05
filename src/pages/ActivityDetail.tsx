@@ -275,6 +275,34 @@ const ActivityDetail = () => {
     checkAndCleanState();
   }, [userProfile]);
 
+  // Logique inscription saison : fenêtre août-octobre pour activités scolaires
+  // Calculée AVANT early return pour pouvoir être utilisée dans useQuery
+  const INSCRIPTION_END_MONTH = 10;
+  const INSCRIPTION_END_DAY = 31;
+  const todayDate = new Date();
+  const isInscriptionClosed = !!activity && activity.period_type === "scolaire" && (
+    todayDate.getMonth() > INSCRIPTION_END_MONTH - 1 ||
+    (todayDate.getMonth() === INSCRIPTION_END_MONTH - 1 && todayDate.getDate() > INSCRIPTION_END_DAY)
+  );
+
+  // Fetch activités alternatives si inscription fermée (DOIT être avant early returns)
+  const { data: alternatives = [] } = useQuery({
+    queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activities")
+        .select("id, title, categories, age_min, age_max, price_base, period_type, images")
+        .neq("id", activity!.id)
+        .eq("is_published", true)
+        .lte("age_min", activity!.age_max)
+        .gte("age_max", activity!.age_min)
+        .limit(3);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isInscriptionClosed
+  });
+
   if (isLoading) return <LoadingState />;
   if (error || !activity) {
     return (
@@ -411,32 +439,6 @@ const ActivityDetail = () => {
   };
   const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
-  // Logique inscription saison : fenêtre août-octobre pour activités scolaires
-  const INSCRIPTION_END_MONTH = 10; // Octobre (0-indexed = 9, mais on veut fin octobre donc 10)
-  const INSCRIPTION_END_DAY = 31;
-  const today = new Date();
-  const isInscriptionClosed = activity.period_type === "scolaire" && (
-    today.getMonth() > INSCRIPTION_END_MONTH - 1 || 
-    (today.getMonth() === INSCRIPTION_END_MONTH - 1 && today.getDate() > INSCRIPTION_END_DAY)
-  );
-
-  // Fetch activités alternatives si inscription fermée
-  const { data: alternatives = [] } = useQuery({
-    queryKey: ["alternatives", activity.id, activity.categories, activity.age_min, activity.age_max],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("activities")
-        .select("id, title, categories, age_min, age_max, price_base, period_type, images")
-        .neq("id", activity.id)
-        .eq("is_published", true)
-        .lte("age_min", activity.age_max)
-        .gte("age_max", activity.age_min)
-        .limit(3);
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: isInscriptionClosed
-  });
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Compact Hero Header (160px optimisé) */}
