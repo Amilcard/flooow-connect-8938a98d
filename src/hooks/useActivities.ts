@@ -129,10 +129,11 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.not("accepts_aid_types", "is", null);
       }
 
-      if (filters?.limit) {
-        query = query.limit(filters.limit);
-      } else {
-        query = query.limit(50);
+      // Limite: utiliser celle spécifiée ou 100 par défaut (augmenté de 50)
+      // Pour afficher toutes les activités, passer limit: 0 ou une valeur élevée
+      const limitValue = filters?.limit !== undefined ? filters.limit : 100;
+      if (limitValue > 0) {
+        query = query.limit(limitValue);
       }
 
       const { data, error } = await query.order("title", { ascending: true });
