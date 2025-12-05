@@ -275,17 +275,14 @@ const ActivityDetail = () => {
     checkAndCleanState();
   }, [userProfile]);
 
-  // Logique inscription saison : fenêtre août-octobre pour activités scolaires
-  // Calculée AVANT early return pour pouvoir être utilisée dans useQuery
-  const INSCRIPTION_END_MONTH = 10;
-  const INSCRIPTION_END_DAY = 31;
-  const todayDate = new Date();
-  const isInscriptionClosed = !!activity && activity.period_type === "scolaire" && (
-    todayDate.getMonth() > INSCRIPTION_END_MONTH - 1 ||
-    (todayDate.getMonth() === INSCRIPTION_END_MONTH - 1 && todayDate.getDate() > INSCRIPTION_END_DAY)
-  );
+  // Logique des états d'inscription basée sur les VRAIES données (places disponibles)
+  // Pas de règle arbitraire "après octobre c'est fermé"
+  const hasAvailableSlots = slots.some(slot => slot.seats_remaining > 0);
+  const hasAvailableSessions = sessions.length > 0; // Sessions scolaires considérées dispo par défaut
+  const isActivityOpen = activity ? (activity.period_type === "scolaire" ? hasAvailableSessions : hasAvailableSlots) : false;
+  const isActivityClosed = !!activity && !isActivityOpen;
 
-  // Fetch activités alternatives si inscription fermée (DOIT être avant early returns)
+  // Fetch activités alternatives si activité complète (DOIT être avant early returns)
   const { data: alternatives = [] } = useQuery({
     queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
     queryFn: async () => {
@@ -300,7 +297,7 @@ const ActivityDetail = () => {
       if (error) throw error;
       return data || [];
     },
-    enabled: isInscriptionClosed
+    enabled: isActivityClosed
   });
 
   if (isLoading) return <LoadingState />;
@@ -857,40 +854,50 @@ const ActivityDetail = () => {
                       {slots.map(slot => {
                         const startDate = new Date(slot.start);
                         const endDate = new Date(slot.end);
+                        const isFull = slot.seats_remaining <= 0;
+                        const isSelected = selectedSlotId === slot.id;
                         return (
-                          <Card 
+                          <Card
                             key={slot.id}
-                            className={`p-3 cursor-pointer transition-all ${
-                              selectedSlotId === slot.id 
-                                ? 'ring-2 ring-primary bg-accent' 
-                                : 'hover:bg-accent/50'
+                            className={`p-3 transition-all ${
+                              isFull
+                                ? 'opacity-60 bg-muted cursor-not-allowed'
+                                : isSelected
+                                  ? 'ring-2 ring-primary bg-accent cursor-pointer'
+                                  : 'hover:bg-accent/50 cursor-pointer'
                             }`}
-                            onClick={() => setSelectedSlotId(slot.id)}
+                            onClick={() => !isFull && setSelectedSlotId(slot.id)}
                           >
                             <div className="space-y-1">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <Calendar size={14} className="text-primary" />
+                                  <Calendar size={14} className={isFull ? "text-muted-foreground" : "text-primary"} />
                                   <span className="text-sm font-medium">
-                                    {startDate.toLocaleDateString('fr-FR', { 
-                                      day: 'numeric', 
-                                      month: 'short' 
+                                    {startDate.toLocaleDateString('fr-FR', {
+                                      weekday: 'short',
+                                      day: 'numeric',
+                                      month: 'short'
                                     })}
                                   </span>
                                 </div>
-                                <Badge variant="outline" className="text-xs">
-                                  {slot.seats_remaining} places
+                                <Badge variant={isFull ? "secondary" : "outline"} className="text-xs">
+                                  {isFull ? "Complet" : `${slot.seats_remaining} places`}
                                 </Badge>
                               </div>
                               <div className="text-xs text-muted-foreground ml-5">
-                                {startDate.toLocaleTimeString('fr-FR', { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })} - {endDate.toLocaleTimeString('fr-FR', { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
+                                {startDate.toLocaleTimeString('fr-FR', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })} - {endDate.toLocaleTimeString('fr-FR', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
                                 })}
                               </div>
+                              {isFull && (
+                                <p className="text-xs text-primary mt-1 ml-5">
+                                  → Demander une place via la Flooow Family
+                                </p>
+                              )}
                             </div>
                           </Card>
                         );
@@ -899,23 +906,34 @@ const ActivityDetail = () => {
                   )}
                     <Button
                       onClick={handleBooking}
-                      disabled={isInscriptionClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
+                      disabled={isActivityClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
                       className="w-full h-12 text-base font-semibold"
                       size="lg"
                     >
-                      {(activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) 
-                        ? "Sélectionnez un créneau"
-                        : "Inscrire mon enfant"}
+                      {isActivityClosed
+                        ? "Inscriptions complètes"
+                        : (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)
+                          ? "Sélectionnez un créneau"
+                          : "Inscrire mon enfant"}
                     </Button>
 
-                    {isInscriptionClosed && (
-                      <p className="text-xs text-center text-orange-600 font-medium">
-                        Inscription hélas terminée, mais on ne vous laisse pas tomber 💪
-                      </p>
+                    {isActivityClosed && (
+                      <div className="mt-4 p-4 bg-accent/50 rounded-lg space-y-3">
+                        <p className="text-sm font-medium text-center">
+                          L'atelier affiche complet, mais on ne vous laisse pas tomber 💪
+                        </p>
+                        <div className="text-xs text-center text-muted-foreground space-y-1">
+                          <p>Vous pouvez demander une place sur liste d'attente via la <strong className="text-primary">Flooow Family</strong>.</p>
+                          <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowContactModal(true)}>
+                            <MessageCircle size={14} className="mr-1" />
+                            Contacter via Flooow Family
+                          </Button>
+                        </div>
+                      </div>
                     )}
-                    {isInscriptionClosed && alternatives.length > 0 && (
+                    {isActivityClosed && alternatives.length > 0 && (
                       <div className="mt-4 space-y-3">
-                        <p className="text-sm font-medium text-center">Découvrez ces alternatives :</p>
+                        <p className="text-sm font-medium text-center">Autres idées pour votre enfant :</p>
                         {alternatives.map((alt: any) => (
                           <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate(`/activity/${alt.id}`)}>
                             <div className="flex justify-between items-center">
@@ -975,7 +993,7 @@ const ActivityDetail = () => {
         priceUnit={activity.price_note || "par activité"}
         onBook={handleBooking}
         onShare={handleShare}
-        disabled={isInscriptionClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
+        disabled={isActivityClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
         buttonText={(activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
         mobileOnly={true}
       />
