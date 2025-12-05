@@ -837,17 +837,34 @@ const ActivityDetail = () => {
                     
                     {activity.period_type === "scolaire" ? (
                     <div className="space-y-2">
-                      {sessions.map((s, idx) => (
-                        <Card key={idx} className={`p-3 cursor-pointer transition-all ${selectedSessionIdx === idx ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"}`} onClick={() => setSelectedSessionIdx(idx)}>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
-                            <span className="text-sm text-muted-foreground">
-                              {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
-                            </span>
-                          </div>
-                          {s.day_of_week !== null && <p className="text-xs text-primary mt-1">Prochaines séances : {getNextDates(s.day_of_week).join(", ")}</p>}
-                        </Card>
-                      ))}
+                      {sessions.map((s, idx) => {
+                        const nextDate = getNextDate(s.day_of_week);
+                        const dayName = s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : null;
+                        return (
+                          <Card
+                            key={idx}
+                            className={`p-3 cursor-pointer transition-all ${selectedSessionIdx === idx ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"}`}
+                            onClick={() => setSelectedSessionIdx(idx)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
+                              <span className="text-sm text-muted-foreground">
+                                {dayName} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
+                              </span>
+                            </div>
+                            {dayName && nextDate && (
+                              <p className="text-xs text-primary mt-1">
+                                Prochaine séance : {dayName} {nextDate}
+                              </p>
+                            )}
+                            {dayName && getNextDates(s.day_of_week, 3).length > 1 && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Voir les autres dates ({getNextDates(s.day_of_week, 3).length - 1})
+                              </p>
+                            )}
+                          </Card>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
@@ -904,6 +921,39 @@ const ActivityDetail = () => {
                       })}
                     </div>
                   )}
+
+                    {/* Récap "Votre choix" quand un créneau est sélectionné */}
+                    {activity.period_type === "scolaire" && selectedSessionIdx !== null && sessions[selectedSessionIdx] && (
+                      <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <p className="text-xs text-muted-foreground">Vous allez inscrire :</p>
+                        <p className="text-sm font-medium">{activity.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {sessions[selectedSessionIdx].age_min}-{sessions[selectedSessionIdx].age_max} ans · {sessions[selectedSessionIdx].day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][sessions[selectedSessionIdx].day_of_week] : ""} {getNextDate(sessions[selectedSessionIdx].day_of_week)} · {sessions[selectedSessionIdx].start_time?.slice(0,5)}-{sessions[selectedSessionIdx].end_time?.slice(0,5)}
+                        </p>
+                      </div>
+                    )}
+                    {activity.period_type !== "scolaire" && selectedSlotId && slots.find(s => s.id === selectedSlotId) && (() => {
+                      const sel = slots.find(s => s.id === selectedSlotId)!;
+                      const d = new Date(sel.start);
+                      return (
+                        <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                          <p className="text-xs text-muted-foreground">Vous allez inscrire :</p>
+                          <p className="text-sm font-medium">{activity.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })} · {d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Bloc si certains créneaux sont complets mais pas tous */}
+                    {!isActivityClosed && slots.some(s => s.seats_remaining <= 0) && slots.some(s => s.seats_remaining > 0) && (
+                      <div className="mt-3 p-3 bg-muted/50 rounded-lg text-xs">
+                        <p className="font-medium">Le créneau que vous visiez est complet ?</p>
+                        <p className="text-muted-foreground mt-1">Inscrivez votre enfant sur un créneau disponible, ou demandez une place sur liste d'attente via la Flooow Family.</p>
+                      </div>
+                    )}
+
                     <Button
                       onClick={handleBooking}
                       disabled={isActivityClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
