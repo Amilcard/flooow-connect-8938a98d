@@ -34,6 +34,10 @@ interface CompactHeroHeaderProps {
    * Fallback route pour le bouton retour
    */
   backFallback?: string;
+  periodType?: string;
+  ageMin?: number;
+  ageMax?: number;
+  price?: number;
 
   /**
    * Contenu à afficher en haut à droite (ex: bouton partage)
@@ -87,7 +91,11 @@ export function CompactHeroHeader({
   categories,
   backFallback = "/activities",
   rightContent,
-  onBack
+  onBack,
+  periodType,
+  ageMin,
+  ageMax,
+  price
 }: CompactHeroHeaderProps) {
   const [imgError, setImgError] = useState(false);
 
@@ -182,6 +190,19 @@ export function CompactHeroHeader({
         >
           {title}
         </h1>
+        {/* Pilules période / âge */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          {periodType && (
+            <Badge className="bg-white/90 text-gray-800 text-xs">
+              {periodType === "scolaire" ? "SAISON" : "VACANCES"}
+            </Badge>
+          )}
+          {ageMin && ageMax && (
+            <Badge className="bg-white/90 text-gray-800 text-xs">
+              {ageMin}-{ageMax} ans
+            </Badge>
+          )}
+        </div>
       </div>
     </div>
   );

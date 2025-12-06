@@ -486,6 +486,10 @@ const ActivityDetail = () => {
         title={activity.title}
         category={activity.category}
         categories={activity.categories}
+        periodType={activity.period_type}
+        ageMin={activity.age_min}
+        ageMax={activity.age_max}
+        price={activity.price_base}
         backFallback="/home"
         rightContent={
           <div className="relative">
