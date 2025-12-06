@@ -3,6 +3,7 @@ import { ActivityCard } from "@/components/Activity/ActivityCard";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, MapPin } from "lucide-react";
+import { formatAgeRangeForCard } from "@/utils/categoryMapping";
 
 interface Activity {
   id: string;
@@ -109,7 +110,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                       </Badge>
                       {activity.age_min && activity.age_max && (
                         <Badge variant="outline" className="text-xs">
-                          {activity.age_min}-{activity.age_max} ans
+                          {formatAgeRangeForCard(activity.age_min, activity.age_max).replace(/ ans$/, "")}
                         </Badge>
                       )}
                     </div>

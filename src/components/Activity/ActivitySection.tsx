@@ -4,6 +4,7 @@ import { ActivityCard } from "./ActivityCard";
 import { ActivityCarousel } from "./ActivityCarousel";
 import { ChevronRight, Search } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
+import { formatAgeRangeForCard } from "@/utils/categoryMapping";
 
 interface Activity {
   id: string;
@@ -113,7 +114,7 @@ export const ActivitySection = ({
                 <ActivityCard
                   key={activity.id}
                   {...activity}
-                  ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
+                  ageRange={activity.age_min && activity.age_max ? formatAgeRangeForCard(activity.age_min, activity.age_max) : activity.ageRange}
                   periodType={activity.periodType}
                   structureName={activity.structureName}
                   structureAddress={activity.structureAddress}

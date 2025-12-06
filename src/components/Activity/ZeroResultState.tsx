@@ -10,6 +10,7 @@ import {
   Users
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatAgeRangeForCard } from "@/utils/categoryMapping";
 
 interface Activity {
   id: string;
@@ -207,7 +208,7 @@ export function ZeroResultState({
                         )}
                         <div className="flex items-center gap-1">
                           <Users className="w-3.5 h-3.5" />
-                          <span>{activity.age_min}-{activity.age_max} ans</span>
+                          <span>{formatAgeRangeForCard(activity.age_min, activity.age_max)}</span>
                         </div>
                       </div>
 

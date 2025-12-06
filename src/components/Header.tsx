@@ -15,12 +15,12 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white shadow-sm">
       <div className="container px-4 md:px-6">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo FLOOOW */}
-          <HeaderLogo />
+        <div className="flex h-16 items-center justify-between gap-4">
+          {/* Logo FLOOOW - même poids visuel que le bouton S'inscrire */}
+          <HeaderLogo className="pl-0" />
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
+          {/* Actions - alignées à droite avec marge symétrique */}
+          <div className="flex items-center gap-2 pr-0">
             {!isAuthenticated ? (
               <>
                 <Button variant="ghost" className="hidden md:inline-flex" asChild>

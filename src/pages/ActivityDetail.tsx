@@ -56,6 +56,7 @@ import activityCultureImg from "@/assets/activity-culture.jpg";
 import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
+import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap: Record<string, string> = {
@@ -417,7 +418,9 @@ const ActivityDetail = () => {
 
   const fallbackImage = getCategoryImage(activity.category);
   const displayImage = activity.images?.[0] || fallbackImage;
-  const ageRange = sessions.length > 0 ? sessions.map(s => `${s.age_min}-${s.age_max} ans`).filter((v, i, a) => a.indexOf(v) === i).join(" / ") : `${activity.age_min}-${activity.age_max} ans`;
+  const ageRange = sessions.length > 0 
+    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ") 
+    : formatAgeRangeForDetail(activity.age_min, activity.age_max);
 
   // Calculer les prochaines dates pour un jour de semaine donné
   const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
