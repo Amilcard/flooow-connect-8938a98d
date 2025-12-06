@@ -103,10 +103,20 @@ export const EcoMobilitySection = ({
     enabled: !!activityAddress
   });
 
-  const handleSelectTransport = (type: "bus" | "bike" | "walk", label: string, details?: string) => {
+  const handleSelectTransport = async (type: "bus" | "bike" | "walk", label: string, details?: string) => {
     const duration = type === "bus" ? durations.bus : type === "bike" ? durations.bike : durations.walk;
     const mode = { type, label, duration, details };
     onTransportModeSelected?.(mode);
+    // Persister en base
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("mobility_choices").upsert({
+        user_id: user.id,
+        activity_id: activityId,
+        transport_mode: type,
+        station_name: details || null
+      }, { onConflict: "user_id,activity_id" });
+    }
     toast.success(`Mode de transport sélectionné : ${label}`);
   };
 
