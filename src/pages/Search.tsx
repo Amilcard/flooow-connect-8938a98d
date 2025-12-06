@@ -12,7 +12,7 @@ import { MapPin, List, X, SlidersHorizontal, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { logSearch } from "@/lib/tracking";
-import { InteractiveMapActivities } from "@/components/Search/InteractiveMapActivities";
+import { GoogleMapsActivities } from "@/components/Search/GoogleMapsActivities";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
 
@@ -171,7 +171,7 @@ const Search = () => {
             activities={displayActivities || []}
           />
         ) : (
-          <InteractiveMapActivities
+          <GoogleMapsActivities
             activities={displayActivities || []}
             height="600px"
           />
