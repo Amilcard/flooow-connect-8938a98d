@@ -600,7 +600,7 @@ const ActivityDetail = () => {
             {activity.organisms?.address && (
               <span className="flex items-center gap-2">
                 <MapPin size={20} className="text-primary" />
-                <span className="text-muted-foreground">{activity.organisms.address}</span>
+                <span className="text-muted-foreground">{activity.venue_name || activity.address}</span>
               </span>
             )}
           </div>
@@ -716,7 +716,7 @@ const ActivityDetail = () => {
                           <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-sm">Lieu</p>
-                            <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
+                            <p className="text-sm text-muted-foreground">{activity.venue_name || activity.address}</p>
                           </div>
                         </div>
                       )}
@@ -819,7 +819,7 @@ const ActivityDetail = () => {
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
                     activityId={activity.id}
-                    activityAddress={activity.organisms?.address}
+                    activityAddress={activity.address}
                     structureName={activity.organisms?.name}
                     structureContactJson={activity.organisms?.phone}
                     onTransportModeSelected={(mode) => {
