@@ -10,12 +10,14 @@ interface GoogleMapsActivitiesProps {
   activities: Activity[];
   centerCoordinates?: [number, number];
   zoom?: number;
+  height?: string;
 }
 
 export const GoogleMapsActivities = ({
   activities,
   centerCoordinates = [45.4397, 4.3872],
-  zoom = 12
+  zoom = 12,
+  height = "500px"
 }: GoogleMapsActivitiesProps) => {
   const navigate = useNavigate();
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -110,7 +112,7 @@ export const GoogleMapsActivities = ({
   }, [googleMapsLoaded, activitiesWithLocation, navigate]);
 
   return (
-    <div className="relative w-full h-full min-h-[400px]">
+    <div className="relative w-full" style={{ height }}>
       <div className="absolute top-2 left-2 z-10 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md">
         <span className="text-sm font-medium">{activitiesWithLocation.length} / {activities.length} localisées</span>
       </div>
