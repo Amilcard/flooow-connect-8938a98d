@@ -190,7 +190,7 @@ export const EcoMobilitySection = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + '?tab=trajets')}`)}
+                    onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activityAddress || "")}&travelmode=transit`, "_blank")}
                     className="mt-2"
                   >
                     Calculer mon itinéraire →
@@ -253,7 +253,7 @@ export const EcoMobilitySection = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + '?tab=trajets')}`)}
+                    onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activityAddress || "")}&travelmode=bicycling`, "_blank")}
                     className="mt-2"
                   >
                     Calculer mon itinéraire →
@@ -305,7 +305,7 @@ export const EcoMobilitySection = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + '?tab=trajets')}`)}
+                    onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activityAddress || "")}&travelmode=walking`, "_blank")}
                     className="mt-2"
                   >
                     Calculer mon itinéraire →

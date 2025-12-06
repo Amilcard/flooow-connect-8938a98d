@@ -967,7 +967,7 @@ const ActivityDetail = () => {
                       <div className="mt-4 space-y-3">
                         <p className="text-sm font-medium text-center">Autres idées pour votre enfant :</p>
                         {alternatives.map((alt: any) => (
-                          <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate(`/activity/${alt.id}`)}>
+                          <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate("/activity/" + alt.id)}>
                             <div className="flex justify-between items-center">
                               <div>
                                 <p className="text-sm font-medium">{alt.title}</p>
