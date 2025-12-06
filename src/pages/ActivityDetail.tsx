@@ -834,9 +834,7 @@ const ActivityDetail = () => {
                     activityId={activity.id}
                     activityAddress={activity.address}
                     structureName={activity.organisms?.name}
-                    structureContactJson={activity.organisms?.phone,
-            email,
-            website}
+                    structureContactJson={activity.organisms?.phone}
                     onTransportModeSelected={(mode) => {
                       console.log('Transport mode selected:', mode);
                     }}
