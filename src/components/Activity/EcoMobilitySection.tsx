@@ -39,6 +39,18 @@ const getCoherentDurations = (activityId: string) => {
   };
 };
 
+// Constants for eco-mobility calculations
+const CO2_CAR_PER_KM = 120; // grams CO2 per km by car
+const CALORIES_BIKE_PER_MIN = 8; // kcal per minute cycling
+const CALORIES_WALK_PER_MIN = 4; // kcal per minute walking
+const STEPS_PER_KM = 1300; // average steps per km
+
+// Estimate distance based on duration and mode
+const estimateDistance = (durationMin: number, mode: 'bike' | 'walk') => {
+  const speedKmH = mode === 'bike' ? 15 : 5; // 15 km/h bike, 5 km/h walk
+  return (durationMin / 60) * speedKmH;
+};
+
 interface EcoMobilitySectionProps {
   activityId: string;
   activityAddress?: string;
@@ -246,6 +258,14 @@ export const EcoMobilitySection = ({
                       <Clock size={14} />
                       <span>Temps estimé : {durations.bike} min</span>
                     </div>
+                    <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
+                      <Leaf size={12} />
+                      <span>≈ {Math.round(estimateDistance(durations.bike, 'bike') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-purple-600">
+                      <Footprints size={12} />
+                      <span>≈ {Math.round(durations.bike * CALORIES_BIKE_PER_MIN)} kcal brûlées</span>
+                    </div>
                   </div>
                 )}
                 
@@ -300,6 +320,14 @@ export const EcoMobilitySection = ({
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Clock size={14} />
                   <span>Temps estimé : {durations.walk} min</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
+                  <Leaf size={12} />
+                  <span>≈ {Math.round(estimateDistance(durations.walk, 'walk') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-purple-600">
+                  <Footprints size={12} />
+                  <span>≈ {Math.round(durations.walk * CALORIES_WALK_PER_MIN)} kcal • {Math.round(estimateDistance(durations.walk, 'walk') * STEPS_PER_KM)} pas</span>
                 </div>
                 <div className="flex gap-2">
                   <Button
