@@ -109,7 +109,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                       </Badge>
                       {activity.age_min && activity.age_max && (
                         <Badge variant="outline" className="text-xs">
-                          {activity.age_min}-{activity.age_max} ans
+                          {activity.age_groups || `${activity.age_min}-${activity.age_max}`} ans
                         </Badge>
                       )}
                     </div>
@@ -156,7 +156,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                     )}
                     <ActivityCard
                       {...activity}
-                      ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
+                      ageRange={activity.age_groups ? `${activity.age_groups} ans` : (activity.age_min ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange} activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange)}
                       periodType={activity.periodType}
                       structureName={activity.structureName}
                       structureAddress={activity.structureAddress}

@@ -82,8 +82,8 @@ export const useActivities = (filters?: ActivityFilters) => {
         // IMPORTANT: Utiliser la table 'activities' directement
         // La vue 'activities_with_sessions' n'existe pas ou est incomplète dans Supabase
         return supabase
-          .from("activities")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, price_unit, organisms:organism_id(name)")
+          .from("activities_with_age_groups")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, price_unit, age_groups, organisms:organism_id(name)")
           .eq("is_published", true);
       };
 
