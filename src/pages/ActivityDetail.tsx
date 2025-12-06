@@ -611,11 +611,21 @@ const ActivityDetail = () => {
           {/* Organisateur avec lien contact discret */}
           {activity.organisms?.name && (
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-2">
-                <Building2 size={20} className="text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">
-                  Organisé par {activity.organisms.name}
-                </span>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <Building2 size={20} className="text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">
+                    Organisé par {activity.organisms.name}
+                  </span>
+                </div>
+                {activity.organisms.type && (
+                  <span className="text-xs text-muted-foreground ml-7">{activity.organisms.type}</span>
+                )}
+                {activity.organisms.website && (
+                  <a href={activity.organisms.website} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline ml-7">
+                    Voir le site web
+                  </a>
+                )}
               </div>
               <Button
                 variant="link"
