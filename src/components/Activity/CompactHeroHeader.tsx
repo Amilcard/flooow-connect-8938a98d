@@ -35,8 +35,8 @@ interface CompactHeroHeaderProps {
    */
   backFallback?: string;
   periodType?: string;
-  ageMin?: number;
-  ageMax?: number;
+  sessions?: Array<{ age_min: number; age_max: number }>;
+  
   price?: number;
 
   /**
@@ -93,8 +93,8 @@ export function CompactHeroHeader({
   rightContent,
   onBack,
   periodType,
-  ageMin,
-  ageMax,
+  sessions = [],
+  
   price
 }: CompactHeroHeaderProps) {
   const [imgError, setImgError] = useState(false);
@@ -197,9 +197,9 @@ export function CompactHeroHeader({
               {periodType === "scolaire" ? "SAISON" : "VACANCES"}
             </Badge>
           )}
-          {ageMin && ageMax && (
+          {sessions.length > 0 && (
             <Badge className="bg-white/90 text-gray-800 text-xs">
-              {ageMin}-{ageMax} ans
+              {sessions.map(s => `${s.age_min}-${s.age_max}`).filter((v, i, a) => a.indexOf(v) === i).join(" / ")} ans
             </Badge>
           )}
         </div>

@@ -487,8 +487,8 @@ const ActivityDetail = () => {
         category={activity.category}
         categories={activity.categories}
         periodType={activity.period_type}
-        ageMin={activity.age_min}
-        ageMax={activity.age_max}
+        sessions={sessions}
+        
         price={activity.price_base}
         backFallback="/home"
         rightContent={
