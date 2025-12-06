@@ -64,6 +64,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     jours_horaires: dbActivity.jours_horaires,
     sessions: dbActivity.sessions,
     price_unit: dbActivity.price_unit,
+    age_groups: dbActivity.age_groups,
     covoiturage_enabled: false,
   };
   return toActivity(raw);
