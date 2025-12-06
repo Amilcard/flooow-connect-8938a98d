@@ -146,8 +146,11 @@ const ActivityDetail = () => {
           *,
           organisms:organism_id (
             name,
+            type,
             address,
-            phone
+            phone,
+            email,
+            website
           )
         `)
         .eq("id", id)
@@ -821,7 +824,9 @@ const ActivityDetail = () => {
                     activityId={activity.id}
                     activityAddress={activity.address}
                     structureName={activity.organisms?.name}
-                    structureContactJson={activity.organisms?.phone}
+                    structureContactJson={activity.organisms?.phone,
+            email,
+            website}
                     onTransportModeSelected={(mode) => {
                       console.log('Transport mode selected:', mode);
                     }}
@@ -1108,13 +1113,13 @@ const ActivityDetail = () => {
       </div>
 
 
-      {activity.organisms && typeof activity.organisms.phone === 'object' && activity.organisms.phone !== null && (
+      {activity.organisms && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
           organizerName={activity.organisms.name}
-          organizerEmail={'email' in activity.organisms.phone ? String(activity.organisms.phone.email) : ''}
-          organizerPhone={'phone' in activity.organisms.phone ? String(activity.organisms.phone.phone) : undefined}
+          organizerEmail={activity.organisms.email || ''}
+          organizerPhone={activity.organisms.phone}
           activityTitle={activity.title}
         />
       )}
