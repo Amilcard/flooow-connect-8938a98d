@@ -135,7 +135,7 @@ const ActivityDetail = () => {
     enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("activities")
+        .from("activities_with_age_groups")
         .select(`
           *,
           organisms:organism_id (
@@ -288,7 +288,7 @@ const ActivityDetail = () => {
     queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("activities")
+        .from("activities_with_age_groups")
         .select("id, title, categories, age_min, age_max, price_base, period_type, images")
         .neq("id", activity!.id)
         .eq("is_published", true)
