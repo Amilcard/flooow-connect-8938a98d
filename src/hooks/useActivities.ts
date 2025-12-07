@@ -81,7 +81,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities_with_sessions")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit, organisms(name), image_url")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions, price_unit, organisms(name), image_url, image_url")
           .eq("is_published", true);
       };
 
