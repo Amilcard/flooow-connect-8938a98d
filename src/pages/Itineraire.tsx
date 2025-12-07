@@ -11,6 +11,12 @@ import { BackButton } from "@/components/BackButton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Constantes éco-mobilité
+const CO2_CAR_PER_KM = 120; // grammes CO2 par km en voiture
+const STEPS_PER_KM = 1350; // pas moyens par km
+const CALORIES_WALK_PER_MIN = 5; // kcal par minute de marche
+const CALORIES_BIKE_PER_MIN = 8; // kcal par minute de vélo
+
 const Itineraire = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -353,6 +359,32 @@ const Itineraire = () => {
                     {routeData.duration?.text}
                   </p>
                 </div>
+              </div>
+              
+              {/* Économies CO2 et santé */}
+              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg space-y-2">
+                <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                  <span className="text-lg">🌱</span>
+                  <span className="font-medium">
+                    ≈ {Math.round((routeData.distance?.value || 0) / 1000 * CO2_CAR_PER_KM / 10) / 100} kg CO₂ évités vs voiture
+                  </span>
+                </div>
+                {(transportType === 'walk' || transportType === 'bike') && (
+                  <div className="flex items-center gap-2 text-purple-700 dark:text-purple-400">
+                    <span className="text-lg">💪</span>
+                    <span className="font-medium">
+                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN))} kcal brûlées
+                    </span>
+                  </div>
+                )}
+                {transportType === 'walk' && (
+                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
+                    <span className="text-lg">👟</span>
+                    <span className="font-medium">
+                      ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM)} pas
+                    </span>
+                  </div>
+                )}
               </div>
 
               {transportType === 'bus' && (
