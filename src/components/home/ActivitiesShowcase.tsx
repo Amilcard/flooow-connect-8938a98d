@@ -156,6 +156,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                       </Badge>
                     )}
                     <ActivityCard
+                      image={activity.image_url || activity.image}
                       {...activity}
                       ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
                       periodType={activity.periodType}
