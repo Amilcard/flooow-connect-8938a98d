@@ -141,7 +141,10 @@ const ActivityDetail = () => {
           organisms:organism_id (
             name,
             address,
-            phone
+            type,
+            phone,
+            email,
+            website
           )
         `)
         .eq("id", id)
