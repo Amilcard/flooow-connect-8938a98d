@@ -195,6 +195,10 @@ export const EcoMobilitySection = ({
                       <Clock size={14} />
                       <span>Temps estimé : {durations.bus} min</span>
                     </div>
+                    <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
+                      <Leaf size={12} />
+                      <span>≈ {Math.round(estimateDistance(durations.bus, 'bus') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités vs voiture</span>
+                    </div>
                   </div>
                 )}
                 
