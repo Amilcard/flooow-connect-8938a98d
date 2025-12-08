@@ -266,7 +266,7 @@ export const ActivityCard = ({
                     'pass_colo': { label: 'Pass Colo', bg: 'bg-green-50', text: 'text-green-600' },
                     'aides_municipales_saint_etienne': { label: 'Ville', bg: 'bg-slate-50', text: 'text-slate-600' },
                   };
-                  const config = aideConfig[aide] || { label: aide.replace(/_/g, ' '), bg: 'bg-gray-50', text: 'text-gray-600' };
+                  const config = aideConfig[aide] || { label: aide.replace(/_/g, ' '), bg: 'bg-muted', text: 'text-muted-foreground' };
                   return (
                     <span key={index} className={"px-1.5 py-0.5 rounded text-[9px] font-medium " + config.bg + " " + config.text}>
                       {config.label}
