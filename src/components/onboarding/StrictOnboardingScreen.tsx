@@ -142,10 +142,10 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
           gap: layout.spacing
         }}
       >
-        <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-gray-900">
+        <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-foreground">
           {title}
         </h1>
-        <p className="text-base text-gray-500 leading-relaxed">
+        <p className="text-base text-muted-foreground leading-relaxed">
           {body}
         </p>
       </div>
@@ -166,7 +166,7 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
                 "h-2 rounded-full transition-all duration-300",
                 i === pagination.index
                   ? "w-8 bg-primary"
-                  : "w-2 bg-gray-200"
+                  : "w-2 bg-muted"
               )}
             />
           ))}
@@ -179,7 +179,7 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
           <Button
             onClick={onPrevious}
             variant="ghost"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-muted-foreground hover:text-foreground"
           >
             ← Précédent
           </Button>

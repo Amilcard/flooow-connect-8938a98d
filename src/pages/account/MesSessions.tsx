@@ -99,7 +99,7 @@ const MesSessions = () => {
       case 'mobile': return <Smartphone className="w-6 h-6 text-green-600" />;
       case 'tablet': return <Tablet className="w-6 h-6 text-blue-600" />;
       case 'desktop': return <Monitor className="w-6 h-6 text-purple-600" />;
-      default: return <Monitor className="w-6 h-6 text-gray-600" />;
+      default: return <Monitor className="w-6 h-6 text-muted-foreground" />;
     }
   };
 
@@ -109,7 +109,7 @@ const MesSessions = () => {
     } else if (browser.includes('Safari')) {
       return <Globe className="w-4 h-4 text-blue-400" />;
     } else {
-      return <Globe className="w-4 h-4 text-gray-500" />;
+      return <Globe className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -275,7 +275,7 @@ const MesSessions = () => {
                               </div>
                               
                               <div className="flex items-center space-x-2">
-                                <Monitor className="w-4 h-4 text-gray-500" />
+                                <Monitor className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Système:</span>
                                 <span className="font-medium">{session.osInfo}</span>
                               </div>
@@ -283,7 +283,7 @@ const MesSessions = () => {
                             
                             <div className="space-y-2">
                               <div className="flex items-center space-x-2">
-                                <MapPin className="w-4 h-4 text-gray-500" />
+                                <MapPin className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Localisation:</span>
                                 <span className="font-medium">
                                   {session.location.city}, {session.location.country}
@@ -291,7 +291,7 @@ const MesSessions = () => {
                               </div>
                               
                               <div className="flex items-center space-x-2">
-                                <Clock className="w-4 h-4 text-gray-500" />
+                                <Clock className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Connexion:</span>
                                 <span className="font-medium">{formatLoginTime(session.loginTime)}</span>
                               </div>
@@ -350,7 +350,7 @@ const MesSessions = () => {
                                 </div>
                                 
                                 <div className="flex items-center space-x-2">
-                                  <Monitor className="w-4 h-4 text-gray-500" />
+                                  <Monitor className="w-4 h-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">Système:</span>
                                   <span className="font-medium">{session.osInfo}</span>
                                 </div>
@@ -358,7 +358,7 @@ const MesSessions = () => {
                               
                               <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
-                                  <MapPin className="w-4 h-4 text-gray-500" />
+                                  <MapPin className="w-4 h-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">Localisation:</span>
                                   <span className="font-medium">
                                     {session.location.city}, {session.location.country}
@@ -366,7 +366,7 @@ const MesSessions = () => {
                                 </div>
                                 
                                 <div className="flex items-center space-x-2">
-                                  <Clock className="w-4 h-4 text-gray-500" />
+                                  <Clock className="w-4 h-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">Dernière activité:</span>
                                   <span className="font-medium">{formatLastActivity(session.lastActivity)}</span>
                                 </div>

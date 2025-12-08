@@ -55,7 +55,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
   return (
     <div className="relative">
       {/* Helper text for carousel indication */}
-      <div className="text-sm text-gray-500 mb-3 text-center md:hidden">
+      <div className="text-sm text-muted-foreground mb-3 text-center md:hidden">
         Faites défiler pour voir d'autres activités
       </div>
 
@@ -67,18 +67,18 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
             <button
               onClick={handlePrevious}
               disabled={currentIndex === 0}
-              className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-2 rounded-full bg-white shadow-md hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               aria-label="Page précédente"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               {currentIndex + 1} / {totalPages}
             </div>
             <button
               onClick={handleNext}
               disabled={currentIndex === totalPages - 1}
-              className="p-2 rounded-full bg-white shadow-md hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-2 rounded-full bg-white shadow-md hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               aria-label="Page suivante"
             >
               <ChevronRight className="h-5 w-5" />
@@ -147,7 +147,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
               className={`h-2 rounded-full transition-all ${
                 index === currentIndex 
                   ? 'w-6 bg-primary' 
-                  : 'w-2 bg-gray-300'
+                  : 'w-2 bg-muted'
               }`}
             />
           ))}
