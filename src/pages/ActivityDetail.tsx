@@ -470,63 +470,6 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Desktop only: Back button + Share (since hero is hidden on lg) */}
-      <div className="hidden lg:flex items-center justify-between px-6 py-4 border-b bg-white">
-        <BackButton className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground" />
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleShare}
-            className="flex items-center gap-2"
-          >
-            <Share2 size={16} />
-            Partager
-          </Button>
-          {/* Share menu for desktop */}
-          {showShareMenu && (
-            <Card className="absolute right-0 top-10 z-50 w-56 p-2 shadow-lg">
-              <div className="space-y-1">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm"
-                  onClick={shareViaWhatsApp}
-                >
-                  <MessageCircle size={16} className="mr-2" />
-                  WhatsApp
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm"
-                  onClick={shareViaEmail}
-                >
-                  <Mail size={16} className="mr-2" />
-                  E-mail
-                </Button>
-                <Separator className="my-1" />
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm"
-                  onClick={copyLink}
-                >
-                  {copied ? (
-                    <>
-                      <Check size={16} className="mr-2 text-green-600" />
-                      <span className="text-green-600">Lien copié !</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={16} className="mr-2" />
-                      Copier le lien
-                    </>
-                  )}
-                </Button>
-              </div>
-            </Card>
-          )}
-        </div>
-      </div>
-
       {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
       <QuickInfoBar
         ageRange={{ min: activity.age_min, max: activity.age_max }}
@@ -543,6 +486,69 @@ const ActivityDetail = () => {
 
       {/* Main Content Container */}
       <div className="container px-4 md:px-6 py-6 max-w-[1140px] mx-auto">
+        {/* Desktop: Back button aligned with content (hidden on mobile - hero has it) */}
+        <div className="hidden lg:flex items-center justify-between mb-4">
+          <BackButton
+            positioning="relative"
+            size="sm"
+            showText={true}
+            label="Retour"
+            className="text-sm"
+          />
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShare}
+              className="flex items-center gap-2"
+            >
+              <Share2 size={16} />
+              Partager
+            </Button>
+            {/* Share menu for desktop */}
+            {showShareMenu && (
+              <Card className="absolute right-0 top-10 z-50 w-56 p-2 shadow-lg">
+                <div className="space-y-1">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={shareViaWhatsApp}
+                  >
+                    <MessageCircle size={16} className="mr-2" />
+                    WhatsApp
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={shareViaEmail}
+                  >
+                    <Mail size={16} className="mr-2" />
+                    E-mail
+                  </Button>
+                  <Separator className="my-1" />
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={copyLink}
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={16} className="mr-2 text-green-600" />
+                        <span className="text-green-600">Lien copié !</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={16} className="mr-2" />
+                        Copier le lien
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </div>
+        </div>
+
         {/* Header Section avec image card + organisateur sur desktop */}
         <div className="space-y-4 pb-6 border-b mb-6" data-tour-id="activity-header">
           {/* Desktop: Layout flex avec image + organisateur à gauche */}
