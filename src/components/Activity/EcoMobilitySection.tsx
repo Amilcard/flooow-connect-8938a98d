@@ -149,6 +149,14 @@ export const EcoMobilitySection = ({
           Économe carbone, fais du bien à la planète 🌍
         </h2>
       </div>
+
+      {/* Bandeau incitatif écomobilité */}
+      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800 rounded-lg">
+        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+          🌱 En choisissant un mode écomobile, vous économisez du CO₂ à chaque séance et contribuez à un avenir plus vert pour vos enfants !
+        </p>
+      </div>
+
       <p className="text-sm text-muted-foreground">
         Choisissez un mode de transport écologique pour vous rendre à l'activité
       </p>
@@ -178,7 +186,7 @@ export const EcoMobilitySection = ({
                 </div>
                 
                 {nearestStop && (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin size={16} className="text-muted-foreground" />
                       <span className="font-medium">{nearestStop.name}</span>
@@ -191,13 +199,18 @@ export const EcoMobilitySection = ({
                         </Badge>
                       ))}
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock size={14} />
-                      <span>Temps estimé : {durations.bus} min</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
-                      <Leaf size={12} />
-                      <span>≈ {Math.round(estimateDistance(durations.bus, 'bus') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités vs voiture</span>
+                    {/* Durée et CO2 - hiérarchie visuelle renforcée */}
+                    <div className="flex flex-wrap items-center gap-4 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={16} className="text-blue-600" />
+                        <span className="font-semibold text-blue-700 dark:text-blue-400">{durations.bus} min</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Leaf size={16} className="text-green-600" />
+                        <span className="font-semibold text-green-700 dark:text-green-400">
+                          {Math.round(estimateDistance(durations.bus, 'bus') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -249,7 +262,7 @@ export const EcoMobilitySection = ({
                 </div>
                 
                 {nearestStation && (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin size={16} className="text-muted-foreground" />
                       <span className="font-medium">{nearestStation.name}</span>
@@ -258,14 +271,20 @@ export const EcoMobilitySection = ({
                     <p className="text-sm text-muted-foreground">
                       {nearestStation.available_bikes} vélos disponibles
                     </p>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock size={14} />
-                      <span>Temps estimé : {durations.bike} min</span>
+                    {/* Durée et CO2 - hiérarchie visuelle renforcée */}
+                    <div className="flex flex-wrap items-center gap-4 p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-md">
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={16} className="text-emerald-600" />
+                        <span className="font-semibold text-emerald-700 dark:text-emerald-400">{durations.bike} min</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Leaf size={16} className="text-green-600" />
+                        <span className="font-semibold text-green-700 dark:text-green-400">
+                          {Math.round(estimateDistance(durations.bike, 'bike') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
-                      <Leaf size={12} />
-                      <span>≈ {Math.round(estimateDistance(durations.bike, 'bike') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités</span>
-                    </div>
+                    {/* Calories/pas en second niveau */}
                     <div className="flex items-center gap-2 text-xs text-purple-600">
                       <Footprints size={12} />
                       <span>≈ {Math.round(durations.bike * CALORIES_BIKE_PER_MIN)} kcal brûlées</span>
@@ -321,14 +340,20 @@ export const EcoMobilitySection = ({
                 <p className="text-sm text-muted-foreground">
                   Idéal pour les enfants et adolescents ! Profitez d'une balade active.
                 </p>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Clock size={14} />
-                  <span>Temps estimé : {durations.walk} min</span>
+                {/* Durée et CO2 - hiérarchie visuelle renforcée */}
+                <div className="flex flex-wrap items-center gap-4 p-2 bg-purple-50 dark:bg-purple-950/30 rounded-md">
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={16} className="text-purple-600" />
+                    <span className="font-semibold text-purple-700 dark:text-purple-400">{durations.walk} min</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Leaf size={16} className="text-green-600" />
+                    <span className="font-semibold text-green-700 dark:text-green-400">
+                      {Math.round(estimateDistance(durations.walk, 'walk') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
-                  <Leaf size={12} />
-                  <span>≈ {Math.round(estimateDistance(durations.walk, 'walk') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités</span>
-                </div>
+                {/* Calories/pas en second niveau */}
                 <div className="flex items-center gap-2 text-xs text-purple-600">
                   <Footprints size={12} />
                   <span>≈ {Math.round(durations.walk * CALORIES_WALK_PER_MIN)} kcal • {Math.round(estimateDistance(durations.walk, 'walk') * STEPS_PER_KM)} pas</span>
