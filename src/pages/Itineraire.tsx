@@ -262,10 +262,10 @@ const Itineraire = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-4 px-4 md:px-6">
-          <BackButton 
+          <BackButton
             fallback={returnUrl || `/activity/${searchParams.get('activityId') || ''}`}
-            variant="ghost"
-            size="icon"
+            positioning="relative"
+            size="sm"
           />
           <div className="flex items-center gap-2">
             {transportType === 'bike' ? (

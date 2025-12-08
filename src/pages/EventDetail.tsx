@@ -122,10 +122,10 @@ const EventDetail = () => {
     <PageLayout>
       <div className="container px-4 py-6 space-y-6 max-w-4xl mx-auto">
         {/* Header avec bouton retour */}
-        {/* Header avec bouton retour */}
         <div className="mb-4">
           <BackButton
             positioning="relative"
+            size="sm"
             showText={true}
             label="Retour"
           />

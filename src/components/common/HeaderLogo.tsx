@@ -10,10 +10,9 @@ interface HeaderLogoProps {
  * HeaderLogo - Composant standardisé pour le logo Flooow
  *
  * Spécifications Design System:
- * - Logo SVG horizontal ratio 5:1 (400×80 viewBox)
- * - Affichage: 120px × 24px mobile → 160px × 32px desktop
- * - Retina ready (source SVG scalable)
- * - Couleur: Orange #F97316
+ * - Logo PNG horizontal (smiley + FLOOOW)
+ * - Affichage: 28px mobile (h-7) → 36px desktop (h-9)
+ * - Min-width: 140px pour éviter compression
  * - Aligné verticalement avec les boutons du header
  *
  * Usage:
@@ -28,8 +27,8 @@ export const HeaderLogo = ({ className = "", to = "/" }: HeaderLogoProps) => {
       <img
         src={logoFlooow}
         alt="Flooow - Mes activités, mes aides, mes trajets"
-        className="h-6 md:h-8 w-auto object-contain block"
-        style={{ minWidth: '120px' }}
+        className="h-7 md:h-9 w-auto object-contain block"
+        style={{ minWidth: '140px' }}
       />
     </Link>
   );
