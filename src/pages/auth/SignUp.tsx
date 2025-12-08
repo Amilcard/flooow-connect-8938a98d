@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { LogoNananere } from '@/components/LogoNananere';
+import { LogoFlooow } from '@/components/LogoFlooow';
 import { authConfig } from '@/config/auth.config';
 
 const SignUp = () => {
@@ -138,9 +138,9 @@ const SignUp = () => {
       <div className="flex-1 flex items-center justify-center px-4 py-6">
         <Card className="w-full max-w-[480px] shadow-md border rounded-2xl bg-card">
           <CardHeader className="text-center space-y-4 pb-6">
-            {/* Logo NANANERE */}
+            {/* Logo Flooow Connect */}
             <div className="mx-auto">
-              <LogoNananere />
+              <LogoFlooow />
             </div>
             <div>
               <CardTitle className="text-2xl font-bold text-foreground">
