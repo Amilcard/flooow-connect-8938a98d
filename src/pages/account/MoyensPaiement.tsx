@@ -208,22 +208,22 @@ const MoyensPaiement = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-            <div>
-              <h1 className="text-xl font-bold">Moyens de paiement</h1>
-              <p className="text-white/90 text-sm">
+      {/* Header blanc standard */}
+      <header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+        <div className="container flex items-center justify-between px-4 py-3">
+          <div className="flex items-start gap-5 flex-1 min-w-0">
+            <BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold text-foreground leading-tight">Moyens de paiement</h1>
+              <p className="text-sm text-muted-foreground">
                 {paymentMethods.length} moyen{paymentMethods.length > 1 ? 's' : ''} de paiement
               </p>
             </div>
           </div>
-          
+
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogTrigger asChild>
-              <Button variant="secondary" size="sm">
+              <Button variant="outline" size="sm">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter
               </Button>
@@ -330,7 +330,7 @@ const MoyensPaiement = () => {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </header>
 
       <div className="container px-4 py-6 space-y-6">
         {/* Informations de sécurité */}
