@@ -106,7 +106,8 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("session_age_min", filters.ageMax).gte("session_age_max", filters.ageMin);
+        // Filter by age_min and age_max columns (not session_age_min/session_age_max)
+        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
       }
 
       if (filters?.periodType && filters.periodType !== 'all') {

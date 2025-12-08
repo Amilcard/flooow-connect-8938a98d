@@ -20,9 +20,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  MapPin, 
-  Users, 
-  Accessibility, 
+  MapPin,
+  Users,
+  Accessibility,
   Euro,
   Car,
   CreditCard,
@@ -41,7 +41,8 @@ import {
   Share2,
   Copy,
   Check,
-  Leaf
+  Leaf,
+  Globe
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -708,6 +709,117 @@ const ActivityDetail = () => {
                     </div>
                   )}
                 </section>
+
+                {/* Bloc Organisateur - Informations complètes */}
+                {activity.organisms && (
+                  <section className="space-y-4">
+                    <h2 className="text-2xl font-bold text-foreground">Organisé par</h2>
+                    <Card className="p-6">
+                      <div className="space-y-4">
+                        {/* Nom et type de l'organisme */}
+                        <div className="flex items-start gap-3">
+                          <Building2 size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-semibold text-foreground">{activity.organisms.name}</p>
+                            {activity.organisms.type && (
+                              <p className="text-sm text-muted-foreground">{activity.organisms.type}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Adresse de l'organisme */}
+                        {activity.organisms.address && (
+                          <div className="flex items-start gap-3">
+                            <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">Adresse</p>
+                              <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Lieu de pratique (si différent) */}
+                        {activity.venue_name && activity.venue_name !== activity.organisms.name && (
+                          <div className="flex items-start gap-3">
+                            <MapPin size={20} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">Lieu de pratique</p>
+                              <p className="text-sm text-muted-foreground">
+                                {activity.venue_name}
+                                {activity.venue_address && `, ${activity.venue_address}`}
+                                {activity.venue_postal_code && ` ${activity.venue_postal_code}`}
+                                {activity.venue_city && ` ${activity.venue_city}`}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Téléphone */}
+                        {activity.organisms.phone && (
+                          <div className="flex items-start gap-3">
+                            <Phone size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">Téléphone</p>
+                              <a
+                                href={`tel:${activity.organisms.phone.replace(/\s/g, '')}`}
+                                className="text-sm text-primary hover:underline"
+                              >
+                                {activity.organisms.phone}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Email */}
+                        {activity.organisms.email && (
+                          <div className="flex items-start gap-3">
+                            <Mail size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">E-mail</p>
+                              <a
+                                href={`mailto:${activity.organisms.email}`}
+                                className="text-sm text-primary hover:underline break-all"
+                              >
+                                {activity.organisms.email}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Site internet */}
+                        {activity.organisms.website && (
+                          <div className="flex items-start gap-3">
+                            <Globe size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">Site internet</p>
+                              <a
+                                href={activity.organisms.website.startsWith('http') ? activity.organisms.website : `https://${activity.organisms.website}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-primary hover:underline break-all"
+                              >
+                                {activity.organisms.website.replace(/^https?:\/\//, '')}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Bouton Contacter */}
+                        <div className="pt-2 border-t">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowContactModal(true)}
+                            className="gap-2"
+                          >
+                            <MessageCircle size={16} />
+                            Contacter l'organisateur
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </section>
+                )}
               </TabsContent>
 
               {/* Onglet Tarifs & aides */}
