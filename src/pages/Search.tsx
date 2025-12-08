@@ -36,7 +36,7 @@ const Search = () => {
   // Map advanced filters to useActivities filters
   // Ne pas appliquer les filtres si les valeurs par défaut sont utilisées
   const isAgeFilterActive = advancedFilters.age_range[0] !== 4 || advancedFilters.age_range[1] !== 17;
-  const isPriceFilterActive = advancedFilters.max_budget !== 200; // 200 est la valeur par défaut
+  const isPriceFilterActive = advancedFilters.max_budget !== 500; // 500€ est la valeur par défaut
 
   const activityFilters = {
     searchQuery: searchQuery,
