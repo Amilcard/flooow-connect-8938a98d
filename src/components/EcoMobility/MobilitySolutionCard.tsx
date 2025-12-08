@@ -83,9 +83,9 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
   const ModeIcon = MODE_ICONS[primaryMode] || Smartphone;
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow">
+    <div className="bg-card rounded-2xl shadow-md border border-border overflow-hidden hover:shadow-xl transition-shadow">
       {/* Header with mode badge */}
-      <div className="p-6 border-b border-gray-100">
+      <div className="p-6 border-b border-border">
         <div className="flex items-start gap-4">
           {/* Mode Icon */}
           <div
@@ -97,10 +97,10 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
 
           {/* Title and label */}
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 font-poppins mb-1">
+            <h3 className="text-xl font-bold text-foreground font-poppins mb-1">
               {solution.name}
             </h3>
-            <p className="text-sm font-semibold text-gray-600 font-poppins">
+            <p className="text-sm font-semibold text-muted-foreground font-poppins">
               {solution.short_label}
             </p>
           </div>
@@ -133,12 +133,12 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
         {/* Territory Scope (legacy mode only) */}
         {!isPlainTextMode && solution.territory_scope && (
           <div className="flex items-start gap-2">
-            <Globe size={18} className="text-gray-400 shrink-0 mt-0.5" />
+            <Globe size={18} className="text-muted-foreground shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-poppins">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide font-poppins">
                 Périmètre
               </p>
-              <p className="text-sm font-medium text-gray-700 font-poppins">
+              <p className="text-sm font-medium text-foreground font-poppins">
                 {solution.territory_scope}
               </p>
             </div>
@@ -147,44 +147,44 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
 
         {/* Description */}
         {solution.description_courte && (
-          <p className="text-sm leading-relaxed text-gray-700 font-poppins">
+          <p className="text-sm leading-relaxed text-foreground font-poppins">
             {solution.description_courte}
           </p>
         )}
 
         {solution.description_parent && !solution.description_courte && (
-          <p className="text-sm leading-relaxed text-gray-700 font-poppins">
+          <p className="text-sm leading-relaxed text-foreground font-poppins">
             {solution.description_parent}
           </p>
         )}
 
         {/* PLAIN TEXT MODE CONTACTS */}
         {isPlainTextMode && (
-          <div className="pt-4 border-t border-gray-100 space-y-2">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide font-poppins">
+          <div className="pt-4 border-t border-border space-y-2">
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide font-poppins">
               Contact
             </p>
 
             {/* Phone (plain text) */}
             {solution.telephone && (
-              <div className="flex items-start gap-2 font-poppins text-xs text-gray-600 leading-snug">
-                <Phone size={12} className="text-gray-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 font-poppins text-xs text-muted-foreground leading-snug">
+                <Phone size={12} className="text-muted-foreground shrink-0 mt-0.5" />
                 <span>{solution.telephone}</span>
               </div>
             )}
 
             {/* Permanence (plain text) */}
             {solution.permanence && (
-              <div className="flex items-start gap-2 font-poppins text-[11px] text-gray-500 leading-snug">
-                <Clock size={12} className="text-gray-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 font-poppins text-[11px] text-muted-foreground leading-snug">
+                <Clock size={12} className="text-muted-foreground shrink-0 mt-0.5" />
                 <span>{solution.permanence}</span>
               </div>
             )}
 
             {/* URL Info (plain text) - truncated for better readability */}
             {solution.url_info && (
-              <div className="flex items-start gap-2 font-poppins text-xs text-gray-600">
-                <Info size={12} className="text-gray-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 font-poppins text-xs text-muted-foreground">
+                <Info size={12} className="text-muted-foreground shrink-0 mt-0.5" />
                 <span className="truncate">
                   {solution.url_info.replace(/^https?:\/\/(www\.)?/, '')}
                 </span>
@@ -195,8 +195,8 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
 
         {/* LEGACY MODE CONTACTS */}
         {!isPlainTextMode && solution.contacts && (solution.contacts.phone || solution.contacts.email || solution.contacts.website) && (
-          <div className="pt-4 border-t border-gray-100">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 font-poppins">
+          <div className="pt-4 border-t border-border">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 font-poppins">
               Contact
             </p>
             <div className="space-y-2">
@@ -206,19 +206,19 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
                   {solution.contacts.phone.tel_href ? (
                     <button
                       onClick={() => handlePhoneClick(solution.contacts!.phone!.tel_href)}
-                      className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium font-poppins transition-colors"
+                      className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium font-poppins transition-colors"
                     >
                       <Phone size={14} className="shrink-0" />
                       <span>{solution.contacts.phone.display}</span>
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2 text-sm text-gray-700 font-poppins">
-                      <Phone size={14} className="text-gray-400 shrink-0" />
+                    <div className="flex items-center gap-2 text-sm text-foreground font-poppins">
+                      <Phone size={14} className="text-muted-foreground shrink-0" />
                       <span>{solution.contacts.phone.display}</span>
                     </div>
                   )}
                   {solution.contacts.phone.note && (
-                    <p className="text-xs text-gray-500 ml-6 mt-0.5 font-poppins">
+                    <p className="text-xs text-muted-foreground ml-6 mt-0.5 font-poppins">
                       {solution.contacts.phone.note}
                     </p>
                   )}
@@ -229,7 +229,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
               {solution.contacts.email && (
                 <button
                   onClick={() => handleEmailClick(solution.contacts!.email!)}
-                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium font-poppins transition-colors"
+                  className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium font-poppins transition-colors"
                 >
                   <Mail size={14} className="shrink-0" />
                   <span>{solution.contacts.email}</span>
@@ -242,7 +242,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
                   href={solution.contacts.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium font-poppins transition-colors"
+                  className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium font-poppins transition-colors"
                 >
                   <ExternalLink size={14} className="shrink-0" />
                   <span>Site web</span>
@@ -256,7 +256,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
         {!isPlainTextMode && solution.primary_cta && (
           <button
             onClick={() => handleCTAClick(solution.primary_cta!.url, solution.primary_cta!.open_mode)}
-            className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-all hover:-translate-y-0.5 font-poppins text-sm shadow-md"
+            className="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-all hover:-translate-y-0.5 font-poppins text-sm shadow-md"
           >
             {solution.primary_cta.label}
           </button>
@@ -269,7 +269,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
               <button
                 key={index}
                 onClick={() => handleCTAClick(cta.url, cta.open_mode)}
-                className="w-full py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all font-poppins text-sm"
+                className="w-full py-2.5 px-4 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-xl transition-all font-poppins text-sm"
               >
                 {cta.label}
               </button>
