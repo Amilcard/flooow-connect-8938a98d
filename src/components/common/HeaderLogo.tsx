@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoFlooow from "@/assets/logo-flooow.svg";
+import logoFlooow from "@/assets/logo-flooow.png";
 
 interface HeaderLogoProps {
   className?: string;
