@@ -4,7 +4,6 @@
  * Aligned with FinancialAid page style
  */
 
-import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
 import { MobilityHeader } from "@/components/EcoMobility/MobilityHeader";
 import { MobilitySolutionCard } from "@/components/EcoMobility/MobilitySolutionCard";
@@ -167,7 +166,7 @@ const EcoMobilite = () => {
         <section className="space-y-6 mb-10">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h2 className="text-2xl font-semibold font-poppins mb-1">Aides et mobilité</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">Aides et mobilité</h2>
               {!isAuthenticated ? (
                 <p className="text-sm text-gray-600 font-poppins">
                   Connectez-vous pour voir les solutions disponibles sur votre territoire.
@@ -204,8 +203,6 @@ const EcoMobilite = () => {
         {/* Data Sources - Styled like AidsInfoBox */}
         <MobilityDataSources sources={DATA_SOURCES} />
       </div>
-
-      <BottomNavigation />
     </PageLayout>
   );
 };
