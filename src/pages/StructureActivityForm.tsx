@@ -187,7 +187,7 @@ const StructureActivityForm = () => {
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback="/structure-dashboard" positioning="relative" size="sm" />
+          <BackButton fallback="/structure-dashboard" positioning="relative" size="sm" showText={true} label="Retour" />
           <h1 className="font-semibold text-lg">
             {id ? "Modifier l'activité" : "Nouvelle activité"}
           </h1>
