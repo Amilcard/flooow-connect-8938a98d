@@ -1,4 +1,4 @@
-import { Star, Baby, Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface QuickInfoBarProps {
@@ -81,7 +81,6 @@ export function QuickInfoBar({
   };
 
   const spotsColor = spotsRemaining ? getSpotsColor(spotsRemaining) : "#10B981";
-  const ageLabel = ageRange.label || `${ageRange.min}-${ageRange.max} ans`;
 
   return (
     <div
@@ -102,14 +101,6 @@ export function QuickInfoBar({
 
       {/* Séparateur si rating présent */}
       {rating && <div className="w-px h-5 bg-border" />}
-
-      {/* Age Range */}
-      <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1 rounded-md">
-        <Baby size={16} color="#4A90E2" strokeWidth={2} />
-        <span className="text-sm font-semibold text-blue-700">
-          {ageLabel}
-        </span>
-      </div>
 
       {/* Badge Gratuit */}
       {isFree && (
