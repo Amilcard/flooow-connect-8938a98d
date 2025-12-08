@@ -683,6 +683,57 @@ const ActivityDetail = () => {
                     </div>
                   </div>
 
+                  {/* Bloc Organisateur complet */}
+                  {activity.organisms && (
+                    <div className="mt-6 p-4 bg-muted/30 rounded-lg space-y-4">
+                      <h3 className="font-semibold text-base flex items-center gap-2">
+                        <Building2 size={18} className="text-primary" />
+                        Organisateur : {activity.organisms.name}
+                      </h3>
+                      <div className="grid sm:grid-cols-2 gap-3 text-sm">
+                        {activity.organisms.type && (
+                          <div className="flex items-center gap-2">
+                            <Info size={16} className="text-muted-foreground flex-shrink-0" />
+                            <span className="text-muted-foreground">Type : {activity.organisms.type}</span>
+                          </div>
+                        )}
+                        {activity.organisms.address && (
+                          <div className="flex items-center gap-2">
+                            <MapPin size={16} className="text-muted-foreground flex-shrink-0" />
+                            <span className="text-muted-foreground">{activity.organisms.address}</span>
+                          </div>
+                        )}
+                        {activity.organisms.phone && (
+                          <div className="flex items-center gap-2">
+                            <Phone size={16} className="text-muted-foreground flex-shrink-0" />
+                            <a href={`tel:${activity.organisms.phone}`} className="text-primary hover:underline">
+                              {activity.organisms.phone}
+                            </a>
+                          </div>
+                        )}
+                        {activity.organisms.email && (
+                          <div className="flex items-center gap-2">
+                            <Mail size={16} className="text-muted-foreground flex-shrink-0" />
+                            <a href={`mailto:${activity.organisms.email}`} className="text-primary hover:underline truncate">
+                              {activity.organisms.email}
+                            </a>
+                          </div>
+                        )}
+                        {activity.organisms.website && (
+                          <div className="flex items-center gap-2 sm:col-span-2">
+                            <FileText size={16} className="text-muted-foreground flex-shrink-0" />
+                            <a href={activity.organisms.website.startsWith('http') ? activity.organisms.website : `https://${activity.organisms.website}`}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="text-primary hover:underline truncate">
+                              {activity.organisms.website}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Informations supplémentaires en dessous */}
                   {(activity.covoiturage_enabled || activity.payment_echelonned) && (
                     <div className="grid sm:grid-cols-2 gap-4 mt-4">
