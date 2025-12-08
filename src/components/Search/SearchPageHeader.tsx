@@ -30,7 +30,7 @@ export const SearchPageHeader = ({
     <div className="sticky top-0 z-[100] bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
       <div className="flex items-center gap-3">
         {/* BackButton - cohérent avec LOT 1 - positioning relative pour alignement avec le contenu */}
-        <BackButton positioning="relative" size="sm" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" />
 
         {/* SearchBar */}
         <div className="flex-1 flex items-center gap-2 bg-gray-50 border-2 border-gray-200 rounded-[10px] px-3 py-2.5 transition-all focus-within:border-primary">

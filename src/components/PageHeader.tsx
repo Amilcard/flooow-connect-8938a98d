@@ -41,6 +41,8 @@ export const PageHeader = ({
               fallback={backFallback}
               positioning="relative"
               size="sm"
+              showText={true}
+              label="Retour"
               className="shrink-0"
             />
           )}

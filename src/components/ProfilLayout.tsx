@@ -45,8 +45,7 @@ interface ProfilLayoutProps {
  * Layout réutilisable pour toutes les pages de la section "Mon compte"
  *
  * Fournit :
- * - Header avec gradient orange (from-primary to-accent)
- * - BackButton en haut à gauche
+ * - Header blanc standard avec BackButton "Retour"
  * - Titre + sous-titre optionnel
  * - Conteneur central avec max-width responsive
  *
@@ -79,32 +78,33 @@ export const ProfilLayout = ({
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header avec gradient orange */}
+      {/* Header blanc standard */}
       <header
-        className="bg-gradient-to-r from-primary to-accent text-white p-4 sticky top-0 z-50 shadow-md"
+        className="bg-white border-b border-border shadow-sm sticky top-0 z-50"
         data-tour-id={tourId}
       >
-        <div className={`container mx-auto ${maxWidthClasses[maxWidth]} flex items-center justify-between`}>
+        <div className={`container mx-auto ${maxWidthClasses[maxWidth]} flex items-center justify-between px-4 py-3`}>
           {/* Left: BackButton + Title */}
-          <div className="flex items-center space-x-4 flex-1 min-w-0">
+          <div className="flex items-start gap-5 flex-1 min-w-0">
             <BackButton
               fallback={backFallback}
-              variant="ghost"
-              size="sm"
               positioning="relative"
-              className="text-white hover:bg-white/20 shrink-0"
+              size="sm"
+              showText={true}
+              label="Retour"
+              className="shrink-0"
             />
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl font-bold truncate">{title}</h1>
+              <h1 className="text-lg font-semibold text-foreground leading-tight truncate">{title}</h1>
               {subtitle && (
-                <p className="text-white/90 text-sm truncate">{subtitle}</p>
+                <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
               )}
             </div>
           </div>
 
           {/* Right: Actions */}
           {rightContent && (
-            <div className="ml-4 shrink-0">
+            <div className="ml-4 shrink-0 flex items-center gap-2">
               {rightContent}
             </div>
           )}

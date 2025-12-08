@@ -264,15 +264,17 @@ const Parametres: React.FC = () => {
 
 	return (
 		<PageLayout showHeader={false}>
-			<div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-				<div className="container flex items-center space-x-4">
-					<BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-					<div>
-						<h1 className="text-xl font-bold">Paramètres</h1>
-						<p className="text-white/90 text-sm">Personnalisez votre expérience</p>
+			<header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+				<div className="container flex items-center justify-between px-4 py-3">
+					<div className="flex items-start gap-5 flex-1 min-w-0">
+						<BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+						<div className="min-w-0 flex-1">
+							<h1 className="text-lg font-semibold text-foreground leading-tight">Paramètres</h1>
+							<p className="text-sm text-muted-foreground">Personnalisez votre expérience</p>
+						</div>
 					</div>
 				</div>
-			</div>
+			</header>
 
 			<div className="container px-4 py-6 space-y-6">
 				<AppearanceSettings settings={settings} updateSetting={updateSetting} />
