@@ -113,7 +113,7 @@ const MesReservations = () => {
       case 'pending': return <Clock className="w-4 h-4 text-orange-600" />;
       case 'cancelled': return <XCircle className="w-4 h-4 text-red-600" />;
       case 'completed': return <Star className="w-4 h-4 text-blue-600" />;
-      default: return <AlertCircle className="w-4 h-4 text-gray-600" />;
+      default: return <AlertCircle className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -133,7 +133,7 @@ const MesReservations = () => {
       case 'pending': return 'bg-orange-100 text-orange-800';
       case 'cancelled': return 'bg-red-100 text-red-800';
       case 'completed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
