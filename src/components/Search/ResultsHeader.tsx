@@ -26,9 +26,9 @@ export const ResultsHeader = ({
   onViewModeChange
 }: ResultsHeaderProps) => {
   return (
-    <div className="px-4 py-4 bg-white border-b border-gray-200 flex flex-col md:flex-row gap-4 md:justify-between md:items-center sticky top-[130px] z-20">
+    <div className="px-4 py-4 bg-background border-b border-border flex flex-col md:flex-row gap-4 md:justify-between md:items-center sticky top-[130px] z-20">
       {/* Results Count */}
-      <h2 className="text-base font-semibold text-gray-900 font-poppins">
+      <h2 className="text-base font-semibold text-foreground font-poppins">
         {resultsCount} activité{resultsCount > 1 ? 's' : ''} trouvée{resultsCount > 1 ? 's' : ''}
       </h2>
 
@@ -39,7 +39,7 @@ export const ResultsHeader = ({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
-            className="w-full md:w-auto px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer text-sm font-medium text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full md:w-auto px-3 py-2 bg-muted border border-border rounded-lg cursor-pointer text-sm font-medium text-foreground font-poppins focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -50,13 +50,13 @@ export const ResultsHeader = ({
         </div>
 
         {/* View Toggle - List / Map */}
-        <div className="flex bg-gray-100 p-1 rounded-lg">
+        <div className="flex bg-muted p-1 rounded-lg">
           <button
             onClick={() => onViewModeChange('list')}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
               viewMode === 'list'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Liste
@@ -65,8 +65,8 @@ export const ResultsHeader = ({
             onClick={() => onViewModeChange('map')}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
               viewMode === 'map'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Carte

@@ -43,7 +43,7 @@ export const ActivityResultCard = ({
   return (
     <div
       onClick={handleClick}
-      className="rounded-2xl bg-white shadow-sm hover:shadow-xl overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer"
+      className="rounded-2xl bg-card shadow-sm hover:shadow-xl overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer"
     >
       {/* Image Section */}
       <div className="relative h-[180px] w-full overflow-hidden">
@@ -80,7 +80,7 @@ export const ActivityResultCard = ({
       {/* Content Section */}
       <div className="p-4 flex flex-col gap-2.5">
         {/* Title */}
-        <h3 className="text-[17px] font-semibold text-gray-900 leading-snug line-clamp-2 font-poppins">
+        <h3 className="text-[17px] font-semibold text-foreground leading-snug line-clamp-2 font-poppins">
           {title}
         </h3>
 
@@ -97,7 +97,7 @@ export const ActivityResultCard = ({
 
           {/* Price */}
           {!priceIsFree && price !== undefined && (
-            <span className="text-base font-bold text-gray-900 font-poppins">
+            <span className="text-base font-bold text-foreground font-poppins">
               {price}€
             </span>
           )}
@@ -110,7 +110,7 @@ export const ActivityResultCard = ({
 
         {/* Location */}
         {location && (
-          <p className="text-sm text-gray-600 line-clamp-1 font-poppins">
+          <p className="text-sm text-muted-foreground line-clamp-1 font-poppins">
             {location}
           </p>
         )}
