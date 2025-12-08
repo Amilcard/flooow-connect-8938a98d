@@ -57,6 +57,8 @@ import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
+import { BackButton } from "@/components/BackButton";
+import { getCategoryStyle } from "@/constants/categories";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap: Record<string, string> = {
@@ -442,9 +444,14 @@ const ActivityDetail = () => {
   };
   const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
+  // Catégorie pour affichage
+  const displayCategory = activity.categories && activity.categories.length > 0
+    ? activity.categories[0]
+    : activity.category;
+
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Compact Hero Header (160px optimisé) */}
+      {/* Mobile only: Compact Hero Header (140px) */}
       <CompactHeroHeader
         imageUrl={displayImage}
         title={activity.title}
@@ -452,69 +459,73 @@ const ActivityDetail = () => {
         categories={activity.categories}
         backFallback="/home"
         rightContent={
-          <div className="relative">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={handleShare}
-                    className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full"
-                  >
-                    <Share2 size={18} className="text-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Partager</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            {/* Share menu for desktop */}
-            {showShareMenu && (
-              <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
-                <div className="space-y-1">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-sm"
-                    onClick={shareViaWhatsApp}
-                  >
-                    <MessageCircle size={16} className="mr-2" />
-                    WhatsApp
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-sm"
-                    onClick={shareViaEmail}
-                  >
-                    <Mail size={16} className="mr-2" />
-                    E-mail
-                  </Button>
-                  <Separator className="my-1" />
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-sm"
-                    onClick={copyLink}
-                  >
-                    {copied ? (
-                      <>
-                        <Check size={16} className="mr-2 text-green-600" />
-                        <span className="text-green-600">Lien copié !</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={16} className="mr-2" />
-                        Copier le lien
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </Card>
-            )}
-          </div>
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={handleShare}
+            className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-9 h-9 rounded-full"
+          >
+            <Share2 size={16} className="text-foreground" />
+          </Button>
         }
       />
+
+      {/* Desktop only: Back button + Share (since hero is hidden on lg) */}
+      <div className="hidden lg:flex items-center justify-between px-6 py-4 border-b bg-white">
+        <BackButton className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground" />
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleShare}
+            className="flex items-center gap-2"
+          >
+            <Share2 size={16} />
+            Partager
+          </Button>
+          {/* Share menu for desktop */}
+          {showShareMenu && (
+            <Card className="absolute right-0 top-10 z-50 w-56 p-2 shadow-lg">
+              <div className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm"
+                  onClick={shareViaWhatsApp}
+                >
+                  <MessageCircle size={16} className="mr-2" />
+                  WhatsApp
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm"
+                  onClick={shareViaEmail}
+                >
+                  <Mail size={16} className="mr-2" />
+                  E-mail
+                </Button>
+                <Separator className="my-1" />
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm"
+                  onClick={copyLink}
+                >
+                  {copied ? (
+                    <>
+                      <Check size={16} className="mr-2 text-green-600" />
+                      <span className="text-green-600">Lien copié !</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={16} className="mr-2" />
+                      Copier le lien
+                    </>
+                  )}
+                </Button>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
 
       {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
       <QuickInfoBar
@@ -530,56 +541,91 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Main Content Container - Airbnb Style with Grid */}
-      <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
-        {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
-        <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
-          {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
-          <h1 className="title-page md:text-4xl">
-            {activity.title}
-          </h1>
-          
-          {/* Méta informations (âge, période, ville) - sans doublon adresse */}
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
-            <span className="flex items-center gap-2">
-              <Users size={20} className="text-primary" />
-              <span className="font-medium text-foreground">{ageRange}</span>
-            </span>
-
-            {activity.period_type && (
-              <span className="flex items-center gap-2">
-                <CalendarRange size={20} className="text-primary" />
-                <span className="text-muted-foreground">
-                  {activity.period_type === 'scolaire'
-                    ? 'Année scolaire'
-                    : 'Vacances scolaires'}
-                </span>
-              </span>
-            )}
-
-            {/* Afficher seulement la ville (pas l'adresse complète - évite doublon avec bloc organisateur) */}
-            {activity.city && (
-              <span className="flex items-center gap-2">
-                <MapPin size={20} className="text-primary" />
-                <span className="text-muted-foreground">{activity.city}</span>
-              </span>
-            )}
-          </div>
-
-          {/* Bouton contact discret - sans "Organisé par" (évite doublon avec bloc organisateur détaillé) */}
-          {activity.organisms?.name && (
-            <div className="flex items-center justify-end">
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => setShowContactModal(true)}
-                className="h-auto p-0 text-sm text-primary hover:underline font-medium"
-              >
-                <MessageCircle size={16} className="mr-1.5" />
-                Contacter l'organisateur
-              </Button>
+      {/* Main Content Container */}
+      <div className="container px-4 md:px-6 py-6 max-w-[1140px] mx-auto">
+        {/* Header Section avec image card sur desktop */}
+        <div className="space-y-4 pb-6 border-b mb-6" data-tour-id="activity-header">
+          {/* Desktop: Layout flex avec image card à gauche */}
+          <div className="flex flex-col lg:flex-row lg:gap-6">
+            {/* Image card - Desktop only (visible uniquement sur lg+) */}
+            <div className="hidden lg:block shrink-0">
+              <div className="relative w-[280px] h-[180px] rounded-xl overflow-hidden shadow-md">
+                <img
+                  src={displayImage}
+                  alt={activity.title}
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: "center 30%" }}
+                  onError={(e) => {
+                    if (!imgError) {
+                      setImgError(true);
+                      (e.target as HTMLImageElement).src = fallbackImage;
+                    }
+                  }}
+                />
+                {/* Category badge */}
+                <div
+                  className="absolute top-3 left-3 px-2.5 py-1 rounded-md"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
+                >
+                  <span
+                    className="text-xs font-bold uppercase font-poppins"
+                    style={{ color: getCategoryStyle(displayCategory).color }}
+                  >
+                    {displayCategory}
+                  </span>
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* Titre et méta */}
+            <div className="flex-1 space-y-3">
+              {/* Titre H1 */}
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                {activity.title}
+              </h1>
+
+              {/* Méta informations (âge, période, ville) */}
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
+                <span className="flex items-center gap-2">
+                  <Users size={18} className="text-primary" />
+                  <span className="font-medium text-foreground">{ageRange}</span>
+                </span>
+
+                {activity.period_type && (
+                  <span className="flex items-center gap-2">
+                    <CalendarRange size={18} className="text-primary" />
+                    <span className="text-muted-foreground">
+                      {activity.period_type === 'scolaire'
+                        ? 'Année scolaire'
+                        : 'Vacances scolaires'}
+                    </span>
+                  </span>
+                )}
+
+                {activity.city && (
+                  <span className="flex items-center gap-2">
+                    <MapPin size={18} className="text-primary" />
+                    <span className="text-muted-foreground">{activity.city}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Bouton contact discret */}
+              {activity.organisms?.name && (
+                <div className="flex items-center pt-1">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => setShowContactModal(true)}
+                    className="h-auto p-0 text-sm text-primary hover:underline font-medium"
+                  >
+                    <MessageCircle size={16} className="mr-1.5" />
+                    Contacter l'organisateur
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}

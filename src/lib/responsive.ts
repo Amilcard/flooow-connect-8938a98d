@@ -19,8 +19,11 @@ export const BREAKPOINTS = {
  * Updated to match graphic charter specifications
  */
 export const HERO_IMAGE_CLASSES = {
-  // Compact hero (activity details) - Progressive: 240px → 320px → 400px
-  compact: "h-[240px] md:h-[320px] lg:h-[400px]",
+  // Compact hero (activity details) - Réduit: 140px mobile, masqué sur desktop (image dans card)
+  compact: "h-[140px] md:h-[160px] lg:hidden",
+
+  // Mini hero (just navigation bar with gradient, no dominant image)
+  mini: "h-[80px] md:h-[100px]",
   
   // Default hero (pages) - Progressive: 240px → 360px → 480px
   default: "h-[240px] md:h-[360px] lg:h-[480px] min-h-[240px]",

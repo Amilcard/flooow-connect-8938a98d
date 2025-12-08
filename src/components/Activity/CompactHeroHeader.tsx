@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { BackButton } from "@/components/BackButton";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
 import { getCategoryStyle } from "@/constants/categories";
-import { HERO_IMAGE_CLASSES } from "@/lib/responsive";
 
 interface CompactHeroHeaderProps {
   /**
@@ -16,7 +13,7 @@ interface CompactHeroHeaderProps {
   imageUrl?: string;
 
   /**
-   * Titre de l'activité (affiché en overlay)
+   * Titre de l'activité (pour alt text)
    */
   title: string;
 
@@ -61,24 +58,13 @@ const getCategoryImage = (category: string): string => {
 };
 
 /**
- * Header hero compact optimisé pour mobile et responsive
+ * Header compact avec image réduite - style card cohérent avec la home
  *
- * - Hauteur responsive : 240px (mobile) → 320px (tablet) → 400px (desktop)
- * - Protection aspect ratio pour images portrait (objectPosition: center 30%)
- * - Gradient amélioré pour lisibilité texte
- * - Fallback élégant si pas d'image
+ * - Mobile: image réduite (140px) en bandeau discret
+ * - Desktop: masqué (image affichée dans une card dans le contenu)
  * - Back button avec backdrop blur
- * - Category badge avec design system
- *
- * @example
- * ```tsx
- * <CompactHeroHeader
- *   imageUrl={activity.images?.[0]}
- *   title="Stage de danse hip-hop"
- *   category="Culture"
- *   backFallback="/activities"
- * />
- * ```
+ * - Category badge discret
+ * - Pas de titre en overlay (titre affiché dans le contenu page)
  */
 export function CompactHeroHeader({
   imageUrl,
@@ -96,69 +82,51 @@ export function CompactHeroHeader({
     ? categories[0]
     : category;
 
-
-
   // Utiliser l'image fournie ou l'image de catégorie comme fallback
   const fallbackImage = getCategoryImage(displayCategory);
   const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
 
   return (
-    <div className="compact-hero-header relative w-full overflow-hidden">
-      {/* Conteneur responsive avec dimensions standardisées */}
-      <div className={`relative w-full ${HERO_IMAGE_CLASSES.compact}`}>
-        {/* Image de fond - toujours affichée (avec fallback catégorie) */}
+    <div className="compact-hero-header relative w-full overflow-hidden lg:hidden">
+      {/* Conteneur compact - 140px mobile, 160px tablet, masqué desktop */}
+      <div className="relative w-full h-[140px] md:h-[160px]">
+        {/* Image de fond - réduite et sobre */}
         <img
           src={finalImageUrl}
           alt={title}
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ 
-            filter: "brightness(0.85)",
-            objectPosition: "center 30%" // Meilleur cadrage pour images portrait
+          style={{
+            filter: "brightness(0.9)",
+            objectPosition: "center 30%"
           }}
           onError={(e) => {
-            // Si erreur de chargement, utiliser l'image de catégorie
             if (!imgError) {
               setImgError(true);
               (e.target as HTMLImageElement).src = fallbackImage;
             }
           }}
         />
-        {/* Gradient overlay pour lisibilité - intensité réduite */}
+        {/* Gradient léger */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
+            background: "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.3) 100%)"
           }}
         />
       </div>
 
-      {/* Back Button - Top Left avec backdrop blur */}
-      <div className="absolute top-4 left-4 z-10">
+      {/* Back Button - Top Left */}
+      <div className="absolute top-3 left-3 z-10">
         <BackButton
-          className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full flex items-center justify-center transition-all"
+          className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-9 h-9 rounded-full flex items-center justify-center transition-all"
         />
       </div>
 
-      {/* Category Badge - Top Right */}
-      <div className="absolute top-4 right-4 z-10">
-        {rightContent ? (
-          <div className="flex items-center gap-2">
-            <div
-              className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
-            >
-              <span
-                className="text-xs font-bold uppercase font-poppins"
-                style={{ color: getCategoryStyle(displayCategory).color }}
-              >
-                {displayCategory}
-              </span>
-            </div>
-            {rightContent}
-          </div>
-        ) : (
+      {/* Category Badge + Actions - Top Right */}
+      <div className="absolute top-3 right-3 z-10">
+        <div className="flex items-center gap-2">
           <div
-            className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
+            className="px-2.5 py-1 rounded-md backdrop-blur-sm"
             style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
           >
             <span
@@ -168,20 +136,8 @@ export function CompactHeroHeader({
               {displayCategory}
             </span>
           </div>
-        )}
-      </div>
-
-      {/* Title Overlay - Bottom avec text-shadow fort */}
-      <div className="absolute bottom-4 left-4 right-4 z-10">
-        <h1
-          className="text-white font-bold leading-tight line-clamp-2"
-          style={{
-            fontSize: "clamp(18px, 4vw, 20px)",
-            textShadow: "0px 2px 8px rgba(0,0,0,0.7), 0px 1px 2px rgba(0,0,0,0.5)"
-          }}
-        >
-          {title}
-        </h1>
+          {rightContent}
+        </div>
       </div>
     </div>
   );
