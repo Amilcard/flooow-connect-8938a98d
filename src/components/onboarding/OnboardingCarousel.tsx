@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { StrictOnboardingScreen, StrictOnboardingScreenConfig } from "./StrictOnboardingScreen";
 
 // Assets
-import logoFlooow from "@/assets/logo-flooow.svg";
+import logoFlooow from "@/assets/logo-flooow.png";
 import familiaAnimation from "@/assets/lottie/familia.json";
 import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
 import confetiAnimation from "@/assets/lottie/confeti.json";
