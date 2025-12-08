@@ -111,7 +111,7 @@ const MesServices = () => {
         {services.map((service) => (
           <section key={service.id} className="space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 font-poppins">{service.title}</h2>
+              <h2 className="text-xl font-bold text-foreground">{service.title}</h2>
               <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
             </div>
             

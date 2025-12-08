@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, FileText, Check, AlertCircle } from "lucide-react";
+import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,7 +70,7 @@ const MesJustificatifs = () => {
   const totalCount = justificatifs.length;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <PageLayout showHeader={false}>
       {/* Nouveau bandeau blanc standard */}
       <PageHeader
         title="Mes justificatifs"
@@ -185,7 +186,7 @@ const MesJustificatifs = () => {
           </CardContent>
         </Card>
       </main>
-    </div>
+    </PageLayout>
   );
 };
 
