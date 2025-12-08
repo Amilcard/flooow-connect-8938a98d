@@ -93,7 +93,7 @@ export const BottomNavigation = () => {
                       "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[48px] min-h-[48px] rounded-lg transition-colors relative"
                     )}
                     style={{
-                      color: isActive ? "#FF8A3D" : "#AFAFAF"
+                      color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"
                     }}
                     aria-label={item.label}
                     aria-current={isActive ? "page" : undefined}
