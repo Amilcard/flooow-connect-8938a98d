@@ -106,7 +106,8 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("session_age_min", filters.ageMax).gte("session_age_max", filters.ageMin);
+        // Utiliser age_min/age_max de la vue (pas session_age_min/session_age_max)
+        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
       }
 
       if (filters?.periodType && filters.periodType !== 'all') {
@@ -117,13 +118,15 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.lte("price_base", filters.maxPrice);
       }
 
-      if (filters?.hasAccessibility) {
-        query = query.eq("has_accessibility", true);
-      }
-
-      if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
-        query = query.overlaps("mobility_types", filters.mobilityTypes);
-      }
+      // Note: has_accessibility et mobility_types ne sont pas dans la vue activities_with_sessions
+      // Ces filtres sont désactivés pour éviter les erreurs
+      // TODO: Ajouter ces colonnes à la vue si nécessaire
+      // if (filters?.hasAccessibility) {
+      //   query = query.eq("has_accessibility", true);
+      // }
+      // if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
+      //   query = query.overlaps("mobility_types", filters.mobilityTypes);
+      // }
 
       if (filters?.hasFinancialAid) {
         query = query.not("accepts_aid_types", "is", null);
