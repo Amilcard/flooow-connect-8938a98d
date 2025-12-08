@@ -4,7 +4,6 @@
  * Aligned with FinancialAid page style
  */
 
-import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
 import { MobilityHeader } from "@/components/EcoMobility/MobilityHeader";
 import { MobilitySolutionCard } from "@/components/EcoMobility/MobilitySolutionCard";
@@ -167,13 +166,13 @@ const EcoMobilite = () => {
         <section className="space-y-6 mb-10">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h2 className="text-2xl font-semibold font-poppins mb-1">Aides et mobilité</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">Aides et mobilité</h2>
               {!isAuthenticated ? (
-                <p className="text-sm text-gray-600 font-poppins">
+                <p className="text-sm text-muted-foreground font-poppins">
                   Connectez-vous pour voir les solutions disponibles sur votre territoire.
                 </p>
               ) : userTerritory ? (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4" />
                   <span className="font-poppins">
                     {userTerritory.name || "Saint-Étienne"}
@@ -189,7 +188,7 @@ const EcoMobilite = () => {
           {/* Info note for beta phase */}
           <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-100 rounded-lg">
             <Info size={16} className="text-blue-500 shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-700 font-poppins">
+            <p className="text-xs text-muted-foreground font-poppins">
               En phase de test, seules les données de Saint-Étienne Métropole sont affichées.
             </p>
           </div>
@@ -204,8 +203,6 @@ const EcoMobilite = () => {
         {/* Data Sources - Styled like AidsInfoBox */}
         <MobilityDataSources sources={DATA_SOURCES} />
       </div>
-
-      <BottomNavigation />
     </PageLayout>
   );
 };

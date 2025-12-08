@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Navigation, MapPin, Clock, Route, Bike, Bus, Footprints } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
+import PageLayout from "@/components/PageLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -258,14 +258,16 @@ const Itineraire = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <PageLayout showHeader={false}>
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container flex items-center gap-3 py-4 px-4 md:px-6">
+        <div className="container flex items-center gap-3 py-4 px-4">
           <BackButton
             fallback={returnUrl || `/activity/${searchParams.get('activityId') || ''}`}
             positioning="relative"
             size="sm"
+            showText={true}
+            label="Retour"
           />
           <div className="flex items-center gap-2">
             {transportType === 'bike' ? (
@@ -275,10 +277,10 @@ const Itineraire = () => {
             ) : (
               <Bus className="w-5 h-5 text-blue-600" />
             )}
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-xl font-bold text-foreground">
               Itinéraire {
-                transportType === 'bike' ? 'Vélivert' : 
-                transportType === 'walk' ? 'Marche santé' : 
+                transportType === 'bike' ? 'Vélivert' :
+                transportType === 'walk' ? 'Marche santé' :
                 'STAS'
               }
             </h1>
@@ -286,7 +288,7 @@ const Itineraire = () => {
         </div>
       </div>
 
-      <div className="container px-4 md:px-6 py-6 space-y-6">
+      <div className="container px-4 py-6 space-y-6">
         {/* Search Form */}
         <Card>
           <CardHeader>
@@ -447,7 +449,7 @@ const Itineraire = () => {
           <div ref={mapContainer} className="w-full h-[350px] md:h-[450px]" />
         </Card>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

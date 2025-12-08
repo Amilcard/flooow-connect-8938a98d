@@ -108,7 +108,7 @@ const MesJustificatifs = () => {
 
         {/* Liste des justificatifs */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <FileText className="w-5 h-5" />
             Documents requis
           </h2>

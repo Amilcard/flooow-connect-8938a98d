@@ -244,7 +244,7 @@ const Index = () => {
         onClear={clearAllFilters}
       />
       
-      <main className="max-w-[1200px] mx-auto px-6 pb-24">
+      <main className="max-w-[1200px] mx-auto px-4 pb-24">
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
           <TerritoryCheck 

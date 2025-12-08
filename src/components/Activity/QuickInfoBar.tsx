@@ -85,23 +85,23 @@ export function QuickInfoBar({
 
   return (
     <div
-      className={`quick-info-bar flex items-center gap-3 flex-wrap py-3 px-4 bg-white border-b border-gray-200 ${className}`}
+      className={`quick-info-bar flex items-center gap-3 flex-wrap py-3 px-4 bg-background border-b border-border ${className}`}
     >
       {/* Rating */}
       {rating && (
         <div className="flex items-center gap-1.5">
           <Star size={16} fill="#F59E0B" color="#F59E0B" strokeWidth={0} />
-          <span className="text-sm font-semibold text-gray-900">
+          <span className="text-sm font-semibold text-foreground">
             {rating.average.toFixed(1)}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             ({rating.count} avis)
           </span>
         </div>
       )}
 
       {/* Séparateur si rating présent */}
-      {rating && <div className="w-px h-5 bg-gray-300" />}
+      {rating && <div className="w-px h-5 bg-border" />}
 
       {/* Age Range */}
       <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1 rounded-md">
