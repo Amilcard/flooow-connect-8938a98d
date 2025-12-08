@@ -101,10 +101,11 @@ const MesServices = () => {
   ];
 
   return (
-    <PageLayout>
+    <PageLayout showHeader={false}>
       <PageHeader
         title="Mes services"
         subtitle="Les contacts utiles pour vos démarches liées aux activités, aux aides et aux déplacements."
+        backFallback="/home"
       />
       
       <div className="container mx-auto px-4 py-8 space-y-8">

@@ -264,7 +264,7 @@ const MaVille = () => {
                         key={index}
                         onClick={() => setCurrentAlerte(index)}
                         className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentAlerte ? 'bg-orange-500 w-6' : 'bg-gray-300'
+                          index === currentAlerte ? 'bg-orange-500 w-6' : 'bg-muted'
                         }`}
                         aria-label={`Alerte ${index + 1}`}
                       />
