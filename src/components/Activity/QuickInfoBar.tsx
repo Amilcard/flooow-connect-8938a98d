@@ -11,15 +11,6 @@ interface QuickInfoBarProps {
   };
 
   /**
-   * Tranche d'âge de l'activité
-   */
-  ageRange: {
-    min: number;
-    max: number;
-    label?: string;
-  };
-
-  /**
    * Indique si l'activité est gratuite
    */
   isFree?: boolean;
@@ -50,15 +41,14 @@ interface QuickInfoBarProps {
  *
  * Affiche les informations essentielles en un coup d'œil :
  * - Rating avec étoiles
- * - Tranche d'âge avec icône
  * - Badge "GRATUIT" si applicable
+ * - Badges SOLIDAIRE / InKlusif
  * - Indicateur de places restantes
  *
  * @example
  * ```tsx
  * <QuickInfoBar
  *   rating={{ average: 4.8, count: 23 }}
- *   ageRange={{ min: 6, max: 12, label: "6-12 ans" }}
  *   isFree={false}
  *   spotsRemaining={3}
  * />
@@ -66,7 +56,6 @@ interface QuickInfoBarProps {
  */
 export function QuickInfoBar({
   rating,
-  ageRange,
   isFree,
   spotsRemaining,
   paymentEchelonned,
