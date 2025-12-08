@@ -217,7 +217,7 @@ const MonCompte = () => {
       />
 
       {/* Bloc Bonjour [Prénom] avec avatar */}
-      <div className="container px-4 pt-4 pb-2">
+      <div className="max-w-[1200px] mx-auto px-4 pt-4 pb-2">
         <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-primary/10">
           <Avatar className="h-12 w-12 ring-2 ring-primary/20">
             <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-semibold text-lg">
@@ -236,7 +236,7 @@ const MonCompte = () => {
       </div>
 
       {/* SECTION A : Mes espaces principaux */}
-      <div className="container px-4 pt-6 pb-4">
+      <div className="max-w-[1200px] mx-auto px-4 pt-6 pb-4">
         <div className="mb-4">
           <h3 className="text-xl font-bold text-foreground">Mes espaces principaux</h3>
           <p className="text-sm text-muted-foreground">Accès rapide à vos informations et démarches</p>
@@ -277,7 +277,7 @@ const MonCompte = () => {
       </div>
 
       {/* SECTION B : Autres infos */}
-      <div className="container px-4 pb-6">
+      <div className="max-w-[1200px] mx-auto px-4 pb-6">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-foreground">Autres infos</h3>
         </div>
@@ -305,7 +305,7 @@ const MonCompte = () => {
       </div>
 
       {/* Bouton déconnexion discret */}
-      <div className="container px-4 pb-8">
+      <div className="max-w-[1200px] mx-auto px-4 pb-8">
         <button
           onClick={handleLogout}
           className="flex items-center justify-center gap-2 w-full py-4 text-sm text-muted-foreground hover:text-destructive transition-colors duration-200 underline"

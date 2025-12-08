@@ -7,7 +7,6 @@ import logoFlooow from "@/assets/logo-flooow.png";
 import familiaAnimation from "@/assets/lottie/familia.json";
 import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
 import confetiAnimation from "@/assets/lottie/confeti.json";
-import logoNananere from "@/assets/logo-nananere.svg";
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
@@ -131,7 +130,7 @@ export const OnboardingCarousel = () => {
   // Configuration for Screen 4 (Strictly from JSON)
   const screen4Config: StrictOnboardingScreenConfig = {
     meta: {
-      important: "Utilisation de l'animation Confetti en fond et du slogan Nananere en illustration."
+      important: "Utilisation de l'animation Confetti en fond et du logo Flooow en illustration."
     },
     screenId: "onboarding_4",
     layout: {
@@ -149,7 +148,7 @@ export const OnboardingCarousel = () => {
       }
     },
     illustration: {
-      file: logoNananere,
+      file: logoFlooow,
       type: "image",
       heightPercent: 45,
       loop: false,
