@@ -70,9 +70,9 @@ export const SearchBar = ({
               }
             }}
             aria-label="Filtrer les résultats"
-            className="flex items-center justify-center"
+            className="flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg hover:bg-muted transition-colors"
           >
-            <SlidersHorizontal size={20} color="#6B7280" />
+            <SlidersHorizontal size={20} className="text-muted-foreground" />
           </button>
         </form>
       </div>
