@@ -93,6 +93,7 @@ export default {
         'gradient-orange': 'var(--gradient-orange)',
         'gradient-green': 'var(--gradient-green)',
         'gradient-pink': 'var(--gradient-pink)',
+        'gradient-splash': 'var(--gradient-splash)',
         'card-gradient-1': 'var(--card-gradient-1)',
         'card-gradient-2': 'var(--card-gradient-2)',
       },
@@ -103,6 +104,7 @@ export default {
         display: ['Poppins', 'system-ui', '-apple-system'],
         sans: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         body: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        poppins: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
