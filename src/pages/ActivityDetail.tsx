@@ -539,41 +539,36 @@ const ActivityDetail = () => {
             {activity.title}
           </h1>
           
-          {/* Méta informations (âge, durée, lieu) */}
+          {/* Méta informations (âge, période, ville) - sans doublon adresse */}
           <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
             <span className="flex items-center gap-2">
               <Users size={20} className="text-primary" />
               <span className="font-medium text-foreground">{ageRange}</span>
             </span>
-            
+
             {activity.period_type && (
               <span className="flex items-center gap-2">
                 <CalendarRange size={20} className="text-primary" />
                 <span className="text-muted-foreground">
-                  {activity.period_type === 'scolaire' 
-                    ? 'Année scolaire' 
+                  {activity.period_type === 'scolaire'
+                    ? 'Année scolaire'
                     : 'Vacances scolaires'}
                 </span>
               </span>
             )}
-            
-            {activity.organisms?.address && (
+
+            {/* Afficher seulement la ville (pas l'adresse complète - évite doublon avec bloc organisateur) */}
+            {activity.city && (
               <span className="flex items-center gap-2">
                 <MapPin size={20} className="text-primary" />
-                <span className="text-muted-foreground">{activity.organisms.address}</span>
+                <span className="text-muted-foreground">{activity.city}</span>
               </span>
             )}
           </div>
 
-          {/* Organisateur avec lien contact discret */}
+          {/* Bouton contact discret - sans "Organisé par" (évite doublon avec bloc organisateur détaillé) */}
           {activity.organisms?.name && (
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-2">
-                <Building2 size={20} className="text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">
-                  Organisé par {activity.organisms.name}
-                </span>
-              </div>
+            <div className="flex items-center justify-end">
               <Button
                 variant="link"
                 size="sm"

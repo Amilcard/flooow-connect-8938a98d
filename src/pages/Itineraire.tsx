@@ -338,54 +338,57 @@ const Itineraire = () => {
 
         {/* Route Info */}
         {routeData && (
-          <Card>
-            <CardHeader>
+          <Card className="border-2 border-green-200 dark:border-green-800">
+            <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2">
                 <Clock size={20} />
-                Détails de l'itinéraire
+                Votre itinéraire écomobile
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Distance</p>
-                  <p className="text-2xl font-semibold">
+              {/* Récap principal - Distance/Durée/CO2 */}
+              <div className="grid grid-cols-3 gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-lg">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Distance</p>
+                  <p className="text-xl font-bold text-foreground">
                     {routeData.distance?.text}
                   </p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Durée estimée</p>
-                  <p className="text-2xl font-semibold">
+                <div className="text-center border-x border-green-200 dark:border-green-700">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Durée</p>
+                  <p className="text-xl font-bold text-foreground">
                     {routeData.duration?.text}
                   </p>
                 </div>
-              </div>
-              
-              {/* Économies CO2 et santé */}
-              <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg space-y-2">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                  <span className="text-lg">🌱</span>
-                  <span className="font-medium">
-                    ≈ {Math.round((routeData.distance?.value || 0) / 1000 * CO2_CAR_PER_KM / 10) / 100} kg CO₂ évités vs voiture
-                  </span>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">CO₂ évités</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {Math.round((routeData.distance?.value || 0) / 1000 * CO2_CAR_PER_KM / 10) / 100} kg
+                  </p>
                 </div>
-                {(transportType === 'walk' || transportType === 'bike') && (
-                  <div className="flex items-center gap-2 text-purple-700 dark:text-purple-400">
-                    <span className="text-lg">💪</span>
-                    <span className="font-medium">
-                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN))} kcal brûlées
-                    </span>
-                  </div>
-                )}
-                {transportType === 'walk' && (
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
-                    <span className="text-lg">👟</span>
-                    <span className="font-medium">
-                      ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM)} pas
-                    </span>
-                  </div>
-                )}
               </div>
+
+              {/* Phrase explicative - préparation cumul écomobilité */}
+              <p className="text-xs text-center text-muted-foreground italic">
+                🌍 Flooow vous aide à suivre vos économies de CO₂ à chaque trajet. Bientôt, retrouvez votre cumul mensuel !
+              </p>
+
+              {/* Bénéfices santé - second niveau */}
+              {(transportType === 'walk' || transportType === 'bike') && (
+                <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                  <p className="text-xs font-medium text-purple-700 dark:text-purple-400 mb-2">💪 Bénéfices santé</p>
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <span className="text-purple-600 dark:text-purple-400">
+                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN))} kcal
+                    </span>
+                    {transportType === 'walk' && (
+                      <span className="text-purple-600 dark:text-purple-400">
+                        ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM)} pas
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {transportType === 'bus' && (
                 <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
@@ -439,9 +442,9 @@ const Itineraire = () => {
           </Card>
         )}
 
-        {/* Map Container */}
+        {/* Map Container - hauteur adaptée mobile */}
         <Card className="overflow-hidden">
-          <div ref={mapContainer} className="w-full h-[500px]" />
+          <div ref={mapContainer} className="w-full h-[350px] md:h-[450px]" />
         </Card>
       </div>
     </div>
