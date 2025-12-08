@@ -474,7 +474,6 @@ const ActivityDetail = () => {
 
       {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
       <QuickInfoBar
-        ageRange={{ min: activity.age_min, max: activity.age_max }}
         isFree={activity.price_base === 0}
         spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
         paymentEchelonned={activity.payment_echelonned || false}
