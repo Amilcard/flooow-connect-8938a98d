@@ -112,7 +112,7 @@ const SimulateurV2 = () => {
                     ? 'bg-primary text-white'
                     : quickResult
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {quickResult && mode !== 'quick' ? '✓' : '1'}
@@ -131,7 +131,7 @@ const SimulateurV2 = () => {
                     ? 'bg-primary text-white'
                     : fastResult
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {fastResult && mode !== 'fast' ? '✓' : '2'}
@@ -150,7 +150,7 @@ const SimulateurV2 = () => {
                     ? 'bg-primary text-white'
                     : completeResult
                     ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 3
@@ -250,7 +250,7 @@ const SimulateurV2 = () => {
         )}
 
         {/* Note légale */}
-        <Alert variant="default" className="border-gray-300">
+        <Alert variant="default" className="border-border">
           <Info className="h-4 w-4" />
           <AlertDescription className="text-xs text-muted-foreground">
             <strong>Estimation indicative.</strong> Les montants affichés sont calculés selon les

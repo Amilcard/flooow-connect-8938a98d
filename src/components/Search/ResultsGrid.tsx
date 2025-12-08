@@ -29,9 +29,9 @@ export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGr
   // Loading State
   if (isLoading) {
     return (
-      <div className="px-4 py-10 bg-white min-h-[60vh] flex flex-col items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gray-100 border-t-primary rounded-full animate-spin" />
-        <p className="mt-4 text-[15px] text-gray-600 font-poppins">
+      <div className="px-4 py-10 bg-background min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="w-10 h-10 border-4 border-muted border-t-primary rounded-full animate-spin" />
+        <p className="mt-4 text-[15px] text-muted-foreground font-poppins">
           Recherche en cours...
         </p>
       </div>
@@ -41,11 +41,11 @@ export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGr
   // Empty State
   if (activities.length === 0) {
     return (
-      <div className="px-4 py-16 bg-white min-h-[60vh] flex flex-col items-center justify-center text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3 font-poppins">
+      <div className="px-4 py-16 bg-background min-h-[60vh] flex flex-col items-center justify-center text-center">
+        <h3 className="text-lg font-semibold text-foreground mb-3 font-poppins">
           Aucune activité ne correspond à vos critères
         </h3>
-        <p className="text-[15px] text-gray-600 mb-5 font-poppins">
+        <p className="text-[15px] text-muted-foreground mb-5 font-poppins">
           Essayez d'élargir vos filtres ou recherchez un autre terme
         </p>
         <button
@@ -60,7 +60,7 @@ export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGr
 
   // Results Grid
   return (
-    <div className="px-4 py-4 bg-white min-h-[60vh]">
+    <div className="px-4 py-4 bg-background min-h-[60vh]">
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity) => (
           <ActivityResultCard

@@ -96,17 +96,17 @@ const MoyensPaiement = () => {
         } else if (method.brand === 'amex') {
           return <div className="w-8 h-5 bg-green-600 text-white text-xs font-bold flex items-center justify-center rounded">AMEX</div>;
         }
-        return <CreditCard className="w-6 h-6 text-gray-600" />;
+        return <CreditCard className="w-6 h-6 text-muted-foreground" />;
       case 'paypal':
         return <div className="w-8 h-5 bg-blue-500 text-white text-xs font-bold flex items-center justify-center rounded">PP</div>;
       case 'applepay':
-        return <Smartphone className="w-6 h-6 text-gray-900" />;
+        return <Smartphone className="w-6 h-6 text-foreground" />;
       case 'googlepay':
         return <Wallet className="w-6 h-6 text-blue-600" />;
       case 'sepa':
         return <Building className="w-6 h-6 text-green-600" />;
       default:
-        return <CreditCard className="w-6 h-6 text-gray-600" />;
+        return <CreditCard className="w-6 h-6 text-muted-foreground" />;
     }
   };
 
@@ -462,7 +462,7 @@ const MoyensPaiement = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-5 bg-blue-500 text-white text-xs font-bold flex items-center justify-center rounded">PP</div>
                 <div>
@@ -474,10 +474,10 @@ const MoyensPaiement = () => {
                 Connecter
               </Button>
             </div>
-            
-            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+
+            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer">
               <div className="flex items-center space-x-3">
-                <Smartphone className="w-6 h-6 text-gray-900" />
+                <Smartphone className="w-6 h-6 text-foreground" />
                 <div>
                   <p className="font-medium">Apple Pay</p>
                   <p className="text-sm text-muted-foreground">Paiement rapide avec Touch ID</p>
@@ -488,7 +488,7 @@ const MoyensPaiement = () => {
               </Button>
             </div>
             
-            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer">
               <div className="flex items-center space-x-3">
                 <Wallet className="w-6 h-6 text-blue-600" />
                 <div>

@@ -83,7 +83,7 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
   };
 
   return (
-    <div className="h-[calc(100vh-200px)] w-full rounded-lg overflow-hidden border border-gray-200 relative z-0">
+    <div className="h-[calc(100vh-200px)] w-full rounded-lg overflow-hidden border border-border relative z-0">
       <MapContainer
         center={defaultCenter}
         zoom={13}
@@ -112,7 +112,7 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
                 <Popup>
                     <div className="p-2 min-w-[200px]">
                     <div className="font-bold text-sm mb-1">{activity.title}</div>
-                    <div className="text-xs text-gray-500 mb-2 capitalize">{activity.category}</div>
+                    <div className="text-xs text-muted-foreground mb-2 capitalize">{activity.category}</div>
                     <div className="text-xs font-semibold mb-2">
                         {activity.price_is_free ? 'Gratuit' : `${activity.price_base || 0}€`}
                     </div>
