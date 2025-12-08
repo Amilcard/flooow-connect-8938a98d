@@ -34,12 +34,18 @@ const Search = () => {
   const { advancedFilters, viewMode, searchQuery } = filterState;
 
   // Map advanced filters to useActivities filters
+  // Ne pas appliquer les filtres si les valeurs par défaut sont utilisées
+  const isAgeFilterActive = advancedFilters.age_range[0] !== 4 || advancedFilters.age_range[1] !== 17;
+  const isPriceFilterActive = advancedFilters.max_budget !== 500; // 500€ est la valeur par défaut
+
   const activityFilters = {
     searchQuery: searchQuery,
     categories: advancedFilters.categories,
-    ageMin: advancedFilters.age_range[0],
-    ageMax: advancedFilters.age_range[1],
-    maxPrice: advancedFilters.max_budget,
+    // Seulement appliquer le filtre d'âge si l'utilisateur l'a modifié
+    ageMin: isAgeFilterActive ? advancedFilters.age_range[0] : undefined,
+    ageMax: isAgeFilterActive ? advancedFilters.age_range[1] : undefined,
+    // Seulement appliquer le filtre de prix si l'utilisateur l'a modifié
+    maxPrice: isPriceFilterActive ? advancedFilters.max_budget : undefined,
     hasAccessibility: advancedFilters.inclusivity || advancedFilters.specific_needs.length > 0,
     hasFinancialAid: advancedFilters.financial_aids_accepted.length > 0 || advancedFilters.payment_echelon || advancedFilters.qf_based_pricing,
     mobilityTypes: advancedFilters.mobility_types,
