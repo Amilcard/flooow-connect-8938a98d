@@ -165,17 +165,17 @@ const MonCompte = () => {
   // SECTION B : Autres infos (items secondaires)
   const otherInfoItems = [
     {
-      icon: <Calendar size={18} className="text-orange-600" />,
+      icon: <Calendar size={18} className="text-primary" />,
       label: "Mes sessions",
       onClick: () => navigate("/mon-compte/sessions"),
     },
     {
-      icon: <Settings size={18} className="text-gray-600" />,
+      icon: <Settings size={18} className="text-muted-foreground" />,
       label: "Paramètres",
       onClick: () => navigate("/mon-compte/parametres"),
     },
     {
-      icon: <HelpCircle size={18} className="text-indigo-600" />,
+      icon: <HelpCircle size={18} className="text-primary" />,
       label: "Aide & Support",
       onClick: () => navigate("/support"),
     },
