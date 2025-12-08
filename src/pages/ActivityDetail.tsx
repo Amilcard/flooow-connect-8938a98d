@@ -543,13 +543,14 @@ const ActivityDetail = () => {
 
       {/* Main Content Container */}
       <div className="container px-4 md:px-6 py-6 max-w-[1140px] mx-auto">
-        {/* Header Section avec image card sur desktop */}
+        {/* Header Section avec image card + organisateur sur desktop */}
         <div className="space-y-4 pb-6 border-b mb-6" data-tour-id="activity-header">
-          {/* Desktop: Layout flex avec image card à gauche */}
+          {/* Desktop: Layout flex avec image + organisateur à gauche */}
           <div className="flex flex-col lg:flex-row lg:gap-6">
-            {/* Image card - Desktop only (visible uniquement sur lg+) */}
-            <div className="hidden lg:block shrink-0">
-              <div className="relative w-[280px] h-[180px] rounded-xl overflow-hidden shadow-md">
+            {/* Colonne gauche: Image + Organisateur - Desktop only */}
+            <div className="hidden lg:flex lg:flex-col lg:gap-4 shrink-0 w-[280px]">
+              {/* Image card */}
+              <div className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-md">
                 <img
                   src={displayImage}
                   alt={activity.title}
@@ -575,6 +576,37 @@ const ActivityDetail = () => {
                   </span>
                 </div>
               </div>
+
+              {/* Bloc Organisateur compact - Desktop */}
+              {activity.organisms && (
+                <div className="p-3 bg-muted/30 rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Building2 size={16} className="text-primary shrink-0" />
+                    <span className="font-semibold text-sm truncate">{activity.organisms.name}</span>
+                  </div>
+                  {activity.organisms.address && (
+                    <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <MapPin size={12} className="shrink-0 mt-0.5" />
+                      <span className="line-clamp-2">{activity.organisms.address}</span>
+                    </div>
+                  )}
+                  {activity.organisms.phone && (
+                    <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-2 text-xs text-primary hover:underline">
+                      <Phone size={12} className="shrink-0" />
+                      {activity.organisms.phone}
+                    </a>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowContactModal(true)}
+                    className="w-full mt-2 h-8 text-xs"
+                  >
+                    <MessageCircle size={14} className="mr-1.5" />
+                    Contacter
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Titre et méta */}
@@ -583,6 +615,25 @@ const ActivityDetail = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
                 {activity.title}
               </h1>
+
+              {/* Badge Rythme */}
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge
+                  variant="secondary"
+                  className="text-xs font-medium px-2.5 py-1"
+                  style={{
+                    backgroundColor: activity.period_type === 'scolaire' ? '#EFF6FF' : '#FEF3C7',
+                    color: activity.period_type === 'scolaire' ? '#1D4ED8' : '#B45309'
+                  }}
+                >
+                  {activity.period_type === 'scolaire' ? '📅 Hebdomadaire' : '🏕️ Stage vacances'}
+                </Badge>
+                {activity.price_base === 0 && (
+                  <Badge className="text-xs font-bold bg-green-100 text-green-700 border-0">
+                    GRATUIT
+                  </Badge>
+                )}
+              </div>
 
               {/* Méta informations (âge, période, ville) */}
               <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
@@ -596,7 +647,7 @@ const ActivityDetail = () => {
                     <CalendarRange size={18} className="text-primary" />
                     <span className="text-muted-foreground">
                       {activity.period_type === 'scolaire'
-                        ? 'Année scolaire'
+                        ? 'Année scolaire 2024-2025'
                         : 'Vacances scolaires'}
                     </span>
                   </span>
@@ -610,18 +661,30 @@ const ActivityDetail = () => {
                 )}
               </div>
 
-              {/* Bouton contact discret */}
-              {activity.organisms?.name && (
-                <div className="flex items-center pt-1">
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => setShowContactModal(true)}
-                    className="h-auto p-0 text-sm text-primary hover:underline font-medium"
-                  >
-                    <MessageCircle size={16} className="mr-1.5" />
-                    Contacter l'organisateur
-                  </Button>
+              {/* Mobile: Bloc Organisateur compact */}
+              {activity.organisms && (
+                <div className="lg:hidden p-3 bg-muted/30 rounded-lg mt-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Building2 size={16} className="text-primary shrink-0" />
+                      <span className="font-semibold text-sm truncate">{activity.organisms.name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowContactModal(true)}
+                      className="h-8 text-xs shrink-0"
+                    >
+                      <MessageCircle size={14} className="mr-1" />
+                      Contacter
+                    </Button>
+                  </div>
+                  {activity.organisms.address && (
+                    <p className="text-xs text-muted-foreground mt-1 flex items-start gap-1">
+                      <MapPin size={12} className="shrink-0 mt-0.5" />
+                      {activity.organisms.address}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
