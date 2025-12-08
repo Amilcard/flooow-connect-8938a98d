@@ -719,149 +719,72 @@ const ActivityDetail = () => {
                   </section>
                 )}
 
-                {/* Informations pratiques - Layout en colonnes alignées */}
+                {/* Informations pratiques - Simplifié (organisateur déjà dans header) */}
                 <section className="space-y-4">
                   <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    {/* Colonne gauche */}
-                    <div className="space-y-4">
-                      {sessions.length > 0 && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Rythme</p>
-                            <p className="text-sm text-muted-foreground">
-                              {activity.period_type === "scolaire" ? "Atelier hebdomadaire" : "Stage vacances"} — voir créneaux disponibles
-                            </p>
-                          </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {/* Rythme */}
+                    {sessions.length > 0 && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
+                        <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Rythme</p>
+                          <p className="text-sm text-muted-foreground">
+                            {activity.period_type === "scolaire"
+                              ? `Hebdomadaire — ${sessions[0]?.day_of_week !== null ? ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"][sessions[0].day_of_week] : ""}`
+                              : activity.has_accommodation ? "Séjour vacances" : "Stage vacances"}
+                          </p>
                         </div>
-                      )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      {typeof activity.accessibility_checklist === 'object' &&
-                       activity.accessibility_checklist !== null &&
-                       'wheelchair' in activity.accessibility_checklist &&
-                       activity.accessibility_checklist.wheelchair && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors" data-tour-id="inklusif-badge-detail">
-                          <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Activité InKlusif</p>
-                            <p className="text-sm text-muted-foreground">Adaptée aux personnes en situation de handicap</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Colonne droite */}
-                    <div className="space-y-4">
-                      {activity.organisms?.address && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Lieu</p>
-                            <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bloc Organisateur complet */}
-                  {activity.organisms && (
-                    <div className="mt-6 p-4 bg-muted/30 rounded-lg space-y-4">
-                      <h3 className="font-semibold text-base flex items-center gap-2">
-                        <Building2 size={18} className="text-primary" />
-                        Organisateur : {activity.organisms.name}
-                      </h3>
-                      <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                        {activity.organisms.type && (
-                          <div className="flex items-center gap-2">
-                            <Info size={16} className="text-muted-foreground flex-shrink-0" />
-                            <span className="text-muted-foreground">Type : {activity.organisms.type}</span>
-                          </div>
-                        )}
-                        {activity.organisms.address && (
-                          <div className="flex items-center gap-2">
-                            <MapPin size={16} className="text-muted-foreground flex-shrink-0" />
-                            <span className="text-muted-foreground">{activity.organisms.address}</span>
-                          </div>
-                        )}
-                        {activity.organisms.phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone size={16} className="text-muted-foreground flex-shrink-0" />
-                            <a href={`tel:${activity.organisms.phone}`} className="text-primary hover:underline">
-                              {activity.organisms.phone}
-                            </a>
-                          </div>
-                        )}
-                        {activity.organisms.email && (
-                          <div className="flex items-center gap-2">
-                            <Mail size={16} className="text-muted-foreground flex-shrink-0" />
-                            <a href={`mailto:${activity.organisms.email}`} className="text-primary hover:underline truncate">
-                              {activity.organisms.email}
-                            </a>
-                          </div>
-                        )}
-                        {activity.organisms.website && (
-                          <div className="flex items-center gap-2 sm:col-span-2">
-                            <FileText size={16} className="text-muted-foreground flex-shrink-0" />
-                            <a href={activity.organisms.website.startsWith('http') ? activity.organisms.website : `https://${activity.organisms.website}`}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-primary hover:underline truncate">
-                              {activity.organisms.website}
-                            </a>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Informations supplémentaires en dessous */}
-                  {(activity.covoiturage_enabled || activity.payment_echelonned) && (
-                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
-                      {activity.covoiturage_enabled && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Covoiturage</p>
-                            <p className="text-sm text-muted-foreground">Service disponible</p>
-                          </div>
+                    {/* Lieu */}
+                    {activity.organisms?.address && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
+                        <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Lieu</p>
+                          <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {activity.payment_echelonned && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Paiement échelonné</p>
-                            <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
-                          </div>
+                    {/* Accessibilité */}
+                    {typeof activity.accessibility_checklist === 'object' &&
+                     activity.accessibility_checklist !== null &&
+                     'wheelchair' in activity.accessibility_checklist &&
+                     activity.accessibility_checklist.wheelchair && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30" data-tour-id="inklusif-badge-detail">
+                        <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Activité InKlusif</p>
+                          <p className="text-sm text-muted-foreground">Adaptée PMR</p>
                         </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    )}
+
+                    {/* Covoiturage */}
+                    {activity.covoiturage_enabled && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
+                        <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Covoiturage</p>
+                          <p className="text-sm text-muted-foreground">Service disponible</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Paiement échelonné */}
+                    {activity.payment_echelonned && (
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
+                        <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Paiement échelonné</p>
+                          <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </section>
               </TabsContent>
 
