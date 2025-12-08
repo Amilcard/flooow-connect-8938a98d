@@ -41,7 +41,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
-    images: [],
+    images: dbActivity.image_url ? [dbActivity.image_url] : [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
     price_base: dbActivity.price_base || 0,
