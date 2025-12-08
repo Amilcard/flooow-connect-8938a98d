@@ -464,6 +464,8 @@ const ActivityDetail = () => {
             size="icon"
             onClick={handleShare}
             className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-9 h-9 rounded-full"
+            aria-label="Partager cette activité"
+            title="Partager"
           >
             <Share2 size={16} className="text-foreground" />
           </Button>
@@ -485,7 +487,7 @@ const ActivityDetail = () => {
       />
 
       {/* Main Content Container */}
-      <div className="container px-4 md:px-6 py-6 max-w-[1140px] mx-auto">
+      <div className="container px-4 md:px-6 py-6 max-w-[1200px] mx-auto">
         {/* Desktop: Back button aligned with content (hidden on mobile - hero has it) */}
         <div className="hidden lg:flex items-center justify-between mb-4">
           <BackButton
@@ -588,25 +590,18 @@ const ActivityDetail = () => {
                 <div className="p-3 bg-muted/30 rounded-lg space-y-2">
                   <div className="flex items-center gap-2">
                     <Building2 size={16} className="text-primary shrink-0" />
-                    <span className="font-semibold text-sm truncate">{activity.organisms.name}</span>
-                  </div>
-                  {activity.organisms.address && (
-                    <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <MapPin size={12} className="shrink-0 mt-0.5" />
-                      <span className="line-clamp-2">{activity.organisms.address}</span>
+                    <div className="min-w-0">
+                      <span className="font-semibold text-sm block truncate">{activity.organisms.name}</span>
+                      {activity.city && (
+                        <span className="text-xs text-muted-foreground">{activity.city}</span>
+                      )}
                     </div>
-                  )}
-                  {activity.organisms.phone && (
-                    <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-2 text-xs text-primary hover:underline">
-                      <Phone size={12} className="shrink-0" />
-                      {activity.organisms.phone}
-                    </a>
-                  )}
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowContactModal(true)}
-                    className="w-full mt-2 h-8 text-xs"
+                    className="w-full h-8 text-xs"
                   >
                     <MessageCircle size={14} className="mr-1.5" />
                     Contacter
@@ -673,7 +668,12 @@ const ActivityDetail = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0">
                       <Building2 size={16} className="text-primary shrink-0" />
-                      <span className="font-semibold text-sm truncate">{activity.organisms.name}</span>
+                      <div className="min-w-0">
+                        <span className="font-semibold text-sm block truncate">{activity.organisms.name}</span>
+                        {activity.city && (
+                          <span className="text-xs text-muted-foreground">{activity.city}</span>
+                        )}
+                      </div>
                     </div>
                     <Button
                       variant="ghost"
@@ -685,12 +685,6 @@ const ActivityDetail = () => {
                       Contacter
                     </Button>
                   </div>
-                  {activity.organisms.address && (
-                    <p className="text-xs text-muted-foreground mt-1 flex items-start gap-1">
-                      <MapPin size={12} className="shrink-0 mt-0.5" />
-                      {activity.organisms.address}
-                    </p>
-                  )}
                 </div>
               )}
             </div>
@@ -725,9 +719,52 @@ const ActivityDetail = () => {
                   </section>
                 )}
 
-                {/* Informations pratiques - Simplifié (organisateur déjà dans header) */}
+                {/* Informations pratiques */}
                 <section className="space-y-4">
                   <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
+
+                  {/* Bloc Organisateur détaillé */}
+                  {activity.organisms && (
+                    <div className="p-4 rounded-lg bg-muted/30 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Building2 size={20} className="text-primary" />
+                        <p className="font-semibold text-base">{activity.organisms.name}</p>
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-3 text-sm">
+                        {activity.organisms.type && (
+                          <div className="flex items-start gap-2">
+                            <Info size={14} className="text-muted-foreground mt-0.5 shrink-0" />
+                            <span className="text-muted-foreground capitalize">{activity.organisms.type}</span>
+                          </div>
+                        )}
+                        {activity.organisms.address && (
+                          <div className="flex items-start gap-2">
+                            <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
+                            <span className="text-muted-foreground">{activity.organisms.address}</span>
+                          </div>
+                        )}
+                        {activity.organisms.phone && (
+                          <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-2 text-primary hover:underline">
+                            <Phone size={14} className="shrink-0" />
+                            {activity.organisms.phone}
+                          </a>
+                        )}
+                        {activity.organisms.email && (
+                          <a href={`mailto:${activity.organisms.email}`} className="flex items-center gap-2 text-primary hover:underline">
+                            <Mail size={14} className="shrink-0" />
+                            {activity.organisms.email}
+                          </a>
+                        )}
+                        {activity.organisms.website && (
+                          <a href={activity.organisms.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary hover:underline">
+                            <FileText size={14} className="shrink-0" />
+                            Site internet
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Rythme */}
                     {sessions.length > 0 && (
@@ -740,17 +777,6 @@ const ActivityDetail = () => {
                               ? `Hebdomadaire — ${sessions[0]?.day_of_week !== null ? ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"][sessions[0].day_of_week] : ""}`
                               : activity.has_accommodation ? "Séjour vacances" : "Stage vacances"}
                           </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Lieu */}
-                    {activity.organisms?.address && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                        <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Lieu</p>
-                          <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
                         </div>
                       </div>
                     )}
