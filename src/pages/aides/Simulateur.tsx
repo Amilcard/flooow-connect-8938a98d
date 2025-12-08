@@ -118,7 +118,7 @@ const Simulateur = () => {
   return (
     <PageLayout>
       <div className="container max-w-2xl px-4 py-6 space-y-6 pb-24">
-        <BackButton positioning="relative" size="sm" fallback="/aides" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/aides" />
 
         {/* Header CityCrunch */}
         <div className="space-y-3">

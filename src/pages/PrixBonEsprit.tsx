@@ -7,7 +7,7 @@ const PrixBonEsprit = () => {
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-6 pb-24">
-        <BackButton positioning="relative" size="sm" fallback="/bon-esprit" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/bon-esprit" />
         
         {/* Hero Section */}
         <div className="mb-8 space-y-4">

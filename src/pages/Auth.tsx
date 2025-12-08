@@ -143,7 +143,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback="/" positioning="relative" size="sm" />
+          <BackButton fallback="/" positioning="relative" size="sm" showText={true} label="Retour" />
           <h1 className="font-semibold text-lg">Connexion</h1>
         </div>
       </div>

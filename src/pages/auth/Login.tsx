@@ -69,7 +69,7 @@ const Login = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header avec BackButton */}
       <div className="flex items-center p-4">
-        <BackButton positioning="relative" size="sm" fallback="/home" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/home" />
       </div>
 
       {/* Main Content */}
