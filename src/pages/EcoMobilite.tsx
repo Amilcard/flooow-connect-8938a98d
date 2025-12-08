@@ -151,11 +151,11 @@ const EcoMobilite = () => {
             <div className="space-y-2">
               <div className="flex items-start gap-2">
                 <Info size={14} className="text-blue-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-700 font-poppins">
+                <p className="text-sm text-muted-foreground font-poppins">
                   monimpacttransport.fr
                 </p>
               </div>
-              <p className="text-xs text-gray-500 font-poppins ml-5">
+              <p className="text-xs text-muted-foreground font-poppins ml-5">
                 Service en ligne accessible 7j/7
               </p>
             </div>
