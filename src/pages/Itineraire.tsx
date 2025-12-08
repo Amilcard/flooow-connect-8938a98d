@@ -166,7 +166,7 @@ const Itineraire = () => {
           content: `
             <div class="p-2">
               <h3 class="font-semibold text-sm">${stop.name || 'Arrêt de bus'}</h3>
-              ${stop.lines ? `<p class="text-xs text-gray-600 mt-1">Lignes: ${Array.isArray(stop.lines) ? stop.lines.join(', ') : stop.lines}</p>` : ''}
+              ${stop.lines ? `<p class="text-xs text-muted-foreground mt-1">Lignes: ${Array.isArray(stop.lines) ? stop.lines.join(', ') : stop.lines}</p>` : ''}
             </div>
           `
         });
@@ -198,8 +198,8 @@ const Itineraire = () => {
           content: `
             <div class="p-2">
               <h3 class="font-semibold text-sm">${station.name || 'Station Vélivert'}</h3>
-              <p class="text-xs text-gray-600 mt-1">
-                🚲 Vélos: ${station.available_bikes || 0} | 
+              <p class="text-xs text-muted-foreground mt-1">
+                🚲 Vélos: ${station.available_bikes || 0} |
                 📍 Places: ${station.available_slots || 0}
               </p>
             </div>

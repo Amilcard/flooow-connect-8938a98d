@@ -318,7 +318,7 @@ function ChildFormSection({ index, register, watch, setValue, remove, canRemove,
             <input
               type="checkbox"
               {...register(`children.${index}.is_student`)}
-              className="rounded border-gray-300"
+              className="rounded border-border"
             />
             <span className="text-sm">
               Scolarisé ou en apprentissage

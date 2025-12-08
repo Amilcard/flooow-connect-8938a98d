@@ -576,7 +576,7 @@ export const SharedAidCalculator = ({
                     id="ars"
                     checked={hasARS}
                     onChange={(e) => setHasARS(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                   />
                   <Label htmlFor="ars" className="font-normal cursor-pointer">
                     Allocation de rentrée scolaire (ARS)
@@ -588,7 +588,7 @@ export const SharedAidCalculator = ({
                     id="aeeh"
                     checked={hasAEEH}
                     onChange={(e) => setHasAEEH(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                   />
                   <Label htmlFor="aeeh" className="font-normal cursor-pointer">
                     Allocation enfant handicapé (AEEH)
@@ -600,7 +600,7 @@ export const SharedAidCalculator = ({
                     id="bourse"
                     checked={hasBourse}
                     onChange={(e) => setHasBourse(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                   />
                   <Label htmlFor="bourse" className="font-normal cursor-pointer">
                     Bourse scolaire

@@ -48,7 +48,7 @@ export function AidsSectionsList({ schoolYearAids, vacationsAids }: AidsSections
             </div>
 
             {/* Title */}
-            <h2 className="font-poppins text-xl font-bold text-gray-900">
+            <h2 className="font-poppins text-xl font-bold text-foreground">
               {section.title}
             </h2>
           </div>

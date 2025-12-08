@@ -43,13 +43,13 @@ export const AdvancedFiltersModal = ({
       {/* Modal */}
       <div className="relative w-full sm:w-[600px] h-[90vh] sm:h-[85vh] bg-white sm:rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom duration-300">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-          <h2 className="text-xl font-bold font-display text-gray-900">Filtres</h2>
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+          <h2 className="text-xl font-bold font-display text-foreground">Filtres</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
-            <X className="w-6 h-6 text-gray-500" />
+            <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
 

@@ -101,15 +101,15 @@ export function QuickEstimateCard({
             <Alert className={`${
               aides_potentielles.length > 0
                 ? 'bg-blue-50 border-blue-200'
-                : 'bg-gray-50 border-gray-200'
+                : 'bg-muted border-border'
             }`}>
               {aides_potentielles.length > 0 ? (
                 <Sparkles className="h-4 w-4 text-blue-600" />
               ) : (
-                <Info className="h-4 w-4 text-gray-600" />
+                <Info className="h-4 w-4 text-muted-foreground" />
               )}
               <AlertDescription className={`text-sm ${
-                aides_potentielles.length > 0 ? 'text-blue-900' : 'text-gray-900'
+                aides_potentielles.length > 0 ? 'text-blue-900' : 'text-foreground'
               }`}>
                 <span dangerouslySetInnerHTML={{ __html: message_incitation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
               </AlertDescription>
@@ -182,7 +182,7 @@ export function QuickEstimateCard({
       </Card>
 
       {/* Note légale */}
-      <Alert variant="default" className="border-gray-300">
+      <Alert variant="default" className="border-border">
         <Info className="h-4 w-4" />
         <AlertDescription className="text-xs text-muted-foreground">
           <strong>Estimation indicative.</strong> Les montants affichés sont calculés selon les critères renseignés.

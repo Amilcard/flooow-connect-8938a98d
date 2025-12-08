@@ -35,7 +35,7 @@ export default function NonRecoursQuiz() {
     <div className="p-4 max-w-2xl relative">
       {!showResult ? (
         <>
-          <p className="text-gray-600 text-sm mb-6 italic">Flooow, c'est l'appli qui vous aide à ne pas passer à côté des aides pour les activités de vos enfants.</p>
+          <p className="text-muted-foreground text-sm mb-6 italic">Flooow, c'est l'appli qui vous aide à ne pas passer à côté des aides pour les activités de vos enfants.</p>
           <div className="space-y-8">
             {questions.map((q, i) => (
               <div key={q.id} className="space-y-3">
@@ -49,7 +49,7 @@ export default function NonRecoursQuiz() {
                       className={`min-h-11 px-5 rounded-full border-2 transition-all ${
                         answers[q.id] === opt
                           ? "bg-orange-500 text-white border-orange-500"
-                          : "bg-white text-gray-700 border-gray-200 hover:border-orange-300"
+                          : "bg-background text-muted-foreground border-border hover:border-orange-300"
                       }`}
                     >
                       {opt}
@@ -78,8 +78,8 @@ export default function NonRecoursQuiz() {
                 <Lottie animationData={confetiAnimation} loop={false} className="w-full h-full" />
               </div>
               <img src={smileyIcon} alt="" className="h-16 w-16 mx-auto animate-bounce-slow" />
-              <h3 className="text-xl font-bold text-gray-900">Bravo, vous êtes au taquet sur les aides</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-xl font-bold text-foreground">Bravo, vous êtes au taquet sur les aides</h3>
+              <p className="text-muted-foreground text-sm">
                 Vous connaissez déjà bien les bons plans. On vous aide à trouver les activités qui collent à votre famille.
               </p>
               <Button
@@ -101,8 +101,8 @@ export default function NonRecoursQuiz() {
           ) : (
             <>
               <img src={smileyIcon} alt="" className="h-12 w-12 mx-auto" />
-              <h3 className="text-xl font-bold text-gray-900">Zéro non-recours, on s'y met ?</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="text-xl font-bold text-foreground">Zéro non-recours, on s'y met ?</h3>
+              <p className="text-muted-foreground text-sm">
                 Vous passez peut-être à côté de coups de pouce. On vous aide à faire le tri.
               </p>
               <Button

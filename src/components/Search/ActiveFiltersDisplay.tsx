@@ -20,26 +20,26 @@ export const ActiveFiltersDisplay = ({
   if (activeFilters.length === 0) return null;
 
   return (
-    <div className="px-4 py-3 bg-white border-b border-gray-200 flex gap-2 flex-wrap items-center">
-      <span className="text-[13px] font-semibold text-gray-600 font-poppins">
+    <div className="px-4 py-3 bg-background border-b border-border flex gap-2 flex-wrap items-center">
+      <span className="text-[13px] font-semibold text-muted-foreground font-poppins">
         Filtres actifs:
       </span>
 
       {activeFilters.map((filter) => (
         <div
           key={filter.id}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-lg"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-muted border border-border rounded-lg"
         >
-          <span className="text-[13px] font-medium text-gray-700 font-poppins">
+          <span className="text-[13px] font-medium text-muted-foreground font-poppins">
             {filter.label}
           </span>
 
           <button
             onClick={() => onRemoveFilter(filter.id)}
-            className="p-0.5 rounded-full hover:bg-gray-200 transition-colors"
+            className="p-0.5 rounded-full hover:bg-muted/80 transition-colors"
             aria-label={`Retirer le filtre ${filter.label}`}
           >
-            <X size={14} className="text-gray-400" />
+            <X size={14} className="text-muted-foreground" />
           </button>
         </div>
       ))}

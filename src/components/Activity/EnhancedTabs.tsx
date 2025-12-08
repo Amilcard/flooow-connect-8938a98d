@@ -79,7 +79,7 @@ export function EnhancedTabs({
       onValueChange={onTabChange}
     >
       {/* Tabs Header avec scroll horizontal */}
-      <div className="bg-gray-50 rounded-lg p-1 mb-6 overflow-x-auto scrollbar-hide">
+      <div className="bg-muted rounded-lg p-1 mb-6 overflow-x-auto scrollbar-hide">
         <TabsList className="inline-flex w-full min-w-max bg-transparent gap-1 h-auto p-0">
           {tabs.map((tab) => (
             <TabsTrigger
@@ -87,11 +87,11 @@ export function EnhancedTabs({
               value={tab.id}
               className="
                 flex items-center gap-2 px-4 py-2.5 rounded-lg
-                bg-white border-2 border-transparent
-                text-sm font-medium text-gray-600
+                bg-background border-2 border-transparent
+                text-sm font-medium text-muted-foreground
                 whitespace-nowrap
                 transition-all duration-200
-                hover:bg-gray-100
+                hover:bg-muted
                 data-[state=active]:bg-orange-50
                 data-[state=active]:border-primary
                 data-[state=active]:text-primary
