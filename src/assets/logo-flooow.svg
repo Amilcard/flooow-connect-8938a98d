@@ -1,3 +1,25 @@
-<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <text x="10" y="28" font-family="Poppins, system-ui, sans-serif" font-size="24" font-weight="700" fill="#FF8A3D">Flooow</text>
+<svg width="400" height="80" viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo Flooow - Format horizontal 5:1 optimisé pour header -->
+  <!-- Affichage recommandé : 160px × 32px (retina 2x : 320 × 64) -->
+
+  <!-- Texte Flooow avec style moderne -->
+  <text
+    x="20"
+    y="56"
+    font-family="'Poppins', 'Inter', system-ui, -apple-system, sans-serif"
+    font-size="52"
+    font-weight="700"
+    fill="#F97316"
+    letter-spacing="-1"
+  >Flooow</text>
+
+  <!-- Accent décoratif - petite vague stylisée -->
+  <path
+    d="M320 45 Q335 35 350 45 Q365 55 380 45"
+    stroke="#F97316"
+    stroke-width="4"
+    stroke-linecap="round"
+    fill="none"
+    opacity="0.7"
+  />
 </svg>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoFlooow from "@/assets/logo-flooow.png";
+import logoFlooow from "@/assets/logo-flooow.svg";
 
 interface HeaderLogoProps {
   className?: string;
@@ -9,11 +9,11 @@ interface HeaderLogoProps {
 /**
  * HeaderLogo - Composant standardisé pour le logo Flooow
  *
- * Spécifications Design System LOT 1:
- * - Height: 32px mobile (h-8) → 36px desktop (h-9)
- * - Width auto, min-width pour éviter compression
- * - Aspect ratio preserved
- * - Object-fit: contain
+ * Spécifications Design System:
+ * - Logo SVG horizontal ratio 5:1 (400×80 viewBox)
+ * - Affichage: 120px × 24px mobile → 160px × 32px desktop
+ * - Retina ready (source SVG scalable)
+ * - Couleur: Orange #F97316
  * - Aligné verticalement avec les boutons du header
  *
  * Usage:
@@ -21,14 +21,15 @@ interface HeaderLogoProps {
  */
 export const HeaderLogo = ({ className = "", to = "/" }: HeaderLogoProps) => {
   return (
-    <Link 
-      to={to} 
+    <Link
+      to={to}
       className={`flex items-center shrink-0 ${className}`}
     >
       <img
         src={logoFlooow}
         alt="Flooow - Mes activités, mes aides, mes trajets"
-        className="h-10 md:h-12 w-auto min-w-[120px] md:min-w-[160px] object-contain block"
+        className="h-6 md:h-8 w-auto object-contain block"
+        style={{ minWidth: '120px' }}
       />
     </Link>
   );
