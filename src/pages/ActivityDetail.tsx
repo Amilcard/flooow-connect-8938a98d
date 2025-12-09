@@ -56,6 +56,7 @@ import activityCultureImg from "@/assets/activity-culture.jpg";
 import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
+import { SessionSelector } from "@/components/Activity/SessionSelector";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 import { BackButton } from "@/components/BackButton";
 import { getCategoryStyle } from "@/constants/categories";
@@ -690,10 +691,10 @@ const ActivityDetail = () => {
           </div>
         </div>
 
-        {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
-        <div className="grid md:grid-cols-12 gap-8">
-          {/* Left Column - Main content with Tabs (8/12) */}
-          <div className="md:col-span-8">
+        {/* Grid 3 colonnes: 2 pour contenu, 1 pour booking card (Desktop) */}
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Left Column - Main content with Tabs (span 2) */}
+          <div className="lg:col-span-2">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
@@ -839,7 +840,7 @@ const ActivityDetail = () => {
                           <span>Prix initial</span>
                           <span className="font-medium">{activity.price_base.toFixed(2)}€</span>
                         </div>
-                        <div className="flex justify-between text-sm text-primary">
+                        <div className="flex justify-between text-sm text-green-600">
                           <span>Aides appliquées</span>
                           <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
                         </div>
@@ -900,10 +901,33 @@ const ActivityDetail = () => {
             </Tabs>
           </div>
 
-          {/* Right Column - Sticky Booking Card (4/12) */}
-          <div className="md:col-span-4">
-            <Card className="p-6 md:sticky md:top-24 space-y-6">
-              <h3 className="font-bold text-lg">Tarifs & créneaux disponibles</h3>
+          {/* Right Column - Sticky Booking Card (span 1) */}
+          <div className="lg:col-span-1">
+            <Card className="p-5 lg:sticky lg:top-24 space-y-5 shadow-lg border-slate-200">
+              {/* 1. Organizer Header */}
+              {activity.organisms && (
+                <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Building2 size={20} className="text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm text-slate-900 truncate">{activity.organisms.name}</p>
+                    {activity.city && (
+                      <p className="text-xs text-slate-500 truncate">{activity.city}</p>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowContactModal(true)}
+                    className="shrink-0 h-8 px-2 text-primary hover:text-primary hover:bg-primary/5"
+                  >
+                    <MessageCircle size={16} />
+                  </Button>
+                </div>
+              )}
+
+              {/* 2. Prix */}
               {/* Prix et aides */}
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
@@ -923,7 +947,7 @@ const ActivityDetail = () => {
                         <span>Prix initial</span>
                         <span className="font-medium">{activity.price_base.toFixed(2)}€</span>
                       </div>
-                      <div className="flex justify-between text-sm text-primary">
+                      <div className="flex justify-between text-sm text-green-600">
                         <span>Aides appliquées</span>
                         <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
                       </div>
@@ -936,20 +960,11 @@ const ActivityDetail = () => {
                 )}
               </div>
 
-              {/* Créneaux disponibles */}
+              {/* 3. Session Selector */}
               {(activity.period_type === "scolaire" ? sessions.length > 0 : slots.length > 0) && (
                 <>
                   <Separator />
                   <div className="space-y-4" data-tour-id="aid-creneaux-list">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg">Horaires</h3>
-                      {periodFilter && (
-                        <Badge variant="secondary" className="text-xs">
-                          {periodFilter === "printemps_2026" ? "🌸 Printemps" : "☀️ Été"}
-                        </Badge>
-                      )}
-                    </div>
-
                     {/* Notice: saison déjà commencée mais inscription possible */}
                     {activity.period_type === "scolaire" && !isActivityClosed && (
                       <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-xs text-blue-700 dark:text-blue-300">
@@ -957,76 +972,18 @@ const ActivityDetail = () => {
                         <span>Saison en cours · Inscription toujours possible</span>
                       </div>
                     )}
-                    
-                    {activity.period_type === "scolaire" ? (
-                    <div className="space-y-2">
-                      {sessions.map((s, idx) => (
-                        <Card key={idx} className={`p-3 cursor-pointer transition-all ${selectedSessionIdx === idx ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"}`} onClick={() => setSelectedSessionIdx(idx)}>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
-                            <span className="text-sm text-muted-foreground">
-                              {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
-                            </span>
-                          </div>
-                          {s.day_of_week !== null && <p className="text-xs text-primary mt-1">Prochaines séances : {getNextDates(s.day_of_week).join(", ")}</p>}
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                      {slots.map(slot => {
-                        const startDate = new Date(slot.start);
-                        const endDate = new Date(slot.end);
-                        const isFull = slot.seats_remaining <= 0;
-                        const isSelected = selectedSlotId === slot.id;
-                        return (
-                          <Card
-                            key={slot.id}
-                            className={`p-3 transition-all ${
-                              isFull
-                                ? 'opacity-60 bg-muted cursor-not-allowed'
-                                : isSelected
-                                  ? 'ring-2 ring-primary bg-accent cursor-pointer'
-                                  : 'hover:bg-accent/50 cursor-pointer'
-                            }`}
-                            onClick={() => !isFull && setSelectedSlotId(slot.id)}
-                          >
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <Calendar size={14} className={isFull ? "text-muted-foreground" : "text-primary"} />
-                                  <span className="text-sm font-medium">
-                                    {startDate.toLocaleDateString('fr-FR', {
-                                      weekday: 'short',
-                                      day: 'numeric',
-                                      month: 'short'
-                                    })}
-                                  </span>
-                                </div>
-                                <Badge variant={isFull ? "secondary" : "outline"} className="text-xs">
-                                  {isFull ? "Complet" : `${slot.seats_remaining} places`}
-                                </Badge>
-                              </div>
-                              <div className="text-xs text-muted-foreground ml-5">
-                                {startDate.toLocaleTimeString('fr-FR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })} - {endDate.toLocaleTimeString('fr-FR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </div>
-                              {isFull && (
-                                <p className="text-xs text-primary mt-1 ml-5">
-                                  → Demander une place via la Flooow Family
-                                </p>
-                              )}
-                            </div>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  )}
+
+                    {/* SessionSelector Dropdown */}
+                    <SessionSelector
+                      periodType={activity.period_type === "scolaire" ? "scolaire" : "vacances"}
+                      sessions={sessions}
+                      slots={slots}
+                      selectedSessionIdx={selectedSessionIdx}
+                      selectedSlotId={selectedSlotId}
+                      onSessionSelect={(idx) => setSelectedSessionIdx(idx)}
+                      onSlotSelect={(slotId) => setSelectedSlotId(slotId)}
+                      periodBadge={periodFilter === "printemps_2026" ? "Printemps" : periodFilter === "ete_2025" ? "Été" : undefined}
+                    />
                     
                     {/* Récap "Votre choix" avant le bouton */}
                     {activity.period_type === "scolaire" && selectedSessionIdx !== null && sessions[selectedSessionIdx] && (
