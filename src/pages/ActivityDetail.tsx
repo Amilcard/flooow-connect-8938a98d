@@ -487,7 +487,7 @@ const ActivityDetail = () => {
       />
 
       {/* Main Content Container */}
-      <div className="container px-4 md:px-6 py-6 max-w-[1200px] mx-auto">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-6">
         {/* Desktop: Back button aligned with content (hidden on mobile - hero has it) */}
         <div className="hidden lg:flex items-center justify-between mb-4">
           <BackButton
