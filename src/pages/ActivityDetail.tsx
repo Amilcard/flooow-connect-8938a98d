@@ -489,7 +489,7 @@ const ActivityDetail = () => {
       {/* Main Content Container */}
       <div className="container px-4 md:px-6 py-6 max-w-[1200px] mx-auto">
         {/* Desktop: Back button aligned with content (hidden on mobile - hero has it) */}
-        <div className="hidden lg:flex items-center justify-between mb-4">
+        <div className="hidden md:flex items-center justify-between mb-4">
           <BackButton
             positioning="relative"
             size="sm"
@@ -554,9 +554,9 @@ const ActivityDetail = () => {
         {/* Header Section avec image card + organisateur sur desktop */}
         <div className="space-y-4 pb-6 border-b mb-6" data-tour-id="activity-header">
           {/* Desktop: Layout flex avec image + organisateur à gauche */}
-          <div className="flex flex-col lg:flex-row lg:gap-6">
+          <div className="flex flex-col md:flex-row md:gap-6">
             {/* Colonne gauche: Image + Organisateur - Desktop only */}
-            <div className="hidden lg:flex lg:flex-col lg:gap-4 shrink-0 w-[280px]">
+            <div className="hidden md:flex md:flex-col md:gap-4 shrink-0 w-[280px]">
               {/* Image card */}
               <div className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-md">
                 <img
@@ -664,7 +664,7 @@ const ActivityDetail = () => {
 
               {/* Mobile: Bloc Organisateur compact */}
               {activity.organisms && (
-                <div className="lg:hidden p-3 bg-muted/30 rounded-lg mt-2">
+                <div className="md:hidden p-3 bg-muted/30 rounded-lg mt-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0">
                       <Building2 size={16} className="text-primary shrink-0" />
@@ -692,9 +692,9 @@ const ActivityDetail = () => {
         </div>
 
         {/* Grid Desktop: 2 colonnes contenu + 1 colonne booking */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {/* Left Column - Main content with Tabs (span 2) */}
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
@@ -902,11 +902,11 @@ const ActivityDetail = () => {
           </div>
 
           {/* Right Column - Sticky Booking Card (span 1) */}
-          <div className="lg:col-span-1">
-            <Card className="p-6 lg:sticky lg:top-24 space-y-6">
+          <div className="md:col-span-1">
+            <Card className="p-6 md:sticky md:top-24 space-y-6">
               {/* Organizer Header - Desktop only, at top of booking card */}
               {activity.organisms && (
-                <div className="hidden lg:flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                <div className="hidden md:flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                       <Building2 size={20} className="text-primary" />
