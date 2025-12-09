@@ -38,8 +38,8 @@ const ForgotPassword = () => {
     } catch (error: any) {
       console.error('Reset password error:', error);
       toast({
-        title: "Erreur",
-        description: error.message || "Impossible d'envoyer l'e-mail. Veuillez réessayer.",
+        title: "Envoi non abouti",
+        description: "Nous n'avons pas pu envoyer l'email. Vérifiez l'adresse et réessayez.",
         variant: "destructive",
       });
     } finally {
