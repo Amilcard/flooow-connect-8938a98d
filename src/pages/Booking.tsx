@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSmartBack } from "@/hooks/useSmartBack";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { KidQuickAddModal } from "@/components/KidQuickAddModal";
+import { ParentalValidationModal } from "@/components/ParentalValidationModal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Booking = () => {
@@ -32,7 +33,8 @@ const Booking = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [showAddChildModal, setShowAddChildModal] = useState(false);
-  
+  const [showParentalValidationModal, setShowParentalValidationModal] = useState(false);
+
   // Récupérer les aides depuis le localStorage si elles existent
   const { state: bookingState } = useActivityBookingState(id!);
 
@@ -113,16 +115,50 @@ const Booking = () => {
     enabled: authChecked && !!userId // Only run query after auth check and if user is logged in
   });
 
-  // Auto-open add child modal only if no children exist
+  // Fetch user's profile to check if they need parental validation
+  const { data: userProfile, isLoading: loadingProfile, refetch: refetchProfile } = useQuery({
+    queryKey: ["user-profile-parental", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, parent_id, linking_code")
+        .eq("id", userId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: authChecked && !!userId
+  });
+
+  // Déterminer si l'utilisateur a besoin de validation parentale
+  // Un utilisateur est considéré comme mineur s'il n'a pas d'enfants ET n'a pas de parent lié
+  const needsParentalValidation = !loadingChildren && !loadingProfile &&
+    children.length === 0 &&
+    userProfile &&
+    !userProfile.parent_id;
+
+  // Auto-open parental validation modal for minors, or add child modal for parents
   useEffect(() => {
-    if (authChecked && !loadingChildren && children.length === 0 && !showAddChildModal) {
+    if (!authChecked || loadingChildren || loadingProfile) return;
+
+    // Si c'est un mineur (pas d'enfants et pas de parent lié) → validation parentale
+    if (needsParentalValidation && !showParentalValidationModal) {
+      setShowParentalValidationModal(true);
+      return;
+    }
+
+    // Si c'est un parent sans enfants enregistrés → ajouter un enfant
+    if (children.length === 0 && !needsParentalValidation && !showAddChildModal && userProfile?.parent_id) {
       toast({
         title: "Ajoutez un enfant",
         description: "Pour réserver cette activité, ajoutez d'abord les informations d'un enfant",
       });
       setShowAddChildModal(true);
     }
-  }, [authChecked, loadingChildren, children.length, showAddChildModal, toast]);
+  }, [authChecked, loadingChildren, loadingProfile, children.length, needsParentalValidation, showAddChildModal, showParentalValidationModal, toast, userProfile]);
 
   // Helper function to calculate age and check eligibility
   const getChildEligibility = (child: any) => {
@@ -267,7 +303,7 @@ const Booking = () => {
     }
   };
 
-  if (!authChecked || loadingActivity || loadingSlot || loadingChildren) {
+  if (!authChecked || loadingActivity || loadingSlot || loadingChildren || loadingProfile) {
     return <LoadingState />;
   }
 
@@ -494,6 +530,18 @@ const Booking = () => {
         onClose={() => setShowAddChildModal(false)}
         onChildAdded={handleChildAdded}
         allowAnonymous={false}
+      />
+
+      <ParentalValidationModal
+        open={showParentalValidationModal}
+        onClose={() => setShowParentalValidationModal(false)}
+        onValidated={() => {
+          refetchProfile();
+          setShowParentalValidationModal(false);
+        }}
+        activityId={id!}
+        slotId={slotId || undefined}
+        activityTitle={activity?.title}
       />
     </div>
   );
