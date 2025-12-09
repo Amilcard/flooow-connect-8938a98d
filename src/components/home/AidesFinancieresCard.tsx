@@ -73,15 +73,18 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         </div>
 
-        {/* Badge Stop au non-recours avec smiley intégré */}
-        <Badge 
+        {/* LOT 4 - T4_1: Badge Zéro non-recours amélioré */}
+        {/* Plus visible avec animation pulse, bordure, et libellé incitatif */}
+        <Badge
           onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }}
-          className="absolute top-4 right-4 bg-sky-500 hover:bg-sky-600 text-white text-sm px-4 py-2 min-w-[44px] min-h-[44px] border-0 shadow-lg z-10 cursor-pointer transition-all hover:scale-105 flex items-center gap-2"
+          className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-sm px-4 py-2.5 min-w-[44px] min-h-[44px] border-2 border-white/30 shadow-xl z-10 cursor-pointer transition-all hover:scale-105 flex flex-col items-center gap-0.5 animate-pulse hover:animate-none"
+          role="button"
+          aria-label="Ouvrir le quiz des aides"
         >
-          
-          Stop au non-recours !
+          <span className="font-bold">Stop au non-recours</span>
+          <span className="text-[10px] text-white/90 font-normal">Testez vos aides</span>
         </Badge>
-        <img src={smileyIcon} alt="" className="absolute -top-4 right-8 h-12 w-12 animate-bounce z-20" />
+        <img src={smileyIcon} alt="" className="absolute -top-2 right-12 h-10 w-10 animate-bounce z-20" />
 
         {/* Contenu centré */}
         <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">

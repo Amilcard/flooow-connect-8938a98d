@@ -99,21 +99,27 @@ const BonEsprit = () => {
       />
 
       <div className="container mx-auto px-4 py-6 pb-24 max-w-5xl">
-        {/* Bandeau d'intro orange */}
+        {/* LOT 5 - T5_1: Intro plus claire avec ton FamilyCrunch */}
         <Card className="mb-8 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 rounded-lg bg-primary/20">
                 <Trophy className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle className="text-xl">Proposez une personnalité Bon esprit</CardTitle>
+              <CardTitle className="text-xl">Qui voulez-vous mettre à l'honneur ?</CardTitle>
             </div>
-            <CardDescription className="text-base leading-relaxed">
-              Chaque jour, des personnes s'engagent pour les enfants et les familles : bénévoles,
-              éducateurs, animateurs, enseignants, agents de terrain… Avec Bon esprit, vous pouvez
-              les mettre à l'honneur. Décrivez une personne, une situation ou une action qui vous a
-              marqué : les écoles et structures participantes éliront ensuite la personnalité "Bon
-              esprit" de votre territoire.
+            <CardDescription className="text-base leading-relaxed space-y-3">
+              <span className="block">
+                Un coach qui motive les enfants même sous la pluie ? Un voisin qui donne un coup de main pour les trajets ?
+                Un bénévole toujours souriant ? Un parent qui organise les goûters ? Un copain qui inclut tout le monde ?
+              </span>
+              <span className="block font-medium text-foreground">
+                Racontez-nous ! On adore ces petits héros du quotidien.
+              </span>
+              <span className="block text-sm">
+                Les personnes nommées seront mises à l'honneur sur Flooow et pourront recevoir un petit mot de remerciement.
+                Simple, sympa, et ça fait toujours plaisir.
+              </span>
             </CardDescription>
           </CardHeader>
         </Card>
