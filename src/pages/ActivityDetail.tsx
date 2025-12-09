@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   MapPin, 
@@ -690,10 +691,10 @@ const ActivityDetail = () => {
           </div>
         </div>
 
-        {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
-        <div className="grid md:grid-cols-12 gap-8">
-          {/* Left Column - Main content with Tabs (8/12) */}
-          <div className="md:col-span-8">
+        {/* Grid Desktop: 2 colonnes contenu + 1 colonne booking */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Main content with Tabs (span 2) */}
+          <div className="lg:col-span-2">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
@@ -900,10 +901,35 @@ const ActivityDetail = () => {
             </Tabs>
           </div>
 
-          {/* Right Column - Sticky Booking Card (4/12) */}
-          <div className="md:col-span-4">
-            <Card className="p-6 md:sticky md:top-24 space-y-6">
-              <h3 className="font-bold text-lg">Tarifs & créneaux disponibles</h3>
+          {/* Right Column - Sticky Booking Card (span 1) */}
+          <div className="lg:col-span-1">
+            <Card className="p-6 lg:sticky lg:top-24 space-y-6">
+              {/* Organizer Header - Desktop only, at top of booking card */}
+              {activity.organisms && (
+                <div className="hidden lg:flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Building2 size={20} className="text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm truncate">{activity.organisms.name}</p>
+                      {activity.city && (
+                        <p className="text-xs text-muted-foreground">{activity.city}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowContactModal(true)}
+                    className="shrink-0 h-8 text-xs"
+                  >
+                    Contact
+                  </Button>
+                </div>
+              )}
+
+              <h3 className="font-bold text-lg">Tarifs & créneaux</h3>
               {/* Prix et aides */}
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
@@ -959,18 +985,35 @@ const ActivityDetail = () => {
                     )}
                     
                     {activity.period_type === "scolaire" ? (
-                    <div className="space-y-2">
-                      {sessions.map((s, idx) => (
-                        <Card key={idx} className={`p-3 cursor-pointer transition-all ${selectedSessionIdx === idx ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"}`} onClick={() => setSelectedSessionIdx(idx)}>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
-                            <span className="text-sm text-muted-foreground">
-                              {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
-                            </span>
-                          </div>
-                          {s.day_of_week !== null && <p className="text-xs text-primary mt-1">Prochaines séances : {getNextDates(s.day_of_week).join(", ")}</p>}
-                        </Card>
-                      ))}
+                    <div className="space-y-3">
+                      {/* Session Selector Dropdown */}
+                      <Select
+                        value={selectedSessionIdx !== null ? String(selectedSessionIdx) : undefined}
+                        onValueChange={(value) => setSelectedSessionIdx(Number(value))}
+                      >
+                        <SelectTrigger className="w-full h-12">
+                          <SelectValue placeholder="Choisir une date de début" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {sessions.map((s, idx) => (
+                            <SelectItem key={idx} value={String(idx)}>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{s.age_min}-{s.age_max} ans</span>
+                                <span className="text-muted-foreground">·</span>
+                                <span className="text-muted-foreground">
+                                  {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {/* Show next dates for selected session */}
+                      {selectedSessionIdx !== null && sessions[selectedSessionIdx]?.day_of_week !== null && (
+                        <p className="text-xs text-slate-700">
+                          Prochaines séances : {getNextDates(sessions[selectedSessionIdx].day_of_week).join(", ")}
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
