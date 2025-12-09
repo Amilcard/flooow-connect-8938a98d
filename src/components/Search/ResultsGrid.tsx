@@ -60,23 +60,26 @@ export const ResultsGrid = ({ activities, isLoading, onResetFilters }: ResultsGr
 
   // Results Grid
   return (
-    <div className="px-4 py-4 bg-background min-h-[60vh]">
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {activities.map((activity) => (
-          <ActivityResultCard
-            key={activity.id}
-            id={activity.id}
-            title={activity.title}
-            category={activity.category}
-            imageUrl={activity.images?.[0]}
-            ageMin={activity.age_min}
-            ageMax={activity.age_max}
-            price={activity.price_amount}
-            priceIsFree={activity.price_is_free}
-            location={activity.location_name}
-            financialAids={activity.financial_aids_accepted}
-          />
-        ))}
+    <div className="bg-background min-h-[60vh]">
+      {/* Conteneur contraint pour alignement avec Header */}
+      <div className="max-w-5xl mx-auto px-4 py-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {activities.map((activity) => (
+            <ActivityResultCard
+              key={activity.id}
+              id={activity.id}
+              title={activity.title}
+              category={activity.category}
+              imageUrl={activity.images?.[0]}
+              ageMin={activity.age_min}
+              ageMax={activity.age_max}
+              price={activity.price_amount}
+              priceIsFree={activity.price_is_free}
+              location={activity.location_name}
+              financialAids={activity.financial_aids_accepted}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -27,8 +27,9 @@ export const SearchPageHeader = ({
   };
 
   return (
-    <div className="sticky top-0 z-[100] bg-background border-b border-border px-4 py-3 shadow-sm">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
+      {/* Conteneur contraint h-16 pour alignement cohérent avec Header/PageHeader */}
+      <div className="max-w-5xl mx-auto h-16 flex items-center gap-3 px-4">
         {/* BackButton - cohérent avec LOT 1 - positioning relative pour alignement avec le contenu */}
         <BackButton positioning="relative" size="sm" showText={true} label="Retour" />
 
@@ -75,6 +76,6 @@ export const SearchPageHeader = ({
           )}
         </button>
       </div>
-    </div>
+    </header>
   );
 };
