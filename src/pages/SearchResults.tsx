@@ -46,10 +46,20 @@ const SearchResults = () => {
         throw error;
       }
 
-      // Map database types to Activity type and deduplicate
+      // LOT 1 - T1_4: Mapping amélioré pour cohérence avec les cartes
       const mappedActivities = (data || []).map((activity: any) => ({
-        ...activity,
+        id: activity.id,
+        title: activity.title,
+        category: activity.category || (activity.categories && activity.categories[0]) || 'Loisirs',
+        images: activity.images || [],
+        age_min: activity.age_min,
+        age_max: activity.age_max,
+        price_amount: activity.price_base,
         price_is_free: activity.price_base === 0 || activity.price_base === null,
+        location_name: activity.structures?.name
+          ? `${activity.structures.name}${activity.structures.address ? ' • ' + activity.structures.address : ''}`
+          : undefined,
+        financial_aids_accepted: activity.accepts_aid_types || [],
       }));
 
       // Deduplicate by ID first

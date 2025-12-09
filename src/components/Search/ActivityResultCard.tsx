@@ -2,10 +2,16 @@
  * LOT 6 - ActivityResultCard Component
  * Similar to ActivityCarouselCard (LOT 4) but adapted for grid layout
  * NO decorative icons
+ *
+ * LOT 1 - Améliorations UI/UX:
+ * - Fallback image intelligent via getActivityImage()
+ * - Formatage âge cohérent via formatAgeRange()
  */
 
 import { useNavigate } from 'react-router-dom';
 import { getCategoryStyle } from '@/constants/categories';
+import { getActivityImage } from '@/lib/imageMapping';
+import { formatAgeRange, formatAidLabel } from '@/utils/activityFormatters';
 
 interface ActivityResultCardProps {
   id: string;
@@ -36,6 +42,13 @@ export const ActivityResultCard = ({
 
   const categoryStyle = getCategoryStyle(category);
 
+  // LOT 1 - T1_1: Fallback image intelligent basé sur titre, catégorie et âge
+  const fallbackImage = getActivityImage(title, category, ageMin ?? 6, ageMax ?? 17);
+  const displayImage = imageUrl || fallbackImage;
+
+  // LOT 1 - T1_2: Formatage âge cohérent (utilise la fonction centralisée)
+  const ageLabel = formatAgeRange(ageMin, ageMax);
+
   const handleClick = () => {
     navigate(`/activity/${id}`);
   };
@@ -48,10 +61,14 @@ export const ActivityResultCard = ({
       {/* Image Section */}
       <div className="relative h-[180px] w-full overflow-hidden">
         <img
-          src={imageUrl || 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=280&fit=crop'}
+          src={displayImage}
           alt={title}
           className="w-full h-full object-cover object-center"
           loading="lazy"
+          onError={(e) => {
+            // Fallback en cas d'erreur de chargement
+            e.currentTarget.src = fallbackImage;
+          }}
         />
 
         {/* Category Badge */}
@@ -86,11 +103,11 @@ export const ActivityResultCard = ({
 
         {/* Meta Row */}
         <div className="flex gap-2 flex-wrap items-center">
-          {/* Age Badge */}
-          {ageMin !== undefined && ageMax !== undefined && (
+          {/* Age Badge - LOT 1 T1_2: Utilise formatAgeRange() */}
+          {ageLabel && (
             <div className="px-2.5 py-1 bg-blue-50 rounded-md">
               <span className="text-xs font-semibold text-blue-600 font-poppins">
-                {ageMin === ageMax ? `${ageMin} ans` : `${ageMin}-${ageMax} ans`}
+                {ageLabel}
               </span>
             </div>
           )}
@@ -115,13 +132,13 @@ export const ActivityResultCard = ({
           </p>
         )}
 
-        {/* Financial Aids Tags */}
+        {/* Financial Aids Tags - LOT 1 T1_3: Labels formatés */}
         {financialAids.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
             {financialAids.slice(0, 2).map((aid, index) => (
               <div key={index} className="px-2 py-1 bg-amber-50 rounded-md">
                 <span className="text-[11px] font-semibold text-amber-600 font-poppins">
-                  {aid}
+                  {formatAidLabel(aid)}
                 </span>
               </div>
             ))}
