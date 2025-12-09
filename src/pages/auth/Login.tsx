@@ -38,8 +38,8 @@ const Login = () => {
       // Afficher l'erreur seulement si elle provient vraiment de l'auth
       if (error?.message) {
         toast({
-          title: "Erreur de connexion",
-          description: "Vérifiez vos identifiants",
+          title: "Connexion impossible",
+          description: "Vérifiez votre email et mot de passe",
           variant: "destructive",
         });
       }
@@ -58,8 +58,8 @@ const Login = () => {
       if (error) throw error;
     } catch (error: any) {
       toast({
-        title: "Erreur de connexion",
-        description: error.message || "Une erreur s'est produite lors de la connexion.",
+        title: "Connexion non aboutie",
+        description: "Nous n'avons pas pu vous connecter. Réessayez dans quelques instants.",
         variant: "destructive",
       });
     }

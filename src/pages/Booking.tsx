@@ -43,9 +43,9 @@ const Booking = () => {
 
       if (!session) {
         toast({
-          title: "Authentification requise",
-          description: "Veuillez vous connecter pour effectuer une réservation",
-          variant: "destructive"
+          title: "Connexion requise",
+          description: "Connectez-vous pour réserver cette activité",
+          variant: "default"
         });
         navigate("/login");
         return;
@@ -163,9 +163,9 @@ const Booking = () => {
   const handleSubmit = async () => {
     if (!selectedChildId) {
       toast({
-        title: "Erreur",
-        description: "Veuillez sélectionner un enfant",
-        variant: "destructive"
+        title: "Sélection requise",
+        description: "Choisissez un enfant pour continuer",
+        variant: "default"
       });
       return;
     }
@@ -176,8 +176,8 @@ const Booking = () => {
       const { isEligible, reason } = getChildEligibility(selectedChild);
       if (!isEligible) {
         toast({
-          title: "Enfant non éligible",
-          description: reason || "Cet enfant ne peut pas être inscrit à cette activité",
+          title: "Âge incompatible",
+          description: reason || "L'âge de cet enfant ne correspond pas à cette activité",
           variant: "destructive"
         });
         return;
@@ -191,9 +191,9 @@ const Booking = () => {
       
       if (!session) {
         toast({
-          title: "Non authentifié",
-          description: "Veuillez vous connecter",
-          variant: "destructive"
+          title: "Connexion requise",
+          description: "Connectez-vous pour finaliser la réservation",
+          variant: "default"
         });
         navigate("/login");
         return;
