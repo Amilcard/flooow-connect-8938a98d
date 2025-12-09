@@ -265,7 +265,7 @@ const Parametres: React.FC = () => {
 	return (
 		<PageLayout showHeader={false}>
 			<header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
-				<div className="max-w-[1200px] mx-auto flex items-center justify-between px-4 py-3">
+				<div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
 					<div className="flex items-start gap-5 flex-1 min-w-0">
 						<BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
 						<div className="min-w-0 flex-1">
@@ -276,7 +276,7 @@ const Parametres: React.FC = () => {
 				</div>
 			</header>
 
-			<div className="max-w-[1200px] mx-auto px-4 py-6 space-y-6">
+			<div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
 				<AppearanceSettings settings={settings} updateSetting={updateSetting} />
 				<SecuritySettings
 					settings={settings}

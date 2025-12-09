@@ -42,12 +42,9 @@ export const ActivityResultCard = ({
 
   const categoryStyle = getCategoryStyle(category);
 
-  // LOT 1 - T1_1: Image intelligente basée sur titre + catégorie + âge
-  // PRIORITÉ: fallback intelligent > image DB (souvent incorrecte)
-  const smartImage = getActivityImage(title, category, ageMin ?? 6, ageMax ?? 17);
-  // Utiliser l'image de la DB seulement si elle existe ET qu'on fait confiance aux données
-  // Pour l'instant, on priorise le mapping intelligent qui est plus fiable
-  const displayImage = smartImage;
+  // FIX: Priorité à l'image spécifique de l'activité, fallback sur le mapping intelligent
+  const fallbackImage = getActivityImage(title, category, ageMin ?? 6, ageMax ?? 17);
+  const displayImage = imageUrl && imageUrl.length > 0 ? imageUrl : fallbackImage;
 
   // LOT 1 - T1_2: Formatage âge cohérent (utilise la fonction centralisée)
   const ageLabel = formatAgeRange(ageMin, ageMax);
@@ -70,7 +67,7 @@ export const ActivityResultCard = ({
           loading="lazy"
           onError={(e) => {
             // Fallback en cas d'erreur de chargement
-            e.currentTarget.src = smartImage;
+            e.currentTarget.src = fallbackImage;
           }}
         />
 
