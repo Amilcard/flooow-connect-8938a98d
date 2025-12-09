@@ -33,7 +33,8 @@ export const PageHeader = ({
       className="bg-white border-b border-border shadow-sm sticky top-0 z-50"
       data-tour-id={tourId}
     >
-      <div className="container flex items-center justify-between px-4 py-3">
+      {/* Conteneur contraint pour aligner avec le contenu principal et la BottomNav */}
+      <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
         {/* Left: Back button + Title/subtitle */}
         <div className="flex items-start gap-5 flex-1 min-w-0">
           {showBackButton && (
