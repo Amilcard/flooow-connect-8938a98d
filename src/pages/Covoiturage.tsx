@@ -4,20 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BottomNavigation } from "@/components/BottomNavigation";
-import { SearchBar } from "@/components/SearchBar";
+import { PageHeader } from "@/components/PageHeader";
+import PageLayout from "@/components/PageLayout";
 import { LoadingState } from "@/components/LoadingState";
-import { ArrowLeft, Car, MapPin, Users, Clock, Phone } from "lucide-react";
+import { Car, MapPin, Users, Clock, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { useSmartBack } from "@/hooks/useSmartBack";
 
 const Covoiturage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activityId = searchParams.get("activityId");
   const slotId = searchParams.get("slotId");
-  const handleBack = useSmartBack(activityId ? `/activity/${activityId}` : "/activities");
 
   // Fetch activity details
   const { data: activity, isLoading: activityLoading } = useQuery({
@@ -83,19 +82,14 @@ const Covoiturage = () => {
   if (activityLoading) return <LoadingState />;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <SearchBar />
-      
-      <div className="container py-6 space-y-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="gap-2"
-        >
-          <ArrowLeft size={18} />
-          Retour
-        </Button>
+    <PageLayout showHeader={false}>
+      <PageHeader
+        title="Covoiturage"
+        subtitle="Partagez vos trajets avec d'autres familles"
+        backFallback={activityId ? `/activity/${activityId}` : "/home"}
+      />
 
+      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         {/* Activity info */}
         <Card>
           <CardHeader>
@@ -199,9 +193,7 @@ const Covoiturage = () => {
           </CardContent>
         </Card>
       </div>
-
-      <BottomNavigation />
-    </div>
+    </PageLayout>
   );
 };
 
