@@ -2,6 +2,11 @@
  * LOT 6 - buildActivityQuery Utility
  * Constructs Supabase query based on filters
  * ADAPTED TO REAL SUPABASE STRUCTURE
+ *
+ * LOT 1 - T1_4: Corrections pour assurer la complétude des activités
+ * - Utilise 'published' au lieu de 'is_published'
+ * - Utilise la relation 'structures' au lieu de 'organisms'
+ * - Sélectionne les images pour le mapping intelligent
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -9,10 +14,11 @@ import { FilterState } from '@/types/searchFilters';
 
 export const buildActivityQuery = (filters: FilterState) => {
   // Use any to avoid deep type instantiation errors with chained query methods
+  // LOT 1 - T1_4: Correction du filtre published et de la relation structures
   let query: any = supabase
     .from('activities')
-    .select('*, organisms(name, address, city, postal_code)')
-    .eq('is_published', true); // Only published activities
+    .select('*, structures(name, address)')
+    .eq('published', true); // LOT 1: Corrigé 'is_published' -> 'published'
 
   // Text search
   if (filters.searchQuery) {
@@ -47,9 +53,11 @@ export const buildActivityQuery = (filters: FilterState) => {
   }
 
   // Advanced Filters - Geographic
-  if (filters.advancedFilters.city) {
-    query = query.ilike('city', `%${filters.advancedFilters.city}%`);
-  }
+  // LOT 1 - T1_4: La colonne 'city' n'existe pas dans activities
+  // La ville est dans structures.address - filtrage à faire côté client si nécessaire
+  // if (filters.advancedFilters.city) {
+  //   query = query.ilike('city', `%${filters.advancedFilters.city}%`);
+  // }
 
   // Advanced Filters - Temporal (period_type)
   if (filters.advancedFilters.period && filters.advancedFilters.period !== 'all') {
@@ -111,9 +119,11 @@ export const buildActivityQuery = (filters: FilterState) => {
     query = query.not('accessibility_checklist', 'is', null);
   }
 
-  if (filters.advancedFilters.public_transport) {
-    query = query.eq('public_transport_nearby', true);
-  }
+  // LOT 1 - T1_4: La colonne 'public_transport_nearby' n'existe pas dans activities
+  // Les infos transport sont dans transport_meta/transport_options
+  // if (filters.advancedFilters.public_transport) {
+  //   query = query.eq('public_transport_nearby', true);
+  // }
 
   // Limit to 50 results
   query = query.limit(50);

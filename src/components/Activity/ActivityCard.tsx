@@ -1,3 +1,9 @@
+/**
+ * LOT 1 - ActivityCard amélioré
+ * - Fallback image intelligent via getActivityImage()
+ * - Formatage âge cohérent via formatAgeRange()
+ * - Labels aides via formatAidLabel()
+ */
 import { MapPin, Users, Accessibility, Heart } from "lucide-react";
 import { getMainCategory, getPeriodLabel } from "@/utils/categoryMapping";
 import { Card } from "@/components/ui/card";
@@ -5,10 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Activity } from "@/types/domain";
 import { getCategoryStyle } from "@/constants/categories";
-import activitySportImg from "@/assets/activity-sport.jpg";
-import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
-import activityVacancesImg from "@/assets/activity-vacances.jpg";
-import activityCultureImg from "@/assets/activity-culture.jpg";
+import { getActivityImage } from "@/lib/imageMapping";
+import { formatAgeRangeShort, formatAidLabel } from "@/utils/activityFormatters";
 
 /**
  * ActivityCard - Optimized for grid layout with reduced whitespace
@@ -47,17 +51,8 @@ interface ActivityCardProps {
   "data-tour-id"?: string;
 }
 
-const getCategoryImage = (category: string): string => {
-  const categoryMap: Record<string, string> = {
-    Sport: activitySportImg,
-    Loisirs: activityLoisirsImg,
-    Vacances: activityVacancesImg,
-    Apprentissage: activityCultureImg,
-    Culture: activityCultureImg,
-    "Activités Innovantes": activityCultureImg,
-  };
-  return categoryMap[category] || activityLoisirsImg;
-};
+// LOT 1 - Supprimé: getCategoryImage() remplacé par getActivityImage() de lib/imageMapping.ts
+// qui fournit un mapping intelligent basé sur titre + catégorie + âge
 
 export const ActivityCard = ({
   title,
@@ -79,7 +74,12 @@ export const ActivityCard = ({
   vacationType,
   priceUnit,
 }: ActivityCardProps) => {
-  const fallbackImage = getCategoryImage(category);
+  // LOT 1 - T1_1: Fallback image intelligent basé sur titre, catégorie et âge
+  // Extraction de l'âge depuis ageRange si disponible (format: "X-Y ans")
+  const ageMatch = ageRange?.match(/^(\d+)-(\d+)/);
+  const ageMin = ageMatch ? parseInt(ageMatch[1]) : 6;
+  const ageMax = ageMatch ? parseInt(ageMatch[2]) : 17;
+  const fallbackImage = getActivityImage(title, category, ageMin, ageMax);
   const displayImage = image || fallbackImage;
 
   const priceAfterAids = price > 100 ? Math.round(price * 0.7) : price;
@@ -146,19 +146,20 @@ export const ActivityCard = ({
               </span>
             </div>
           )}
-          {/* Badge 🗓️ Échelonné */}
+          {/* Badge Échelonné - LOT 1 T1_3: Sans emoji */}
           {paymentEchelonned && (
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-gradient-to-r from-orange-500/95 to-amber-500/95">
               <span className="text-xs font-bold uppercase font-poppins text-white">
-                🗓️ Échelonné
+                Échelonné
               </span>
             </div>
           )}
-          
+
+          {/* Badge Aides - LOT 1 T1_3: Sans emoji */}
           {aidesEligibles && aidesEligibles.length > 0 && (
             <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-green-100/95">
               <span className="text-xs font-bold uppercase font-poppins text-green-700">
-                💶 Aides possibles
+                Aides possibles
               </span>
             </div>
           )}
@@ -254,25 +255,14 @@ export const ActivityCard = ({
                  'par période'}
               </p>
             )}
+            {/* LOT 1 T1_3: Utilise formatAidLabel() pour les labels */}
             {aidesEligibles && aidesEligibles.length > 0 && (
               <div className="flex items-center gap-1 mt-1 flex-wrap">
-                {aidesEligibles.slice(0, 2).map((aide, index) => {
-                  const aideConfig: Record<string, { label: string; bg: string; text: string }> = {
-                    'pass_sport': { label: "Pass'Sport", bg: 'bg-blue-50', text: 'text-blue-600' },
-                    'pass_culture': { label: 'Pass Culture', bg: 'bg-purple-50', text: 'text-purple-600' },
-                    'caf_loire_temps_libre': { label: 'CAF', bg: 'bg-orange-50', text: 'text-orange-600' },
-                    'vacaf_ave': { label: 'VACAF', bg: 'bg-amber-50', text: 'text-amber-600' },
-                    'ancv': { label: 'ANCV', bg: 'bg-teal-50', text: 'text-teal-600' },
-                    'pass_colo': { label: 'Pass Colo', bg: 'bg-green-50', text: 'text-green-600' },
-                    'aides_municipales_saint_etienne': { label: 'Ville', bg: 'bg-slate-50', text: 'text-slate-600' },
-                  };
-                  const config = aideConfig[aide] || { label: aide.replace(/_/g, ' '), bg: 'bg-muted', text: 'text-muted-foreground' };
-                  return (
-                    <span key={index} className={"px-1.5 py-0.5 rounded text-[9px] font-medium " + config.bg + " " + config.text}>
-                      {config.label}
-                    </span>
-                  );
-                })}
+                {aidesEligibles.slice(0, 2).map((aide, index) => (
+                  <span key={index} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-amber-50 text-amber-600">
+                    {formatAidLabel(aide)}
+                  </span>
+                ))}
                 {aidesEligibles.length > 2 && (
                   <span className="text-[9px] text-muted-foreground">+{aidesEligibles.length - 2}</span>
                 )}
