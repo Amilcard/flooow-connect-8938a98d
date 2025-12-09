@@ -369,7 +369,15 @@ const MonCovoiturage = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2 pt-4 border-t">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => toast({
+                          title: "Bientôt disponible",
+                          description: "La messagerie de contact sera disponible prochainement"
+                        })}
+                      >
                         <Phone className="w-4 h-4 mr-2" />
                         Contacter
                       </Button>
@@ -448,7 +456,15 @@ const MonCovoiturage = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2 pt-4 border-t">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => toast({
+                          title: "Bientôt disponible",
+                          description: "La gestion des participants sera disponible prochainement"
+                        })}
+                      >
                         Gérer les participants
                       </Button>
                       <Button 
