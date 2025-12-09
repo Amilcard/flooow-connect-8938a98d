@@ -146,7 +146,7 @@ const ValidationsParentales = () => {
         backFallback="/mon-compte"
       />
 
-      <div className="container px-4 py-6 space-y-4 max-w-2xl mx-auto pb-24">
+      <div className="container px-4 py-6 space-y-4 max-w-5xl mx-auto pb-24">
         {bookings.length === 0 ? (
           <EmptyState 
             icon={Clock}

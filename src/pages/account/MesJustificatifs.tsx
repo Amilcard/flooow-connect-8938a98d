@@ -79,7 +79,7 @@ const MesJustificatifs = () => {
         tourId="documents-page-header"
       />
 
-      <main className="max-w-[1200px] mx-auto px-4 py-6 space-y-6" data-tour-id="account-documents">
+      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6" data-tour-id="account-documents">
         {/* Résumé des documents */}
         <Card className={!allRequiredUploaded ? "bg-muted/50 border-orange-200" : "bg-green-50 border-green-200"}>
           <CardHeader>
