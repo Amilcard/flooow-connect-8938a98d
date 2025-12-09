@@ -40,8 +40,8 @@ const SignUp = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!passwordRegex.test(formData.password)) {
       toast({
-        title: "Mot de passe trop faible",
-        description: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre",
+        title: "Renforçons votre mot de passe",
+        description: "Pour votre sécurité, utilisez au moins 8 caractères avec une majuscule, une minuscule et un chiffre",
         variant: "destructive",
       });
       return;
@@ -49,8 +49,8 @@ const SignUp = () => {
 
     if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Erreur",
-        description: "Les mots de passe ne correspondent pas",
+        title: "Vérification requise",
+        description: "Les mots de passe saisis ne correspondent pas",
         variant: "destructive",
       });
       return;
@@ -58,8 +58,8 @@ const SignUp = () => {
 
     if (!acceptTerms) {
       toast({
-        title: "Erreur",
-        description: "Veuillez accepter les conditions d'utilisation",
+        title: "Conditions requises",
+        description: "Merci d'accepter les conditions d'utilisation pour continuer",
         variant: "destructive",
       });
       return;

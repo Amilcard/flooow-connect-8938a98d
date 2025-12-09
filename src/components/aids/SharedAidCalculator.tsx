@@ -799,7 +799,10 @@ export const SharedAidCalculator = ({
                       onClick={() => {
                         const qfSelect = document.getElementById('qf');
                         if (qfSelect) qfSelect.focus();
-                        toast({ title: "Renseignez votre QF ci-dessus" });
+                        toast({
+                          title: "Quotient familial requis",
+                          description: "Indiquez votre QF pour affiner le calcul de vos aides"
+                        });
                       }}
                     >
                       Affiner mon résultat <ArrowRight className="ml-2 h-3 w-3" />

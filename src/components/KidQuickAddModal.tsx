@@ -34,8 +34,8 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded, allowAnonymous =
     
     if (!firstName.trim() || !birthDate) {
       toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs obligatoires",
+        title: "Informations manquantes",
+        description: "Merci de renseigner le prénom et la date de naissance",
         variant: "destructive"
       });
       return;

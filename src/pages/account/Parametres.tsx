@@ -65,8 +65,8 @@ const Parametres: React.FC = () => {
 			!passwordForm.confirmPassword
 		) {
 			toast({
-				title: 'Erreur',
-				description: 'Veuillez remplir tous les champs.',
+				title: 'Champs requis',
+				description: 'Merci de remplir tous les champs pour continuer.',
 				variant: 'destructive',
 			});
 			return;
@@ -74,8 +74,8 @@ const Parametres: React.FC = () => {
 
 		if (passwordForm.newPassword !== passwordForm.confirmPassword) {
 			toast({
-				title: 'Erreur',
-				description: 'Les mots de passe ne correspondent pas.',
+				title: 'Vérification requise',
+				description: 'Les mots de passe saisis ne correspondent pas.',
 				variant: 'destructive',
 			});
 			return;
@@ -84,8 +84,8 @@ const Parametres: React.FC = () => {
 		// Validation force du mot de passe
 		if (passwordForm.newPassword.length < 8) {
 			toast({
-				title: 'Erreur',
-				description: 'Le mot de passe doit contenir au moins 8 caractères.',
+				title: 'Mot de passe trop court',
+				description: 'Pour votre sécurité, utilisez au moins 8 caractères.',
 				variant: 'destructive',
 			});
 			return;
@@ -94,8 +94,8 @@ const Parametres: React.FC = () => {
 		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 		if (!passwordRegex.test(passwordForm.newPassword)) {
 			toast({
-				title: 'Mot de passe trop faible',
-				description: 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre.',
+				title: 'Renforçons votre mot de passe',
+				description: 'Ajoutez une majuscule, une minuscule et un chiffre pour plus de sécurité.',
 				variant: 'destructive',
 			});
 			return;
