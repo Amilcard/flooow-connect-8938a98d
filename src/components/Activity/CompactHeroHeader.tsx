@@ -115,10 +115,12 @@ export function CompactHeroHeader({
         />
       </div>
 
-      {/* Back Button - Top Left */}
-      <div className="absolute top-3 left-3 z-10">
+      {/* Back Button - Top Left - Position fixe cohérente avec PageHeader */}
+      <div className="absolute top-3 left-4 z-10">
         <BackButton
-          className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-9 h-9 rounded-full flex items-center justify-center transition-all"
+          positioning="relative"
+          size="sm"
+          className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md !h-10 !w-10 !min-w-[40px] !p-0 rounded-full flex items-center justify-center transition-all"
         />
       </div>
 

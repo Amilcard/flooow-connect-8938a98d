@@ -585,26 +585,43 @@ const ActivityDetail = () => {
                 </div>
               </div>
 
-              {/* Bloc Organisateur compact - Desktop */}
+              {/* Bloc Organisateur enrichi - Desktop */}
               {activity.organisms && (
-                <div className="p-3 bg-muted/30 rounded-lg space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Building2 size={16} className="text-primary shrink-0" />
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Building2 size={20} className="text-primary" />
+                    </div>
                     <div className="min-w-0">
-                      <span className="font-semibold text-sm block truncate">{activity.organisms.name}</span>
-                      {activity.city && (
-                        <span className="text-xs text-muted-foreground">{activity.city}</span>
+                      <span className="font-semibold text-sm block truncate text-slate-900">{activity.organisms.name}</span>
+                      {activity.organisms.type && (
+                        <span className="text-xs text-slate-500 capitalize">{activity.organisms.type}</span>
                       )}
                     </div>
+                  </div>
+                  {/* Contacts rapides */}
+                  <div className="space-y-1.5 text-xs">
+                    {activity.organisms.address && (
+                      <div className="flex items-center gap-2 text-slate-600">
+                        <MapPin size={12} className="shrink-0" />
+                        <span className="truncate">{activity.organisms.address}</span>
+                      </div>
+                    )}
+                    {activity.organisms.phone && (
+                      <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-2 text-primary hover:underline">
+                        <Phone size={12} className="shrink-0" />
+                        {activity.organisms.phone}
+                      </a>
+                    )}
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowContactModal(true)}
-                    className="w-full h-8 text-xs"
+                    className="w-full h-9 text-xs font-medium"
                   >
                     <MessageCircle size={14} className="mr-1.5" />
-                    Contacter
+                    Contacter l'organisateur
                   </Button>
                 </div>
               )}
@@ -662,27 +679,44 @@ const ActivityDetail = () => {
                 )}
               </div>
 
-              {/* Mobile: Bloc Organisateur compact */}
+              {/* Mobile: Bloc Organisateur enrichi */}
               {activity.organisms && (
-                <div className="lg:hidden p-3 bg-muted/30 rounded-lg mt-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Building2 size={16} className="text-primary shrink-0" />
-                      <div className="min-w-0">
-                        <span className="font-semibold text-sm block truncate">{activity.organisms.name}</span>
-                        {activity.city && (
-                          <span className="text-xs text-muted-foreground">{activity.city}</span>
+                <div className="lg:hidden p-4 bg-slate-50 rounded-xl border border-slate-100 mt-3">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Building2 size={18} className="text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="font-semibold text-sm block truncate text-slate-900">{activity.organisms.name}</span>
+                        {activity.organisms.type && (
+                          <span className="text-xs text-slate-500 capitalize">{activity.organisms.type}</span>
                         )}
                       </div>
                     </div>
+                    {/* Contacts rapides - Mobile */}
+                    <div className="flex flex-wrap gap-3 text-xs">
+                      {activity.organisms.phone && (
+                        <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-1.5 text-primary">
+                          <Phone size={12} />
+                          {activity.organisms.phone}
+                        </a>
+                      )}
+                      {activity.organisms.address && (
+                        <div className="flex items-center gap-1.5 text-slate-600">
+                          <MapPin size={12} />
+                          <span className="truncate max-w-[150px]">{activity.city || activity.organisms.address}</span>
+                        </div>
+                      )}
+                    </div>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       onClick={() => setShowContactModal(true)}
-                      className="h-8 text-xs shrink-0"
+                      className="w-full h-9 text-xs font-medium"
                     >
-                      <MessageCircle size={14} className="mr-1" />
-                      Contacter
+                      <MessageCircle size={14} className="mr-1.5" />
+                      Contacter l'organisateur
                     </Button>
                   </div>
                 </div>
@@ -722,48 +756,6 @@ const ActivityDetail = () => {
                 {/* Informations pratiques */}
                 <section className="space-y-4">
                   <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
-
-                  {/* Bloc Organisateur détaillé */}
-                  {activity.organisms && (
-                    <div className="p-4 rounded-lg bg-muted/30 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Building2 size={20} className="text-primary" />
-                        <p className="font-semibold text-base">{activity.organisms.name}</p>
-                      </div>
-                      <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                        {activity.organisms.type && (
-                          <div className="flex items-start gap-2">
-                            <Info size={14} className="text-muted-foreground mt-0.5 shrink-0" />
-                            <span className="text-muted-foreground capitalize">{activity.organisms.type}</span>
-                          </div>
-                        )}
-                        {activity.organisms.address && (
-                          <div className="flex items-start gap-2">
-                            <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
-                            <span className="text-muted-foreground">{activity.organisms.address}</span>
-                          </div>
-                        )}
-                        {activity.organisms.phone && (
-                          <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-2 text-primary hover:underline">
-                            <Phone size={14} className="shrink-0" />
-                            {activity.organisms.phone}
-                          </a>
-                        )}
-                        {activity.organisms.email && (
-                          <a href={`mailto:${activity.organisms.email}`} className="flex items-center gap-2 text-primary hover:underline">
-                            <Mail size={14} className="shrink-0" />
-                            {activity.organisms.email}
-                          </a>
-                        )}
-                        {activity.organisms.website && (
-                          <a href={activity.organisms.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary hover:underline">
-                            <FileText size={14} className="shrink-0" />
-                            Site internet
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Rythme */}
