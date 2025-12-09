@@ -80,6 +80,7 @@ import MonCovoiturage from "./pages/account/MonCovoiturage";
 import ProfilEligibilite from "./pages/account/ProfilEligibilite";
 import MesJustificatifs from "./pages/account/MesJustificatifs";
 import Parametres from "./pages/account/Parametres";
+import LierEnfant from "./pages/account/LierEnfant";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import RGPD from "./pages/legal/RGPD";
@@ -218,6 +219,7 @@ const App = () => (
           <Route path="/mon-compte/eligibilite" element={<ProfilEligibilite />} />
           <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
           <Route path="/mon-compte/parametres" element={<Parametres />} />
+          <Route path="/mon-compte/lier-enfant" element={<LierEnfant />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/community" element={<Community />} />

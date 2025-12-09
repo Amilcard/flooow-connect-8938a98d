@@ -13,6 +13,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import {
   User,
   Users,
+  UserPlus,
   FileText,
   Bell,
   HelpCircle,
@@ -127,6 +128,14 @@ const MonCompte = () => {
       badge: userStats.enfants,
       onClick: () => navigate("/mon-compte/enfants"),
       tourId: "account-children",
+    },
+    {
+      icon: <UserPlus size={20} />,
+      title: "Lier un enfant",
+      subtitle: "Valider les inscriptions de vos enfants",
+      badge: null,
+      onClick: () => navigate("/mon-compte/lier-enfant"),
+      tourId: "account-link-child",
     },
     {
       icon: <Calendar size={20} />,
