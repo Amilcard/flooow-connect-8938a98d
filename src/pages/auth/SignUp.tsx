@@ -1,3 +1,7 @@
+/**
+ * SignUp Page
+ * LOT 3 - T3_1: Message explicatif pour orienter vers la création par le parent
+ */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BackButton } from '@/components/BackButton';
@@ -7,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, Mail, Lock, User, Phone, Info, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { LogoFlooow } from '@/components/LogoFlooow';
@@ -153,6 +158,24 @@ const SignUp = () => {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {/* LOT 3 - T3_1: Message orientation parent/mineur */}
+            <Alert className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
+              <Users className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-sm">
+                <p className="font-semibold text-orange-800 mb-1">
+                  Le compte Flooow est au nom du parent
+                </p>
+                <p className="text-orange-700 text-xs leading-relaxed">
+                  <span className="font-medium">Tu es mineur(e) ?</span> Tu peux demander à ton parent de créer le compte.
+                  C'est lui qui pourra ajouter toutes les infos utiles pour tes aides.
+                </p>
+                <p className="text-orange-700 text-xs mt-1 leading-relaxed">
+                  <span className="font-medium">Vous êtes parent ?</span> Renseignez vos informations pour bénéficier de toutes les aides possibles.
+                  Vous pourrez ensuite ajouter vos enfants.
+                </p>
+              </AlertDescription>
+            </Alert>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Prénom et Nom */}
               <div className="grid grid-cols-2 gap-3">
