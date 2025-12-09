@@ -90,6 +90,9 @@ import CGU from "./pages/legal/CGU";
 import Simulateur from "./pages/aides/Simulateur";
 import SimulateurV2 from "./pages/aides/SimulateurV2";
 import SearchFilters from "./pages/SearchFilters";
+import SaisirCodeParent from "./pages/inscription/SaisirCodeParent";
+import GenererCodeEnfant from "./pages/inscription/GenererCodeEnfant";
+import EnAttenteValidation from "./pages/inscription/EnAttenteValidation";
 
 const queryClient = new QueryClient();
 
@@ -230,6 +233,10 @@ const App = () => (
           <Route path="/legal/cgu" element={<CGU />} />
           <Route path="/itineraire" element={<Itineraire />} />
           <Route path="/bon-esprit" element={<BonEsprit />} />
+          {/* Inscription enfant - Family Flooow */}
+          <Route path="/inscription/saisir-code-parent" element={<SaisirCodeParent />} />
+          <Route path="/inscription/generer-code-enfant" element={<GenererCodeEnfant />} />
+          <Route path="/inscription/en-attente" element={<EnAttenteValidation />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,32 +1,32 @@
--- Migration: Flux de validation parentale à l'inscription activité
--- Description: Permet aux mineurs de s'inscrire avec validation parentale obligatoire
+-- Migration: Parental validation flow for activity registration
+-- Description: Allows minors to register with mandatory parental validation
 
--- 1. Ajouter champ parent_id à profiles (lien mineur → parent)
+-- 1. Add parent_id column to profiles (links minor to parent)
 ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
 
--- 2. Ajouter code de liaison unique (6 caractères alphanumériques)
+-- 2. Add unique linking code (6 alphanumeric characters)
 ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS linking_code VARCHAR(6) UNIQUE;
 
--- 3. Ajouter date de naissance à profiles (pour détecter mineur si besoin)
+-- 3. Add date of birth to profiles (to detect minor if needed)
 ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS dob DATE;
 
--- 4. Enum pour les statuts des demandes temporaires
+-- 4. Enum for temporary request statuses
 DO $$ BEGIN
   CREATE TYPE child_request_status AS ENUM (
-    'waiting_parent_link',  -- Mineur a généré un code, attend que parent le lie
-    'parent_linked',        -- Parent lié, attend validation de la demande
-    'validated',            -- Parent a validé → créer booking réel
-    'rejected',             -- Parent a refusé
-    'expired'               -- Délai de 7 jours dépassé
+    'waiting_parent_link',
+    'parent_linked',
+    'validated',
+    'rejected',
+    'expired'
   );
 EXCEPTION
   WHEN duplicate_object THEN null;
 END $$;
 
--- 5. Table des demandes temporaires de mineurs
+-- 5. Table for minor temporary requests
 CREATE TABLE IF NOT EXISTS public.child_temp_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   minor_profile_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS public.child_temp_requests (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. Index pour recherche par code
+-- 6. Indexes for code search
 CREATE INDEX IF NOT EXISTS idx_child_temp_requests_code ON public.child_temp_requests(linking_code);
 CREATE INDEX IF NOT EXISTS idx_child_temp_requests_minor ON public.child_temp_requests(minor_profile_id);
 CREATE INDEX IF NOT EXISTS idx_child_temp_requests_parent ON public.child_temp_requests(parent_id);
@@ -51,7 +51,7 @@ CREATE INDEX IF NOT EXISTS idx_child_temp_requests_status ON public.child_temp_r
 CREATE INDEX IF NOT EXISTS idx_profiles_linking_code ON public.profiles(linking_code) WHERE linking_code IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_profiles_parent_id ON public.profiles(parent_id) WHERE parent_id IS NOT NULL;
 
--- 7. Fonction pour générer un code unique (évite O/0, I/1/L confusion)
+-- 7. Function to generate unique code (avoids O/0, I/1/L confusion)
 CREATE OR REPLACE FUNCTION generate_linking_code() RETURNS VARCHAR(6) AS $$
 DECLARE
   chars VARCHAR := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -65,7 +65,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 8. Fonction pour générer un code unique pour un profil
+-- 8. Function to generate unique code for a profile
 CREATE OR REPLACE FUNCTION generate_profile_linking_code(profile_id UUID) RETURNS VARCHAR(6) AS $$
 DECLARE
   new_code VARCHAR(6);
@@ -75,11 +75,8 @@ BEGIN
   LOOP
     new_code := generate_linking_code();
 
-    -- Vérifier unicité
     IF NOT EXISTS (SELECT 1 FROM profiles WHERE linking_code = new_code)
        AND NOT EXISTS (SELECT 1 FROM child_temp_requests WHERE linking_code = new_code) THEN
-
-      -- Mettre à jour le profil avec le nouveau code
       UPDATE profiles SET linking_code = new_code, updated_at = NOW() WHERE id = profile_id;
       RETURN new_code;
     END IF;
@@ -92,7 +89,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 9. Fonction pour créer une demande temporaire d'inscription (mineur)
+-- 9. Function to create temporary registration request (minor)
 CREATE OR REPLACE FUNCTION create_child_temp_request(
   p_minor_id UUID,
   p_activity_id UUID,
@@ -104,7 +101,6 @@ DECLARE
   max_attempts INT := 10;
   attempts INT := 0;
 BEGIN
-  -- Générer un code unique
   LOOP
     new_code := generate_linking_code();
 
@@ -119,7 +115,6 @@ BEGIN
     END IF;
   END LOOP;
 
-  -- Créer la demande
   INSERT INTO child_temp_requests (minor_profile_id, activity_id, slot_id, linking_code, status)
   VALUES (p_minor_id, p_activity_id, p_slot_id, new_code, 'waiting_parent_link')
   RETURNING id INTO new_request_id;
@@ -128,7 +123,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 10. Fonction pour lier un parent à un mineur via code
+-- 10. Function to link parent to minor via code
 CREATE OR REPLACE FUNCTION link_parent_to_minor(
   p_parent_id UUID,
   p_linking_code VARCHAR(6)
@@ -137,7 +132,6 @@ DECLARE
   v_request RECORD;
   v_minor_profile RECORD;
 BEGIN
-  -- Chercher d'abord dans child_temp_requests
   SELECT * INTO v_request
   FROM child_temp_requests
   WHERE linking_code = UPPER(p_linking_code)
@@ -145,14 +139,12 @@ BEGIN
     AND expires_at > NOW();
 
   IF FOUND THEN
-    -- Mettre à jour la demande
     UPDATE child_temp_requests
     SET parent_id = p_parent_id,
         status = 'parent_linked',
         updated_at = NOW()
     WHERE id = v_request.id;
 
-    -- Lier le profil mineur au parent
     UPDATE profiles
     SET parent_id = p_parent_id, updated_at = NOW()
     WHERE id = v_request.minor_profile_id;
@@ -166,32 +158,30 @@ BEGIN
     );
   END IF;
 
-  -- Chercher dans profiles (parent partage son code avec mineur)
   SELECT * INTO v_minor_profile
   FROM profiles
   WHERE linking_code = UPPER(p_linking_code)
     AND parent_id IS NULL;
 
   IF FOUND THEN
-    -- Ce code appartient à un parent, pas à un mineur
     RETURN json_build_object(
       'success', false,
-      'error', 'Ce code appartient à un autre utilisateur'
+      'error', 'This code belongs to another user'
     );
   END IF;
 
   RETURN json_build_object(
     'success', false,
-    'error', 'Code invalide ou expiré'
+    'error', 'Invalid or expired code'
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 11. Fonction pour valider une demande par le parent
+-- 11. Function to validate request by parent
 CREATE OR REPLACE FUNCTION validate_child_request(
   p_parent_id UUID,
   p_request_id UUID,
-  p_action VARCHAR(10) -- 'validate' ou 'reject'
+  p_action VARCHAR(10)
 ) RETURNS JSON AS $$
 DECLARE
   v_request RECORD;
@@ -205,7 +195,7 @@ BEGIN
   IF NOT FOUND THEN
     RETURN json_build_object(
       'success', false,
-      'error', 'Demande introuvable ou non autorisée'
+      'error', 'Request not found or not authorized'
     );
   END IF;
 
@@ -233,7 +223,7 @@ BEGIN
   ELSE
     RETURN json_build_object(
       'success', false,
-      'error', 'Action invalide'
+      'error', 'Invalid action'
     );
   END IF;
 END;
@@ -242,23 +232,23 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 12. RLS Policies
 ALTER TABLE public.child_temp_requests ENABLE ROW LEVEL SECURITY;
 
--- Le mineur peut voir ses propres demandes
+DROP POLICY IF EXISTS "Minors can view own requests" ON public.child_temp_requests;
 CREATE POLICY "Minors can view own requests" ON public.child_temp_requests
   FOR SELECT USING (minor_profile_id = auth.uid());
 
--- Le mineur peut créer des demandes pour lui-même
+DROP POLICY IF EXISTS "Minors can create own requests" ON public.child_temp_requests;
 CREATE POLICY "Minors can create own requests" ON public.child_temp_requests
   FOR INSERT WITH CHECK (minor_profile_id = auth.uid());
 
--- Le parent lié peut voir les demandes de ses mineurs
+DROP POLICY IF EXISTS "Parents can view linked requests" ON public.child_temp_requests;
 CREATE POLICY "Parents can view linked requests" ON public.child_temp_requests
   FOR SELECT USING (parent_id = auth.uid());
 
--- Le parent peut mettre à jour les demandes liées
+DROP POLICY IF EXISTS "Parents can update linked requests" ON public.child_temp_requests;
 CREATE POLICY "Parents can update linked requests" ON public.child_temp_requests
   FOR UPDATE USING (parent_id = auth.uid());
 
--- 13. Trigger pour mettre à jour updated_at
+-- 13. Trigger for updated_at
 CREATE OR REPLACE FUNCTION update_child_temp_requests_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -272,7 +262,7 @@ CREATE TRIGGER trigger_child_temp_requests_updated_at
   BEFORE UPDATE ON public.child_temp_requests
   FOR EACH ROW EXECUTE FUNCTION update_child_temp_requests_updated_at();
 
--- 14. Commentaires
-COMMENT ON TABLE public.child_temp_requests IS 'Demandes d''inscription temporaires de mineurs en attente de validation parentale';
-COMMENT ON COLUMN public.profiles.parent_id IS 'ID du parent responsable (pour les comptes mineurs)';
-COMMENT ON COLUMN public.profiles.linking_code IS 'Code unique pour lier parent/enfant';
+-- 14. Comments
+COMMENT ON TABLE public.child_temp_requests IS 'Temporary registration requests from minors awaiting parental validation';
+COMMENT ON COLUMN public.profiles.parent_id IS 'Parent ID for minor accounts';
+COMMENT ON COLUMN public.profiles.linking_code IS 'Unique code for parent-child linking';
