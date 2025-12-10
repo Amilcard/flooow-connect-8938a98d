@@ -72,15 +72,8 @@ CREATE INDEX IF NOT EXISTS idx_activities_sante_tags ON public.activities USING 
 CREATE INDEX IF NOT EXISTS idx_activities_prerequis ON public.activities USING GIN(prerequis);
 
 -- =====================================================
--- ÉTAPE 3: Migrer price vers price_base si nécessaire
--- =====================================================
-
-UPDATE public.activities
-SET price_base = price
-WHERE price_base IS NULL AND price IS NOT NULL;
-
--- =====================================================
--- ÉTAPE 4: Créer ou remplacer la vue activities_with_sessions
+-- ÉTAPE 3: Créer ou remplacer la vue activities_with_sessions
+-- (Utilise uniquement les colonnes existantes dans la table)
 -- =====================================================
 
 DROP VIEW IF EXISTS public.activities_with_sessions;
@@ -93,7 +86,8 @@ SELECT
   a.title,
   a.description,
   a.categories,
-  a.category,
+  -- Catégorie principale (premier élément du tableau)
+  a.categories[1] AS category,
   a.age_min,
   a.age_max,
   a.price_base,
@@ -130,9 +124,10 @@ SELECT
   a.organism_phone,
   a.organism_email,
   a.organism_website,
-  a.covoiturage_enabled,
-  a.accessibility,
-  a.structure_id,
+  -- Alias pour compatibilité avec le code existant
+  a.mobility_covoit AS covoiturage_enabled,
+  -- Accessibilité (boolean existant)
+  a.has_accessibility,
   a.created_at,
   a.updated_at,
   -- Agrégation des sessions depuis availability_slots
@@ -151,22 +146,18 @@ SELECT
   -- Age min/max depuis les sessions si disponible
   COALESCE(MIN(s.seats_total), a.age_min) AS session_age_min,
   COALESCE(MAX(s.seats_total), a.age_max) AS session_age_max,
-  -- Accessibilité simplifiée
-  CASE
-    WHEN a.accessibility IS NOT NULL AND a.accessibility != '{}'::jsonb
-    THEN TRUE
-    ELSE FALSE
-  END AS has_accessibility,
+  -- Accessibility JSONB pour compatibilité
+  '{}'::jsonb AS accessibility,
   -- Types de mobilité (pour filtres)
   ARRAY_REMOVE(ARRAY[
     CASE WHEN a.mobility_tc IS NOT NULL THEN 'TC' END,
     CASE WHEN a.mobility_velo = TRUE THEN 'velo' END,
-    CASE WHEN a.mobility_covoit = TRUE OR a.covoiturage_enabled = TRUE THEN 'covoit' END
+    CASE WHEN a.mobility_covoit = TRUE THEN 'covoit' END
   ], NULL) AS mobility_types
 FROM public.activities a
 LEFT JOIN public.availability_slots s ON s.activity_id = a.id
 GROUP BY
-  a.id, a.title, a.description, a.categories, a.category,
+  a.id, a.title, a.description, a.categories,
   a.age_min, a.age_max, a.price_base, a.price_unit, a.accepts_aid_types,
   a.tags, a.period_type, a.vacation_periods, a.vacation_type,
   a.duration_days, a.has_accommodation, a.address, a.city, a.postal_code,
@@ -175,7 +166,7 @@ GROUP BY
   a.mobility_tc, a.mobility_velo, a.mobility_covoit, a.sante_tags,
   a.prerequis, a.pieces_a_fournir, a.organism_id, a.organism_name,
   a.organism_type, a.organism_phone, a.organism_email, a.organism_website,
-  a.covoiturage_enabled, a.accessibility, a.structure_id, a.created_at, a.updated_at;
+  a.has_accessibility, a.created_at, a.updated_at;
 
 -- Commentaire pour documentation
 COMMENT ON VIEW public.activities_with_sessions IS
