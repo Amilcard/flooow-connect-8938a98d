@@ -14,8 +14,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white shadow-sm">
-      {/* Conteneur contraint pour aligner avec le contenu principal et la BottomNav */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6">
+      <div className="container px-4 md:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo FLOOOW - même poids visuel que le bouton S'inscrire */}
           <HeaderLogo className="pl-0" />

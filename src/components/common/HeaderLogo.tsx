@@ -9,10 +9,11 @@ interface HeaderLogoProps {
 /**
  * HeaderLogo - Composant standardisé pour le logo Flooow
  *
- * Spécifications Design System:
- * - Logo PNG horizontal (smiley + FLOOOW)
- * - Affichage: 28px mobile (h-7) → 36px desktop (h-9)
- * - Min-width: 140px pour éviter compression
+ * Spécifications Design System LOT 1:
+ * - Height: 32px mobile (h-8) → 36px desktop (h-9)
+ * - Width auto, min-width pour éviter compression
+ * - Aspect ratio preserved
+ * - Object-fit: contain
  * - Aligné verticalement avec les boutons du header
  *
  * Usage:
@@ -20,15 +21,14 @@ interface HeaderLogoProps {
  */
 export const HeaderLogo = ({ className = "", to = "/" }: HeaderLogoProps) => {
   return (
-    <Link
-      to={to}
+    <Link 
+      to={to} 
       className={`flex items-center shrink-0 ${className}`}
     >
       <img
         src={logoFlooow}
         alt="Flooow - Mes activités, mes aides, mes trajets"
-        className="h-7 md:h-9 w-auto object-contain block"
-        style={{ minWidth: '140px' }}
+        className="h-14 md:h-16 w-auto object-contain"
       />
     </Link>
   );
