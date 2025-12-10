@@ -156,6 +156,7 @@ const MesNotifications = () => {
                 icon={Bell}
                 title="Aucune notification"
                 description="Vous serez notifié des nouveaux événements dans votre territoire ou correspondant à vos centres d'intérêt"
+                variant="inspiring"
               />
             ) : (
               notifications.map((notification: any) => (

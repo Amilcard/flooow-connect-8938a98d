@@ -83,9 +83,10 @@ export const ProfilLayout = ({
         className="bg-white border-b border-border shadow-sm sticky top-0 z-50"
         data-tour-id={tourId}
       >
-        <div className={`container mx-auto ${maxWidthClasses[maxWidth]} flex items-center justify-between px-4 py-3`}>
-          {/* Left: BackButton + Title */}
-          <div className="flex items-start gap-5 flex-1 min-w-0">
+        {/* Conteneur contraint h-16 fixe pour alignement vertical cohérent - comme PageHeader */}
+        <div className={`container mx-auto ${maxWidthClasses[maxWidth]} h-16 flex items-center justify-between px-4`}>
+          {/* Left: BackButton + Title - tous centrés verticalement */}
+          <div className="flex items-center gap-4 flex-1 min-w-0">
             <BackButton
               fallback={backFallback}
               positioning="relative"
@@ -94,7 +95,7 @@ export const ProfilLayout = ({
               label="Retour"
               className="shrink-0"
             />
-            <div className="min-w-0 flex-1">
+            <div className="flex flex-col justify-center flex-1 min-w-0">
               <h1 className="text-lg font-semibold text-foreground leading-tight truncate">{title}</h1>
               {subtitle && (
                 <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
