@@ -26,7 +26,8 @@ export const ResultsHeader = ({
   onViewModeChange
 }: ResultsHeaderProps) => {
   return (
-    <div className="px-4 py-4 bg-background border-b border-border flex flex-col md:flex-row gap-4 md:justify-between md:items-center sticky top-[130px] z-20">
+    <div className="bg-background border-b border-border sticky top-[130px] z-20">
+      <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row gap-4 md:justify-between md:items-center">
       {/* Results Count */}
       <h2 className="text-base font-semibold text-foreground font-poppins">
         {resultsCount} activité{resultsCount > 1 ? 's' : ''} trouvée{resultsCount > 1 ? 's' : ''}
@@ -72,6 +73,7 @@ export const ResultsHeader = ({
             Carte
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

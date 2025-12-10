@@ -65,7 +65,8 @@ const QUICK_FILTER_CHIPS: QuickFilterChip[] = [
 export const QuickFiltersBar = ({ quickFilters, onToggleFilter }: QuickFiltersBarProps) => {
   return (
     <div className="sticky top-[69px] z-[90] bg-muted py-3 border-b border-border overflow-x-auto overflow-y-hidden scrollbar-hide webkit-overflow-scrolling-touch">
-      <div className="flex gap-2 px-4 whitespace-nowrap">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex gap-2 px-4 whitespace-nowrap">
         {QUICK_FILTER_CHIPS.map((chip) => {
           const isActive = quickFilters[chip.id];
 
@@ -86,6 +87,7 @@ export const QuickFiltersBar = ({ quickFilters, onToggleFilter }: QuickFiltersBa
             </button>
           );
         })}
+        </div>
       </div>
     </div>
   );

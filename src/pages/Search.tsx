@@ -77,7 +77,7 @@ const Search = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-10 bg-background border-b">
-        <div className="container py-2">
+        <div className="max-w-5xl mx-auto px-4 py-2">
           <BackButton positioning="relative" size="sm" showText={true} label="Retour" />
         </div>
         <SearchBar 
@@ -87,7 +87,7 @@ const Search = () => {
         />
       </div>
       
-      <div className="container py-4 space-y-4">
+      <div className="max-w-5xl mx-auto px-4 py-4 space-y-4">
         {/* Search query display */}
         {searchQuery && (
           <div className="mb-2 space-y-2">

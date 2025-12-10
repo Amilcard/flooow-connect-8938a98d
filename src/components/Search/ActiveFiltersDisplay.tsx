@@ -20,7 +20,8 @@ export const ActiveFiltersDisplay = ({
   if (activeFilters.length === 0) return null;
 
   return (
-    <div className="px-4 py-3 bg-background border-b border-border flex gap-2 flex-wrap items-center">
+    <div className="bg-background border-b border-border">
+      <div className="max-w-5xl mx-auto px-4 py-3 flex gap-2 flex-wrap items-center">
       <span className="text-[13px] font-semibold text-muted-foreground font-poppins">
         Filtres actifs:
       </span>
@@ -52,6 +53,7 @@ export const ActiveFiltersDisplay = ({
           Tout effacer
         </button>
       )}
+      </div>
     </div>
   );
 };

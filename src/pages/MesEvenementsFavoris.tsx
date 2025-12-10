@@ -53,7 +53,7 @@ const MesEvenementsFavoris = () => {
         tourId="favorite-events-header"
       />
 
-      <div className="max-w-[1200px] mx-auto px-4 py-6 pb-24" data-tour-id="account-favorites">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-24" data-tour-id="account-favorites">
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
