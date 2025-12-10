@@ -38,10 +38,11 @@ interface QuickInfoBarProps {
 
 /**
  * Barre condensée d'informations rapides sous le hero
+ * Style aligné avec les cards de l'écran Recherche
  *
  * Affiche les informations essentielles en un coup d'œil :
  * - Rating avec étoiles
- * - Badge "GRATUIT" si applicable
+ * - Badge "Séance d'essai" si activité propose un essai gratuit
  * - Badges SOLIDAIRE / InKlusif
  * - Indicateur de places restantes
  *
@@ -73,60 +74,60 @@ export function QuickInfoBar({
 
   return (
     <div
-      className={`quick-info-bar flex items-center gap-3 flex-wrap py-3 px-4 bg-background border-b border-border ${className}`}
+      className={`quick-info-bar flex items-center gap-2 flex-wrap py-2.5 px-4 bg-background/95 backdrop-blur-sm border-b border-border/50 ${className}`}
     >
-      {/* Rating */}
+      {/* Rating - style card Recherche */}
       {rating && (
-        <div className="flex items-center gap-1.5">
-          <Star size={16} fill="#F59E0B" color="#F59E0B" strokeWidth={0} />
+        <div className="flex items-center gap-1">
+          <Star size={14} fill="#F59E0B" color="#F59E0B" strokeWidth={0} />
           <span className="text-sm font-semibold text-foreground">
             {rating.average.toFixed(1)}
           </span>
-          <span className="text-sm text-muted-foreground">
-            ({rating.count} avis)
+          <span className="text-xs text-muted-foreground">
+            ({rating.count})
           </span>
         </div>
       )}
 
       {/* Séparateur si rating présent */}
-      {rating && <div className="w-px h-5 bg-border" />}
+      {rating && <div className="w-px h-4 bg-border/60" />}
 
-      {/* Badge Gratuit */}
+      {/* Badge Séance d'essai (remplace "Gratuit") */}
       {isFree && (
         <Badge
-          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-green-100 text-green-700 border-0"
+          className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
         >
-          GRATUIT
+          Séance d'essai
         </Badge>
       )}
 
-      {/* Badge SOLIDAIRE */}
+      {/* Badge SOLIDAIRE - style pill cohérent */}
       {paymentEchelonned && (
         <Badge
-          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0"
+          className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0"
         >
-          SOLIDAIRE
+          Solidaire
         </Badge>
       )}
 
-      {/* Badge INCLUSIVITÉ */}
+      {/* Badge InKlusif - style pill cohérent */}
       {hasAccessibility && (
         <Badge
-          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-blue-100 text-blue-700 border-0"
+          className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
         >
           InKlusif
         </Badge>
       )}
 
-      {/* Places restantes (seulement si < 10) */}
+      {/* Places restantes (seulement si < 10) - aligné à droite */}
       {spotsRemaining !== undefined && spotsRemaining < 10 && (
-        <div className="flex items-center gap-1.5 ml-auto">
-          <Users size={14} color={spotsColor} strokeWidth={2.5} />
+        <div className="flex items-center gap-1 ml-auto">
+          <Users size={12} color={spotsColor} strokeWidth={2.5} />
           <span
-            className="text-sm font-semibold"
+            className="text-xs font-semibold"
             style={{ color: spotsColor }}
           >
-            {spotsRemaining} place{spotsRemaining > 1 ? "s" : ""} restante{spotsRemaining > 1 ? "s" : ""}
+            {spotsRemaining} place{spotsRemaining > 1 ? "s" : ""}
           </span>
         </div>
       )}
