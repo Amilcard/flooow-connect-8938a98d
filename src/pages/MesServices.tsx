@@ -103,7 +103,7 @@ const MesServices = () => {
   return (
     <PageLayout showHeader={false}>
       <PageHeader
-        title="Mes services"
+        title="Mes dossiers"
         subtitle="Les contacts utiles pour vos démarches liées aux activités, aux aides et aux déplacements."
         backFallback="/home"
       />
