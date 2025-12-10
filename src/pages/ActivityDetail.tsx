@@ -668,12 +668,44 @@ const ActivityDetail = () => {
 
                     {/* Colonne droite */}
                     <div className="space-y-4">
-                      {activity.organisms?.address && (
+                      {/* Lieu d'activité */}
+                      {(activity.venue_name || activity.address) && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Lieu</p>
-                            <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
+                            <p className="font-medium text-sm">Lieu d'entraînement</p>
+                            {activity.venue_name && <p className="text-sm font-medium text-foreground">{activity.venue_name}</p>}
+                            <p className="text-sm text-muted-foreground">
+                              {activity.address}{activity.city && `, ${activity.city}`}{activity.postal_code && ` ${activity.postal_code}`}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Organisateur complet */}
+                      {activity.organisms && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Building2 size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div className="space-y-1">
+                            <p className="font-medium text-sm">Organisateur</p>
+                            <p className="text-sm font-medium text-foreground">{activity.organisms.name}</p>
+                            {activity.organisms.type && (
+                              <p className="text-xs text-muted-foreground">{activity.organisms.type}</p>
+                            )}
+                            {activity.organisms.address && (
+                              <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
+                            )}
+                            {activity.organisms.phone && (
+                              <p className="text-sm text-muted-foreground">📞 {activity.organisms.phone}</p>
+                            )}
+                            {activity.organisms.email && (
+                              <p className="text-sm text-muted-foreground">✉️ {activity.organisms.email}</p>
+                            )}
+                            {activity.organisms.website && (
+                              <a href={activity.organisms.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                                🌐 Site web
+                              </a>
+                            )}
                           </div>
                         </div>
                       )}
