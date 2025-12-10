@@ -527,8 +527,8 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Main Content Container - Densifié pour flux visuel continu */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
+      {/* Main Content Container - Largeur augmentée pour desktop, flux visuel continu */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
         {/* Header Section - Compact : Titre → Méta sur 1-2 lignes → Organisateur discret */}
         <div className="space-y-2 pb-4 border-b mb-6" data-tour-id="activity-header">
           {/* Titre H1 - hierarchie forte */}

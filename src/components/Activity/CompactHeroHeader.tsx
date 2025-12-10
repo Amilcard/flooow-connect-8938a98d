@@ -58,13 +58,13 @@ const getCategoryImage = (category: string): string => {
 };
 
 /**
- * Header compact avec image réduite - style card cohérent avec la home
+ * Header avec image d'activité style "super-card"
  *
- * - Mobile: image réduite (140px) en bandeau discret
- * - Desktop: masqué (image affichée dans une card dans le contenu)
- * - Back button avec backdrop blur
- * - Category badge discret
- * - Pas de titre en overlay (titre affiché dans le contenu page)
+ * Design aligné avec les cards de l'écran Recherche et Accueil :
+ * - Hauteur intermédiaire (pas trop landing page, pas trop petit)
+ * - Overlay léger pour lisibilité sans assombrir
+ * - Boutons discrets (retour, partage)
+ * - Badge catégorie style pill identique aux cards
  */
 export function CompactHeroHeader({
   imageUrl,
@@ -88,15 +88,15 @@ export function CompactHeroHeader({
 
   return (
     <div className="compact-hero-header relative w-full overflow-hidden">
-      {/* Conteneur immersif - 200px mobile, 240px tablet, 280px desktop - aligné avec cards Recherche */}
-      <div className="relative w-full h-[200px] md:h-[240px] lg:h-[280px]">
-        {/* Image de fond - immersive comme les cards Recherche */}
+      {/* Conteneur style super-card - hauteur intermédiaire entre card et landing */}
+      <div className="relative w-full h-[180px] md:h-[200px] lg:h-[220px]">
+        {/* Image de fond - nette et centrée comme les cards */}
         <img
           src={finalImageUrl}
           alt={title}
           className="absolute inset-0 w-full h-full object-cover"
           style={{
-            objectPosition: "center 40%"
+            objectPosition: "center center"
           }}
           onError={(e) => {
             if (!imgError) {
@@ -105,33 +105,34 @@ export function CompactHeroHeader({
             }
           }}
         />
-        {/* Gradient optimisé pour lisibilité sans assombrir l'image */}
+        {/* Gradient léger - juste pour lisibilité des boutons, pas d'effet dramatique */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.35) 100%)"
+            background: "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.20) 100%)"
           }}
         />
       </div>
 
-      {/* Back Button - Top Left - Style pilule cohérent avec Recherche */}
+      {/* Back Button - Top Left - Style sobre cohérent avec Recherche */}
       <div className="absolute top-4 left-4 z-10">
         <BackButton
           positioning="relative"
           size="sm"
-          className="bg-white/95 backdrop-blur-md hover:bg-white shadow-lg !h-10 !w-10 !min-w-[40px] !p-0 rounded-full flex items-center justify-center transition-all hover:scale-105"
+          className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-md !h-10 !w-10 !min-w-[40px] !p-0 rounded-full flex items-center justify-center transition-colors"
         />
       </div>
 
       {/* Category Badge + Actions - Top Right */}
       <div className="absolute top-4 right-4 z-10">
         <div className="flex items-center gap-2">
+          {/* Badge catégorie - même style que ActivityResultCard */}
           <div
-            className="px-3 py-1.5 rounded-full backdrop-blur-md shadow-md"
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
+            className="px-2.5 py-1 rounded-lg backdrop-blur-sm shadow-sm"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)' }}
           >
             <span
-              className="text-xs font-semibold uppercase tracking-wide"
+              className="text-xs font-bold uppercase"
               style={{ color: getCategoryStyle(displayCategory).color }}
             >
               {displayCategory}
