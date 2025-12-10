@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
-import { ArrowLeft, User, Calendar, MapPin, CheckCircle, XCircle } from "lucide-react";
+import { User, Calendar, MapPin, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -18,15 +18,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useSmartBack } from "@/hooks/useSmartBack";
+import PageLayout from "@/components/PageLayout";
+import { PageHeader } from "@/components/PageHeader";
 
 const ValidationParentale = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const handleBack = useSmartBack("/mes-sessions");
-  
+
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
 
@@ -91,7 +91,7 @@ const ValidationParentale = () => {
 
       // TODO: Send email notification via edge function
       
-      navigate("/mes-sessions");
+      navigate("/mon-compte/validations");
     },
     onError: (error: any) => {
       toast({
@@ -136,23 +136,13 @@ const ValidationParentale = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
-          <h1 className="font-semibold text-lg">Validation Parentale</h1>
-        </div>
-      </div>
+    <PageLayout showHeader={false}>
+      <PageHeader
+        title="Validation Parentale"
+        backFallback="/mon-compte/validations"
+      />
 
-      <div className="container px-4 py-6 space-y-6 max-w-2xl mx-auto">
+      <div className="container px-4 py-6 space-y-6 max-w-2xl mx-auto pb-24">
         {/* Status badge */}
         {isAlreadyValidated && (
           <Card className={`p-4 ${
@@ -297,7 +287,7 @@ const ValidationParentale = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageLayout>
   );
 };
 

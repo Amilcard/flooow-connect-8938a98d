@@ -41,7 +41,6 @@ import ChildSelfSignup from "./pages/ChildSelfSignup";
 import ValidateChildSignup from "./pages/ValidateChildSignup";
 import Alternatives from "./pages/Alternatives";
 import Covoiturage from "./pages/Covoiturage";
-import MesSessions from "./pages/MesSessions";
 import AdminSessions from "./pages/AdminSessions";
 import NotFound from "./pages/NotFound";
 import ParentSignup from "./pages/ParentSignup";
@@ -199,7 +198,6 @@ const App = () => (
           <Route path="/validate-child-signup" element={<ValidateChildSignup />} />
           <Route path="/alternatives" element={<Alternatives />} />
           <Route path="/covoiturage" element={<Covoiturage />} />
-          <Route path="/mes-sessions" element={<MesSessions />} />
           <Route path="/admin/sessions" element={<AdminSessions />} />
           <Route path="/inscription/parent" element={<ParentSignup />} />
           <Route path="/validations/:bookingId" element={<ValidationParentale />} />

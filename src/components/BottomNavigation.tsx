@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
   { icon: Home, label: "Accueil", path: "/home", showSplash: false },
   { icon: Search, label: "Recherche", path: "/search" },
   { icon: MapPin, label: "Ma ville", path: "/ma-ville-mon-actu" }, // Correspond à la tuile "Ma ville & mon actu"
-  { icon: Building2, label: "Mes services", path: "/mes-services" }, // Remplace "Mes aides"
+  { icon: Building2, label: "Mes dossiers", path: "/mes-services" }, // Anciennement "Mes services"
   { icon: UserCircle, label: "Mon compte", path: "/mon-compte", requiresAuth: true },
 ];
 
@@ -102,7 +102,7 @@ export const BottomNavigation = () => {
                       item.path === "/home" ? "nav-item-home" :
                       item.path === "/search" ? "nav-item-search" :
                       item.path === "/ma-ville-mon-actu" ? "nav-item-maville" :
-                      item.path === "/mes-services" ? "nav-item-services" :
+                      item.path === "/mes-services" ? "nav-item-dossiers" :
                       "nav-item-account"
                     }
                   >
