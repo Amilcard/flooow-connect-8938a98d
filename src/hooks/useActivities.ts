@@ -41,7 +41,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
-    images: [],
+    images: dbActivity.image_url ? [dbActivity.image_url] : [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
     price_base: dbActivity.price_base || 0,
@@ -81,7 +81,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities_with_sessions")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions_json, price_unit, organism_name, organism_type, organism_address, organism_phone, organism_email, organism_website")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions_json, price_unit, organism_name, organism_type, organism_address, organism_phone, organism_email, organism_website, image_url")
           .eq("is_published", true);
       };
 
