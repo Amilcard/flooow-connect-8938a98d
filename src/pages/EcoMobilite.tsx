@@ -126,7 +126,7 @@ const EcoMobilite = () => {
       {/* Header */}
       <MobilityHeader />
 
-      <div className="max-w-[1200px] mx-auto px-4 pb-24">
+      <div className="max-w-5xl mx-auto px-4 pb-24">
         {/* Simulateur CO2 - Highlighted Banner */}
         <Card className="mb-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
           <CardHeader>

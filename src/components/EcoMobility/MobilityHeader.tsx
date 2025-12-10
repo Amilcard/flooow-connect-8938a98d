@@ -10,9 +10,11 @@ import { BackButton } from '@/components/BackButton';
 
 export function MobilityHeader() {
   return (
-    <div className="bg-background px-4 py-6">
-      {/* Back Button + Title/Subtitle bloc */}
-      <div className="flex items-start gap-5 mb-2">
+    <div className="bg-background border-b border-border shadow-sm">
+      {/* Conteneur contraint max-w-5xl pour alignement cohérent avec PageHeader */}
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        {/* Back Button + Title/Subtitle bloc */}
+        <div className="flex items-start gap-5 mb-2">
         {/* LOT 2 - T2_3: BackButton uniforme avec showText et label "Retour" */}
         <BackButton
           positioning="relative"
@@ -30,6 +32,7 @@ export function MobilityHeader() {
           <p className="font-poppins text-[15px] font-normal text-muted-foreground leading-relaxed">
             Préparez vos trajets pour rejoindre vos activités sans voiture.
           </p>
+        </div>
         </div>
       </div>
     </div>
