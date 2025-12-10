@@ -41,30 +41,49 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
+    description: dbActivity.description,
     images: dbActivity.image_url ? [dbActivity.image_url] : [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
     price_base: dbActivity.price_base || 0,
-    category: null,
+    category: dbActivity.category || null,
     categories: dbActivity.categories,
-    accessibility_checklist: null,
+    accessibility_checklist: dbActivity.accessibility || null,
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
     structures: {
-      name: dbActivity.organisms?.name || null,
+      name: dbActivity.organism_name || dbActivity.lieu_nom || null,
       address: dbActivity.address,
       city: dbActivity.city,
       postal_code: dbActivity.postal_code,
       location_lat: dbActivity.latitude,
       location_lng: dbActivity.longitude,
     },
+    lieu: {
+      nom: dbActivity.lieu_nom,
+      adresse: dbActivity.address,
+      transport: dbActivity.transport_info,
+    },
+    mobilite: {
+      TC: dbActivity.mobility_tc,
+      velo: dbActivity.mobility_velo,
+      covoit: dbActivity.mobility_covoit || dbActivity.covoiturage_enabled,
+    },
     vacation_periods: dbActivity.vacation_periods,
+    vacationType: dbActivity.vacation_type,
+    durationDays: dbActivity.duration_days,
+    hasAccommodation: dbActivity.has_accommodation,
     date_debut: dbActivity.date_debut,
     date_fin: dbActivity.date_fin,
     jours_horaires: dbActivity.jours_horaires,
+    creneaux: dbActivity.creneaux,
     sessions: dbActivity.sessions_json,
     price_unit: dbActivity.price_unit,
-    covoiturage_enabled: false,
+    priceUnit: dbActivity.price_unit,
+    covoiturage_enabled: dbActivity.covoiturage_enabled || dbActivity.mobility_covoit,
+    santeTags: dbActivity.sante_tags,
+    prerequis: dbActivity.prerequis,
+    pieces: dbActivity.pieces_a_fournir,
   };
   return toActivity(raw);
 };
@@ -81,7 +100,18 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities_with_sessions")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions_json, price_unit, organism_name, organism_type, organism_address, organism_phone, organism_email, organism_website, image_url")
+          .select(`
+            id, title, description, category, categories,
+            age_min, age_max, price_base, price_unit, accepts_aid_types, tags,
+            period_type, vacation_periods, vacation_type, duration_days, has_accommodation,
+            address, city, postal_code, latitude, longitude,
+            date_debut, date_fin, jours_horaires, creneaux, sessions_json,
+            image_url, is_published,
+            lieu_nom, transport_info, mobility_tc, mobility_velo, mobility_covoit,
+            sante_tags, prerequis, pieces_a_fournir,
+            organism_name, organism_type, organism_phone, organism_email, organism_website,
+            covoiturage_enabled, accessibility, has_accessibility, mobility_types
+          `)
           .eq("is_published", true);
       };
 

@@ -65,14 +65,30 @@ export interface Activity {
   dateDebut?: string;          // Date de début (YYYY-MM-DD)
   dateFin?: string;            // Date de fin (YYYY-MM-DD)
   joursHoraires?: string;      // Jours et horaires (scolaire)
+  creneaux?: TimeSlot[];       // Créneaux structurés
   sessions?: string;           // Sessions (vacances)
   hasAccommodation?: boolean;  // Hébergement inclus ou non
   price_is_free?: boolean;     // Indicateur activité gratuite
+  // Champs enrichis
+  lieuNom?: string;            // Nom du lieu distinct de l'organisme
+  transportInfo?: string;      // Info transport en commun
+  santeTags?: string[];        // Ex: ["Certificat médical requis"]
+  prerequis?: string[];        // Ex: ["Savoir nager"]
+  piecesAFournir?: string[];   // Ex: ["Photo d'identité", "Certificat médical"]
+}
+
+/**
+ * Type pour les créneaux structurés
+ */
+export interface TimeSlot {
+  jour: string;      // Ex: "mercredi"
+  debut: string;     // Ex: "14:00"
+  fin: string;       // Ex: "16:00"
 }
 
 /**
  * Type pour les données brutes issues de sources externes
- * (Edge Function mock-activities, API, etc.)
+ * (Edge Function mock-activities, API, Supabase)
  */
 export interface ActivityRaw {
   id: string;
@@ -87,6 +103,7 @@ export interface ActivityRaw {
   cout?: number;
   price?: number;
   price_base?: number;
+  price_unit?: string;
   lieu?: {
     nom?: string;
     adresse?: string;
@@ -105,6 +122,8 @@ export interface ActivityRaw {
   structures?: {
     name?: string;
     address?: string;
+    city?: string;
+    postal_code?: string;
     location_lat?: number;     // PostGIS lat from structures.location
     location_lng?: number;     // PostGIS lng from structures.location
   };
@@ -113,4 +132,14 @@ export interface ActivityRaw {
   priceUnit?: string;
   durationDays?: number;
   hasAccommodation?: boolean;
+  // Dates et horaires
+  date_debut?: string;
+  date_fin?: string;
+  jours_horaires?: string;
+  creneaux?: any[];  // JSON array of time slots
+  sessions?: any;
+  // Santé et prérequis
+  santeTags?: string[];
+  prerequis?: string[];
+  pieces?: string[];
 }

@@ -77,16 +77,16 @@ export function toActivity(raw: ActivityRaw): Activity {
   const ageMax = raw.ageMax ?? raw.age_max ?? 17;
   const price = raw.cout ?? raw.price ?? raw.price_base ?? 0;
   const category = raw.theme || raw.category || (raw.categories && raw.categories[0]) || 'Loisirs';
-  
+
   // Attribution intelligente de l'image selon thématique et âge
   // Fix: Filtrer les URLs invalides (cdn.example.com) qui causent des erreurs
-  const isValidImage = (url: string | null | undefined) => 
+  const isValidImage = (url: string | null | undefined) =>
     url && url.startsWith('http') && !url.includes('cdn.example.com');
 
-  const activityImage = (raw.images && raw.images.length > 0 && isValidImage(raw.images[0])) 
-    ? raw.images[0] 
+  const activityImage = (raw.images && raw.images.length > 0 && isValidImage(raw.images[0]))
+    ? raw.images[0]
     : getActivityImage(title, category, ageMin, ageMax);
-  
+
   // Construction objet avec valeurs par défaut
   const activity: Activity = {
     id: raw.id,
@@ -98,9 +98,9 @@ export function toActivity(raw: ActivityRaw): Activity {
     category,
     categories: raw.categories || [category],
     price: Number(price),
-    hasAccessibility: !!(raw.accessibilite && raw.accessibilite.length > 0) || 
+    hasAccessibility: !!(raw.accessibilite && raw.accessibilite.length > 0) ||
                       !!(raw.accessibility_checklist?.wheelchair),
-    hasFinancialAid: !!(raw.aidesEligibles && raw.aidesEligibles.length > 0) || 
+    hasFinancialAid: !!(raw.aidesEligibles && raw.aidesEligibles.length > 0) ||
                      !!(raw.accepts_aid_types && raw.accepts_aid_types.length > 0),
     periodType: raw.period_type,
     structureName: raw.lieu?.nom || raw.structures?.name,
@@ -118,8 +118,8 @@ export function toActivity(raw: ActivityRaw): Activity {
   if (raw.vacationType) {
     activity.vacationType = raw.vacationType;
   }
-  if (raw.priceUnit) {
-    activity.priceUnit = raw.priceUnit;
+  if (raw.priceUnit || raw.price_unit) {
+    activity.priceUnit = raw.priceUnit || raw.price_unit;
   }
   if (raw.durationDays) {
     activity.durationDays = raw.durationDays;
@@ -131,7 +131,7 @@ export function toActivity(raw: ActivityRaw): Activity {
   // Mobilité optionnelle
   if (raw.mobilite || raw.covoiturage_enabled) {
     activity.mobility = {
-      TC: raw.lieu?.transport || raw.mobilite?.TC,
+      TC: raw.mobilite?.TC || raw.lieu?.transport,
       velo: raw.mobilite?.velo,
       covoit: raw.mobilite?.covoit ?? raw.covoiturage_enabled,
     };
@@ -148,9 +148,29 @@ export function toActivity(raw: ActivityRaw): Activity {
       lat: raw.structures.location_lat,
       lng: raw.structures.location_lng,
       adresse: raw.structures.address || '',
-      ville: '', // Peut être extrait du code postal si nécessaire
-      codePostal: '', // Peut être ajouté si disponible
+      ville: raw.structures.city || '',
+      codePostal: raw.structures.postal_code || '',
     };
+  }
+
+  // Champs enrichis (nouveaux)
+  if (raw.lieu?.nom) {
+    activity.lieuNom = raw.lieu.nom;
+  }
+  if (raw.lieu?.transport) {
+    activity.transportInfo = raw.lieu.transport;
+  }
+  if (raw.santeTags && raw.santeTags.length > 0) {
+    activity.santeTags = raw.santeTags;
+  }
+  if (raw.prerequis && raw.prerequis.length > 0) {
+    activity.prerequis = raw.prerequis;
+  }
+  if (raw.pieces && raw.pieces.length > 0) {
+    activity.piecesAFournir = raw.pieces;
+  }
+  if (raw.creneaux && Array.isArray(raw.creneaux) && raw.creneaux.length > 0) {
+    activity.creneaux = raw.creneaux;
   }
 
   return activity;
