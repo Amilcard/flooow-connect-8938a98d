@@ -27,7 +27,7 @@ export const DEFAULT_ADVANCED_FILTERS: AdvancedFilters = {
   specific_needs: [],
   categories: [],
   accommodation_type: 'all',
-  max_budget: 200,
+  max_budget: 500,
   financial_aids_accepted: [],
   qf_based_pricing: false,
   inclusivity: false,

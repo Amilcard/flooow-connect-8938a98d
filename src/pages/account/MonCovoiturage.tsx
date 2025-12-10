@@ -157,22 +157,22 @@ const MonCovoiturage = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-            <div>
-              <h1 className="text-xl font-bold">Mon Covoiturage</h1>
-              <p className="text-white/90 text-sm">
+      {/* Header blanc standard */}
+      <header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+          <div className="flex items-start gap-5 flex-1 min-w-0">
+            <BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold text-foreground leading-tight">Mon Covoiturage</h1>
+              <p className="text-sm text-muted-foreground">
                 {covoiturages.length} covoiturage{covoiturages.length > 1 ? 's' : ''}
               </p>
             </div>
           </div>
-          
+
           <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
             <DialogTrigger asChild>
-              <Button variant="secondary" size="sm">
+              <Button variant="outline" size="sm">
                 <Plus className="w-4 h-4 mr-2" />
                 Nouveau
               </Button>
@@ -284,9 +284,9 @@ const MonCovoiturage = () => {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </header>
 
-      <div className="container px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Informations éco-mobilité */}
         <Card className="border-green-200 bg-green-50 mb-6">
           <CardContent className="p-4">
@@ -369,7 +369,15 @@ const MonCovoiturage = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2 pt-4 border-t">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => toast({
+                          title: "Bientôt disponible",
+                          description: "La messagerie de contact sera disponible prochainement"
+                        })}
+                      >
                         <Phone className="w-4 h-4 mr-2" />
                         Contacter
                       </Button>
@@ -448,7 +456,15 @@ const MonCovoiturage = () => {
                       </div>
                     </div>
                     <div className="flex space-x-2 pt-4 border-t">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => toast({
+                          title: "Bientôt disponible",
+                          description: "La gestion des participants sera disponible prochainement"
+                        })}
+                      >
                         Gérer les participants
                       </Button>
                       <Button 

@@ -68,7 +68,7 @@ export const AvailableSlotsSection = ({
     if (percentage > 50) return { color: "bg-green-100 text-green-700", label: "Disponible" };
     if (percentage > 20) return { color: "bg-orange-100 text-orange-700", label: "Peu de places" };
     if (percentage > 0) return { color: "bg-red-100 text-red-700", label: "Dernières places" };
-    return { color: "bg-gray-100 text-gray-700", label: "Complet" };
+    return { color: "bg-muted text-muted-foreground", label: "Complet" };
   };
 
   if (slots.length === 0) {

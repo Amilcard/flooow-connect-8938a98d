@@ -264,7 +264,7 @@ const MaVille = () => {
                         key={index}
                         onClick={() => setCurrentAlerte(index)}
                         className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentAlerte ? 'bg-orange-500 w-6' : 'bg-gray-300'
+                          index === currentAlerte ? 'bg-orange-500 w-6' : 'bg-muted'
                         }`}
                         aria-label={`Alerte ${index + 1}`}
                       />
@@ -278,7 +278,7 @@ const MaVille = () => {
           {/* ========== SECTION 2: ACTUS & AGENDA ========== */}
           <section className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold">Mon actu & Agenda</h2>
+              <h2 className="text-xl font-bold text-foreground">Mon actu & Agenda</h2>
               <p className="text-sm text-muted-foreground">Événements, nouveautés, infos du territoire.</p>
             </div>
 
@@ -316,7 +316,7 @@ const MaVille = () => {
           {/* ========== SECTION 3: CONTACTS UTILES ========== */}
           <section className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold">Nos contacts utiles</h2>
+              <h2 className="text-xl font-bold text-foreground">Nos contacts utiles</h2>
               <p className="text-sm text-muted-foreground">On appelle direct.</p>
             </div>
 
@@ -396,7 +396,7 @@ const MaVille = () => {
           {/* ========== SECTION 4: ANNUAIRE STRUCTURES ========== */}
           <section className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold">Nos structures locales</h2>
+              <h2 className="text-xl font-bold text-foreground">Nos structures locales</h2>
               <p className="text-sm text-muted-foreground">Centres sociaux, MJC, assos. On les connaît.</p>
             </div>
 

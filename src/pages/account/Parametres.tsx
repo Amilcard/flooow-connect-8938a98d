@@ -65,8 +65,8 @@ const Parametres: React.FC = () => {
 			!passwordForm.confirmPassword
 		) {
 			toast({
-				title: 'Erreur',
-				description: 'Veuillez remplir tous les champs.',
+				title: 'Champs requis',
+				description: 'Merci de remplir tous les champs pour continuer.',
 				variant: 'destructive',
 			});
 			return;
@@ -74,8 +74,8 @@ const Parametres: React.FC = () => {
 
 		if (passwordForm.newPassword !== passwordForm.confirmPassword) {
 			toast({
-				title: 'Erreur',
-				description: 'Les mots de passe ne correspondent pas.',
+				title: 'Vérification requise',
+				description: 'Les mots de passe saisis ne correspondent pas.',
 				variant: 'destructive',
 			});
 			return;
@@ -84,8 +84,8 @@ const Parametres: React.FC = () => {
 		// Validation force du mot de passe
 		if (passwordForm.newPassword.length < 8) {
 			toast({
-				title: 'Erreur',
-				description: 'Le mot de passe doit contenir au moins 8 caractères.',
+				title: 'Mot de passe trop court',
+				description: 'Pour votre sécurité, utilisez au moins 8 caractères.',
 				variant: 'destructive',
 			});
 			return;
@@ -94,8 +94,8 @@ const Parametres: React.FC = () => {
 		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 		if (!passwordRegex.test(passwordForm.newPassword)) {
 			toast({
-				title: 'Mot de passe trop faible',
-				description: 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre.',
+				title: 'Renforçons votre mot de passe',
+				description: 'Ajoutez une majuscule, une minuscule et un chiffre pour plus de sécurité.',
 				variant: 'destructive',
 			});
 			return;
@@ -264,17 +264,19 @@ const Parametres: React.FC = () => {
 
 	return (
 		<PageLayout showHeader={false}>
-			<div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-				<div className="container flex items-center space-x-4">
-					<BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-					<div>
-						<h1 className="text-xl font-bold">Paramètres</h1>
-						<p className="text-white/90 text-sm">Personnalisez votre expérience</p>
+			<header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+				<div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+					<div className="flex items-start gap-5 flex-1 min-w-0">
+						<BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+						<div className="min-w-0 flex-1">
+							<h1 className="text-lg font-semibold text-foreground leading-tight">Paramètres</h1>
+							<p className="text-sm text-muted-foreground">Personnalisez votre expérience</p>
+						</div>
 					</div>
 				</div>
-			</div>
+			</header>
 
-			<div className="container px-4 py-6 space-y-6">
+			<div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
 				<AppearanceSettings settings={settings} updateSetting={updateSetting} />
 				<SecuritySettings
 					settings={settings}

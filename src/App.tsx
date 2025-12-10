@@ -80,6 +80,7 @@ import MonCovoiturage from "./pages/account/MonCovoiturage";
 import ProfilEligibilite from "./pages/account/ProfilEligibilite";
 import MesJustificatifs from "./pages/account/MesJustificatifs";
 import Parametres from "./pages/account/Parametres";
+import LierEnfant from "./pages/account/LierEnfant";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import RGPD from "./pages/legal/RGPD";
@@ -89,6 +90,9 @@ import CGU from "./pages/legal/CGU";
 import Simulateur from "./pages/aides/Simulateur";
 import SimulateurV2 from "./pages/aides/SimulateurV2";
 import SearchFilters from "./pages/SearchFilters";
+import SaisirCodeParent from "./pages/inscription/SaisirCodeParent";
+import GenererCodeEnfant from "./pages/inscription/GenererCodeEnfant";
+import EnAttenteValidation from "./pages/inscription/EnAttenteValidation";
 
 const queryClient = new QueryClient();
 
@@ -218,6 +222,7 @@ const App = () => (
           <Route path="/mon-compte/eligibilite" element={<ProfilEligibilite />} />
           <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
           <Route path="/mon-compte/parametres" element={<Parametres />} />
+          <Route path="/mon-compte/lier-enfant" element={<LierEnfant />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/community" element={<Community />} />
@@ -228,6 +233,10 @@ const App = () => (
           <Route path="/legal/cgu" element={<CGU />} />
           <Route path="/itineraire" element={<Itineraire />} />
           <Route path="/bon-esprit" element={<BonEsprit />} />
+          {/* Inscription enfant - Family Flooow */}
+          <Route path="/inscription/saisir-code-parent" element={<SaisirCodeParent />} />
+          <Route path="/inscription/generer-code-enfant" element={<GenererCodeEnfant />} />
+          <Route path="/inscription/en-attente" element={<EnAttenteValidation />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>

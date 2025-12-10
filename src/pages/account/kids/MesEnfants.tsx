@@ -99,9 +99,9 @@ const MesEnfants = () => {
     } catch (error) {
       console.error('Erreur lors du chargement des enfants:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les enfants.",
-        variant: "destructive"
+        title: "Chargement interrompu",
+        description: "Impossible de charger vos enfants pour le moment. Vérifiez votre connexion et réessayez.",
+        variant: "default"
       });
     } finally {
       setIsLoading(false);
@@ -149,8 +149,8 @@ const MesEnfants = () => {
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer l'enfant. Veuillez réessayer.",
+        title: "Suppression impossible",
+        description: "Nous n'avons pas pu supprimer ce profil. Veuillez réessayer.",
         variant: "destructive"
       });
     }

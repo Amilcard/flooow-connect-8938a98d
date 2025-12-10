@@ -40,9 +40,9 @@ export const BonEspritCard = () => {
           Clubs solidaires
         </h2>
 
-        {/* Sous-titre */}
+        {/* LOT 5 - T5_1: Sous-titre plus explicite */}
         <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
-          On nomme nos héros.
+          Mettez en lumière un coach, un bénévole, un parent ou un copain qui fait du bien autour de lui.
         </p>
 
         {/* CTA discret */}

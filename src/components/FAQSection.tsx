@@ -44,7 +44,7 @@ const FAQSection = ({ limit = 6 }: { limit?: number }) => {
           {faqItems.slice(0, limit).map((item, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <div key={idx} className="border-t last:border-b border-gray-200">
+              <div key={idx} className="border-t last:border-b border-border">
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
                   className="w-full text-left flex items-center justify-between py-4 px-2"

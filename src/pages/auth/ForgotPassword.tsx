@@ -38,8 +38,8 @@ const ForgotPassword = () => {
     } catch (error: any) {
       console.error('Reset password error:', error);
       toast({
-        title: "Erreur",
-        description: error.message || "Impossible d'envoyer l'e-mail. Veuillez réessayer.",
+        title: "Envoi non abouti",
+        description: "Nous n'avons pas pu envoyer l'email. Vérifiez l'adresse et réessayez.",
         variant: "destructive",
       });
     } finally {
@@ -51,7 +51,7 @@ const ForgotPassword = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col">
         <div className="flex items-center justify-between p-4">
-          <BackButton fallback="/login" />
+          <BackButton fallback="/login" positioning="relative" size="sm" showText={true} label="Retour" />
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4">
@@ -108,7 +108,7 @@ const ForgotPassword = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
-        <BackButton fallback="/login" variant="ghost" size="sm" showText className="gap-2" />
+        <BackButton fallback="/login" positioning="relative" size="sm" showText={true} label="Retour" />
       </div>
 
       {/* Main Content */}

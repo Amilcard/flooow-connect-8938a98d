@@ -157,6 +157,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                     )}
                     <ActivityCard
                       {...activity}
+                      image={activity.image}
                       ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
                       periodType={activity.periodType}
                       structureName={activity.structureName}

@@ -101,17 +101,18 @@ const MesServices = () => {
   ];
 
   return (
-    <PageLayout>
+    <PageLayout showHeader={false}>
       <PageHeader
         title="Mes services"
         subtitle="Les contacts utiles pour vos démarches liées aux activités, aux aides et aux déplacements."
+        backFallback="/home"
       />
       
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-[1200px] mx-auto px-4 py-8 space-y-8">
         {services.map((service) => (
           <section key={service.id} className="space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 font-poppins">{service.title}</h2>
+              <h2 className="text-xl font-bold text-foreground">{service.title}</h2>
               <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
             </div>
             

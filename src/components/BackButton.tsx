@@ -45,10 +45,10 @@ export const BackButton = ({
   };
 
   // Pill style classes for absolute positioning (floating button)
-  const pillClasses = "absolute top-3 left-4 z-10 bg-white border border-gray-200 rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
+  const pillClasses = "absolute top-3 left-4 z-10 bg-background border border-border rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
 
   // Relative positioning classes for inline usage in headers
-  const inlineClasses = "relative bg-white border border-gray-200 rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
+  const inlineClasses = "relative bg-background border border-border rounded-full h-11 min-w-[44px] px-4 py-2.5 shadow-[0px_2px_4px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow";
 
   const baseClasses = positioning === "absolute" ? pillClasses : inlineClasses;
 
@@ -71,7 +71,7 @@ export const BackButton = ({
         aria-label={label}
         className={`${baseClasses} ${className}`}
       >
-        <ChevronLeft className={showText ? "mr-2 text-gray-700" : "text-gray-700"} size={24} strokeWidth={2} />
+        <ChevronLeft className={showText ? "mr-2 text-foreground" : "text-foreground"} size={24} strokeWidth={2} />
         {showText && label}
       </Button>
     </>

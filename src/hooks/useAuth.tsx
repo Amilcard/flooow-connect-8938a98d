@@ -1,7 +1,9 @@
+/**
+ * Auth Provider avec support OAuth
+ * Les utilisateurs OAuth sont automatiquement mappés comme profils parent
+ */
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-
 import { supabase } from '@/integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
 
 interface AuthUser {
   id: string;
@@ -9,6 +11,7 @@ interface AuthUser {
   firstName?: string;
   lastName?: string;
   avatar?: string;
+  provider?: string; // OAuth provider si applicable
 }
 
 interface AuthContextType {
@@ -45,21 +48,86 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
   
 
+  /**
+   * Extrait les infos utilisateur depuis la session Supabase
+   * Gère à la fois les connexions email et OAuth
+   */
+  const extractUserFromSession = (sessionUser: any): AuthUser => {
+    const metadata = sessionUser.user_metadata || {};
+
+    // OAuth providers utilisent des champs différents pour le nom
+    const firstName = metadata.firstName || metadata.first_name || metadata.given_name || metadata.name?.split(' ')[0] || '';
+    const lastName = metadata.lastName || metadata.last_name || metadata.family_name || metadata.name?.split(' ').slice(1).join(' ') || '';
+
+    // Déterminer le provider (OAuth ou email)
+    const provider = sessionUser.app_metadata?.provider || 'email';
+
+    // Avatar : utiliser celui du provider OAuth s'il existe
+    const oauthAvatar = metadata.avatar_url || metadata.picture;
+    const avatar = oauthAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      `${firstName} ${lastName}`.trim() || sessionUser.email
+    )}&background=6366f1&color=fff`;
+
+    return {
+      id: sessionUser.id,
+      email: sessionUser.email || '',
+      firstName,
+      lastName,
+      avatar,
+      provider,
+    };
+  };
+
+  /**
+   * Assure que l'utilisateur OAuth a un profil parent créé
+   */
+  const ensureOAuthProfile = async (sessionUser: any) => {
+    const provider = sessionUser.app_metadata?.provider;
+
+    // Si c'est un utilisateur OAuth (pas email), vérifier/créer le profil
+    if (provider && provider !== 'email') {
+      try {
+        // Vérifier si le profil existe déjà
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', sessionUser.id)
+          .single();
+
+        // Si le profil n'existe pas, il sera créé par le trigger Supabase
+        // On met juste à jour le statut pour indiquer que c'est un compte parent OAuth
+        if (existingProfile) {
+          // Mettre à jour avec les infos OAuth si nécessaires
+          const metadata = sessionUser.user_metadata || {};
+          const firstName = metadata.first_name || metadata.given_name || metadata.name?.split(' ')[0];
+          const lastName = metadata.last_name || metadata.family_name || metadata.name?.split(' ').slice(1).join(' ');
+
+          if (firstName || lastName) {
+            await supabase
+              .from('profiles')
+              .update({
+                first_name: firstName || existingProfile.first_name,
+                last_name: lastName || existingProfile.last_name,
+                // account_status reste 'active' pour OAuth (pas besoin de validation email)
+              })
+              .eq('id', sessionUser.id);
+          }
+        }
+      } catch (error) {
+        console.error('Error ensuring OAuth profile:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     // Check current session
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            firstName: session.user.user_metadata?.firstName,
-            lastName: session.user.user_metadata?.lastName,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              `${session.user.user_metadata?.firstName || ''} ${session.user.user_metadata?.lastName || ''}`
-            )}&background=6366f1&color=fff`
-          });
+          setUser(extractUserFromSession(session.user));
+          // Assurer que le profil OAuth existe
+          await ensureOAuthProfile(session.user);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -71,17 +139,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          firstName: session.user.user_metadata?.firstName,
-          lastName: session.user.user_metadata?.lastName,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            `${session.user.user_metadata?.firstName || ''} ${session.user.user_metadata?.lastName || ''}`
-          )}&background=6366f1&color=fff`
-        });
+        setUser(extractUserFromSession(session.user));
+
+        // Si c'est une nouvelle connexion OAuth, assurer que le profil existe
+        if (event === 'SIGNED_IN') {
+          await ensureOAuthProfile(session.user);
+        }
       } else {
         setUser(null);
       }

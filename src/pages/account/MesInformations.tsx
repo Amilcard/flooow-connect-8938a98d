@@ -68,15 +68,14 @@ const MesInformations = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header simplifié */}
-      <div className="bg-white border-b border-border">
-        <div className="container px-5 py-4 flex items-center justify-between">
-          {/* Partie gauche: Back + Titre */}
-          <div className="flex items-center gap-3">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="hover:bg-muted/50" />
-            <div>
-              <h1 className="text-lg font-bold text-foreground">Mes informations</h1>
-              <p className="text-xs text-muted-foreground">Gérer mon profil personnel</p>
+      {/* Header blanc standard */}
+      <header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+          <div className="flex items-start gap-5 flex-1 min-w-0">
+            <BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold text-foreground leading-tight">Mes informations</h1>
+              <p className="text-sm text-muted-foreground">Gérer mon profil personnel</p>
             </div>
           </div>
 
@@ -89,9 +88,9 @@ const MesInformations = () => {
             {isEditing ? <Save className="w-5 h-5 text-muted-foreground" /> : <Edit className="w-5 h-5 text-muted-foreground" />}
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="container px-4 py-6 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         {/* Photo de profil */}
         <Card>
           <CardHeader>
