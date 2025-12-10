@@ -189,9 +189,10 @@ const MesEnfants = () => {
           <EmptyState
             icon={Baby}
             title="Aucun enfant enregistré"
-            description="Ajoutez le profil de vos enfants pour personnaliser leur expérience"
+            description="Ajoutez le profil de vos enfants pour découvrir des activités adaptées à leur âge et leurs centres d'intérêt"
             actionLabel="Ajouter mon premier enfant"
             onAction={() => setIsAddingChild(true)}
+            variant="inspiring"
           />
         ) : (
           children.map((child) => {
