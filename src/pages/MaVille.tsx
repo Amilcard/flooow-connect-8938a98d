@@ -230,10 +230,8 @@ const MaVille = () => {
         backFallback="/home"
       />
 
-      <div className="min-h-screen bg-background pb-24">
-
-        <div className="max-w-5xl mx-auto px-4 py-6 space-y-8">
-          {/* ========== SECTION 1: ALERTES URGENTES ========== */}
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-24 space-y-8">
+        {/* ========== SECTION 1: ALERTES URGENTES ========== */}
           {alertes.length > 0 && (
             <div className="relative">
               <div
@@ -482,7 +480,6 @@ const MaVille = () => {
               </Button>
             </CardContent>
           </Card>
-        </div>
       </div>
     </PageLayout>
   );

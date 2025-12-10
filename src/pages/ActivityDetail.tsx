@@ -528,7 +528,7 @@ const ActivityDetail = () => {
       />
 
       {/* Main Content Container - Airbnb Style with Grid */}
-      <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
         {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
         <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
           {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}

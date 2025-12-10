@@ -24,16 +24,13 @@ const MapUpdater = ({ activities }: { activities: Activity[] }) => {
 
   useEffect(() => {
     if (activities.length > 0) {
-      // Calculate bounds
+      // Calculate bounds - use activity.location (set by toActivity adapter)
       const bounds = activities.reduce((acc, activity) => {
-        // Type assertion for location as it comes from JSON in Supabase
-        const location = activity.structures?.location as { lat: number; lon: number } | null;
-        const lat = location?.lat || ST_ETIENNE_COORDS.lat; 
-        const lon = location?.lon || ST_ETIENNE_COORDS.lon;
-        
-        // Only include valid coordinates in bounds
-        if (lat && lon) {
-            acc.extend([lat, lon]);
+        const activityLocation = (activity as any).location as { lat: number; lng: number } | null;
+
+        // Only include activities with valid coordinates in bounds
+        if (activityLocation?.lat && activityLocation?.lng) {
+            acc.extend([activityLocation.lat, activityLocation.lng]);
         }
         return acc;
       }, new LatLngBounds([]));
@@ -96,12 +93,16 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
         />
         
         {activities.map((activity) => {
-            // Fallback coordinates logic
-            const location = activity.structures?.location as { lat: number; lon: number } | null;
-            // For demo purposes, if no location, we randomize slightly around Saint-Étienne
-            // In production, we should filter out activities without location or show them differently
-            const lat = location?.lat || ST_ETIENNE_COORDS.lat + (Math.random() - 0.5) * 0.1; 
-            const lon = location?.lon || ST_ETIENNE_COORDS.lon + (Math.random() - 0.5) * 0.1;
+            // Fix: Use activity.location (set by toActivity adapter) with lat/lng properties
+            const activityLocation = (activity as any).location as { lat: number; lng: number } | null;
+
+            // Skip activities without valid coordinates
+            if (!activityLocation?.lat || !activityLocation?.lng) {
+              return null;
+            }
+
+            const lat = activityLocation.lat;
+            const lon = activityLocation.lng;
 
             return (
                 <Marker 
