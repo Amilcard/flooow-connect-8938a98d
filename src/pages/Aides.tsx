@@ -4,7 +4,6 @@
  */
 
 import { useState, useEffect } from "react";
-import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { SharedAidCalculator } from "@/components/aids/SharedAidCalculator";
@@ -177,10 +176,6 @@ const Aides = () => {
         <AidsInfoBox />
       </div>
 
-      {/* Bottom margin for navigation */}
-      <div className="h-20" />
-
-      <BottomNavigation />
     </PageLayout>
   );
 };

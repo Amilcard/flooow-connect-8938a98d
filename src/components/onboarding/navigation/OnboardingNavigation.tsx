@@ -32,10 +32,10 @@ export const OnboardingNavigation: React.FC<OnboardingNavigationProps> = ({
       </Button>
       
       {!isLastStep && onSkip && (
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={onSkip}
-          className="text-gray-500 hover:text-gray-700 hover:bg-transparent font-normal"
+          className="text-muted-foreground hover:text-foreground hover:bg-transparent font-normal"
         >
           {labels.skip}
         </Button>

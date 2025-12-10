@@ -51,8 +51,8 @@ const MesNotifications = () => {
       case 'event_reminder': return <Clock className="w-5 h-5 text-orange-600" />;
       case 'favorite': return <Heart className="w-5 h-5 text-pink-600" />;
       case 'booking': return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'system': return <Info className="w-5 h-5 text-gray-600" />;
-      default: return <Bell className="w-5 h-5 text-gray-600" />;
+      case 'system': return <Info className="w-5 h-5 text-muted-foreground" />;
+      default: return <Bell className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
@@ -113,6 +113,7 @@ const MesNotifications = () => {
     <ProfilLayout
       title="Mes notifications"
       subtitle={unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : 'Toutes lues'}
+      backFallback="/mon-compte"
       tourId="notifications-page"
       rightContent={
         unreadCount > 0 ? (

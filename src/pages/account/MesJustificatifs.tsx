@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, FileText, Check, AlertCircle } from "lucide-react";
+import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,7 +70,7 @@ const MesJustificatifs = () => {
   const totalCount = justificatifs.length;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <PageLayout showHeader={false}>
       {/* Nouveau bandeau blanc standard */}
       <PageHeader
         title="Mes justificatifs"
@@ -78,7 +79,7 @@ const MesJustificatifs = () => {
         tourId="documents-page-header"
       />
 
-      <main className="container py-6 space-y-6" data-tour-id="account-documents">
+      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6" data-tour-id="account-documents">
         {/* Résumé des documents */}
         <Card className={!allRequiredUploaded ? "bg-muted/50 border-orange-200" : "bg-green-50 border-green-200"}>
           <CardHeader>
@@ -107,7 +108,7 @@ const MesJustificatifs = () => {
 
         {/* Liste des justificatifs */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <FileText className="w-5 h-5" />
             Documents requis
           </h2>
@@ -185,7 +186,7 @@ const MesJustificatifs = () => {
           </CardContent>
         </Card>
       </main>
-    </div>
+    </PageLayout>
   );
 };
 

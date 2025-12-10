@@ -99,7 +99,7 @@ const MesSessions = () => {
       case 'mobile': return <Smartphone className="w-6 h-6 text-green-600" />;
       case 'tablet': return <Tablet className="w-6 h-6 text-blue-600" />;
       case 'desktop': return <Monitor className="w-6 h-6 text-purple-600" />;
-      default: return <Monitor className="w-6 h-6 text-gray-600" />;
+      default: return <Monitor className="w-6 h-6 text-muted-foreground" />;
     }
   };
 
@@ -109,7 +109,7 @@ const MesSessions = () => {
     } else if (browser.includes('Safari')) {
       return <Globe className="w-4 h-4 text-blue-400" />;
     } else {
-      return <Globe className="w-4 h-4 text-gray-500" />;
+      return <Globe className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -194,29 +194,29 @@ const MesSessions = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-            <div>
-              <h1 className="text-xl font-bold">Mes sessions</h1>
-              <p className="text-white/90 text-sm">
+      {/* Header blanc standard */}
+      <header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+          <div className="flex items-start gap-5 flex-1 min-w-0">
+            <BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold text-foreground leading-tight">Mes sessions</h1>
+              <p className="text-sm text-muted-foreground">
                 {sessions.length} session{sessions.length > 1 ? 's' : ''} active{sessions.length > 1 ? 's' : ''}
               </p>
             </div>
           </div>
-          
+
           {activeSessions.length > 0 && (
-            <Button variant="default" size="sm" onClick={revokeAllOtherSessions} className="bg-red-600 hover:bg-red-700 text-white">
+            <Button variant="destructive" size="sm" onClick={revokeAllOtherSessions}>
               <LogOut className="w-4 h-4 mr-2" />
               Fermer toutes
             </Button>
           )}
         </div>
-      </div>
+      </header>
 
-      <div className="container px-4 py-6 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         {/* Informations de sécurité */}
         <Card className="border-blue-200 bg-blue-50">
           <CardContent className="p-4">
@@ -275,7 +275,7 @@ const MesSessions = () => {
                               </div>
                               
                               <div className="flex items-center space-x-2">
-                                <Monitor className="w-4 h-4 text-gray-500" />
+                                <Monitor className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Système:</span>
                                 <span className="font-medium">{session.osInfo}</span>
                               </div>
@@ -283,7 +283,7 @@ const MesSessions = () => {
                             
                             <div className="space-y-2">
                               <div className="flex items-center space-x-2">
-                                <MapPin className="w-4 h-4 text-gray-500" />
+                                <MapPin className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Localisation:</span>
                                 <span className="font-medium">
                                   {session.location.city}, {session.location.country}
@@ -291,7 +291,7 @@ const MesSessions = () => {
                               </div>
                               
                               <div className="flex items-center space-x-2">
-                                <Clock className="w-4 h-4 text-gray-500" />
+                                <Clock className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Connexion:</span>
                                 <span className="font-medium">{formatLoginTime(session.loginTime)}</span>
                               </div>
@@ -350,7 +350,7 @@ const MesSessions = () => {
                                 </div>
                                 
                                 <div className="flex items-center space-x-2">
-                                  <Monitor className="w-4 h-4 text-gray-500" />
+                                  <Monitor className="w-4 h-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">Système:</span>
                                   <span className="font-medium">{session.osInfo}</span>
                                 </div>
@@ -358,7 +358,7 @@ const MesSessions = () => {
                               
                               <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
-                                  <MapPin className="w-4 h-4 text-gray-500" />
+                                  <MapPin className="w-4 h-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">Localisation:</span>
                                   <span className="font-medium">
                                     {session.location.city}, {session.location.country}
@@ -366,7 +366,7 @@ const MesSessions = () => {
                                 </div>
                                 
                                 <div className="flex items-center space-x-2">
-                                  <Clock className="w-4 h-4 text-gray-500" />
+                                  <Clock className="w-4 h-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">Dernière activité:</span>
                                   <span className="font-medium">{formatLastActivity(session.lastActivity)}</span>
                                 </div>

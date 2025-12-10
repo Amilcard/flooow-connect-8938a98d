@@ -145,8 +145,8 @@ export const EcoMobilitySection = ({
     <section className="space-y-4">
       <div className="flex items-center gap-2">
         <Leaf className="w-6 h-6 text-green-600" />
-        <h2 className="text-2xl font-bold text-foreground">
-          Économe carbone, fais du bien à la planète 🌍
+        <h2 className="text-xl font-bold text-foreground">
+          Économe carbone, fais du bien à la planète
         </h2>
       </div>
 

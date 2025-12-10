@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { Users, Euro, Search, Bus } from "lucide-react";
 import logoFlooow from "@/assets/logo-flooow.png";
-import logoNananere from "@/assets/logo-nananere.svg";
 
 const Splash = () => {
   const navigate = useNavigate();
@@ -63,7 +62,7 @@ const Splash = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6">
       <div className="text-center space-y-6">
         <h1 className="text-5xl font-bold text-white">Flooow</h1>
-        <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets. Nananare !</p>
+        <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets.</p>
         <Loader2 className="w-12 h-12 text-white animate-spin mx-auto" />
       </div>
     </div>

@@ -7,9 +7,9 @@ const PrixBonEsprit = () => {
   return (
     <PageLayout>
       <div className="container mx-auto px-4 py-6 pb-24">
-        <BackButton positioning="relative" size="sm" fallback="/bon-esprit" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/bon-esprit" />
         
-        {/* Hero Section */}
+        {/* LOT 5 - T5_1: Hero Section avec ton FamilyCrunch */}
         <div className="mb-8 space-y-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
@@ -17,11 +17,11 @@ const PrixBonEsprit = () => {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-text-main">Prix Bon Esprit</h1>
-              <p className="text-lg text-text-muted">Vote des élèves</p>
+              <p className="text-lg text-text-muted">C'est toi qui choisis !</p>
             </div>
           </div>
           <p className="text-xl text-text-secondary">
-            Mettre en lumière les héros du quotidien de ton école ou de ton quartier.
+            Tu connais quelqu'un de génial dans ton école ou ton quartier ? C'est le moment de le dire !
           </p>
         </div>
 

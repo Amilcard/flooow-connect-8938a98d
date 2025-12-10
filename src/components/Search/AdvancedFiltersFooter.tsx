@@ -15,11 +15,11 @@ export const AdvancedFiltersFooter = ({
   isCountLoading
 }: AdvancedFiltersFooterProps) => {
   return (
-    <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 flex gap-3 z-20">
+    <div className="sticky bottom-0 left-0 right-0 p-4 bg-background border-t border-border flex gap-3 z-20">
       <Button
         variant="outline"
         onClick={onClear}
-        className="flex-1 h-12 text-base font-medium font-poppins border-2 hover:bg-gray-50"
+        className="flex-1 h-12 text-base font-medium font-poppins border-2 hover:bg-muted"
       >
         Réinitialiser
       </Button>

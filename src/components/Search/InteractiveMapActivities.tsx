@@ -162,7 +162,7 @@ export function InteractiveMapActivities({
             <Popup maxWidth={300} className="activity-popup">
               <div className="p-2 min-w-[250px]">
                 {/* Titre */}
-                <h3 className="font-bold text-base text-gray-900 mb-2 leading-tight">
+                <h3 className="font-bold text-base text-foreground mb-2 leading-tight">
                   {activity.title}
                 </h3>
 

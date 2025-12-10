@@ -576,7 +576,7 @@ export const SharedAidCalculator = ({
                     id="ars"
                     checked={hasARS}
                     onChange={(e) => setHasARS(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                   />
                   <Label htmlFor="ars" className="font-normal cursor-pointer">
                     Allocation de rentrée scolaire (ARS)
@@ -588,7 +588,7 @@ export const SharedAidCalculator = ({
                     id="aeeh"
                     checked={hasAEEH}
                     onChange={(e) => setHasAEEH(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                   />
                   <Label htmlFor="aeeh" className="font-normal cursor-pointer">
                     Allocation enfant handicapé (AEEH)
@@ -600,7 +600,7 @@ export const SharedAidCalculator = ({
                     id="bourse"
                     checked={hasBourse}
                     onChange={(e) => setHasBourse(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300"
+                    className="h-4 w-4 rounded border-border"
                   />
                   <Label htmlFor="bourse" className="font-normal cursor-pointer">
                     Bourse scolaire
@@ -799,7 +799,10 @@ export const SharedAidCalculator = ({
                       onClick={() => {
                         const qfSelect = document.getElementById('qf');
                         if (qfSelect) qfSelect.focus();
-                        toast({ title: "Renseignez votre QF ci-dessus" });
+                        toast({
+                          title: "Quotient familial requis",
+                          description: "Indiquez votre QF pour affiner le calcul de vos aides"
+                        });
                       }}
                     >
                       Affiner mon résultat <ArrowRight className="ml-2 h-3 w-3" />
@@ -820,13 +823,17 @@ export const SharedAidCalculator = ({
           </Alert>
 
           {/* CTA Signup pour utilisateurs non connectés */}
+          {/* LOT 3 - T3_1: Message orienté parent */}
           {!isLoggedIn && (
             <div className="pt-4">
               <Alert className="bg-primary/10 border-primary/30">
                 <UserPlus className="h-4 w-4 text-primary" />
                 <AlertDescription className="space-y-3">
                   <p className="text-sm font-medium">
-                    Pour profiter de vos aides et inscrire votre enfant à cette activité
+                    Parents : créez votre compte pour profiter des aides et inscrire vos enfants
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Le compte Flooow est au nom du parent. Vous pourrez ensuite ajouter vos enfants.
                   </p>
                   <Button
                     onClick={() => navigate("/signup")}
@@ -834,7 +841,7 @@ export const SharedAidCalculator = ({
                     size="lg"
                   >
                     <UserPlus className="mr-2 h-4 w-4" />
-                    Créer mon compte gratuit
+                    Créer mon compte parent gratuit
                   </Button>
                 </AlertDescription>
               </Alert>
@@ -859,13 +866,17 @@ export const SharedAidCalculator = ({
           )}
 
           {/* CTA Signup pour utilisateurs non connectés même sans aides */}
+          {/* LOT 3 - T3_1: Message orienté parent */}
           {!isLoggedIn && (
             <div className="pt-4">
               <Alert className="bg-primary/10 border-primary/30">
                 <UserPlus className="h-4 w-4 text-primary" />
                 <AlertDescription className="space-y-3">
                   <p className="text-sm font-medium">
-                    Pour inscrire votre enfant à cette activité
+                    Parents : créez votre compte pour inscrire vos enfants
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Le compte Flooow est au nom du parent. Vous pourrez ensuite ajouter vos enfants.
                   </p>
                   <Button
                     onClick={() => navigate("/signup")}
@@ -873,7 +884,7 @@ export const SharedAidCalculator = ({
                     size="lg"
                   >
                     <UserPlus className="mr-2 h-4 w-4" />
-                    Créer mon compte gratuit
+                    Créer mon compte parent gratuit
                   </Button>
                 </AlertDescription>
               </Alert>

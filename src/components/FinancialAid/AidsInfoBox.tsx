@@ -12,12 +12,12 @@ export function AidsInfoBox() {
       {/* Icon + Title Row */}
       <div className="flex items-center gap-2.5 mb-3">
         <Lightbulb size={24} className="text-amber-500" />
-        <h3 className="font-poppins text-base font-bold text-gray-900">
+        <h3 className="font-poppins text-base font-bold text-foreground">
           Bon à savoir
         </h3>
       </div>
       {/* Content */}
-      <p className="font-poppins text-sm font-normal text-gray-700 leading-relaxed">
+      <p className="font-poppins text-sm font-normal text-muted-foreground leading-relaxed">
         Les aides sont souvent cumulables. Ces montants sont des estimations basées sur vos informations. Ils seront confirmés par les organismes concernés lors de votre inscription.
       </p>
     </div>

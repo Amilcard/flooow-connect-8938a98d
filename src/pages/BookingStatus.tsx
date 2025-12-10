@@ -76,17 +76,17 @@ const BookingStatus = () => {
         };
       case "annulee":
         return {
-          icon: <AlertCircle className="w-16 h-16 text-gray-500" />,
+          icon: <AlertCircle className="w-16 h-16 text-muted-foreground" />,
           title: "Réservation annulée",
           description: "Cette réservation a été annulée.",
-          color: "bg-gray-100 text-gray-700"
+          color: "bg-muted text-muted-foreground"
         };
       default:
         return {
-          icon: <AlertCircle className="w-16 h-16 text-gray-500" />,
+          icon: <AlertCircle className="w-16 h-16 text-muted-foreground" />,
           title: "Statut inconnu",
           description: "",
-          color: "bg-gray-100 text-gray-700"
+          color: "bg-muted text-muted-foreground"
         };
     }
   };

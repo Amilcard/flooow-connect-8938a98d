@@ -1,4 +1,4 @@
-import { Star, Baby, Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface QuickInfoBarProps {
@@ -8,15 +8,6 @@ interface QuickInfoBarProps {
   rating?: {
     average: number;
     count: number;
-  };
-
-  /**
-   * Tranche d'âge de l'activité
-   */
-  ageRange: {
-    min: number;
-    max: number;
-    label?: string;
   };
 
   /**
@@ -50,15 +41,14 @@ interface QuickInfoBarProps {
  *
  * Affiche les informations essentielles en un coup d'œil :
  * - Rating avec étoiles
- * - Tranche d'âge avec icône
  * - Badge "GRATUIT" si applicable
+ * - Badges SOLIDAIRE / InKlusif
  * - Indicateur de places restantes
  *
  * @example
  * ```tsx
  * <QuickInfoBar
  *   rating={{ average: 4.8, count: 23 }}
- *   ageRange={{ min: 6, max: 12, label: "6-12 ans" }}
  *   isFree={false}
  *   spotsRemaining={3}
  * />
@@ -66,7 +56,6 @@ interface QuickInfoBarProps {
  */
 export function QuickInfoBar({
   rating,
-  ageRange,
   isFree,
   spotsRemaining,
   paymentEchelonned,
@@ -81,35 +70,26 @@ export function QuickInfoBar({
   };
 
   const spotsColor = spotsRemaining ? getSpotsColor(spotsRemaining) : "#10B981";
-  const ageLabel = ageRange.label || `${ageRange.min}-${ageRange.max} ans`;
 
   return (
     <div
-      className={`quick-info-bar flex items-center gap-3 flex-wrap py-3 px-4 bg-white border-b border-gray-200 ${className}`}
+      className={`quick-info-bar flex items-center gap-3 flex-wrap py-3 px-4 bg-background border-b border-border ${className}`}
     >
       {/* Rating */}
       {rating && (
         <div className="flex items-center gap-1.5">
           <Star size={16} fill="#F59E0B" color="#F59E0B" strokeWidth={0} />
-          <span className="text-sm font-semibold text-gray-900">
+          <span className="text-sm font-semibold text-foreground">
             {rating.average.toFixed(1)}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             ({rating.count} avis)
           </span>
         </div>
       )}
 
       {/* Séparateur si rating présent */}
-      {rating && <div className="w-px h-5 bg-gray-300" />}
-
-      {/* Age Range */}
-      <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1 rounded-md">
-        <Baby size={16} color="#4A90E2" strokeWidth={2} />
-        <span className="text-sm font-semibold text-blue-700">
-          {ageLabel}
-        </span>
-      </div>
+      {rating && <div className="w-px h-5 bg-border" />}
 
       {/* Badge Gratuit */}
       {isFree && (

@@ -23,7 +23,7 @@ export function MobilityDataSources({ sources }: MobilityDataSourcesProps) {
       {/* Icon + Title Row */}
       <div className="flex items-center gap-2.5 mb-3">
         <Lightbulb size={24} className="text-amber-500" />
-        <h3 className="font-poppins text-base font-bold text-gray-900">
+        <h3 className="font-poppins text-base font-bold text-foreground">
           Sources des données CO₂
         </h3>
       </div>
@@ -32,13 +32,13 @@ export function MobilityDataSources({ sources }: MobilityDataSourcesProps) {
       <div className="space-y-3">
         {sources.map((source) => (
           <div key={source.code} className="space-y-1">
-            <p className="font-poppins text-sm font-semibold text-gray-700">
+            <p className="font-poppins text-sm font-semibold text-foreground">
               {source.label}
             </p>
-            <p className="font-poppins text-xs text-gray-600 leading-relaxed">
+            <p className="font-poppins text-xs text-muted-foreground leading-relaxed">
               {source.description_parent}
             </p>
-            <p className="font-poppins text-xs text-gray-500">
+            <p className="font-poppins text-xs text-muted-foreground">
               {source.website.replace(/^https?:\/\/(www\.)?/, '')}
             </p>
           </div>

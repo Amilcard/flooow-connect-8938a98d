@@ -69,17 +69,18 @@ export const BottomNavigation = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] animate-in fade-in duration-300">
           <div className="text-center space-y-4">
             <h1 className="text-6xl font-bold text-white tracking-tight">Flooow</h1>
-            <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets. Nananare !</p>
+            <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets.</p>
           </div>
         </div>
       )}
 
-      <nav 
+      <nav
         className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)]"
         role="navigation"
         aria-label="Navigation principale"
       >
-        <div className="container px-2 py-2.5">
+        {/* Conteneur contraint pour aligner avec le contenu principal */}
+        <div className="max-w-5xl mx-auto px-4 py-2.5">
           <ul className="flex items-center justify-around">
             {visibleItems.map((item) => {
               const Icon = item.icon;
@@ -93,7 +94,7 @@ export const BottomNavigation = () => {
                       "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[48px] min-h-[48px] rounded-lg transition-colors relative"
                     )}
                     style={{
-                      color: isActive ? "#FF8A3D" : "#AFAFAF"
+                      color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"
                     }}
                     aria-label={item.label}
                     aria-current={isActive ? "page" : undefined}

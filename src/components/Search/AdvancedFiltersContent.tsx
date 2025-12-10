@@ -391,16 +391,16 @@ const FilterSection = ({
   className
 }: FilterSectionProps) => {
   return (
-    <div className={cn("border-b border-gray-100", className)}>
+    <div className={cn("border-b border-border", className)}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors"
       >
         <div className="flex items-center gap-3">
           {icon}
           <div className="text-left">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-900">{title}</span>
+              <span className="font-semibold text-foreground">{title}</span>
               {isCritical && <span className="text-red-500 text-xs">*</span>}
             </div>
             {description && (
@@ -409,9 +409,9 @@ const FilterSection = ({
           </div>
         </div>
         {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-gray-400" />
+          <ChevronUp className="w-5 h-5 text-muted-foreground" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
+          <ChevronDown className="w-5 h-5 text-muted-foreground" />
         )}
       </button>
       

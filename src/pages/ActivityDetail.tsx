@@ -57,8 +57,6 @@ import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
-import { BackButton } from "@/components/BackButton";
-import { getCategoryStyle } from "@/constants/categories";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap: Record<string, string> = {
@@ -137,16 +135,13 @@ const ActivityDetail = () => {
     enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("activities_with_age_groups")
+        .from("activities")
         .select(`
           *,
           organisms:organism_id (
             name,
             address,
-            type,
-            phone,
-            email,
-            website
+            phone
           )
         `)
         .eq("id", id)
@@ -293,7 +288,7 @@ const ActivityDetail = () => {
     queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("activities_with_age_groups")
+        .from("activities")
         .select("id, title, categories, age_min, age_max, price_base, period_type, images")
         .neq("id", activity!.id)
         .eq("is_published", true)
@@ -444,14 +439,9 @@ const ActivityDetail = () => {
   };
   const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
-  // Catégorie pour affichage
-  const displayCategory = activity.categories && activity.categories.length > 0
-    ? activity.categories[0]
-    : activity.category;
-
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Mobile only: Compact Hero Header (140px) */}
+      {/* Compact Hero Header (160px optimisé) */}
       <CompactHeroHeader
         imageUrl={displayImage}
         title={activity.title}
@@ -459,55 +449,28 @@ const ActivityDetail = () => {
         categories={activity.categories}
         backFallback="/home"
         rightContent={
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={handleShare}
-            className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-9 h-9 rounded-full"
-          >
-            <Share2 size={16} className="text-foreground" />
-          </Button>
-        }
-      />
-
-      {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
-      <QuickInfoBar
-        ageRange={{ min: activity.age_min, max: activity.age_max }}
-        isFree={activity.price_base === 0}
-        spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
-        paymentEchelonned={activity.payment_echelonned || false}
-        hasAccessibility={
-          typeof activity.accessibility_checklist === 'object' &&
-          activity.accessibility_checklist !== null &&
-          'wheelchair' in activity.accessibility_checklist &&
-          Boolean((activity.accessibility_checklist as any).wheelchair)
-        }
-      />
-
-      {/* Main Content Container */}
-      <div className="container px-4 md:px-6 py-6 max-w-[1140px] mx-auto">
-        {/* Desktop: Back button aligned with content (hidden on mobile - hero has it) */}
-        <div className="hidden lg:flex items-center justify-between mb-4">
-          <BackButton
-            positioning="relative"
-            size="sm"
-            showText={true}
-            label="Retour"
-            className="text-sm"
-          />
           <div className="relative">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShare}
-              className="flex items-center gap-2"
-            >
-              <Share2 size={16} />
-              Partager
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={handleShare}
+                    className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full"
+                  >
+                    <Share2 size={18} className="text-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Partager</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
             {/* Share menu for desktop */}
             {showShareMenu && (
-              <Card className="absolute right-0 top-10 z-50 w-56 p-2 shadow-lg">
+              <Card className="absolute right-0 top-12 z-50 w-56 p-2 shadow-lg">
                 <div className="space-y-1">
                   <Button
                     variant="ghost"
@@ -547,154 +510,78 @@ const ActivityDetail = () => {
               </Card>
             )}
           </div>
-        </div>
+        }
+      />
 
-        {/* Header Section avec image card + organisateur sur desktop */}
-        <div className="space-y-4 pb-6 border-b mb-6" data-tour-id="activity-header">
-          {/* Desktop: Layout flex avec image + organisateur à gauche */}
-          <div className="flex flex-col lg:flex-row lg:gap-6">
-            {/* Colonne gauche: Image + Organisateur - Desktop only */}
-            <div className="hidden lg:flex lg:flex-col lg:gap-4 shrink-0 w-[280px]">
-              {/* Image card */}
-              <div className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-md">
-                <img
-                  src={displayImage}
-                  alt={activity.title}
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: "center 30%" }}
-                  onError={(e) => {
-                    if (!imgError) {
-                      setImgError(true);
-                      (e.target as HTMLImageElement).src = fallbackImage;
-                    }
-                  }}
-                />
-                {/* Category badge */}
-                <div
-                  className="absolute top-3 left-3 px-2.5 py-1 rounded-md"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
-                >
-                  <span
-                    className="text-xs font-bold uppercase font-poppins"
-                    style={{ color: getCategoryStyle(displayCategory).color }}
-                  >
-                    {displayCategory}
-                  </span>
-                </div>
-              </div>
+      {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
+      <QuickInfoBar
+        ageRange={{ min: activity.age_min, max: activity.age_max }}
+        isFree={activity.price_base === 0}
+        spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
+        paymentEchelonned={activity.payment_echelonned || false}
+        hasAccessibility={
+          typeof activity.accessibility_checklist === 'object' &&
+          activity.accessibility_checklist !== null &&
+          'wheelchair' in activity.accessibility_checklist &&
+          Boolean((activity.accessibility_checklist as any).wheelchair)
+        }
+      />
 
-              {/* Bloc Organisateur compact - Desktop */}
-              {activity.organisms && (
-                <div className="p-3 bg-muted/30 rounded-lg space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Building2 size={16} className="text-primary shrink-0" />
-                    <span className="font-semibold text-sm truncate">{activity.organisms.name}</span>
-                  </div>
-                  {activity.organisms.address && (
-                    <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <MapPin size={12} className="shrink-0 mt-0.5" />
-                      <span className="line-clamp-2">{activity.organisms.address}</span>
-                    </div>
-                  )}
-                  {activity.organisms.phone && (
-                    <a href={`tel:${activity.organisms.phone}`} className="flex items-center gap-2 text-xs text-primary hover:underline">
-                      <Phone size={12} className="shrink-0" />
-                      {activity.organisms.phone}
-                    </a>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowContactModal(true)}
-                    className="w-full mt-2 h-8 text-xs"
-                  >
-                    <MessageCircle size={14} className="mr-1.5" />
-                    Contacter
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Titre et méta */}
-            <div className="flex-1 space-y-3">
-              {/* Titre H1 */}
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
-                {activity.title}
-              </h1>
-
-              {/* Badge Rythme */}
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge
-                  variant="secondary"
-                  className="text-xs font-medium px-2.5 py-1"
-                  style={{
-                    backgroundColor: activity.period_type === 'scolaire' ? '#EFF6FF' : '#FEF3C7',
-                    color: activity.period_type === 'scolaire' ? '#1D4ED8' : '#B45309'
-                  }}
-                >
-                  {activity.period_type === 'scolaire' ? '📅 Hebdomadaire' : '🏕️ Stage vacances'}
-                </Badge>
-                {activity.price_base === 0 && (
-                  <Badge className="text-xs font-bold bg-green-100 text-green-700 border-0">
-                    GRATUIT
-                  </Badge>
-                )}
-              </div>
-
-              {/* Méta informations (âge, période, ville) */}
-              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
-                <span className="flex items-center gap-2">
-                  <Users size={18} className="text-primary" />
-                  <span className="font-medium text-foreground">{ageRange}</span>
+      {/* Main Content Container - Airbnb Style with Grid */}
+      <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
+        {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
+        <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
+          {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
+          <h1 className="title-page md:text-4xl">
+            {activity.title}
+          </h1>
+          
+          {/* Méta informations (âge, durée, lieu) */}
+          <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
+            <span className="flex items-center gap-2">
+              <Users size={20} className="text-primary" />
+              <span className="font-medium text-foreground">{ageRange}</span>
+            </span>
+            
+            {activity.period_type && (
+              <span className="flex items-center gap-2">
+                <CalendarRange size={20} className="text-primary" />
+                <span className="text-muted-foreground">
+                  {activity.period_type === 'scolaire' 
+                    ? 'Année scolaire' 
+                    : 'Vacances scolaires'}
                 </span>
-
-                {activity.period_type && (
-                  <span className="flex items-center gap-2">
-                    <CalendarRange size={18} className="text-primary" />
-                    <span className="text-muted-foreground">
-                      {activity.period_type === 'scolaire'
-                        ? 'Année scolaire 2024-2025'
-                        : 'Vacances scolaires'}
-                    </span>
-                  </span>
-                )}
-
-                {activity.city && (
-                  <span className="flex items-center gap-2">
-                    <MapPin size={18} className="text-primary" />
-                    <span className="text-muted-foreground">{activity.city}</span>
-                  </span>
-                )}
-              </div>
-
-              {/* Mobile: Bloc Organisateur compact */}
-              {activity.organisms && (
-                <div className="lg:hidden p-3 bg-muted/30 rounded-lg mt-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Building2 size={16} className="text-primary shrink-0" />
-                      <span className="font-semibold text-sm truncate">{activity.organisms.name}</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowContactModal(true)}
-                      className="h-8 text-xs shrink-0"
-                    >
-                      <MessageCircle size={14} className="mr-1" />
-                      Contacter
-                    </Button>
-                  </div>
-                  {activity.organisms.address && (
-                    <p className="text-xs text-muted-foreground mt-1 flex items-start gap-1">
-                      <MapPin size={12} className="shrink-0 mt-0.5" />
-                      {activity.organisms.address}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+              </span>
+            )}
+            
+            {activity.organisms?.address && (
+              <span className="flex items-center gap-2">
+                <MapPin size={20} className="text-primary" />
+                <span className="text-muted-foreground">{activity.organisms.address}</span>
+              </span>
+            )}
           </div>
+
+          {/* Organisateur avec lien contact discret */}
+          {activity.organisms?.name && (
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-2">
+                <Building2 size={20} className="text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">
+                  Organisé par {activity.organisms.name}
+                </span>
+              </div>
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => setShowContactModal(true)}
+                className="h-auto p-0 text-sm text-primary hover:underline font-medium"
+              >
+                <MessageCircle size={16} className="mr-1.5" />
+                Contacter l'organisateur
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
@@ -725,72 +612,130 @@ const ActivityDetail = () => {
                   </section>
                 )}
 
-                {/* Informations pratiques - Simplifié (organisateur déjà dans header) */}
+                {/* Informations pratiques - Layout en colonnes alignées */}
                 <section className="space-y-4">
                   <h2 className="text-2xl font-bold text-foreground">Informations pratiques</h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {/* Rythme */}
-                    {sessions.length > 0 && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                        <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Rythme</p>
-                          <p className="text-sm text-muted-foreground">
-                            {activity.period_type === "scolaire"
-                              ? `Hebdomadaire — ${sessions[0]?.day_of_week !== null ? ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"][sessions[0].day_of_week] : ""}`
-                              : activity.has_accommodation ? "Séjour vacances" : "Stage vacances"}
-                          </p>
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Colonne gauche */}
+                    <div className="space-y-4">
+                      {sessions.length > 0 && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Rythme</p>
+                            <p className="text-sm text-muted-foreground">
+                              {activity.period_type === "scolaire" ? "Atelier hebdomadaire" : "Stage vacances"} — voir créneaux disponibles
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Lieu */}
-                    {activity.organisms?.address && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                        <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Lieu</p>
-                          <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Accessibilité */}
-                    {typeof activity.accessibility_checklist === 'object' &&
-                     activity.accessibility_checklist !== null &&
-                     'wheelchair' in activity.accessibility_checklist &&
-                     activity.accessibility_checklist.wheelchair && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30" data-tour-id="inklusif-badge-detail">
-                        <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Activité InKlusif</p>
-                          <p className="text-sm text-muted-foreground">Adaptée PMR</p>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Covoiturage */}
-                    {activity.covoiturage_enabled && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                        <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Covoiturage</p>
-                          <p className="text-sm text-muted-foreground">Service disponible</p>
-                        </div>
-                      </div>
-                    )}
 
-                    {/* Paiement échelonné */}
-                    {activity.payment_echelonned && (
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30">
-                        <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Paiement échelonné</p>
-                          <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      {typeof activity.accessibility_checklist === 'object' &&
+                       activity.accessibility_checklist !== null &&
+                       'wheelchair' in activity.accessibility_checklist &&
+                       activity.accessibility_checklist.wheelchair && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors" data-tour-id="inklusif-badge-detail">
+                          <Accessibility size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Activité InKlusif</p>
+                            <p className="text-sm text-muted-foreground">Adaptée aux personnes en situation de handicap</p>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
+
+                    {/* Colonne droite */}
+                    <div className="space-y-4">
+                      {/* Lieu d'activité */}
+                      {(activity.venue_name || activity.address) && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Lieu d'entraînement</p>
+                            {activity.venue_name && <p className="text-sm font-medium text-foreground">{activity.venue_name}</p>}
+                            <p className="text-sm text-muted-foreground">
+                              {activity.address}{activity.city && `, ${activity.city}`}{activity.postal_code && ` ${activity.postal_code}`}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Organisateur complet */}
+                      {activity.organisms && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Building2 size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div className="space-y-1">
+                            <p className="font-medium text-sm">Organisateur</p>
+                            <p className="text-sm font-medium text-foreground">{activity.organisms.name}</p>
+                            {activity.organisms.type && (
+                              <p className="text-xs text-muted-foreground">{activity.organisms.type}</p>
+                            )}
+                            {activity.organisms.address && (
+                              <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
+                            )}
+                            {activity.organisms.phone && (
+                              <p className="text-sm text-muted-foreground">📞 {activity.organisms.phone}</p>
+                            )}
+                            {activity.organisms.email && (
+                              <p className="text-sm text-muted-foreground">✉️ {activity.organisms.email}</p>
+                            )}
+                            {activity.organisms.website && (
+                              <a href={activity.organisms.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                                🌐 Site web
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Informations supplémentaires en dessous */}
+                  {(activity.covoiturage_enabled || activity.payment_echelonned) && (
+                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                      {activity.covoiturage_enabled && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Covoiturage</p>
+                            <p className="text-sm text-muted-foreground">Service disponible</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {activity.payment_echelonned && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Paiement échelonné</p>
+                            <p className="text-sm text-muted-foreground">Plusieurs fois possible</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </section>
               </TabsContent>
 
@@ -1097,13 +1042,13 @@ const ActivityDetail = () => {
       </div>
 
 
-      {activity.organisms && (
+      {activity.organisms && typeof activity.organisms.phone === 'object' && activity.organisms.phone !== null && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
           organizerName={activity.organisms.name}
-          organizerEmail={activity.organisms?.email || ''}
-          organizerPhone={activity.organisms?.phone}
+          organizerEmail={'email' in activity.organisms.phone ? String(activity.organisms.phone.email) : ''}
+          organizerPhone={'phone' in activity.organisms.phone ? String(activity.organisms.phone.phone) : undefined}
           activityTitle={activity.title}
         />
       )}

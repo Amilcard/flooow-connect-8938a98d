@@ -41,7 +41,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
-    images: dbActivity.image_url ? [dbActivity.image_url] : [],
+    images: [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
     price_base: dbActivity.price_base || 0,
@@ -51,7 +51,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
     structures: {
-      name: dbActivity.organism_name || null,
+      name: dbActivity.organisms?.name || null,
       address: dbActivity.address,
       city: dbActivity.city,
       postal_code: dbActivity.postal_code,
@@ -81,7 +81,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities_with_sessions")
-          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions_json, price_unit, organism_name, organism_type, organism_address, organism_phone, organism_email, organism_website, image_url")
+          .select("id, title, description, categories, age_min, age_max, price_base, accepts_aid_types, tags, period_type, vacation_periods, address, city, postal_code, latitude, longitude, date_debut, date_fin, jours_horaires, sessions_json, price_unit, organism_name, organism_type, organism_address, organism_phone, organism_email, organism_website")
           .eq("is_published", true);
       };
 
@@ -106,8 +106,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       }
 
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        // Utiliser age_min/age_max de la vue (pas session_age_min/session_age_max)
-        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
+        query = query.lte("session_age_min", filters.ageMax).gte("session_age_max", filters.ageMin);
       }
 
       if (filters?.periodType && filters.periodType !== 'all') {
@@ -118,15 +117,13 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.lte("price_base", filters.maxPrice);
       }
 
-      // Note: has_accessibility et mobility_types ne sont pas dans la vue activities_with_sessions
-      // Ces filtres sont désactivés pour éviter les erreurs
-      // TODO: Ajouter ces colonnes à la vue si nécessaire
-      // if (filters?.hasAccessibility) {
-      //   query = query.eq("has_accessibility", true);
-      // }
-      // if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
-      //   query = query.overlaps("mobility_types", filters.mobilityTypes);
-      // }
+      if (filters?.hasAccessibility) {
+        query = query.eq("has_accessibility", true);
+      }
+
+      if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
+        query = query.overlaps("mobility_types", filters.mobilityTypes);
+      }
 
       if (filters?.hasFinancialAid) {
         query = query.not("accepts_aid_types", "is", null);

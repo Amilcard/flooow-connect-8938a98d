@@ -27,30 +27,31 @@ export const SearchPageHeader = ({
   };
 
   return (
-    <div className="sticky top-0 z-[100] bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
+      {/* Conteneur contraint h-16 pour alignement cohérent avec Header/PageHeader */}
+      <div className="max-w-5xl mx-auto h-16 flex items-center gap-3 px-4">
         {/* BackButton - cohérent avec LOT 1 - positioning relative pour alignement avec le contenu */}
-        <BackButton positioning="relative" size="sm" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" />
 
         {/* SearchBar */}
-        <div className="flex-1 flex items-center gap-2 bg-gray-50 border-2 border-gray-200 rounded-[10px] px-3 py-2.5 transition-all focus-within:border-primary">
-          <Search size={20} className="text-gray-400 flex-shrink-0" />
+        <div className="flex-1 flex items-center gap-2 bg-muted border-2 border-border rounded-[10px] px-3 py-2.5 transition-all focus-within:border-primary">
+          <Search size={20} className="text-muted-foreground flex-shrink-0" />
 
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Sport, culture, quartier..."
-            className="flex-1 bg-transparent border-none outline-none text-[15px] text-gray-900 placeholder:text-gray-400 font-poppins"
+            className="flex-1 bg-transparent border-none outline-none text-[15px] text-foreground placeholder:text-muted-foreground font-poppins"
           />
 
           {searchQuery && (
             <button
               onClick={handleClear}
-              className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+              className="p-1 rounded-full hover:bg-muted transition-colors"
               aria-label="Effacer la recherche"
             >
-              <X size={18} className="text-gray-600" />
+              <X size={18} className="text-muted-foreground" />
             </button>
           )}
         </div>
@@ -58,10 +59,10 @@ export const SearchPageHeader = ({
         {/* Filters Button */}
         <button
           onClick={onOpenFilters}
-          className="relative px-3 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-[10px] transition-all hover:border-primary hover:bg-white"
+          className="relative px-3 py-2.5 bg-muted border-2 border-border rounded-[10px] transition-all hover:border-primary hover:bg-background"
           aria-label="Ouvrir les filtres"
         >
-          <span className="text-sm font-semibold text-gray-900 font-poppins">
+          <span className="text-sm font-semibold text-foreground font-poppins">
             Filtres
           </span>
 
@@ -75,6 +76,6 @@ export const SearchPageHeader = ({
           )}
         </button>
       </div>
-    </div>
+    </header>
   );
 };
