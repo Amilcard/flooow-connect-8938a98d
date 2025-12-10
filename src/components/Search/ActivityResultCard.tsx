@@ -84,11 +84,11 @@ export const ActivityResultCard = ({
           </span>
         </div>
 
-        {/* Gratuit Badge */}
+        {/* Badge Séance d'essai (pour activités avec essai gratuit) */}
         {priceIsFree && (
           <div className="absolute top-3 right-3 px-3 py-1.5 bg-emerald-500/95 rounded-lg">
-            <span className="text-xs font-bold text-white uppercase font-poppins">
-              GRATUIT
+            <span className="text-[11px] font-semibold text-white font-poppins">
+              Séance d'essai
             </span>
           </div>
         )}
@@ -119,8 +119,8 @@ export const ActivityResultCard = ({
             </span>
           )}
           {priceIsFree && (
-            <span className="text-base font-bold text-emerald-600 font-poppins">
-              Gratuit
+            <span className="text-sm font-semibold text-emerald-600 font-poppins">
+              Essai offert
             </span>
           )}
         </div>

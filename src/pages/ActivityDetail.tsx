@@ -527,58 +527,59 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Main Content Container - Airbnb Style with Grid */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
-        {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
-        <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
-          {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
-          <h1 className="title-page md:text-4xl">
+      {/* Main Content Container - Densifié pour flux visuel continu */}
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
+        {/* Header Section - Compact : Titre → Méta sur 1-2 lignes → Organisateur discret */}
+        <div className="space-y-2 pb-4 border-b mb-6" data-tour-id="activity-header">
+          {/* Titre H1 - hierarchie forte */}
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
             {activity.title}
           </h1>
-          
-          {/* Méta informations (âge, durée, lieu) */}
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
-            <span className="flex items-center gap-2">
-              <Users size={20} className="text-primary" />
+
+          {/* Méta compactes : lieu | période | âge - sur 1 ligne */}
+          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            {activity.organisms?.address && (
+              <>
+                <span className="flex items-center gap-1.5">
+                  <MapPin size={14} className="text-primary" />
+                  <span>{activity.city || activity.organisms.address.split(',')[0]}</span>
+                </span>
+                <span className="text-border">•</span>
+              </>
+            )}
+
+            {activity.period_type && (
+              <>
+                <span className="flex items-center gap-1.5">
+                  <CalendarRange size={14} className="text-primary" />
+                  <span>
+                    {activity.period_type === 'scolaire' ? 'Année scolaire' : 'Vacances'}
+                  </span>
+                </span>
+                <span className="text-border">•</span>
+              </>
+            )}
+
+            <span className="flex items-center gap-1.5">
+              <Users size={14} className="text-primary" />
               <span className="font-medium text-foreground">{ageRange}</span>
             </span>
-            
-            {activity.period_type && (
-              <span className="flex items-center gap-2">
-                <CalendarRange size={20} className="text-primary" />
-                <span className="text-muted-foreground">
-                  {activity.period_type === 'scolaire' 
-                    ? 'Année scolaire' 
-                    : 'Vacances scolaires'}
-                </span>
-              </span>
-            )}
-            
-            {activity.organisms?.address && (
-              <span className="flex items-center gap-2">
-                <MapPin size={20} className="text-primary" />
-                <span className="text-muted-foreground">{activity.organisms.address}</span>
-              </span>
-            )}
           </div>
 
-          {/* Organisateur avec lien contact discret */}
+          {/* Organisateur - ligne compacte avec contact discret */}
           {activity.organisms?.name && (
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-2">
-                <Building2 size={20} className="text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">
-                  Organisé par {activity.organisms.name}
-                </span>
-              </div>
+            <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+              <span className="text-sm text-muted-foreground">
+                Organisé par <span className="font-medium text-foreground">{activity.organisms.name}</span>
+              </span>
               <Button
-                variant="link"
+                variant="ghost"
                 size="sm"
                 onClick={() => setShowContactModal(true)}
-                className="h-auto p-0 text-sm text-primary hover:underline font-medium"
+                className="h-7 px-2 text-xs text-primary hover:text-primary/80 hover:bg-primary/5"
               >
-                <MessageCircle size={16} className="mr-1.5" />
-                Contacter l'organisateur
+                <MessageCircle size={14} className="mr-1" />
+                Contacter
               </Button>
             </div>
           )}
@@ -737,6 +738,14 @@ const ActivityDetail = () => {
                     </div>
                   )}
                 </section>
+
+                {/* Cross-links vers autres onglets - texte d'orientation discret */}
+                <div className="mt-6 p-3 bg-muted/30 rounded-lg border border-border/50">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    💡 Consultez l'onglet <button onClick={() => setActiveTab("tarifs")} className="font-medium text-primary hover:underline">Tarifs & aides</button> pour estimer votre reste à charge,
+                    ou <button onClick={() => setActiveTab("trajets")} className="font-medium text-primary hover:underline">Trajets</button> pour préparer vos déplacements (transports en commun, vélo, covoiturage).
+                  </p>
+                </div>
               </TabsContent>
 
               {/* Onglet Tarifs & aides */}

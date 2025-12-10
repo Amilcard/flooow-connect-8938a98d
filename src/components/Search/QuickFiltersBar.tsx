@@ -1,7 +1,7 @@
 /**
  * LOT 6 - QuickFiltersBar Component
  * Horizontal scrollable chips for quick 1-click filters
- * Most used filters: gratuit, vacances été, âge, aides, proche, mercredi, sport, culture
+ * Most used filters: séance d'essai, vacances été, âge, aides, proche, mercredi, sport, culture
  */
 
 import { QuickFilters, QuickFilterChip } from '@/types/searchFilters';
@@ -14,7 +14,7 @@ interface QuickFiltersBarProps {
 const QUICK_FILTER_CHIPS: QuickFilterChip[] = [
   {
     id: 'gratuit',
-    label: 'Gratuit',
+    label: 'Séance d\'essai',
     color_active: '#10B981',
     bg_active: '#DCFCE7'
   },

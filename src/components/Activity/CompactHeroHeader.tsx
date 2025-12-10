@@ -87,17 +87,16 @@ export function CompactHeroHeader({
   const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
 
   return (
-    <div className="compact-hero-header relative w-full overflow-hidden lg:hidden">
-      {/* Conteneur compact - 140px mobile, 160px tablet, masqué desktop */}
-      <div className="relative w-full h-[140px] md:h-[160px]">
-        {/* Image de fond - réduite et sobre */}
+    <div className="compact-hero-header relative w-full overflow-hidden">
+      {/* Conteneur immersif - 200px mobile, 240px tablet, 280px desktop - aligné avec cards Recherche */}
+      <div className="relative w-full h-[200px] md:h-[240px] lg:h-[280px]">
+        {/* Image de fond - immersive comme les cards Recherche */}
         <img
           src={finalImageUrl}
           alt={title}
           className="absolute inset-0 w-full h-full object-cover"
           style={{
-            filter: "brightness(0.9)",
-            objectPosition: "center 30%"
+            objectPosition: "center 40%"
           }}
           onError={(e) => {
             if (!imgError) {
@@ -106,33 +105,33 @@ export function CompactHeroHeader({
             }
           }}
         />
-        {/* Gradient léger */}
+        {/* Gradient optimisé pour lisibilité sans assombrir l'image */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.3) 100%)"
+            background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.35) 100%)"
           }}
         />
       </div>
 
-      {/* Back Button - Top Left - Position fixe cohérente avec PageHeader */}
-      <div className="absolute top-3 left-4 z-10">
+      {/* Back Button - Top Left - Style pilule cohérent avec Recherche */}
+      <div className="absolute top-4 left-4 z-10">
         <BackButton
           positioning="relative"
           size="sm"
-          className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md !h-10 !w-10 !min-w-[40px] !p-0 rounded-full flex items-center justify-center transition-all"
+          className="bg-white/95 backdrop-blur-md hover:bg-white shadow-lg !h-10 !w-10 !min-w-[40px] !p-0 rounded-full flex items-center justify-center transition-all hover:scale-105"
         />
       </div>
 
       {/* Category Badge + Actions - Top Right */}
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-4 right-4 z-10">
         <div className="flex items-center gap-2">
           <div
-            className="px-2.5 py-1 rounded-md backdrop-blur-sm"
+            className="px-3 py-1.5 rounded-full backdrop-blur-md shadow-md"
             style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
           >
             <span
-              className="text-xs font-bold uppercase font-poppins"
+              className="text-xs font-semibold uppercase tracking-wide"
               style={{ color: getCategoryStyle(displayCategory).color }}
             >
               {displayCategory}
