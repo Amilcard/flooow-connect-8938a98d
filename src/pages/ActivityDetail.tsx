@@ -138,10 +138,10 @@ const ActivityDetail = () => {
         .from("activities")
         .select(`
           *,
-          organisms:organism_id (
+          structures:structure_id (
             name,
             address,
-            phone
+            contact_json
           )
         `)
         .eq("id", id)
@@ -291,7 +291,7 @@ const ActivityDetail = () => {
         .from("activities")
         .select("id, title, categories, age_min, age_max, price_base, period_type, images")
         .neq("id", activity!.id)
-        .eq("is_published", true)
+        .eq("published", true)
         .lte("age_min", activity!.age_max)
         .gte("age_max", activity!.age_min)
         .limit(3);
