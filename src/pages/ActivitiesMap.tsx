@@ -55,8 +55,9 @@ const ActivitiesMap = () => {
         .select(`*`)
         .eq("published", true);
 
+      // FIX: column is 'categories' (array), not 'category'
       if (selectedCategories.length > 0) {
-        query = query.in("category", selectedCategories);
+        query = query.overlaps("categories", selectedCategories);
       }
 
       const { data, error } = await query;
