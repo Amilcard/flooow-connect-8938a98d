@@ -113,12 +113,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const buildBaseQuery = () => {
         return supabase
           .from("activities")
-          .select(`
-            id, title, description, category, categories, images,
-            age_min, age_max, price_base, price_unit, accepts_aid_types, tags,
-            period_type, vacation_periods, vacation_type, duration_days, has_accommodation,
-            covoiturage_enabled, accessibility_checklist, payment_echelonned, structure_id
-          `)
+          .select("*")
           .eq("published", true);
       };
 
