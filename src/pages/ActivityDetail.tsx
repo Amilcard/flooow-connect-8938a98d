@@ -578,15 +578,19 @@ const ActivityDetail = () => {
           {/* Left Column - Main content with Tabs (8/12) */}
           <div className="md:col-span-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
-                <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
-                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center gap-1.5" data-tour-id="tab-tarifs">
-                  <Euro size={14} className="hidden md:inline" />
-                  Tarifs & aides
+              <TabsList className="w-full grid grid-cols-3 gap-1 h-auto p-1 mb-6">
+                <TabsTrigger value="infos" className="text-xs md:text-sm flex items-center justify-center gap-1.5">
+                  <Info size={14} />
+                  <span className="hidden sm:inline">Infos</span>
                 </TabsTrigger>
-                <TabsTrigger value="trajets" className="text-xs md:text-sm flex items-center gap-1.5">
-                  <Leaf size={14} className="hidden md:inline" />
-                  Trajets
+                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center justify-center gap-1.5" data-tour-id="tab-tarifs">
+                  <Euro size={14} />
+                  <span className="hidden sm:inline">Tarifs</span>
+                  <span className="hidden md:inline">&nbsp;& aides</span>
+                </TabsTrigger>
+                <TabsTrigger value="trajets" className="text-xs md:text-sm flex items-center justify-center gap-1.5">
+                  <Leaf size={14} />
+                  <span className="hidden sm:inline">Trajets</span>
                 </TabsTrigger>
               </TabsList>
 
