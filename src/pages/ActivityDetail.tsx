@@ -518,8 +518,10 @@ const ActivityDetail = () => {
         categories={activity.categories}
       />
 
-      {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
+      {/* Quick Info Bar - Ligne de tags identique aux cards Recherche */}
       <QuickInfoBar
+        category={activity.categories?.[0] || activity.category}
+        periodType={activity.period_type}
         ageRange={{ min: activity.age_min, max: activity.age_max }}
         isFree={activity.price_base === 0}
         spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
@@ -532,48 +534,29 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Main Content Container - Densifié pour flux visuel continu */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
-        {/* Header Section - Compact : Titre → Méta sur 1-2 lignes → Organisateur discret */}
-        <div className="space-y-2 pb-4 border-b mb-6" data-tour-id="activity-header">
-          {/* Titre H1 - hierarchie forte */}
+      {/* Main Content Container - Largeur augmentée pour desktop, flux visuel continu */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
+        {/* Header Section - Titre + Lieu + Organisateur (période/âge dans QuickInfoBar) */}
+        <div className="space-y-2 pb-4 border-b mb-5" data-tour-id="activity-header">
+          {/* Titre H1 */}
           <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
             {activity.title}
           </h1>
 
-          {/* Méta compactes : lieu | période | âge - sur 1 ligne */}
-          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            {activity.organisms?.address && (
-              <>
-                <span className="flex items-center gap-1.5">
-                  <MapPin size={14} className="text-primary" />
-                  <span>{activity.city || activity.organisms.address.split(',')[0]}</span>
-                </span>
-                <span className="text-border">•</span>
-              </>
-            )}
+          {/* Localisation uniquement (période et âge sont dans QuickInfoBar) */}
+          {(activity.organisms?.address || activity.city) && (
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <MapPin size={14} className="text-primary flex-shrink-0" />
+              <span>
+                {activity.city || activity.organisms?.address?.split(',')[0]}
+                {activity.postal_code && ` (${activity.postal_code})`}
+              </span>
+            </div>
+          )}
 
-            {activity.period_type && (
-              <>
-                <span className="flex items-center gap-1.5">
-                  <CalendarRange size={14} className="text-primary" />
-                  <span>
-                    {activity.period_type === 'scolaire' ? 'Année scolaire' : 'Vacances'}
-                  </span>
-                </span>
-                <span className="text-border">•</span>
-              </>
-            )}
-
-            <span className="flex items-center gap-1.5">
-              <Users size={14} className="text-primary" />
-              <span className="font-medium text-foreground">{ageRange}</span>
-            </span>
-          </div>
-
-          {/* Organisateur - ligne compacte avec contact discret */}
+          {/* Organisateur avec contact */}
           {activity.organisms?.name && (
-            <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <span className="text-sm text-muted-foreground">
                 Organisé par <span className="font-medium text-foreground">{activity.organisms.name}</span>
               </span>
