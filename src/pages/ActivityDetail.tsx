@@ -53,7 +53,7 @@ import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
-import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
+import { ActivityImageCard } from "@/components/Activity/ActivityImageCard";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
@@ -441,12 +441,9 @@ const ActivityDetail = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Compact Hero Header (160px optimisé) */}
-      <CompactHeroHeader
-        imageUrl={displayImage}
+      {/* Page Header avec flèche retour alignée à gauche */}
+      <PageHeader
         title={activity.title}
-        category={activity.category}
-        categories={activity.categories}
         backFallback="/home"
         rightContent={
           <div className="relative">
@@ -454,12 +451,12 @@ const ActivityDetail = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="secondary"
+                    variant="ghost"
                     size="icon"
                     onClick={handleShare}
-                    className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full"
+                    className="h-9 w-9"
                   >
-                    <Share2 size={18} className="text-foreground" />
+                    <Share2 size={18} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -511,6 +508,14 @@ const ActivityDetail = () => {
             )}
           </div>
         }
+      />
+
+      {/* Image Card arrondie avec badges overlay */}
+      <ActivityImageCard
+        imageUrl={displayImage}
+        title={activity.title}
+        category={activity.category}
+        categories={activity.categories}
       />
 
       {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
