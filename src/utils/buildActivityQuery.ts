@@ -22,7 +22,7 @@ export const buildActivityQuery = (filters: FilterState) => {
   let query: any = supabase
     .from('activities')
     .select('*')
-    .eq('published', true);
+    .eq('is_published', true);
 
   // Text search
   if (filters.searchQuery) {

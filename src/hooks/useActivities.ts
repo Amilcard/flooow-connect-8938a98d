@@ -114,7 +114,7 @@ export const useActivities = (filters?: ActivityFilters) => {
         return supabase
           .from("activities")
           .select("*")
-          .eq("published", true);
+          .eq("is_published", true);
       };
 
       let query = buildBaseQuery();
