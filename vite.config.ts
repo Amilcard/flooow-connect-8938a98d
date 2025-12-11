@@ -21,14 +21,18 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tabs', '@radix-ui/react-tooltip'],
           'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
           'supabase': ['@supabase/supabase-js'],
-          'charts': ['recharts']
+          'charts': ['recharts'],
+          'map-vendor': ['leaflet', 'react-leaflet'],
+          'query-vendor': ['@tanstack/react-query'],
+          'date-vendor': ['date-fns'],
         }
       }
     }

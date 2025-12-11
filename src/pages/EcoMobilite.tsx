@@ -5,7 +5,7 @@
  */
 
 import PageLayout from "@/components/PageLayout";
-import { MobilityHeader } from "@/components/EcoMobility/MobilityHeader";
+import { PageHeader } from "@/components/PageHeader";
 import { MobilitySolutionCard } from "@/components/EcoMobility/MobilitySolutionCard";
 import { MobilityDataSources } from "@/components/EcoMobility/MobilityDataSources";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -124,7 +124,11 @@ const EcoMobilite = () => {
   return (
     <PageLayout showHeader={false}>
       {/* Header */}
-      <MobilityHeader />
+      <PageHeader
+        title="Mes trajets"
+        subtitle="Préparez vos trajets pour rejoindre vos activités sans voiture."
+        backFallback="/home"
+      />
 
       <div className="max-w-5xl mx-auto px-4 pb-24">
         {/* Simulateur CO2 - Highlighted Banner */}
