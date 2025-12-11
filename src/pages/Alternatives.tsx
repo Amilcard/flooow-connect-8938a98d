@@ -36,20 +36,21 @@ const Alternatives = () => {
     enabled: !!activityId,
   });
 
-  // Fetch similar activities (simple logic: same category)
+  // Fetch similar activities (simple logic: same categories)
+  // FIX: column is 'categories' (array), not 'category'
   const { data: alternatives, isLoading } = useQuery({
-    queryKey: ["alternatives", activityId, originalActivity?.category],
+    queryKey: ["alternatives", activityId, originalActivity?.categories],
     queryFn: async () => {
-      if (!originalActivity) return [];
-      
+      if (!originalActivity || !originalActivity.categories?.length) return [];
+
       const { data } = await supabase
         .from("activities")
         .select("*")
-        .eq("category", originalActivity.category)
+        .overlaps("categories", originalActivity.categories)
         .eq("published", true)
         .neq("id", activityId)
         .limit(5);
-      
+
       return data || [];
     },
     enabled: !!originalActivity,

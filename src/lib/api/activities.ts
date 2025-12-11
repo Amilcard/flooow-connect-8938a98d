@@ -10,8 +10,9 @@ export async function searchActivities(rawParams: unknown) {
       .from('activities')
       .select('*', { count: 'exact' });
     
+    // FIX: column is 'categories' (array), not 'category'
     if (params.category) {
-      query = query.eq('category', params.category);
+      query = query.overlaps('categories', [params.category]);
     }
     
     if (params.age) {
