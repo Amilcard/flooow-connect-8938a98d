@@ -2,13 +2,16 @@
  * LOT 4 - T4_2: Quiz Zéro non-recours
  * Ton léger et bienveillant style FamilyCrunch
  * Structure 5 questions Oui/Non/Pas sûr conservée
+ *
+ * PERF: Lottie chargé en lazy pour économiser ~614KB au chargement initial
  */
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import Lottie from "lottie-react";
-import confetiAnimation from "@/assets/lottie/confeti.json";
 import smileyIcon from "@/assets/smiley.png";
+
+// Lazy load Lottie pour optimisation bundle (614KB économisés au chargement initial)
+const Lottie = lazy(() => import("lottie-react"));
 
 type Answer = "Oui" | "Non" | "Pas sûr" | null;
 
@@ -18,6 +21,7 @@ export default function NonRecoursQuiz() {
     q1: null, q2: null, q3: null, q4: null, q5: null
   });
   const [showResult, setShowResult] = useState(false);
+  const [confettiData, setConfettiData] = useState<object | null>(null);
 
   // LOT 4 - T4_2: Questions réécrites avec un ton plus léger
   const questions = [
@@ -33,7 +37,17 @@ export default function NonRecoursQuiz() {
   };
 
   const allAnswered = Object.values(answers).every(a => a !== null);
-  const handleValidate = () => setShowResult(true);
+
+  const handleValidate = async () => {
+    setShowResult(true);
+    // Charger les confetti seulement si résultat positif
+    const ouiCount = Object.values(answers).filter(a => a === "Oui").length;
+    if (ouiCount >= 3) {
+      const data = await import("@/assets/lottie/confeti.json");
+      setConfettiData(data.default);
+    }
+  };
+
   const ouiCount = Object.values(answers).filter(a => a === "Oui").length;
   const isDejaAuClair = ouiCount >= 3;
 
@@ -90,9 +104,14 @@ export default function NonRecoursQuiz() {
           {/* LOT 4 - T4_2: Messages de résultat plus chaleureux */}
           {isDejaAuClair ? (
             <>
-              <div className="fixed inset-0 pointer-events-none z-50">
-                <Lottie animationData={confetiAnimation} loop={false} className="w-full h-full" />
-              </div>
+              {/* Confetti animation - lazy loaded */}
+              {confettiData && (
+                <div className="fixed inset-0 pointer-events-none z-50">
+                  <Suspense fallback={null}>
+                    <Lottie animationData={confettiData} loop={false} className="w-full h-full" />
+                  </Suspense>
+                </div>
+              )}
               <img src={smileyIcon} alt="" className="h-16 w-16 mx-auto animate-bounce-slow" />
               <h3 className="text-xl font-bold text-foreground">
                 Super, vous êtes déjà bien informé
