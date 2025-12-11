@@ -38,39 +38,36 @@ interface ActivityFilters {
 }
 
 /**
- * REFACTOR: Mapping unifié depuis table `activities` + jointure `structures`
- * - Utilise `images` (array) au lieu de `image_url`
- * - Utilise `structures` (jointure) au lieu de `organism_*`
- * - Utilise `accessibility_checklist` au lieu de `accessibility`
+ * FIX: Mapping simplifié - sans jointure structures pour éviter erreur embed
+ * - Utilise `images` (array) depuis la table activities
+ * - Structure info sera null (pas de jointure)
  */
 const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
     description: dbActivity.description,
-    // REFACTOR: images est un array, pas image_url
     images: dbActivity.images || [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
     price_base: dbActivity.price_base || 0,
     category: dbActivity.category || dbActivity.categories?.[0] || null,
     categories: dbActivity.categories || [],
-    // REFACTOR: accessibility_checklist (Json)
     accessibility_checklist: dbActivity.accessibility_checklist || null,
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
-    // REFACTOR: structures via jointure structure_id
+    // FIX: Pas de jointure structures - infos nulles
     structures: {
-      name: dbActivity.structures?.name || null,
-      address: dbActivity.structures?.address || null,
+      name: null,
+      address: null,
       city: null,
       postal_code: null,
       location_lat: null,
       location_lng: null,
     },
     lieu: {
-      nom: dbActivity.structures?.name || null,
-      adresse: dbActivity.structures?.address || null,
+      nom: null,
+      adresse: null,
       transport: null,
     },
     mobilite: {
@@ -98,9 +95,9 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
 };
 
 /**
- * REFACTOR: Utilise table `activities` (unifiée) au lieu de vue `activities_with_sessions`
+ * FIX: Utilise table `activities` (unifiée) sans jointure problématique
  * - Source unique de données
- * - Jointure `structures:structure_id` pour les infos organisme
+ * - Pas de jointure structures (évite erreur embed Supabase)
  * - Champ `published` (pas `is_published`)
  */
 export const useActivities = (filters?: ActivityFilters) => {
@@ -112,7 +109,7 @@ export const useActivities = (filters?: ActivityFilters) => {
     refetchOnMount: false,
     retry: false,
     queryFn: async () => {
-      // REFACTOR: Table `activities` avec jointure `structures`
+      // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
       const buildBaseQuery = () => {
         return supabase
           .from("activities")
@@ -120,8 +117,7 @@ export const useActivities = (filters?: ActivityFilters) => {
             id, title, description, category, categories, images,
             age_min, age_max, price_base, price_unit, accepts_aid_types, tags,
             period_type, vacation_periods, vacation_type, duration_days, has_accommodation,
-            covoiturage_enabled, accessibility_checklist, payment_echelonned,
-            structures:structure_id (name, address)
+            covoiturage_enabled, accessibility_checklist, payment_echelonned, structure_id
           `)
           .eq("published", true);
       };
