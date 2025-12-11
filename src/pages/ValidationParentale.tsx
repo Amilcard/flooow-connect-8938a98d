@@ -34,11 +34,12 @@ const ValidationParentale = () => {
   const { data: booking, isLoading } = useQuery({
     queryKey: ["booking-validation", bookingId],
     queryFn: async () => {
+      // FIX: Removed nested structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("bookings")
         .select(`
           *,
-          activities:activity_id(title, images, structures:structure_id(name, address)),
+          activities:activity_id(title, images),
           children:child_id(first_name, dob),
           availability_slots:slot_id(start, end),
           validations_parentales!validations_parentales_booking_id_fkey(*)

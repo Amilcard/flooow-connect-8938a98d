@@ -49,12 +49,10 @@ const ActivitiesMap = () => {
   const { data: activities = [], isLoading } = useQuery({
     queryKey: ["activities-map", selectedCategories],
     queryFn: async () => {
+      // FIX: Removed structures join to avoid Supabase embed error
       let query = supabase
         .from("activities")
-        .select(`
-          *,
-          structures:structure_id(name, address, location)
-        `)
+        .select(`*`)
         .eq("published", true);
 
       if (selectedCategories.length > 0) {

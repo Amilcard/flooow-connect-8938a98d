@@ -53,9 +53,10 @@ const BookingRecap = () => {
   const { data: activity, isLoading: loadingActivity } = useQuery({
     queryKey: ["activity", id],
     queryFn: async () => {
+      // FIX: Removed structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("activities")
-        .select("*, structures:structure_id(name, address)")
+        .select("*")
         .eq("id", id)
         .single();
       if (error) throw error;

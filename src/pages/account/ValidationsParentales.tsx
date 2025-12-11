@@ -38,11 +38,12 @@ const ValidationsParentales = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      // FIX: Removed nested structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("bookings")
         .select(`
           *,
-          activities:activity_id(title, images, category, structures:structure_id(name, address)),
+          activities:activity_id(title, images, category),
           children:child_id(first_name, dob),
           availability_slots:slot_id(start, end),
           validations_parentales!validations_parentales_booking_id_fkey(*)

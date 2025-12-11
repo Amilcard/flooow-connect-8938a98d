@@ -17,10 +17,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { FilterState } from '@/types/searchFilters';
 
 export const buildActivityQuery = (filters: FilterState) => {
+  // FIX: Removed structures join to avoid Supabase embed error
   // Use any to avoid deep type instantiation errors with chained query methods
   let query: any = supabase
     .from('activities')
-    .select('*, structures:structure_id(name, address)')
+    .select('*')
     .eq('published', true);
 
   // Text search

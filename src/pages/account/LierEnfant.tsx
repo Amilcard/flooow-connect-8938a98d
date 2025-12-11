@@ -94,12 +94,13 @@ const LierEnfant = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifie");
 
+      // FIX: Removed nested structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("child_temp_requests")
         .select(`
           *,
           minor:minor_profile_id(id, email, first_name),
-          activity:activity_id(title, images, structures:structure_id(name, address)),
+          activity:activity_id(title, images),
           slot:slot_id(start, end)
         `)
         .eq("parent_id", user.id)
