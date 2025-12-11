@@ -134,16 +134,10 @@ const ActivityDetail = () => {
     queryKey: ["activity", id],
     enabled: !!id,
     queryFn: async () => {
+      // FIX: Removed structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("activities")
-        .select(`
-          *,
-          structures:structure_id (
-            name,
-            address,
-            contact_json
-          )
-        `)
+        .select(`*`)
         .eq("id", id)
         .single();
 

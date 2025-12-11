@@ -23,12 +23,10 @@ const Covoiturage = () => {
     queryKey: ["activity", activityId],
     queryFn: async () => {
       if (!activityId) return null;
+      // FIX: Removed structures join to avoid Supabase embed error
       const { data } = await supabase
         .from("activities")
-        .select(`
-          *,
-          structures:structure_id (name, address)
-        `)
+        .select(`*`)
         .eq("id", activityId)
         .single();
       return data;
