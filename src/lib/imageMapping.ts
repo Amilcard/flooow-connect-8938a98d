@@ -1,22 +1,24 @@
 /**
  * Mapping intelligent des images d'activités
  * Attribution automatique selon thématique + tranche d'âge
+ * AUDIT: Migration vers WebP pour les images optimisées
  */
 
-import activitySport from "@/assets/activity-sport.jpg";
-import activityLoisirs from "@/assets/activity-loisirs.jpg";
+// Images génériques par catégorie (WebP optimisées)
+import activitySport from "@/assets/activity-sport.webp";
+import activityLoisirs from "@/assets/activity-loisirs.webp";
 import activityVacances from "@/assets/activity-vacances.jpg";
 import activityCulture from "@/assets/activity-culture.jpg";
 
 // Images spécifiques par activité ET âge
 import activityArts69 from "@/assets/activity-arts-6-9.jpg";
 import activityArts1013 from "@/assets/activity-arts-10-13.jpg";
-import activityCamp1013 from "@/assets/activity-camp-10-13.jpg";
+import activityCamp1013 from "@/assets/activity-camp-10-13.webp";
 import activityCode1013 from "@/assets/activity-code-10-13.jpg";
 import activityCuisine69 from "@/assets/activity-cuisine-6-9.jpg";
 import activityEscalade1417 from "@/assets/activity-escalade-14-17.jpg";
 import activityHiphop1417 from "@/assets/activity-hiphop-14-17.jpg";
-import activityJardinage1013 from "@/assets/activity-jardinage-10-13.jpg";
+import activityJardinage1013 from "@/assets/activity-jardinage-10-13.webp";
 import activityJeux69 from "@/assets/activity-jeux-6-9.jpg";
 import activityJudo69 from "@/assets/activity-judo-6-9.jpg";
 import activityJudoKids from "@/assets/activity-judo-kids.jpg";
