@@ -5,8 +5,12 @@
  *
  * LOT 1 - T1_4: Corrections pour assurer la complétude des activités
  * - Utilise 'published' au lieu de 'is_published'
- * - Utilise la relation 'structures' au lieu de 'organisms'
+ * - Utilise la relation 'structures:structure_id'
  * - Sélectionne les images pour le mapping intelligent
+ *
+ * REFACTOR: Alignement avec schéma BDD réel
+ * - Utilise 'categories' (array) au lieu de 'tags' pour les filtres catégories
+ * - Ajout filtres: payment_echelonned, covoiturage_enabled
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -14,11 +18,10 @@ import { FilterState } from '@/types/searchFilters';
 
 export const buildActivityQuery = (filters: FilterState) => {
   // Use any to avoid deep type instantiation errors with chained query methods
-  // LOT 1 - T1_4: Correction du filtre published et de la relation structures
   let query: any = supabase
     .from('activities')
-    .select('*, structures(name, address)')
-    .eq('published', true); // LOT 1: Corrigé 'is_published' -> 'published'
+    .select('*, structures:structure_id(name, address)')
+    .eq('published', true);
 
   // Text search
   if (filters.searchQuery) {
@@ -44,20 +47,18 @@ export const buildActivityQuery = (filters: FilterState) => {
     query = query.not('accepts_aid_types', 'is', null);
   }
 
+  // Quick filters Sport/Culture - utilise categories (array) en priorité
   if (filters.quickFilters.sport) {
-    query = query.contains('tags', ['sport']);
+    query = query.overlaps('categories', ['Sport', 'sport']);
   }
 
   if (filters.quickFilters.culture) {
-    query = query.contains('tags', ['culture']);
+    query = query.overlaps('categories', ['Culture', 'culture']);
   }
 
   // Advanced Filters - Geographic
-  // LOT 1 - T1_4: La colonne 'city' n'existe pas dans activities
-  // La ville est dans structures.address - filtrage à faire côté client si nécessaire
-  // if (filters.advancedFilters.city) {
-  //   query = query.ilike('city', `%${filters.advancedFilters.city}%`);
-  // }
+  // NOTE: La colonne 'city' n'existe pas dans activities
+  // La ville est dans structures.address - filtrage côté client si nécessaire
 
   // Advanced Filters - Temporal (period_type)
   if (filters.advancedFilters.period && filters.advancedFilters.period !== 'all') {
@@ -91,12 +92,9 @@ export const buildActivityQuery = (filters: FilterState) => {
       .gte('age_max', filters.advancedFilters.age_range[0]);
   }
 
-  // Advanced Filters - Categories (using tags)
+  // Advanced Filters - Categories (REFACTOR: utilise categories, pas tags)
   if (filters.advancedFilters.categories.length > 0) {
-    const tagConditions = filters.advancedFilters.categories.map(cat => 
-      `tags.cs.{${cat.toLowerCase()}}`
-    ).join(',');
-    query = query.or(tagConditions);
+    query = query.overlaps('categories', filters.advancedFilters.categories);
   }
 
   // Advanced Filters - Price
@@ -108,10 +106,8 @@ export const buildActivityQuery = (filters: FilterState) => {
 
   // Advanced Filters - Financial Aids (accepts_aid_types)
   if (filters.advancedFilters.financial_aids_accepted.length > 0) {
-    const aidsConditions = filters.advancedFilters.financial_aids_accepted.map(aid => 
-      `accepts_aid_types.cs.{"${aid}"}`
-    ).join(',');
-    query = query.or(aidsConditions);
+    // Note: accepts_aid_types est un Json, pas un array - requête simplifiée
+    query = query.not('accepts_aid_types', 'is', null);
   }
 
   // Advanced Filters - Accessibility
@@ -119,11 +115,18 @@ export const buildActivityQuery = (filters: FilterState) => {
     query = query.not('accessibility_checklist', 'is', null);
   }
 
-  // LOT 1 - T1_4: La colonne 'public_transport_nearby' n'existe pas dans activities
-  // Les infos transport sont dans transport_meta/transport_options
-  // if (filters.advancedFilters.public_transport) {
-  //   query = query.eq('public_transport_nearby', true);
-  // }
+  // Advanced Filters - Payment echelonné (NOUVEAU)
+  if (filters.advancedFilters.payment_echelon) {
+    query = query.eq('payment_echelonned', true);
+  }
+
+  // Advanced Filters - Mobility / Covoiturage (NOUVEAU)
+  if (filters.advancedFilters.mobility_types?.includes('Covoiturage')) {
+    query = query.eq('covoiturage_enabled', true);
+  }
+
+  // NOTE: Vélo et TC désactivés - champs non présents en BDD
+  // bike_friendly, public_transport_nearby n'existent pas
 
   // Limit to 50 results
   query = query.limit(50);

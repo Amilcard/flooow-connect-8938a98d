@@ -37,57 +37,72 @@ interface ActivityFilters {
   financialAidsAccepted?: string[];
 }
 
+/**
+ * REFACTOR: Mapping unifié depuis table `activities` + jointure `structures`
+ * - Utilise `images` (array) au lieu de `image_url`
+ * - Utilise `structures` (jointure) au lieu de `organism_*`
+ * - Utilise `accessibility_checklist` au lieu de `accessibility`
+ */
 const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
     description: dbActivity.description,
-    images: dbActivity.image_url ? [dbActivity.image_url] : [],
+    // REFACTOR: images est un array, pas image_url
+    images: dbActivity.images || [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
     price_base: dbActivity.price_base || 0,
-    category: dbActivity.category || null,
-    categories: dbActivity.categories,
-    accessibility_checklist: dbActivity.accessibility || null,
+    category: dbActivity.category || dbActivity.categories?.[0] || null,
+    categories: dbActivity.categories || [],
+    // REFACTOR: accessibility_checklist (Json)
+    accessibility_checklist: dbActivity.accessibility_checklist || null,
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
+    // REFACTOR: structures via jointure structure_id
     structures: {
-      name: dbActivity.organism_name || dbActivity.lieu_nom || null,
-      address: dbActivity.address,
-      city: dbActivity.city,
-      postal_code: dbActivity.postal_code,
-      location_lat: dbActivity.latitude,
-      location_lng: dbActivity.longitude,
+      name: dbActivity.structures?.name || null,
+      address: dbActivity.structures?.address || null,
+      city: null,
+      postal_code: null,
+      location_lat: null,
+      location_lng: null,
     },
     lieu: {
-      nom: dbActivity.lieu_nom,
-      adresse: dbActivity.address,
-      transport: dbActivity.transport_info,
+      nom: dbActivity.structures?.name || null,
+      adresse: dbActivity.structures?.address || null,
+      transport: null,
     },
     mobilite: {
-      TC: dbActivity.mobility_tc,
-      velo: dbActivity.mobility_velo,
-      covoit: dbActivity.mobility_covoit || dbActivity.covoiturage_enabled,
+      TC: null,
+      velo: null,
+      covoit: dbActivity.covoiturage_enabled || false,
     },
-    vacation_periods: dbActivity.vacation_periods,
+    vacation_periods: dbActivity.vacation_periods || [],
     vacationType: dbActivity.vacation_type,
     durationDays: dbActivity.duration_days,
     hasAccommodation: dbActivity.has_accommodation,
-    date_debut: dbActivity.date_debut,
-    date_fin: dbActivity.date_fin,
-    jours_horaires: dbActivity.jours_horaires,
-    creneaux: dbActivity.creneaux,
-    sessions: dbActivity.sessions_json,
+    date_debut: null,
+    date_fin: null,
+    jours_horaires: null,
+    creneaux: null,
+    sessions: null,
     price_unit: dbActivity.price_unit,
     priceUnit: dbActivity.price_unit,
-    covoiturage_enabled: dbActivity.covoiturage_enabled || dbActivity.mobility_covoit,
-    santeTags: dbActivity.sante_tags,
-    prerequis: dbActivity.prerequis,
-    pieces: dbActivity.pieces_a_fournir,
+    covoiturage_enabled: dbActivity.covoiturage_enabled || false,
+    santeTags: dbActivity.tags || [],
+    prerequis: [],
+    pieces: [],
   };
   return toActivity(raw);
 };
 
+/**
+ * REFACTOR: Utilise table `activities` (unifiée) au lieu de vue `activities_with_sessions`
+ * - Source unique de données
+ * - Jointure `structures:structure_id` pour les infos organisme
+ * - Champ `published` (pas `is_published`)
+ */
 export const useActivities = (filters?: ActivityFilters) => {
   const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
     queryKey: ["activities", filters],
@@ -97,29 +112,25 @@ export const useActivities = (filters?: ActivityFilters) => {
     refetchOnMount: false,
     retry: false,
     queryFn: async () => {
+      // REFACTOR: Table `activities` avec jointure `structures`
       const buildBaseQuery = () => {
         return supabase
-          .from("activities_with_sessions")
+          .from("activities")
           .select(`
-            id, title, description, category, categories,
+            id, title, description, category, categories, images,
             age_min, age_max, price_base, price_unit, accepts_aid_types, tags,
             period_type, vacation_periods, vacation_type, duration_days, has_accommodation,
-            address, city, postal_code, latitude, longitude,
-            date_debut, date_fin, jours_horaires, creneaux, sessions_json,
-            image_url, is_published,
-            lieu_nom, transport_info, mobility_tc, mobility_velo, mobility_covoit,
-            sante_tags, prerequis, pieces_a_fournir,
-            organism_name, organism_type, organism_phone, organism_email, organism_website,
-            covoiturage_enabled, accessibility, has_accessibility, mobility_types
+            covoiturage_enabled, accessibility_checklist, payment_echelonned,
+            structures:structure_id (name, address)
           `)
-          .eq("is_published", true);
+          .eq("published", true);
       };
 
       let query = buildBaseQuery();
 
       const rawSearchTerm = filters?.searchQuery || filters?.search;
       let searchTerm: string | null = null;
-      
+
       if (rawSearchTerm) {
         searchTerm = sanitizeSearchQuery(rawSearchTerm);
         if (searchTerm) {
@@ -135,8 +146,9 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.overlaps("categories", filters.categories);
       }
 
+      // REFACTOR: Utilise age_min/age_max de activities (pas session_age_*)
       if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("session_age_min", filters.ageMax).gte("session_age_max", filters.ageMin);
+        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
       }
 
       if (filters?.periodType && filters.periodType !== 'all') {
@@ -147,12 +159,14 @@ export const useActivities = (filters?: ActivityFilters) => {
         query = query.lte("price_base", filters.maxPrice);
       }
 
+      // REFACTOR: Utilise accessibility_checklist (pas has_accessibility)
       if (filters?.hasAccessibility) {
-        query = query.eq("has_accessibility", true);
+        query = query.not("accessibility_checklist", "is", null);
       }
 
-      if (filters?.mobilityTypes && filters.mobilityTypes.length > 0) {
-        query = query.overlaps("mobility_types", filters.mobilityTypes);
+      // REFACTOR: Covoiturage uniquement (mobility_types n'existe pas en BDD)
+      if (filters?.mobilityTypes?.includes('Covoiturage')) {
+        query = query.eq("covoiturage_enabled", true);
       }
 
       if (filters?.hasFinancialAid) {
