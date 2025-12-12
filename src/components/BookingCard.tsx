@@ -79,10 +79,11 @@ export const BookingCard = ({
               {adjustedPrice !== null && adjustedPrice !== undefined ? (
                 <div className="space-y-1">
                   <div className="flex items-baseline gap-2">
+                    {/* TECH-009: Protection reste à charge ≥ 0 */}
                     <span className="text-3xl font-bold text-primary">
-                      {adjustedPrice === 0 ? "Gratuit" : `${adjustedPrice}€`}
+                      {Math.max(0, adjustedPrice) === 0 ? "Gratuit" : `${Math.max(0, adjustedPrice)}€`}
                     </span>
-                    {adjustedPrice > 0 && (
+                    {Math.max(0, adjustedPrice) > 0 && (
                       <span className="text-sm text-muted-foreground">par enfant</span>
                     )}
                   </div>
@@ -91,7 +92,8 @@ export const BookingCard = ({
                       {activity.price_base}€
                     </span>
                     <Badge variant="secondary" className="text-xs">
-                      Avec aides: -{activity.price_base - adjustedPrice}€
+                      {/* TECH-009: Protection économie ≥ 0 */}
+                      Avec aides: -{Math.max(0, activity.price_base - Math.max(0, adjustedPrice))}€
                     </Badge>
                   </div>
                 </div>
