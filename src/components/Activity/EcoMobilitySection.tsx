@@ -54,15 +54,17 @@ const estimateDistance = (durationMin: number, mode: 'bike' | 'walk') => {
 interface EcoMobilitySectionProps {
   activityId: string;
   activityAddress?: string;
+  activityLatLng?: { lat: number; lng: number };
   structureName?: string;
   structureContactJson?: any;
   onTransportModeSelected?: (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => void;
   selectedTransportMode?: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string } | null;
 }
 
-export const EcoMobilitySection = ({ 
-  activityId, 
+export const EcoMobilitySection = ({
+  activityId,
   activityAddress,
+  activityLatLng,
   structureName,
   structureContactJson,
   onTransportModeSelected,

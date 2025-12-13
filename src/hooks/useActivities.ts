@@ -38,9 +38,9 @@ interface ActivityFilters {
 }
 
 /**
- * FIX: Mapping simplifié - sans jointure structures pour éviter erreur embed
+ * FIX: Mapping simplifié - utilise colonnes dénormalisées organism_*
  * - Utilise `images` (array) depuis la table activities
- * - Structure info sera null (pas de jointure)
+ * - TECH-005: Récupère organism_name et city pour affichage sur cartes
  */
 const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
@@ -56,14 +56,14 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     accessibility_checklist: dbActivity.accessibility_checklist || null,
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
-    // FIX: Pas de jointure structures - infos nulles
+    // TECH-005: Utilise colonnes dénormalisées organism_* de la table activities
     structures: {
-      name: null,
-      address: null,
-      city: null,
-      postal_code: null,
-      location_lat: null,
-      location_lng: null,
+      name: dbActivity.organism_name || null,
+      address: dbActivity.address || null,
+      city: dbActivity.city || null,
+      postal_code: dbActivity.postal_code || null,
+      location_lat: dbActivity.latitude || null,
+      location_lng: dbActivity.longitude || null,
     },
     lieu: {
       nom: null,
@@ -98,7 +98,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
  * FIX: Utilise table `activities` (unifiée) sans jointure problématique
  * - Source unique de données
  * - Pas de jointure structures (évite erreur embed Supabase)
- * - Champ `published` (pas `is_published`)
+ * - Champ `is_published` (pas `published`) - colonne correcte en BDD
  */
 export const useActivities = (filters?: ActivityFilters) => {
   const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({

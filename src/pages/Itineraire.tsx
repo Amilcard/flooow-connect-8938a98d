@@ -5,11 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Navigation, MapPin, Clock, Route, Bike, Bus, Footprints } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Navigation, MapPin, Clock, Route, Bike, Bus, Footprints, Loader2, AlertCircle, CheckCircle2, Leaf, Trophy, Sparkles } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import PageLayout from "@/components/PageLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  EcoMobilityBadges,
+  logLocalTrip,
+  getLocalEcoStats,
+  getEarnedBadges,
+  getNextMilestone,
+  type EcoStats
+} from "@/components/EcoMobility/EcoMobilityBadges";
 
 // Constantes éco-mobilité
 const CO2_CAR_PER_KM = 120; // grammes CO2 par km en voiture
@@ -25,21 +34,131 @@ const Itineraire = () => {
   const directionsRenderer = useRef<any>(null);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
   const [googleMapsToken, setGoogleMapsToken] = useState<string>("");
-  
+
   const transportType = searchParams.get('type') || 'bus';
   const destination = searchParams.get('destination') || '';
+  const activityId = searchParams.get('activityId') || '';
   const returnUrl = searchParams.get('return') || null;
-  
+
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
   const [travelMode, setTravelMode] = useState(
-    transportType === 'bike' ? 'BICYCLING' : 
+    transportType === 'bike' ? 'BICYCLING' :
     transportType === 'walk' ? 'WALKING' :
     'TRANSIT'
   );
   const [routeData, setRouteData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [tripValidated, setTripValidated] = useState(false);
+  const [departureError, setDepartureError] = useState<string | null>(null);
+  const [arrivalError, setArrivalError] = useState<string | null>(null);
+  const [geolocating, setGeolocating] = useState(false);
+  const [routeError, setRouteError] = useState<string | null>(null);
+  const [ecoStats, setEcoStats] = useState<EcoStats>(getLocalEcoStats());
+  const [newBadgeUnlocked, setNewBadgeUnlocked] = useState<string | null>(null);
   const markersRef = useRef<any[]>([]);
+
+  // Fetch user profile for pre-filling departure
+  const { data: userProfile } = useQuery({
+    queryKey: ["user-profile-itineraire"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("postal_code, city")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 300000
+  });
+
+  // Fetch activity details to get full address
+  const { data: activity } = useQuery({
+    queryKey: ["activity-itineraire", activityId],
+    queryFn: async () => {
+      if (!activityId) return null;
+      const { data, error } = await supabase
+        .from("activities")
+        .select("address, city, postal_code, venue_name, latitude, longitude")
+        .eq("id", activityId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activityId,
+    staleTime: 300000
+  });
+
+  // Pre-fill departure from user profile or try geolocation
+  useEffect(() => {
+    const prefillDeparture = async () => {
+      // Priority 1: User profile with postal code
+      if (userProfile?.postal_code && !departure) {
+        const city = userProfile.city || "Saint-Étienne";
+        setDeparture(`${userProfile.postal_code} ${city}`);
+        return;
+      }
+
+      // Priority 2: Try geolocation if no profile
+      if (!userProfile && !departure && navigator.geolocation) {
+        setGeolocating(true);
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              // Reverse geocode using Google Maps API if available
+              if (googleMapsLoaded && (window as any).google) {
+                const geocoder = new (window as any).google.maps.Geocoder();
+                geocoder.geocode(
+                  { location: { lat: position.coords.latitude, lng: position.coords.longitude } },
+                  (results: any[], status: string) => {
+                    if (status === 'OK' && results[0]) {
+                      setDeparture(results[0].formatted_address);
+                    }
+                    setGeolocating(false);
+                  }
+                );
+              } else {
+                setGeolocating(false);
+              }
+            } catch (error) {
+              console.error('Geocoding error:', error);
+              setGeolocating(false);
+            }
+          },
+          () => {
+            setGeolocating(false);
+          },
+          { timeout: 5000 }
+        );
+      }
+    };
+
+    prefillDeparture();
+  }, [userProfile, googleMapsLoaded, departure]);
+
+  // Pre-fill arrival from activity if better address available
+  useEffect(() => {
+    if (activity && !arrival) {
+      const fullAddress = [
+        activity.venue_name,
+        activity.address,
+        activity.city,
+        activity.postal_code
+      ].filter(Boolean).join(', ');
+
+      if (fullAddress) {
+        setArrival(fullAddress);
+      }
+    } else if (!arrival && destination) {
+      setArrival(destination);
+    }
+  }, [activity, destination, arrival]);
 
   // Get Google Maps API key
   useEffect(() => {
@@ -216,13 +335,28 @@ const Itineraire = () => {
   }, [googleMapsLoaded, transportType, busStops, bikeStations]);
 
   const calculateRoute = async () => {
-    if (!departure || !arrival) {
-      toast.error("Veuillez renseigner le départ et l'arrivée");
+    // Clear previous errors
+    setDepartureError(null);
+    setArrivalError(null);
+    setRouteError(null);
+
+    // Inline validation with specific error messages
+    let hasError = false;
+    if (!departure || departure.trim().length < 3) {
+      setDepartureError("Veuillez saisir une adresse de départ (min. 3 caractères)");
+      hasError = true;
+    }
+    if (!arrival || arrival.trim().length < 3) {
+      setArrivalError("Veuillez saisir une adresse d'arrivée (min. 3 caractères)");
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
     if (!googleMapsLoaded) {
-      toast.error("Chargement de la carte en cours...");
+      setRouteError("Chargement de la carte en cours, veuillez patienter...");
       return;
     }
 
@@ -230,31 +364,98 @@ const Itineraire = () => {
     try {
       const google = (window as any).google;
       const directionsService = new google.maps.DirectionsService();
-      
+
+      // Build smart origin/destination (don't append city if already contains it)
+      const normalizedDeparture = departure.toLowerCase();
+      const normalizedArrival = arrival.toLowerCase();
+      const origin = normalizedDeparture.includes('saint-étienne') || normalizedDeparture.includes('saint-etienne') || /\d{5}/.test(departure)
+        ? departure
+        : `${departure}, Saint-Étienne`;
+      const destinationAddr = normalizedArrival.includes('saint-étienne') || normalizedArrival.includes('saint-etienne') || /\d{5}/.test(arrival)
+        ? arrival
+        : `${arrival}, Saint-Étienne`;
+
       const request = {
-        origin: departure + ", Saint-Étienne",
-        destination: arrival + ", Saint-Étienne",
+        origin,
+        destination: destinationAddr,
         travelMode: travelMode,
       };
 
       directionsService.route(request, (result: any, status: any) => {
+        setLoading(false);
         if (status === 'OK' && result) {
           setRouteData(result.routes[0].legs[0]);
+          setRouteError(null);
           if (directionsRenderer.current) {
             directionsRenderer.current.setDirections(result);
           }
           toast.success("Itinéraire calculé !");
         } else {
           console.error('Directions request failed:', status);
-          toast.error("Aucun itinéraire trouvé");
+          // Specific error messages based on status
+          if (status === 'ZERO_RESULTS') {
+            setRouteError("Aucun itinéraire trouvé entre ces deux adresses. Vérifiez les adresses saisies.");
+          } else if (status === 'NOT_FOUND') {
+            setRouteError("L'une des adresses n'a pas pu être localisée. Essayez une adresse plus précise.");
+          } else if (status === 'OVER_QUERY_LIMIT' || status === 'REQUEST_DENIED') {
+            setRouteError("Service temporairement indisponible. Réessayez dans quelques instants.");
+          } else {
+            setRouteError("Impossible de calculer l'itinéraire. Vérifiez les adresses et réessayez.");
+          }
         }
-        setLoading(false);
       });
     } catch (error) {
       console.error('Error calculating route:', error);
-      toast.error("Erreur lors du calcul de l'itinéraire");
+      setRouteError("Erreur technique lors du calcul. Veuillez réessayer.");
       setLoading(false);
     }
+  };
+
+  // Handle trip validation (for CO2 tracking)
+  const handleValidateTrip = async () => {
+    if (!routeData) return;
+
+    const distanceKm = (routeData.distance?.value || 0) / 1000;
+    const co2SavedGrams = Math.round(distanceKm * CO2_CAR_PER_KM);
+
+    // Get badges before logging
+    const badgesBefore = getEarnedBadges(ecoStats);
+
+    // Log the trip (localStorage for now, will use eco_travel_logs when table is created)
+    const mode = transportType === 'bike' ? 'bike' : transportType === 'walk' ? 'walk' : 'bus';
+    const newStats = logLocalTrip(mode, co2SavedGrams);
+    setEcoStats(newStats);
+
+    // Check if new badge was unlocked
+    const badgesAfter = getEarnedBadges(newStats);
+    if (badgesAfter.length > badgesBefore.length) {
+      const newBadge = badgesAfter[badgesAfter.length - 1];
+      setNewBadgeUnlocked(newBadge.icon + " " + newBadge.name);
+      toast.success(
+        `🎉 Badge débloqué : ${newBadge.icon} ${newBadge.name}`,
+        { duration: 5000 }
+      );
+    } else {
+      toast.success(
+        `Bravo ! Vous avez économisé ${(co2SavedGrams / 1000).toFixed(2)} kg de CO₂ 🌱`,
+        { duration: 4000 }
+      );
+    }
+
+    setTripValidated(true);
+
+    // TODO: Persist to eco_travel_logs table when schema is approved
+    // This will be implemented in Phase P2 with:
+    // await supabase.from('eco_travel_logs').insert({
+    //   user_id: userId,
+    //   activity_id: activityId,
+    //   transport_mode: mode,
+    //   distance_meters: routeData.distance?.value,
+    //   duration_seconds: routeData.duration?.value,
+    //   co2_saved_grams: co2SavedGrams,
+    //   departure_address: departure,
+    //   arrival_address: arrival
+    // });
   };
 
   return (
@@ -298,42 +499,93 @@ const Itineraire = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Departure field */}
             <div className="space-y-2">
               <Label htmlFor="departure">Point de départ</Label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                {geolocating ? (
+                  <Loader2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground animate-spin" />
+                ) : (
+                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                )}
                 <Input
                   id="departure"
-                  placeholder="Ex: 10 rue de la République"
+                  placeholder={geolocating ? "Localisation en cours..." : "Ex: 10 rue de la République, Saint-Étienne"}
                   value={departure}
-                  onChange={(e) => setDeparture(e.target.value)}
-                  className="pl-10"
+                  onChange={(e) => {
+                    setDeparture(e.target.value);
+                    setDepartureError(null);
+                  }}
+                  className={`pl-10 ${departureError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                  disabled={geolocating}
                 />
               </div>
+              {departureError && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertCircle size={12} />
+                  {departureError}
+                </p>
+              )}
+              {!departure && !geolocating && (
+                <p className="text-xs text-muted-foreground">
+                  💡 Saisissez votre adresse de départ ou laissez-nous vous localiser
+                </p>
+              )}
             </div>
 
+            {/* Arrival field */}
             <div className="space-y-2">
-              <Label htmlFor="arrival">Point d'arrivée</Label>
+              <Label htmlFor="arrival">Point d'arrivée (lieu de l'activité)</Label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <MapPin className="absolute left-3 top-3 h-4 w-4 text-green-600" />
                 <Input
                   id="arrival"
-                  placeholder="Ex: 5 rue Massenet"
+                  placeholder="Ex: Gymnase Jean Moulin, Saint-Étienne"
                   value={arrival}
-                  onChange={(e) => setArrival(e.target.value)}
-                  className="pl-10"
-                  disabled
+                  onChange={(e) => {
+                    setArrival(e.target.value);
+                    setArrivalError(null);
+                  }}
+                  className={`pl-10 bg-green-50/50 dark:bg-green-950/20 ${arrivalError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                 />
               </div>
+              {arrivalError && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertCircle size={12} />
+                  {arrivalError}
+                </p>
+              )}
             </div>
 
-            <Button 
-              onClick={calculateRoute} 
-              disabled={loading || !googleMapsLoaded}
+            {/* Route error message */}
+            {routeError && (
+              <Alert variant="destructive" className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{routeError}</AlertDescription>
+              </Alert>
+            )}
+
+            <Button
+              onClick={calculateRoute}
+              disabled={loading || !googleMapsLoaded || geolocating}
               className="w-full"
             >
-              <Route className="w-4 h-4 mr-2" />
-              {loading ? "Calcul en cours..." : "Calculer l'itinéraire"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Calcul en cours...
+                </>
+              ) : !googleMapsLoaded ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Chargement de la carte...
+                </>
+              ) : (
+                <>
+                  <Route className="w-4 h-4 mr-2" />
+                  Calculer l'itinéraire
+                </>
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -440,8 +692,56 @@ const Itineraire = () => {
                   </p>
                 </div>
               )}
+
+              {/* CTA: Validate trip for CO2 tracking */}
+              {tripValidated ? (
+                <div className="space-y-4">
+                  {/* Success message */}
+                  <div className="p-4 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/40 dark:to-emerald-900/40 rounded-lg border border-green-300 dark:border-green-700">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500 rounded-full">
+                        <CheckCircle2 className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-green-800 dark:text-green-200">Trajet validé !</p>
+                        <p className="text-sm text-green-700 dark:text-green-300">
+                          Bravo pour votre contribution à la planète 🌱
+                        </p>
+                      </div>
+                      <Trophy className="w-8 h-8 text-yellow-500" />
+                    </div>
+                  </div>
+
+                  {/* New badge unlocked animation */}
+                  {newBadgeUnlocked && (
+                    <div className="p-4 bg-gradient-to-r from-yellow-100 to-amber-100 dark:from-yellow-900/40 dark:to-amber-900/40 rounded-lg border border-yellow-300 dark:border-yellow-700 animate-pulse">
+                      <div className="flex items-center justify-center gap-2">
+                        <Sparkles className="w-5 h-5 text-yellow-600" />
+                        <span className="font-bold text-yellow-800 dark:text-yellow-200">
+                          Nouveau badge : {newBadgeUnlocked}
+                        </span>
+                        <Sparkles className="w-5 h-5 text-yellow-600" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Button
+                  onClick={handleValidateTrip}
+                  variant="outline"
+                  className="w-full border-green-500 text-green-700 hover:bg-green-50 dark:hover:bg-green-950/30 dark:text-green-400"
+                >
+                  <Leaf className="w-4 h-4 mr-2" />
+                  J'ai réalisé ce trajet éco-responsable
+                </Button>
+              )}
             </CardContent>
           </Card>
+        )}
+
+        {/* Eco-mobility badges summary */}
+        {ecoStats.totalTrips > 0 && (
+          <EcoMobilityBadges stats={ecoStats} />
         )}
 
         {/* Map Container - hauteur adaptée mobile */}

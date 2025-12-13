@@ -96,8 +96,10 @@ export function StickyBookingCTA({
     onToggleFavorite?.();
   };
 
-  const displayPrice = discountedPrice ?? price;
-  const hasDiscount = discountedPrice !== undefined && discountedPrice < price;
+  // TECH-009: Protection reste à charge ≥ 0 (jamais de prix négatif affiché)
+  const safeDiscountedPrice = discountedPrice !== undefined ? Math.max(0, discountedPrice) : undefined;
+  const displayPrice = safeDiscountedPrice ?? price;
+  const hasDiscount = safeDiscountedPrice !== undefined && safeDiscountedPrice < price;
 
   return (
     <>

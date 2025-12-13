@@ -803,7 +803,16 @@ const ActivityDetail = () => {
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
                     activityId={activity.id}
-                    activityAddress={activity.organisms?.address}
+                    activityAddress={[
+                      activity.venue_name,
+                      activity.address,
+                      activity.city,
+                      activity.postal_code
+                    ].filter(Boolean).join(', ') || activity.organisms?.address}
+                    activityLatLng={activity.latitude && activity.longitude ? {
+                      lat: activity.latitude,
+                      lng: activity.longitude
+                    } : undefined}
                     structureName={activity.organisms?.name}
                     structureContactJson={activity.organisms?.phone}
                     onTransportModeSelected={(mode) => {
@@ -875,17 +884,59 @@ const ActivityDetail = () => {
                     
                     {activity.period_type === "scolaire" ? (
                     <div className="space-y-2">
-                      {sessions.map((s, idx) => (
-                        <Card key={idx} className={`p-3 cursor-pointer transition-all ${selectedSessionIdx === idx ? "ring-2 ring-primary bg-accent" : "hover:bg-accent/50"}`} onClick={() => setSelectedSessionIdx(idx)}>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{s.age_min}-{s.age_max} ans</span>
-                            <span className="text-sm text-muted-foreground">
-                              {s.day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][s.day_of_week] : "Vacances"} {s.start_time?.slice(0,5)}-{s.end_time?.slice(0,5)}
-                            </span>
-                          </div>
-                          {s.day_of_week !== null && <p className="text-xs text-primary mt-1">Prochaines séances : {getNextDates(s.day_of_week).join(", ")}</p>}
-                        </Card>
-                      ))}
+                      {sessions.map((s, idx) => {
+                        const isSelected = selectedSessionIdx === idx;
+                        const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+                        const dayLabel = s.day_of_week !== null ? dayNames[s.day_of_week] : "Vacances";
+                        const timeLabel = s.start_time && s.end_time ? `${s.start_time.slice(0, 5)} – ${s.end_time.slice(0, 5)}` : "";
+
+                        return (
+                          <Card
+                            key={s.id || `session-${idx}`}
+                            data-session-idx={idx}
+                            className={`p-4 min-h-[72px] transition-all border-2 ${
+                              isSelected
+                                ? 'ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary cursor-pointer shadow-md'
+                                : 'hover:bg-accent/50 hover:border-primary/30 cursor-pointer border-transparent'
+                            }`}
+                            onClick={() => setSelectedSessionIdx(idx)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setSelectedSessionIdx(idx);
+                              }
+                            }}
+                            aria-selected={isSelected}
+                          >
+                            <div className="space-y-1.5">
+                              {/* Ligne 1: Jour + horaire (niveau fort) */}
+                              <div className="flex items-center justify-between gap-2">
+                                <span className={`text-sm font-semibold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                                  {dayLabel} {timeLabel}
+                                </span>
+                                {isSelected && (
+                                  <CheckCircle2 size={18} className="text-primary flex-shrink-0" />
+                                )}
+                              </div>
+                              {/* Ligne 2: Tranche d'âge */}
+                              <div className="flex items-center gap-2">
+                                <Badge variant={isSelected ? "default" : "secondary"} className="text-xs">
+                                  <Users size={12} className="mr-1" />
+                                  {s.age_min}-{s.age_max} ans
+                                </Badge>
+                              </div>
+                              {/* Ligne 3: Prochaines séances */}
+                              {s.day_of_week !== null && (
+                                <p className="text-xs text-muted-foreground pt-1">
+                                  <span className="text-primary font-medium">Prochaines séances :</span> {getNextDates(s.day_of_week).join(", ")}
+                                </p>
+                              )}
+                            </div>
+                          </Card>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
@@ -894,48 +945,73 @@ const ActivityDetail = () => {
                         const endDate = new Date(slot.end);
                         const isFull = slot.seats_remaining <= 0;
                         const isSelected = selectedSlotId === slot.id;
+                        // Format date complète lisible
+                        const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+                        const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+                        const dateFormatted = startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                        const timeStart = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                        const timeEnd = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
                         return (
                           <Card
                             key={slot.id}
-                            className={`p-3 transition-all ${
+                            data-slot-id={slot.id}
+                            className={`p-4 min-h-[72px] transition-all border-2 ${
                               isFull
-                                ? 'opacity-60 bg-muted cursor-not-allowed'
+                                ? 'opacity-50 bg-muted/50 cursor-not-allowed border-transparent'
                                 : isSelected
-                                  ? 'ring-2 ring-primary bg-accent cursor-pointer'
-                                  : 'hover:bg-accent/50 cursor-pointer'
+                                  ? 'ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary cursor-pointer shadow-md'
+                                  : 'hover:bg-accent/50 hover:border-primary/30 cursor-pointer border-transparent'
                             }`}
                             onClick={() => !isFull && setSelectedSlotId(slot.id)}
+                            role="button"
+                            tabIndex={isFull ? -1 : 0}
+                            onKeyDown={(e) => {
+                              if ((e.key === 'Enter' || e.key === ' ') && !isFull) {
+                                e.preventDefault();
+                                setSelectedSlotId(slot.id);
+                              }
+                            }}
+                            aria-selected={isSelected}
+                            aria-disabled={isFull}
                           >
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <Calendar size={14} className={isFull ? "text-muted-foreground" : "text-primary"} />
-                                  <span className="text-sm font-medium">
-                                    {startDate.toLocaleDateString('fr-FR', {
-                                      weekday: 'short',
-                                      day: 'numeric',
-                                      month: 'short'
-                                    })}
-                                  </span>
-                                </div>
-                                <Badge variant={isFull ? "secondary" : "outline"} className="text-xs">
-                                  {isFull ? "Complet" : `${slot.seats_remaining} places`}
+                            <div className="space-y-1.5">
+                              {/* Ligne 1: Date complète (niveau fort) */}
+                              <div className="flex items-center justify-between gap-2">
+                                <span className={`text-sm font-semibold ${isFull ? 'text-muted-foreground' : isSelected ? 'text-primary' : 'text-foreground'}`}>
+                                  {dayNameCapitalized} {dateFormatted}
+                                </span>
+                                {isSelected && !isFull && (
+                                  <CheckCircle2 size={18} className="text-primary flex-shrink-0" />
+                                )}
+                              </div>
+                              {/* Ligne 2: Horaire */}
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Calendar size={14} className={isSelected ? "text-primary" : ""} />
+                                <span>{timeStart} – {timeEnd}</span>
+                              </div>
+                              {/* Ligne 3: Places disponibles */}
+                              <div className="flex items-center justify-between pt-1">
+                                <Badge
+                                  variant={isFull ? "secondary" : isSelected ? "default" : "outline"}
+                                  className={`text-xs ${
+                                    isFull
+                                      ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                      : slot.seats_remaining <= 3
+                                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                                        : isSelected
+                                          ? ''
+                                          : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                  }`}
+                                >
+                                  {isFull ? "Complet" : slot.seats_remaining <= 3 ? `Plus que ${slot.seats_remaining} place${slot.seats_remaining > 1 ? 's' : ''} !` : `${slot.seats_remaining} places`}
                                 </Badge>
+                                {isFull && (
+                                  <span className="text-xs text-primary font-medium">
+                                    Liste d'attente →
+                                  </span>
+                                )}
                               </div>
-                              <div className="text-xs text-muted-foreground ml-5">
-                                {startDate.toLocaleTimeString('fr-FR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })} - {endDate.toLocaleTimeString('fr-FR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </div>
-                              {isFull && (
-                                <p className="text-xs text-primary mt-1 ml-5">
-                                  → Demander une place via la Flooow Family
-                                </p>
-                              )}
                             </div>
                           </Card>
                         );
@@ -943,25 +1019,50 @@ const ActivityDetail = () => {
                     </div>
                   )}
                     
-                    {/* Récap "Votre choix" avant le bouton */}
-                    {activity.period_type === "scolaire" && selectedSessionIdx !== null && sessions[selectedSessionIdx] && (
-                      <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg space-y-1">
-                        <p className="text-xs font-medium text-primary">✓ Votre choix</p>
-                        <p className="text-sm font-medium">{activity.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {sessions[selectedSessionIdx].age_min}-{sessions[selectedSessionIdx].age_max} ans · {sessions[selectedSessionIdx].day_of_week !== null ? ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"][sessions[selectedSessionIdx].day_of_week] : "Vacances"} {sessions[selectedSessionIdx].start_time?.slice(0,5)}-{sessions[selectedSessionIdx].end_time?.slice(0,5)}
-                        </p>
-                      </div>
-                    )}
+                    {/* Récap "Créneau sélectionné" - bien visible avant le bouton */}
+                    {activity.period_type === "scolaire" && selectedSessionIdx !== null && sessions[selectedSessionIdx] && (() => {
+                      const session = sessions[selectedSessionIdx];
+                      const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+                      const dayLabel = session.day_of_week !== null ? dayNames[session.day_of_week] : "Vacances";
+                      const timeLabel = session.start_time && session.end_time
+                        ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
+                        : "";
+                      return (
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-primary" />
+                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {session.age_min}-{session.age_max} ans
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {activity.period_type !== "scolaire" && selectedSlotId && slots.find(s => s.id === selectedSlotId) && (() => {
                       const selectedSlot = slots.find(s => s.id === selectedSlotId)!;
+                      const startDate = new Date(selectedSlot.start);
+                      const endDate = new Date(selectedSlot.end);
+                      const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+                      const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+                      const dateFormatted = startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                      const timeStart = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                      const timeEnd = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                       return (
-                        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg space-y-1">
-                          <p className="text-xs font-medium text-primary">✓ Votre choix</p>
-                          <p className="text-sm font-medium">{activity.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(selectedSlot.start).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} · {new Date(selectedSlot.start).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - {new Date(selectedSlot.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          </p>
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-primary" />
+                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-base font-semibold text-foreground">{dayNameCapitalized} {dateFormatted}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {timeStart} – {timeEnd}
+                            </p>
+                          </div>
                         </div>
                       );
                     })()}
