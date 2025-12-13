@@ -1,6 +1,7 @@
 {
+  "_note": "ARCHIVE - exemples générés avec un ancien projet Supabase. À adapter avec https://kbrgwezkjaakoecispom.supabase.co",
   "timestamp": "2025-10-13T13:45:00Z",
-  "base_url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1",
+  "base_url": "https://kbrgwezkjaakoecispom.supabase.co/functions/v1",
   "description": "Smoke tests pour l'API d'authentification et gestion de sessions",
   "tests": [
     {

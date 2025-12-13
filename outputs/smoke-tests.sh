@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# ARCHIVE - NE PAS UTILISER TEL QUEL
+# Ancien projet Supabase. À adapter si jamais on réactive ces tests.
+
 # ============================================
 # SMOKE TESTS - Auth & Session Management
 # ============================================
@@ -7,7 +10,7 @@
 set -e
 
 # Configuration
-BASE_URL="https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1"
+BASE_URL="https://kbrgwezkjaakoecispom.supabase.co/functions/v1"
 COOKIE_FILE="cookies.txt"
 OUTPUT_FILE="outputs/smoke_report.json"
 
