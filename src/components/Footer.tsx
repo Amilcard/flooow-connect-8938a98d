@@ -5,8 +5,9 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="container px-4 md:px-6 py-12">
+    <footer className="w-full border-t border-border bg-card">
+      {/* Container aligné avec le reste de l'app (max-w-6xl comme ActivityDetailHero) */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-12">
         {/* Grid: 3 colonnes alignées */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
