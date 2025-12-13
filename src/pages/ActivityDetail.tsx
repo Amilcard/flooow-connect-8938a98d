@@ -803,7 +803,16 @@ const ActivityDetail = () => {
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
                     activityId={activity.id}
-                    activityAddress={activity.organisms?.address}
+                    activityAddress={[
+                      activity.venue_name,
+                      activity.address,
+                      activity.city,
+                      activity.postal_code
+                    ].filter(Boolean).join(', ') || activity.organisms?.address}
+                    activityLatLng={activity.latitude && activity.longitude ? {
+                      lat: activity.latitude,
+                      lng: activity.longitude
+                    } : undefined}
                     structureName={activity.organisms?.name}
                     structureContactJson={activity.organisms?.phone}
                     onTransportModeSelected={(mode) => {
