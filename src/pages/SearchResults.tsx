@@ -185,15 +185,16 @@ const SearchResults = () => {
           isLoading={isActivitiesLoading}
         />
       ) : (
-        <ResultsGrid
-          activities={activities}
-          isLoading={isActivitiesLoading}
-          onResetFilters={handleClearFilters}
-        />
+        <>
+          <ResultsGrid
+            activities={activities}
+            isLoading={isActivitiesLoading}
+            onResetFilters={handleClearFilters}
+          />
+          {/* Bottom margin for navigation - only for list view */}
+          <div className="h-20" />
+        </>
       )}
-
-      {/* Bottom margin for navigation */}
-      <div className="h-20" />
 
       {/* Bottom Navigation */}
       <BottomNavigation />

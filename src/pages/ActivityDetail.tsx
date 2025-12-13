@@ -429,7 +429,9 @@ const ActivityDetail = () => {
   const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
-  const displayImage = activity.images?.[0] || fallbackImage;
+  // Fix: vérifie aussi les strings vides dans images
+  const rawImage = activity.images?.[0];
+  const displayImage = (rawImage && rawImage.trim() !== '') ? rawImage : fallbackImage;
   const ageRange = sessions.length > 0 
     ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ") 
     : formatAgeRangeForDetail(activity.age_min, activity.age_max);

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LoadingState } from "@/components/LoadingState";
 import { EmptyState } from "@/components/EmptyState";
 import { User, Calendar, MapPin, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -20,8 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import PageLayout from "@/components/PageLayout";
-import { PageHeader } from "@/components/PageHeader";
+import { ProfilLayout } from "@/components/ProfilLayout";
 
 const ValidationsParentales = () => {
   const navigate = useNavigate();
@@ -137,17 +135,14 @@ const ValidationsParentales = () => {
     return new Date().getFullYear() - new Date(dob).getFullYear();
   };
 
-  if (isLoading) return <LoadingState />;
-
   return (
-    <PageLayout showHeader={false}>
-      <PageHeader
-        title="Demandes d'inscription"
-        subtitle={bookings.length > 0 ? `${bookings.length} en attente` : undefined}
-        backFallback="/mon-compte"
-      />
-
-      <div className="container px-4 py-6 space-y-4 max-w-5xl mx-auto pb-24">
+    <ProfilLayout
+      title="Demandes d'inscription"
+      subtitle={bookings.length > 0 ? `${bookings.length} en attente` : undefined}
+      backFallback="/mon-compte"
+      isLoading={isLoading}
+    >
+      <div className="space-y-4">
         {bookings.length === 0 ? (
           <EmptyState 
             icon={Clock}
@@ -277,7 +272,7 @@ const ValidationsParentales = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageLayout>
+    </ProfilLayout>
   );
 };
 

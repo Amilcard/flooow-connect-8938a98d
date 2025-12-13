@@ -137,21 +137,51 @@ export const MapSearchView = ({
     loadGoogleMaps();
   }, []);
 
-  // Get category color for marker
-  const getCategoryColor = (category: string): string => {
-    const style = getCategoryStyle(category);
-    return style.color;
+  // Category color mapping (user-requested colors)
+  const CATEGORY_COLORS: Record<string, string> = {
+    'Sport': '#EF4444',      // Rouge
+    'Vacances': '#22C55E',   // Vert
+    'Culture': '#8B5CF6',    // Violet
+    'Loisirs': '#EAB308',    // Jaune
   };
 
-  // Create SVG marker icon
-  const createMarkerIcon = (color: string, isSelected: boolean): google.maps.Symbol => {
+  // Category letter for accessibility
+  const CATEGORY_LETTERS: Record<string, string> = {
+    'Sport': 'S',
+    'Vacances': 'V',
+    'Culture': 'C',
+    'Loisirs': 'L',
+  };
+
+  // Get category color for marker
+  const getCategoryColor = (category: string): string => {
+    return CATEGORY_COLORS[category] || '#8B5CF6';
+  };
+
+  // Get category letter for accessibility
+  const getCategoryLetter = (category: string): string => {
+    return CATEGORY_LETTERS[category] || '?';
+  };
+
+  // Create custom SVG marker with letter for accessibility
+  const createMarkerIcon = (category: string, isSelected: boolean): google.maps.Icon => {
+    const color = getCategoryColor(category);
+    const letter = getCategoryLetter(category);
+    const size = isSelected ? 40 : 32;
+    const fontSize = isSelected ? 14 : 12;
+    
+    // SVG marker with letter inside
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="18" fill="${color}" stroke="white" stroke-width="${isSelected ? 3 : 2}"/>
+        <text x="20" y="25" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold">${letter}</text>
+      </svg>
+    `;
+    
     return {
-      path: google.maps.SymbolPath.CIRCLE,
-      scale: isSelected ? 14 : 10,
-      fillColor: color,
-      fillOpacity: 1,
-      strokeColor: '#ffffff',
-      strokeWeight: isSelected ? 3 : 2,
+      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+      scaledSize: new google.maps.Size(size, size),
+      anchor: new google.maps.Point(size / 2, size / 2),
     };
   };
 
@@ -210,12 +240,11 @@ export const MapSearchView = ({
       if (!activity.location) return;
 
       const isSelected = activity.id === selectedActivityId;
-      const color = getCategoryColor(activity.category);
 
       const marker = new google.maps.Marker({
         position: { lat: activity.location.lat, lng: activity.location.lng },
         title: activity.title,
-        icon: createMarkerIcon(color, isSelected),
+        icon: createMarkerIcon(activity.category, isSelected),
         zIndex: isSelected ? 100 : 1,
         animation: isSelected ? google.maps.Animation.BOUNCE : undefined,
       });
@@ -423,6 +452,21 @@ export const MapSearchView = ({
           {/* Right panel: Map */}
           <div className="flex-1 relative">
             <div ref={mapContainer} className="w-full h-full" />
+
+            {/* Category legend (desktop only) */}
+            <div className="absolute bottom-6 right-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg shadow-md px-3 py-2 flex gap-3">
+              {Object.entries(CATEGORY_COLORS).map(([cat, color]) => (
+                <div key={cat} className="flex items-center gap-1.5">
+                  <div 
+                    className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
+                    style={{ backgroundColor: color }}
+                  >
+                    {CATEGORY_LETTERS[cat]}
+                  </div>
+                  <span className="text-xs text-muted-foreground">{cat}</span>
+                </div>
+              ))}
+            </div>
 
             {/* Search this area button */}
             {showSearchButton && onSearchInArea && (

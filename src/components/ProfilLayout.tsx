@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { BackButton } from "@/components/BackButton";
-import PageLayout from "@/components/PageLayout";
+import { BottomNavigation } from "@/components/BottomNavigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProfilLayoutProps {
   /**
@@ -30,10 +31,9 @@ interface ProfilLayoutProps {
   children: ReactNode;
 
   /**
-   * Max width du conteneur central
-   * @default "2xl"
+   * État de chargement - affiche un skeleton
    */
-  maxWidth?: "xl" | "2xl" | "3xl" | "4xl" | "full";
+  isLoading?: boolean;
 
   /**
    * ID pour Usetiful tour
@@ -42,22 +42,35 @@ interface ProfilLayoutProps {
 }
 
 /**
+ * Skeleton de chargement unifié pour l'espace client
+ */
+const AccountSkeleton = () => (
+  <div className="space-y-4">
+    {/* Skeleton cards */}
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="p-4 border rounded-xl space-y-3">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-4 w-60" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+/**
  * Layout réutilisable pour toutes les pages de la section "Mon compte"
+ *
+ * UNIFORMISÉ: Utilise max-w-5xl (1024px) pour cohérence avec MonCompte hub
  *
  * Fournit :
  * - Header blanc standard avec BackButton "Retour"
  * - Titre + sous-titre optionnel
- * - Conteneur central avec max-width responsive
- *
- * @example
- * ```tsx
- * <ProfilLayout
- *   title="Mes enfants"
- *   subtitle="Gérez les profils de vos enfants"
- * >
- *   <div>Contenu...</div>
- * </ProfilLayout>
- * ```
+ * - Conteneur central avec max-w-5xl
+ * - Padding bottom pour la bottom nav (pb-24)
  */
 export const ProfilLayout = ({
   title,
@@ -65,26 +78,18 @@ export const ProfilLayout = ({
   backFallback = "/mon-compte",
   rightContent,
   children,
-  maxWidth = "2xl",
+  isLoading = false,
   tourId
 }: ProfilLayoutProps) => {
-  const maxWidthClasses = {
-    xl: "max-w-screen-xl",
-    "2xl": "max-w-2xl",
-    "3xl": "max-w-3xl",
-    "4xl": "max-w-4xl",
-    full: "max-w-full"
-  };
-
   return (
-    <PageLayout showHeader={false}>
+    <div className="min-h-screen bg-background pb-24">
       {/* Header blanc standard */}
       <header
         className="bg-white border-b border-border shadow-sm sticky top-0 z-50"
         data-tour-id={tourId}
       >
-        {/* Conteneur contraint h-16 fixe pour alignement vertical cohérent - comme PageHeader */}
-        <div className={`container mx-auto ${maxWidthClasses[maxWidth]} h-16 flex items-center justify-between px-4`}>
+        {/* Conteneur contraint h-16 fixe - max-w-5xl pour cohérence */}
+        <div className="max-w-5xl mx-auto h-16 flex items-center justify-between px-4">
           {/* Left: BackButton + Title - tous centrés verticalement */}
           <div className="flex items-center gap-4 flex-1 min-w-0">
             <BackButton
@@ -112,10 +117,13 @@ export const ProfilLayout = ({
         </div>
       </header>
 
-      {/* Main content area */}
-      <div className={`container mx-auto ${maxWidthClasses[maxWidth]} px-4 py-6 pb-24`}>
-        {children}
+      {/* Main content area - max-w-5xl pour cohérence */}
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        {isLoading ? <AccountSkeleton /> : children}
       </div>
-    </PageLayout>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation />
+    </div>
   );
 };

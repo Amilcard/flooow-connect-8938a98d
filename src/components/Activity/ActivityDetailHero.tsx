@@ -76,8 +76,10 @@ export const ActivityDetailHero = ({
   nextSessionLabel,
   onContactClick,
 }: ActivityDetailHeroProps) => {
-  // Fallback image basé sur catégorie
-  const displayImage = imageUrl || getActivityImage(title, category, ageMin || 6, ageMax || 17);
+  // Fallback image basé sur catégorie - vérifie aussi les strings vides
+  const displayImage = (imageUrl && imageUrl.trim() !== '') 
+    ? imageUrl 
+    : getActivityImage(title, category, ageMin || 6, ageMax || 17);
   const categoryStyle = getCategoryStyle(category);
   
   // Format localisation

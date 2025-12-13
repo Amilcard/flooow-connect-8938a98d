@@ -9,10 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { LoadingState } from "@/components/LoadingState";
-import { EmptyState } from "@/components/EmptyState";
-import PageLayout from "@/components/PageLayout";
-import { PageHeader } from "@/components/PageHeader";
+import { ProfilLayout } from "@/components/ProfilLayout";
 import { useToast } from "@/hooks/use-toast";
 import {
   UserPlus,
@@ -232,17 +229,14 @@ const LierEnfant = () => {
     ? `${profile.linking_code.slice(0, 3)} ${profile.linking_code.slice(3)}`
     : "";
 
-  if (loadingProfile) return <LoadingState />;
-
   return (
-    <PageLayout showHeader={false}>
-      <PageHeader
-        title="Lier un enfant"
-        subtitle="Family Flooow"
-        backFallback="/mon-compte"
-      />
-
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6 pb-24">
+    <ProfilLayout
+      title="Lier un enfant"
+      subtitle="Family Flooow"
+      backFallback="/mon-compte"
+      isLoading={loadingProfile}
+    >
+      <div className="space-y-6">
         {/* Message inspirant Family Flooow */}
         <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/10 p-5">
           <div className="flex items-start gap-4">
@@ -402,7 +396,19 @@ const LierEnfant = () => {
           </div>
 
           {loadingRequests ? (
-            <LoadingState />
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <Card key={i} className="p-4">
+                  <div className="flex items-center gap-3 animate-pulse">
+                    <div className="w-10 h-10 bg-muted rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-muted rounded w-32" />
+                      <div className="h-3 bg-muted rounded w-24" />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           ) : pendingRequests.length === 0 ? (
             <Card className="bg-muted/30 border-0 p-6">
               <div className="text-center space-y-3">
@@ -524,7 +530,7 @@ const LierEnfant = () => {
           </p>
         </Card>
       </div>
-    </PageLayout>
+    </ProfilLayout>
   );
 };
 
