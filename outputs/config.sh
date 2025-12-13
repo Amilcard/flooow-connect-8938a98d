@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # ============================================
 # Configuration pour smoke tests - Flooow Connect
+# ARCHIVE - Exemples de smoke tests pour le projet Flooow
 # ============================================
 
 # API Base URL - Supabase Edge Functions
-API_BASE="https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1"
+API_BASE="https://kbrgwezkjaakoecispom.supabase.co/functions/v1"
 
 # Credentials de test (à créer dans Supabase Auth)
 # IMPORTANT: Créer ce compte via l'UI Supabase ou l'endpoint signup avant de lancer les tests

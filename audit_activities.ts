@@ -2,7 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import 'dotenv/config';
 
-const supabaseUrl = "https://lddlzlthtwuwxxrrbxuc.supabase.co";
+// ARCHIVE TOOL - utilise le projet Supabase actuel Flooow
+const supabaseUrl = "https://kbrgwezkjaakoecispom.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkZGx6bHRodHd1d3h4cnJieHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNzI3MjEsImV4cCI6MjA3NTg0ODcyMX0.G19gvS7x4tYgtRPKbq7njqG_5OAo0bTYO9O0_fNRlyM"; 
 
 const supabase = createClient(supabaseUrl, supabaseKey);

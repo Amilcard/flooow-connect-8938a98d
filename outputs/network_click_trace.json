@@ -1,11 +1,12 @@
 {
+  "_note": "ARCHIVE - trace réseau d'un ancien projet. Host mis à jour pour cohérence.",
   "timestamp": "2025-10-13T11:45:00Z",
   "trace_type": "Frontend Activity Load",
   "user_action": "Page load / Tab click",
   
   "network_requests": [
     {
-      "url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/rest/v1/activities",
+      "url": "https://kbrgwezkjaakoecispom.supabase.co/rest/v1/activities",
       "method": "GET",
       "params": {
         "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
@@ -32,7 +33,7 @@
       ]
     },
     {
-      "url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/rest/v1/activities",
+      "url": "https://kbrgwezkjaakoecispom.supabase.co/rest/v1/activities",
       "method": "GET",
       "params": {
         "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
@@ -46,7 +47,7 @@
       "note": "Budget filter applied correctly"
     },
     {
-      "url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/rest/v1/activities",
+      "url": "https://kbrgwezkjaakoecispom.supabase.co/rest/v1/activities",
       "method": "GET",
       "params": {
         "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# ARCHIVE - Exemples de smoke tests pour le projet Flooow
 # Configuration
-API_BASE="${API_BASE:-https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1}"
+API_BASE="${API_BASE:-https://kbrgwezkjaakoecispom.supabase.co/functions/v1}"
 T_FAMILY="${T_FAMILY:-Bearer <FAMILY_TOKEN>}"
 T_PARENT="${T_PARENT:-Bearer <PARENT_TOKEN>}"
 

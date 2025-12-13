@@ -14,7 +14,7 @@
         "Set cookies: access_token (HttpOnly), refresh_token (HttpOnly), session_id",
         "Retourne session_id et user info"
       ],
-      "curl_example": "curl -c cookies.txt -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/auth-sessions/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"pass123\",\"device\":\"web\"}'"
+      "curl_example": "curl -c cookies.txt -X POST https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"pass123\",\"device\":\"web\"}'"
     },
     {
       "name": "session_info",
@@ -24,7 +24,7 @@
         "Lit session_id depuis cookie",
         "Retourne metadata session (user_id, roles, device, ip, etc.)"
       ],
-      "curl_example": "curl -b cookies.txt https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/auth-sessions/session-info"
+      "curl_example": "curl -b cookies.txt https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/session-info"
     },
     {
       "name": "refresh",
@@ -37,7 +37,7 @@
         "Génère nouveau JWT access_token",
         "Set nouveaux cookies"
       ],
-      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/auth-sessions/refresh"
+      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/refresh"
     },
     {
       "name": "logout",
@@ -49,7 +49,7 @@
         "Clear tous les cookies",
         "Log audit event"
       ],
-      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/auth-sessions/logout"
+      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/logout"
     },
     {
       "name": "verify_revoked",
