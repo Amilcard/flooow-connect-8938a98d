@@ -41,7 +41,9 @@ import {
   Share2,
   Copy,
   Check,
-  Leaf
+  Leaf,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -54,6 +56,10 @@ import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
 import { ActivityImageCard } from "@/components/Activity/ActivityImageCard";
+import { ActivityDetailHero } from "@/components/Activity/ActivityDetailHero";
+import { SessionSlotCard } from "@/components/Activity/SessionSlotCard";
+import { SessionAccordion, SelectedSessionSummary } from "@/components/Activity/SessionAccordion";
+import { SlotAccordion, SelectedSlotSummary } from "@/components/Activity/SlotAccordion";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
@@ -85,7 +91,10 @@ const ActivityDetail = () => {
       : "infos"
   );
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
-  const [selectedSessionIdx, setSelectedSessionIdx] = useState<number | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [selectedOccurrenceDate, setSelectedOccurrenceDate] = useState<string | null>(null); // Date ISO de la séance choisie
+  const [showAllDates, setShowAllDates] = useState(false); // Pour "Voir plus de dates"
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null); // Pour l'accordéon
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -285,7 +294,7 @@ const ActivityDetail = () => {
         .from("activities")
         .select("id, title, categories, age_min, age_max, price_base, period_type, images")
         .neq("id", activity!.id)
-        .eq("published", true)
+        .eq("is_published", true)
         .lte("age_min", activity!.age_max)
         .gte("age_max", activity!.age_min)
         .limit(3);
@@ -308,7 +317,7 @@ const ActivityDetail = () => {
   }
 
   const handleBooking = () => {
-    if (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) {
+    if (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId) {
       toast({
         title: "Créneau requis",
         description: "Veuillez sélectionner un créneau",
@@ -319,7 +328,16 @@ const ActivityDetail = () => {
 
     // Rediriger vers la page d'inscription
     // Les aides sont optionnelles, elles seront reprises si calculées
-    const bookingUrl = activity.period_type === "scolaire" && selectedSessionIdx !== null ? `/booking/${id}?sessionIdx=${selectedSessionIdx}` : `/booking/${id}?slotId=${selectedSlotId}`; navigate(bookingUrl);
+    // Pour les sessions scolaires, on passe sessionId + occurrenceDate (date ISO de la séance choisie)
+    if (activity.period_type === "scolaire" && selectedSessionId) {
+      const params = new URLSearchParams({ sessionId: selectedSessionId });
+      if (selectedOccurrenceDate) {
+        params.append('occurrenceDate', selectedOccurrenceDate);
+      }
+      navigate(`/booking/${id}?${params.toString()}`);
+    } else if (selectedSlotId) {
+      navigate(`/booking/${id}?slotId=${selectedSlotId}`);
+    }
   };
 
   const handleAidsCalculated = (data: {
@@ -416,20 +434,29 @@ const ActivityDetail = () => {
     ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ") 
     : formatAgeRangeForDetail(activity.age_min, activity.age_max);
 
-  // Calculer les prochaines dates pour un jour de semaine donné
-  const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+  // Calculer les prochaines dates pour un jour de semaine donné - retourne objets {iso, label, labelShort}
+  const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array<{iso: string, label: string, labelShort: string}> => {
     if (dayOfWeek === null) return [];
-    const dates: string[] = [];
+    const dates: Array<{iso: string, label: string, labelShort: string}> = [];
     const today = new Date();
     const currentDay = today.getDay();
     let daysUntil = dayOfWeek - currentDay;
     if (daysUntil <= 0) daysUntil += 7;
+    const dayNames = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
     for (let i = 0; i < count; i++) {
       const nextDate = new Date(today);
       nextDate.setDate(today.getDate() + daysUntil + (i * 7));
-      dates.push(nextDate.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }));
+      dates.push({
+        iso: nextDate.toISOString().split('T')[0],
+        label: nextDate.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }),
+        labelShort: `${dayNames[nextDate.getDay()]} ${nextDate.getDate()} ${nextDate.toLocaleDateString("fr-FR", { month: "short" })}`
+      });
     }
     return dates;
+  };
+  // Ancienne fonction pour compatibilité
+  const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+    return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
   };
   const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
@@ -504,73 +531,40 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Image Card arrondie avec badges overlay */}
-      <ActivityImageCard
-        imageUrl={displayImage}
+      {/* Hero Section - Photo + Infos Organisateur (layout cohérent avec Accueil/Recherche) */}
+      <ActivityDetailHero
         title={activity.title}
         category={activity.category}
         categories={activity.categories}
-      />
-
-      {/* Quick Info Bar - Ligne de tags identique aux cards Recherche */}
-      <QuickInfoBar
-        category={activity.categories?.[0] || activity.category}
         periodType={activity.period_type}
-        ageRange={{ min: activity.age_min, max: activity.age_max }}
-        isFree={activity.price_base === 0}
-        spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
-        paymentEchelonned={activity.payment_echelonned || false}
-        hasAccessibility={
-          typeof activity.accessibility_checklist === 'object' &&
-          activity.accessibility_checklist !== null &&
-          'wheelchair' in activity.accessibility_checklist &&
-          Boolean((activity.accessibility_checklist as any).wheelchair)
+        ageMin={activity.age_min}
+        ageMax={activity.age_max}
+        priceBase={activity.price_base}
+        imageUrl={displayImage}
+        organismName={activity.organism_name}
+        organismType={activity.organism_type}
+        organismPhone={activity.organism_phone}
+        organismEmail={activity.organism_email}
+        organismWebsite={activity.organism_website}
+        address={activity.address}
+        city={activity.city}
+        postalCode={activity.postal_code}
+        venueName={activity.venue_name}
+        nextSessionLabel={sessions.length > 0 && sessions[0].day_of_week !== null 
+          ? `Prochaine : ${getNextDates(sessions[0].day_of_week, 1)[0] || ''}`
+          : slots.length > 0 
+            ? `Prochaine : ${new Date(slots[0].start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+            : undefined
         }
+        onContactClick={() => setShowContactModal(true)}
       />
 
-      {/* Main Content Container - Largeur augmentée pour desktop, flux visuel continu */}
+      {/* Main Content Container */}
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
-        {/* Header Section - Titre + Lieu + Organisateur (période/âge dans QuickInfoBar) */}
-        <div className="space-y-2 pb-4 border-b mb-5" data-tour-id="activity-header">
-          {/* Titre H1 */}
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
-            {activity.title}
-          </h1>
-
-          {/* Localisation uniquement (période et âge sont dans QuickInfoBar) */}
-          {(activity.organisms?.address || activity.city) && (
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin size={14} className="text-primary flex-shrink-0" />
-              <span>
-                {activity.city || activity.organisms?.address?.split(',')[0]}
-                {activity.postal_code && ` (${activity.postal_code})`}
-              </span>
-            </div>
-          )}
-
-          {/* Organisateur avec contact */}
-          {activity.organisms?.name && (
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <span className="text-sm text-muted-foreground">
-                Organisé par <span className="font-medium text-foreground">{activity.organisms.name}</span>
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowContactModal(true)}
-                className="h-7 px-2 text-xs text-primary hover:text-primary/80 hover:bg-primary/5"
-              >
-                <MessageCircle size={14} className="mr-1" />
-                Contacter
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
-        <div className="grid md:grid-cols-12 gap-8">
-          {/* Left Column - Main content with Tabs (8/12) */}
-          <div className="md:col-span-8">
+        {/* Grid 12 colonnes: 8 pour contenu principal, 4 pour panneau latéral d'action */}
+        <div className="grid md:grid-cols-12 gap-6 lg:gap-8">
+          {/* Main Content - Informations détaillées (8/12) */}
+          <main className="md:col-span-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full grid grid-cols-3 gap-1 h-auto p-1 mb-6">
                 <TabsTrigger value="infos" className="text-xs md:text-sm flex items-center justify-center gap-1.5">
@@ -655,53 +649,28 @@ const ActivityDetail = () => {
 
                     {/* Colonne droite */}
                     <div className="space-y-4">
-                      {/* Lieu d'activité */}
-                      {(activity.venue_name || activity.address) && (
+                      {/* Lieu d'entraînement (peut être différent du siège du club) */}
+                      {(activity.venue_name || activity.location_name) && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-sm">Lieu d'entraînement</p>
-                            {activity.venue_name && <p className="text-sm font-medium text-foreground">{activity.venue_name}</p>}
-                            <p className="text-sm text-muted-foreground">
-                              {activity.address}{activity.city && `, ${activity.city}`}{activity.postal_code && ` ${activity.postal_code}`}
+                            <p className="text-sm font-medium text-foreground">
+                              {activity.venue_name || activity.location_name}
                             </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Organisateur complet */}
-                      {activity.organisms && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <Building2 size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div className="space-y-1">
-                            <p className="font-medium text-sm">Organisateur</p>
-                            <p className="text-sm font-medium text-foreground">{activity.organisms.name}</p>
-                            {activity.organisms.type && (
-                              <p className="text-xs text-muted-foreground">{activity.organisms.type}</p>
+                            {activity.location_address && (
+                              <p className="text-sm text-muted-foreground">{activity.location_address}</p>
                             )}
-                            {activity.organisms.address && (
-                              <p className="text-sm text-muted-foreground">{activity.organisms.address}</p>
-                            )}
-                            {activity.organisms.phone && (
-                              <p className="text-sm text-muted-foreground">📞 {activity.organisms.phone}</p>
-                            )}
-                            {activity.organisms.email && (
-                              <p className="text-sm text-muted-foreground">✉️ {activity.organisms.email}</p>
-                            )}
-                            {activity.organisms.website && (
-                              <a href={activity.organisms.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
-                                🌐 Site web
-                              </a>
+                            {(activity.location_postal_code || activity.location_city) && (
+                              <p className="text-sm text-muted-foreground">
+                                {activity.location_postal_code} {activity.location_city}
+                              </p>
                             )}
                           </div>
                         </div>
                       )}
-                    </div>
-                  </div>
 
-                  {/* Informations supplémentaires en dessous */}
-                  {(activity.covoiturage_enabled || activity.payment_echelonned) && (
-                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                      {/* Covoiturage */}
                       {activity.covoiturage_enabled && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
@@ -712,6 +681,7 @@ const ActivityDetail = () => {
                         </div>
                       )}
 
+                      {/* Paiement échelonné */}
                       {activity.payment_echelonned && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
@@ -722,7 +692,7 @@ const ActivityDetail = () => {
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
                 </section>
 
                 {/* Cross-links vers autres onglets - texte d'orientation discret */}
@@ -808,13 +778,13 @@ const ActivityDetail = () => {
                       activity.address,
                       activity.city,
                       activity.postal_code
-                    ].filter(Boolean).join(', ') || activity.organisms?.address}
+                    ].filter(Boolean).join(', ') || activity.address}
                     activityLatLng={activity.latitude && activity.longitude ? {
                       lat: activity.latitude,
                       lng: activity.longitude
                     } : undefined}
-                    structureName={activity.organisms?.name}
-                    structureContactJson={activity.organisms?.phone}
+                    structureName={activity.organism_name}
+                    structureContactJson={activity.organism_phone}
                     onTransportModeSelected={(mode) => {
                       console.log('Transport mode selected:', mode);
                     }}
@@ -822,12 +792,19 @@ const ActivityDetail = () => {
                 </div>
               </TabsContent>
             </Tabs>
-          </div>
+          </main>
 
-          {/* Right Column - Sticky Booking Card (4/12) */}
-          <div className="md:col-span-4">
-            <Card className="p-6 md:sticky md:top-24 space-y-6">
-              <h3 className="font-bold text-lg">Tarifs & créneaux disponibles</h3>
+          {/* ============================================
+              PANNEAU LATÉRAL D'ACTION (Aside) - Sticky
+              Contient: Tarifs, Créneaux, CTA Inscription
+              ============================================ */}
+          <aside className="md:col-span-4" aria-label="Panneau de réservation">
+            <Card className="p-5 md:sticky md:top-20 space-y-5 shadow-lg border-2 border-border/50">
+              {/* En-tête du panneau */}
+              <div className="space-y-1">
+                <h2 className="font-bold text-lg text-foreground">Tarifs & créneaux disponibles</h2>
+                <p className="text-xs text-muted-foreground">Sélectionnez un créneau pour inscrire votre enfant</p>
+              </div>
               {/* Prix et aides */}
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
@@ -883,150 +860,77 @@ const ActivityDetail = () => {
                     )}
                     
                     {activity.period_type === "scolaire" ? (
-                    <div className="space-y-2">
-                      {sessions.map((s, idx) => {
-                        const isSelected = selectedSessionIdx === idx;
-                        const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-                        const dayLabel = s.day_of_week !== null ? dayNames[s.day_of_week] : "Vacances";
-                        const timeLabel = s.start_time && s.end_time ? `${s.start_time.slice(0, 5)} – ${s.end_time.slice(0, 5)}` : "";
-
-                        return (
-                          <Card
-                            key={s.id || `session-${idx}`}
-                            data-session-idx={idx}
-                            className={`p-4 min-h-[72px] transition-all border-2 ${
-                              isSelected
-                                ? 'ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary cursor-pointer shadow-md'
-                                : 'hover:bg-accent/50 hover:border-primary/30 cursor-pointer border-transparent'
-                            }`}
-                            onClick={() => setSelectedSessionIdx(idx)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                setSelectedSessionIdx(idx);
-                              }
-                            }}
-                            aria-selected={isSelected}
-                          >
-                            <div className="space-y-1.5">
-                              {/* Ligne 1: Jour + horaire (niveau fort) */}
-                              <div className="flex items-center justify-between gap-2">
-                                <span className={`text-sm font-semibold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
-                                  {dayLabel} {timeLabel}
-                                </span>
-                                {isSelected && (
-                                  <CheckCircle2 size={18} className="text-primary flex-shrink-0" />
-                                )}
-                              </div>
-                              {/* Ligne 2: Tranche d'âge */}
-                              <div className="flex items-center gap-2">
-                                <Badge variant={isSelected ? "default" : "secondary"} className="text-xs">
-                                  <Users size={12} className="mr-1" />
-                                  {s.age_min}-{s.age_max} ans
-                                </Badge>
-                              </div>
-                              {/* Ligne 3: Prochaines séances */}
-                              {s.day_of_week !== null && (
-                                <p className="text-xs text-muted-foreground pt-1">
-                                  <span className="text-primary font-medium">Prochaines séances :</span> {getNextDates(s.day_of_week).join(", ")}
-                                </p>
-                              )}
-                            </div>
-                          </Card>
-                        );
-                      })}
+                    <div className="space-y-3">
+                      {/* Accordéons de sessions scolaires */}
+                      {sessions.map((s, index) => (
+                        <SessionAccordion
+                          key={s.id}
+                          session={{
+                            id: s.id,
+                            day_of_week: s.day_of_week,
+                            start_time: s.start_time,
+                            end_time: s.end_time,
+                            age_min: s.age_min,
+                            age_max: s.age_max,
+                            location: s.location,
+                            price: s.price,
+                          }}
+                          isExpanded={expandedSessionId === s.id || (index === 0 && expandedSessionId === null)}
+                          onToggle={() => setExpandedSessionId(expandedSessionId === s.id ? null : s.id)}
+                          selectedDate={selectedSessionId === s.id ? selectedOccurrenceDate : null}
+                          onSelectDate={(sessionId, date) => {
+                            setSelectedSessionId(sessionId);
+                            setSelectedOccurrenceDate(date);
+                            setExpandedSessionId(sessionId);
+                          }}
+                          activityLocation={activity.location_name || undefined}
+                        />
+                      ))}
+                      
+                      {/* Récap séance choisie */}
+                      {selectedSessionId && selectedOccurrenceDate && (
+                        <SelectedSessionSummary
+                          session={sessions.find(s => s.id === selectedSessionId) || null}
+                          selectedDate={selectedOccurrenceDate}
+                        />
+                      )}
                     </div>
                   ) : (
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                      {slots.map(slot => {
-                        const startDate = new Date(slot.start);
-                        const endDate = new Date(slot.end);
-                        const isFull = slot.seats_remaining <= 0;
-                        const isSelected = selectedSlotId === slot.id;
-                        // Format date complète lisible
-                        const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
-                        const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-                        const dateFormatted = startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-                        const timeStart = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                        const timeEnd = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-
-                        return (
-                          <Card
-                            key={slot.id}
-                            data-slot-id={slot.id}
-                            className={`p-4 min-h-[72px] transition-all border-2 ${
-                              isFull
-                                ? 'opacity-50 bg-muted/50 cursor-not-allowed border-transparent'
-                                : isSelected
-                                  ? 'ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary cursor-pointer shadow-md'
-                                  : 'hover:bg-accent/50 hover:border-primary/30 cursor-pointer border-transparent'
-                            }`}
-                            onClick={() => !isFull && setSelectedSlotId(slot.id)}
-                            role="button"
-                            tabIndex={isFull ? -1 : 0}
-                            onKeyDown={(e) => {
-                              if ((e.key === 'Enter' || e.key === ' ') && !isFull) {
-                                e.preventDefault();
-                                setSelectedSlotId(slot.id);
-                              }
-                            }}
-                            aria-selected={isSelected}
-                            aria-disabled={isFull}
-                          >
-                            <div className="space-y-1.5">
-                              {/* Ligne 1: Date complète (niveau fort) */}
-                              <div className="flex items-center justify-between gap-2">
-                                <span className={`text-sm font-semibold ${isFull ? 'text-muted-foreground' : isSelected ? 'text-primary' : 'text-foreground'}`}>
-                                  {dayNameCapitalized} {dateFormatted}
-                                </span>
-                                {isSelected && !isFull && (
-                                  <CheckCircle2 size={18} className="text-primary flex-shrink-0" />
-                                )}
-                              </div>
-                              {/* Ligne 2: Horaire */}
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Calendar size={14} className={isSelected ? "text-primary" : ""} />
-                                <span>{timeStart} – {timeEnd}</span>
-                              </div>
-                              {/* Ligne 3: Places disponibles */}
-                              <div className="flex items-center justify-between pt-1">
-                                <Badge
-                                  variant={isFull ? "secondary" : isSelected ? "default" : "outline"}
-                                  className={`text-xs ${
-                                    isFull
-                                      ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                      : slot.seats_remaining <= 3
-                                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                                        : isSelected
-                                          ? ''
-                                          : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                  }`}
-                                >
-                                  {isFull ? "Complet" : slot.seats_remaining <= 3 ? `Plus que ${slot.seats_remaining} place${slot.seats_remaining > 1 ? 's' : ''} !` : `${slot.seats_remaining} places`}
-                                </Badge>
-                                {isFull && (
-                                  <span className="text-xs text-primary font-medium">
-                                    Liste d'attente →
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </Card>
-                        );
-                      })}
+                    <div className="space-y-3">
+                      {/* Accordéon de slots vacances */}
+                      <SlotAccordion
+                        slots={slots}
+                        ageMin={activity.age_min}
+                        ageMax={activity.age_max}
+                        selectedSlotId={selectedSlotId || null}
+                        onSelectSlot={(slotId) => setSelectedSlotId(slotId)}
+                        periodLabel={periodFilter === "printemps_2026" ? "Vacances de Printemps" : periodFilter === "ete_2026" ? "Vacances d'Été" : "Vacances"}
+                        defaultExpanded={true}
+                      />
+                      
+                      {/* Récap créneau choisi */}
+                      {selectedSlotId && (
+                        <SelectedSlotSummary
+                          slot={slots.find(s => s.id === selectedSlotId) || null}
+                          ageMin={activity.age_min}
+                          ageMax={activity.age_max}
+                        />
+                      )}
                     </div>
                   )}
                     
                     {/* Récap "Créneau sélectionné" - bien visible avant le bouton */}
-                    {activity.period_type === "scolaire" && selectedSessionIdx !== null && sessions[selectedSessionIdx] && (() => {
-                      const session = sessions[selectedSessionIdx];
+                    {activity.period_type === "scolaire" && selectedSessionId && sessions.find(s => s.id === selectedSessionId) && (() => {
+                      const session = sessions.find(s => s.id === selectedSessionId)!;
                       const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
                       const dayLabel = session.day_of_week !== null ? dayNames[session.day_of_week] : "Vacances";
                       const timeLabel = session.start_time && session.end_time
                         ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
                         : "";
+                      // Formater la date sélectionnée
+                      const selectedDateLabel = selectedOccurrenceDate 
+                        ? new Date(selectedOccurrenceDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+                        : null;
                       return (
                         <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
                           <div className="flex items-center gap-2">
@@ -1035,7 +939,12 @@ const ActivityDetail = () => {
                           </div>
                           <div className="pl-6 space-y-1">
                             <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
-                            <p className="text-sm text-muted-foreground">
+                            {selectedDateLabel && (
+                              <p className="text-sm font-medium text-primary">
+                                📅 Séance du {selectedDateLabel}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
                               {session.age_min}-{session.age_max} ans
                             </p>
                           </div>
@@ -1069,15 +978,17 @@ const ActivityDetail = () => {
 
                     <Button
                       onClick={handleBooking}
-                      disabled={isActivityClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
+                      disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
                       className="w-full h-12 text-base font-semibold"
                       size="lg"
                     >
                       {isActivityClosed
                         ? "Inscriptions complètes"
-                        : (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)
+                        : (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)
                           ? "Sélectionnez un créneau"
-                          : "Inscrire mon enfant"}
+                          : selectedOccurrenceDate
+                            ? `Inscrire (${new Date(selectedOccurrenceDate).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })})`
+                            : "Inscrire mon enfant"}
                     </Button>
 
                     {isActivityClosed && (
@@ -1133,18 +1044,18 @@ const ActivityDetail = () => {
                 </div>
               </div>
             </Card>
-          </div>
+          </aside>
         </div>
       </div>
 
 
-      {activity.organisms && typeof activity.organisms.phone === 'object' && activity.organisms.phone !== null && (
+      {activity.organism_name && typeof activity.organism_phone === 'object' && activity.organism_phone !== null && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
-          organizerName={activity.organisms.name}
-          organizerEmail={'email' in activity.organisms.phone ? String(activity.organisms.phone.email) : ''}
-          organizerPhone={'phone' in activity.organisms.phone ? String(activity.organisms.phone.phone) : undefined}
+          organizerName={activity.organism_name}
+          organizerEmail={'email' in activity.organism_phone ? String(activity.organism_phone.email) : ''}
+          organizerPhone={'phone' in activity.organism_phone ? String(activity.organism_phone.phone) : undefined}
           activityTitle={activity.title}
         />
       )}
@@ -1156,8 +1067,8 @@ const ActivityDetail = () => {
         priceUnit={activity.price_note || "par activité"}
         onBook={handleBooking}
         onShare={handleShare}
-        disabled={isActivityClosed || (activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId)}
-        buttonText={(activity.period_type === "scolaire" ? selectedSessionIdx === null : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
+        disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
+        buttonText={(activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
         mobileOnly={true}
       />
 

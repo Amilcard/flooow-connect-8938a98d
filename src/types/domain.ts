@@ -75,6 +75,14 @@ export interface Activity {
   santeTags?: string[];        // Ex: ["Certificat médical requis"]
   prerequis?: string[];        // Ex: ["Savoir nager"]
   piecesAFournir?: string[];   // Ex: ["Photo d'identité", "Certificat médical"]
+  
+  // Champs organisateur dénormalisés (depuis Supabase)
+  organism_id?: string;
+  organism_name?: string;
+  organism_type?: string;
+  organism_phone?: string;
+  organism_email?: string;
+  organism_website?: string;
 }
 
 /**

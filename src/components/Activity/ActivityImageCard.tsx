@@ -74,9 +74,9 @@ export function ActivityImageCard({
 
   return (
     <div className="px-4 pt-4">
-      <div className="relative w-full overflow-hidden rounded-xl shadow-md">
-        {/* Conteneur image - hauteur responsive */}
-        <div className="relative w-full h-[200px] md:h-[240px] lg:h-[280px]">
+      <div className="relative w-full overflow-hidden rounded-2xl shadow-md">
+        {/* Conteneur image - hauteur réduite pour cohérence avec cards Accueil/Résultats */}
+        <div className="relative w-full h-[140px] md:h-[180px] lg:h-[200px]">
           {/* Image */}
           <img
             src={finalImageUrl}

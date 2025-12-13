@@ -43,14 +43,24 @@ const Login = () => {
       // Petit délai pour laisser la session se stabiliser
       setTimeout(() => navigate('/home'), 100);
     } catch (error: any) {
-      // Afficher l'erreur seulement si elle provient vraiment de l'auth
-      if (error?.message) {
-        toast({
-          title: "Connexion impossible",
-          description: "Vérifiez votre email et mot de passe",
-          variant: "destructive",
-        });
+      console.error("Login error:", error);
+      
+      // Message d'erreur plus explicite selon le type d'erreur
+      let errorMessage = "Vérifiez votre email et mot de passe";
+      
+      if (error?.message?.includes("Invalid login credentials")) {
+        errorMessage = "Email ou mot de passe incorrect. Si vous vous êtes inscrit via Google/Apple, utilisez ce même bouton pour vous connecter.";
+      } else if (error?.message?.includes("Email not confirmed")) {
+        errorMessage = "Veuillez confirmer votre email avant de vous connecter.";
+      } else if (error?.message?.includes("User not found")) {
+        errorMessage = "Aucun compte trouvé avec cet email. Créez un compte ou utilisez la connexion sociale.";
       }
+      
+      toast({
+        title: "Connexion impossible",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 

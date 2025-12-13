@@ -209,9 +209,9 @@ export function InteractiveMapActivities({
               Voir détails
             </button>
             <button
-              onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${activity.location.lat},${activity.location.lng}', '_blank')"
+              onclick="window.location.href='/activity/${activity.id}?tab=trajets'"
               style="background: white; border: 1px solid #e5e7eb; padding: 10px 12px; border-radius: 8px; cursor: pointer;"
-              title="Itinéraire"
+              title="Voir l'itinéraire"
             >
               🧭
             </button>
