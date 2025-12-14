@@ -226,29 +226,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Nettoyer l'état AVANT l'appel API pour éviter boucle
     setUser(null);
 
-    // Nettoyer TOUS les états persistés dans localStorage
+    // Nettoyer les états persistés dans localStorage avec whitelist explicite
     try {
-      // 1. Nettoyer toutes les données de réservation d'activités
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('activity_booking_')) {
-          localStorage.removeItem(key);
-        }
+      // 1. Clés Flooow à supprimer au logout (whitelist)
+      const FLOOOW_LOGOUT_KEYS = [
+        'userTerritoryId',
+        'userPostalCode',
+        'userTerritoryMode',
+        'anonymous_children',
+        'parent-signup-draft',
+        // Note: On garde 'onboardingViewCount' et 'flooow_usetiful_visits' pour ne pas relancer l'onboarding
+      ];
+
+      // Supprimer les clés explicites
+      FLOOOW_LOGOUT_KEYS.forEach(key => {
+        localStorage.removeItem(key);
       });
-      
-      // 2. Nettoyer toutes les données de profil utilisateur en cache
+
+      // 2. Supprimer les clés avec préfixes connus (réservations)
       Object.keys(localStorage).forEach(key => {
-        if (key.includes('user') || key.includes('profile') || key.includes('child')) {
+        if (key.startsWith('activity_booking_') || key.startsWith('booking_draft_')) {
           localStorage.removeItem(key);
         }
       });
 
-      // 3. Nettoyer les données de territoire
-      localStorage.removeItem('userTerritoryId');
-      localStorage.removeItem('userPostalCode');
-      localStorage.removeItem('userTerritoryMode');
-      // Ne pas supprimer hasSeenOnboarding pour ne pas relancer l'onboarding
-      
-      // 4. Nettoyer sessionStorage
+      // 3. Nettoyer sessionStorage
       sessionStorage.clear();
     } catch (error) {
       console.error('Error clearing storage:', error);

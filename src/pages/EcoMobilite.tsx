@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Calculator, MapPin, Info } from "lucide-react";
 import { MobilitySolution, DataSource } from "@/types/Mobility";
-import { useUserTerritory } from "@/hooks/useUserTerritory";
+import { useTerritory } from "@/hooks/useTerritory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -114,7 +114,7 @@ const DATA_SOURCES: DataSource[] = [
 ];
 
 const EcoMobilite = () => {
-  const { data: userTerritory, isLoading } = useUserTerritory();
+  const { territory: userTerritory, isLoading } = useTerritory();
   const { isAuthenticated } = useAuth();
 
   // Filtrer les solutions selon le territoire de l'utilisateur

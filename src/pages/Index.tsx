@@ -10,7 +10,7 @@ import { BonEspritCard } from "@/components/home/BonEspritCard";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
-import { useUserTerritory } from "@/hooks/useUserTerritory";
+import { useTerritory } from "@/hooks/useTerritory";
 import { ErrorState } from "@/components/ErrorState";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -193,32 +193,32 @@ const Index = () => {
   const { data: territoryAccess } = useTerritoryAccess(userProfile?.postal_code || null);
   
   // Récupérer le territoire de l'utilisateur pour filtrer les activités
-  const { data: userTerritory } = useUserTerritory();
+  const { territoryId } = useTerritory();
 
   // Charger les activités : avec territoire si connecté, sinon toutes les activités
   const { activities: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({
     limit: 6,
-    territoryId: userTerritory?.id || undefined // undefined permet de charger toutes les activités si pas de territoire
+    territoryId: territoryId || undefined // undefined permet de charger toutes les activités si pas de territoire
   });
 
   // Petits budgets (max 400€)
-  const { activities: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
+  const { activities: budgetActivities = [], isLoading: loadingBudget } = useActivities({
     limit: 6,
-    territoryId: userTerritory?.id,
+    territoryId: territoryId,
     maxPrice: 400
   });
 
   // Sport & bien-être
-  const { activities: sportActivities = [], isLoading: loadingSport } = useActivities({ 
+  const { activities: sportActivities = [], isLoading: loadingSport } = useActivities({
     limit: 6,
-    territoryId: userTerritory?.id,
+    territoryId: territoryId,
     category: 'sport'
   });
 
   // Activités recommandées
-  const { activities: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({ 
+  const { activities: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({
     limit: 6,
-    territoryId: userTerritory?.id
+    territoryId: territoryId
   });
 
 

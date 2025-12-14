@@ -361,11 +361,6 @@
     display: none;
   }
 
-  /* Hide Lovable badge globally */
-  #lovable-badge {
-    display: none !important;
-  }
-
   /* Webkit overflow scrolling for iOS smooth scroll */
   .webkit-overflow-scrolling-touch {
     -webkit-overflow-scrolling: touch;
