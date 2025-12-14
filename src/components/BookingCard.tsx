@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +8,14 @@ import { Calendar, AlertCircle } from "lucide-react";
 import { SlotPicker } from "@/components/SlotPicker";
 import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
 import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
+import type { Activity } from "@/types/domain";
+import type { CalculatedAid } from "@/utils/FinancialAidEngine";
 
-interface Slot {
+// ============================================
+// INTERFACES TYPÉES
+// ============================================
+
+interface BookingSlot {
   id: string;
   start: string;
   end: string;
@@ -18,31 +23,31 @@ interface Slot {
   seats_total: number;
 }
 
-interface Child {
+interface BookingChild {
   id: string;
   first_name: string;
   dob: string;
 }
 
-interface UserProfile {
+interface BookingUserProfile {
   quotient_familial?: number;
   postal_code?: string;
 }
 
 interface BookingCardProps {
-  activity: any;
-  slots: Slot[];
-  children: Child[];
-  userProfile: UserProfile | null;
+  activity: Activity;
+  slots: BookingSlot[];
+  children: BookingChild[];
+  userProfile: BookingUserProfile | null;
   selectedSlotId?: string;
   selectedChildId?: string;
   onSelectSlot: (slotId: string) => void;
   onSelectChild: (childId: string) => void;
   onBooking: () => void;
   calculateAge: (dob: string) => number;
-  calculateDurationDays: (slot: any) => number;
+  calculateDurationDays: (slot: BookingSlot) => number;
   adjustedPrice?: number | null;
-  calculatedAids?: any[];
+  calculatedAids?: CalculatedAid[];
 }
 
 export const BookingCard = ({

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
+import { SkipToContent } from "./components/a11y/SkipToContent";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
@@ -144,7 +145,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <SkipToContent />
           <Suspense fallback={<PageLoader />}>
+            <main id="main-content">
             <Routes>
               {/* Pages critiques (static imports) */}
               <Route path="/" element={<Splash />} />
@@ -298,6 +301,7 @@ const App = () => (
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </main>
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
