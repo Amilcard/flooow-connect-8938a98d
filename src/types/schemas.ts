@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import type { Activity, ActivityRaw, ActivityCategory } from './domain';
+import type { Activity, ActivityRaw } from './domain';
 import { getActivityImage } from '@/lib/imageMapping';
 
 /**
@@ -83,8 +83,9 @@ export function toActivity(raw: ActivityRaw): Activity {
   const isValidImage = (url: string | null | undefined) =>
     url && url.startsWith('http') && !url.includes('cdn.example.com');
 
-  const activityImage = (raw.images && raw.images.length > 0 && isValidImage(raw.images[0]))
-    ? raw.images[0]
+  const firstImage = raw.images?.[0];
+  const activityImage = (firstImage && isValidImage(firstImage))
+    ? firstImage
     : getActivityImage(title, category, ageMin, ageMax);
 
   // Construction objet avec valeurs par défaut

@@ -67,12 +67,14 @@ export const formatAgeRangeForCard = (ageMin?: number, ageMax?: number): string 
   }
   
   if (segments.length === 1) {
-    return segments[0].label;
+    const seg = segments[0];
+    return seg ? seg.label : `${ageMin}-${ageMax} ans`;
   }
-  
+
   // Plusieurs segments: afficher la tranche globale simplifiée
   const firstSeg = segments[0];
   const lastSeg = segments[segments.length - 1];
+  if (!firstSeg || !lastSeg) return `${ageMin}-${ageMax} ans`;
   return `${firstSeg.min}-${lastSeg.max} ans`;
 };
 
@@ -90,9 +92,10 @@ export const formatAgeRangeForDetail = (ageMin?: number, ageMax?: number): strin
   }
   
   if (segments.length === 1) {
-    return segments[0].label;
+    const seg = segments[0];
+    return seg ? seg.label : `${ageMin}-${ageMax} ans`;
   }
-  
+
   // Plusieurs segments: afficher chacun séparé par " / "
   return segments.map(s => s.label).join(' / ');
 };
@@ -110,10 +113,12 @@ export const formatAgeRangeShort = (ageMin?: number, ageMax?: number): string =>
   }
   
   if (segments.length === 1) {
-    return `${segments[0].min}-${segments[0].max}`;
+    const seg = segments[0];
+    return seg ? `${seg.min}-${seg.max}` : `${ageMin}-${ageMax}`;
   }
-  
+
   const firstSeg = segments[0];
   const lastSeg = segments[segments.length - 1];
+  if (!firstSeg || !lastSeg) return `${ageMin}-${ageMax}`;
   return `${firstSeg.min}-${lastSeg.max}`;
 };

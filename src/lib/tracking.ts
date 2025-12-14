@@ -27,7 +27,8 @@ export const logSearch = async (params: {
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
-    await supabase.from('search_logs').insert({
+    // Tables analytics non typées dans Supabase types générés
+    await (supabase.from('search_logs' as never) as ReturnType<typeof supabase.from>).insert({
       user_id: user?.id || null,
       session_id: getSessionId(),
       search_query: params.searchQuery || null,
@@ -51,7 +52,8 @@ export const logActivityView = async (params: {
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
-    await supabase.from('activity_views').insert({
+    // Tables analytics non typées dans Supabase types générés
+    await (supabase.from('activity_views' as never) as ReturnType<typeof supabase.from>).insert({
       activity_id: params.activityId,
       user_id: user?.id || null,
       session_id: getSessionId(),
