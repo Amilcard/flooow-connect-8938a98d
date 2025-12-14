@@ -4,24 +4,36 @@ import { StrictOnboardingScreen, StrictOnboardingScreenConfig } from "./StrictOn
 
 // Assets - Static (small files)
 import logoFlooow from "@/assets/logo-flooow.png";
-import familiaAnimation from "@/assets/lottie/familia.json";
-import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
-// confeti.json loaded dynamically (614KB) - only when needed
+// Lottie animations loaded dynamically to reduce initial bundle
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
+  const [familiaAnimation, setFamiliaAnimation] = useState<object | null>(null);
+  const [financeGuruAnimation, setFinanceGuruAnimation] = useState<object | null>(null);
   const [confetiAnimation, setConfetiAnimation] = useState<object | null>(null);
   const totalSteps = 4;
 
-  // Preload confetti when approaching step 4 (step 2+)
+  // Load familia immediately (needed for step 1)
   useEffect(() => {
+    import("@/assets/lottie/familia.json")
+      .then((data) => setFamiliaAnimation(data.default))
+      .catch(() => console.warn("Failed to load familia animation"));
+  }, []);
+
+  // Preload animations progressively
+  useEffect(() => {
+    if (currentStep >= 1 && !financeGuruAnimation) {
+      import("@/assets/lottie/finance-guru.json")
+        .then((data) => setFinanceGuruAnimation(data.default))
+        .catch(() => console.warn("Failed to load finance-guru animation"));
+    }
     if (currentStep >= 2 && !confetiAnimation) {
       import("@/assets/lottie/confeti.json")
         .then((data) => setConfetiAnimation(data.default))
         .catch(() => console.warn("Failed to load confetti animation"));
     }
-  }, [currentStep, confetiAnimation]);
+  }, [currentStep, financeGuruAnimation, confetiAnimation]);
 
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
