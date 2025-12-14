@@ -1,7 +1,9 @@
-import React from 'react';
-import Lottie from 'lottie-react';
+import React, { lazy, Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+// Lazy load Lottie to reduce initial bundle size
+const Lottie = lazy(() => import('lottie-react'));
 
 // Define the interface for the screen configuration based on the provided JSON
 export interface StrictOnboardingScreenConfig {
@@ -91,12 +93,14 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
             opacity: layout.background.opacity
           }}
         >
-           <Lottie
+          <Suspense fallback={<div className="w-full h-full bg-gradient-to-b from-primary/5 to-transparent" />}>
+            <Lottie
               animationData={layout.background.file}
               loop={layout.background.loop}
               autoplay={layout.background.autoplay}
               className="w-full h-full object-cover"
             />
+          </Suspense>
         </div>
       )}
 
@@ -113,12 +117,14 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
         >
           <div className="w-full h-full flex items-center justify-center">
             {illustration?.type === 'lottie' && illustration.file ? (
-              <Lottie 
-                animationData={illustration.file}
-                loop={illustration.loop}
-                autoplay={illustration.autoplay}
-                className={cn("w-full h-full max-w-sm object-contain", illustration.className)}
-              />
+              <Suspense fallback={<div className="w-full h-full animate-pulse bg-muted/20 rounded-lg" />}>
+                <Lottie
+                  animationData={illustration.file}
+                  loop={illustration.loop}
+                  autoplay={illustration.autoplay}
+                  className={cn("w-full h-full max-w-sm object-contain", illustration.className)}
+                />
+              </Suspense>
             ) : illustration?.type === 'image' || fallback ? (
               <img 
                 src={illustration?.type === 'image' ? (illustration.file as string) : fallback?.ifAnimationError.useImage} 

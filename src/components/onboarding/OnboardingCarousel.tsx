@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { StrictOnboardingScreen, StrictOnboardingScreenConfig } from "./StrictOnboardingScreen";
 
-// Assets
+// Assets - Static (small files)
 import logoFlooow from "@/assets/logo-flooow.png";
 import familiaAnimation from "@/assets/lottie/familia.json";
 import financeGuruAnimation from "@/assets/lottie/finance-guru.json";
-import confetiAnimation from "@/assets/lottie/confeti.json";
+// confeti.json loaded dynamically (614KB) - only when needed
 
 export const OnboardingCarousel = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
+  const [confetiAnimation, setConfetiAnimation] = useState<object | null>(null);
   const totalSteps = 4;
+
+  // Preload confetti when approaching step 4 (step 2+)
+  useEffect(() => {
+    if (currentStep >= 2 && !confetiAnimation) {
+      import("@/assets/lottie/confeti.json")
+        .then((data) => setConfetiAnimation(data.default))
+        .catch(() => console.warn("Failed to load confetti animation"));
+    }
+  }, [currentStep, confetiAnimation]);
 
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
@@ -128,6 +138,7 @@ export const OnboardingCarousel = () => {
   };
 
   // Configuration for Screen 4 (Strictly from JSON)
+  // Background animation only shown if loaded (graceful degradation)
   const screen4Config: StrictOnboardingScreenConfig = {
     meta: {
       important: "Utilisation de l'animation Confetti en fond et du logo Flooow en illustration."
@@ -138,14 +149,16 @@ export const OnboardingCarousel = () => {
       safeArea: true,
       paddingHorizontal: 24,
       spacing: 22,
-      background: {
-        type: "lottie",
-        file: confetiAnimation,
-        loop: true,
-        autoplay: true,
-        opacity: 0.35,
-        mode: "cover"
-      }
+      ...(confetiAnimation && {
+        background: {
+          type: "lottie" as const,
+          file: confetiAnimation,
+          loop: true,
+          autoplay: true,
+          opacity: 0.35,
+          mode: "cover" as const
+        }
+      })
     },
     illustration: {
       file: logoFlooow,
