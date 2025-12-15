@@ -54,7 +54,7 @@ CREATE INDEX IF NOT EXISTS idx_profiles_parent_id ON public.profiles(parent_id) 
 -- 7. Function to generate unique code (avoids O/0, I/1/L confusion)
 CREATE OR REPLACE FUNCTION generate_linking_code() RETURNS VARCHAR(6) AS $$
 DECLARE
-  chars VARCHAR := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  chars VARCHAR(30) := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   code VARCHAR(6) := '';
   i INT;
 BEGIN
