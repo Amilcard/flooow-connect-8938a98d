@@ -34,7 +34,7 @@ curl -s -X POST "${API_BASE}/bookings" \
   -d "{\"activity_id\":\"${ACTIVITY_ID}\",\"child_id\":\"child-demo\",\"transport_mode\":\"covoiturage\"}" \
   -o /tmp/s3.json
 
-if [ -f /tmp/s3.json ] && jq -e '.id' /tmp/s3.json >/dev/null 2>&1; then
+if [[ -f /tmp/s3.json ]] && jq -e '.id' /tmp/s3.json >/dev/null 2>&1; then
   BOOKING_ID=$(jq -r '.id' /tmp/s3.json)
   echo "   ✓ OK - Booking created: ${BOOKING_ID}"
 else
@@ -45,7 +45,7 @@ fi
 echo ""
 
 # 4. Parent validation
-if [ -n "$BOOKING_ID" ]; then
+if [[ -n "$BOOKING_ID" ]]; then
   echo "4) POST /bookings/{id}/parent-validate"
   curl -s -X POST "${API_BASE}/bookings/${BOOKING_ID}/parent-validate" \
     -H "Authorization: ${T_PARENT}" \
@@ -53,7 +53,7 @@ if [ -n "$BOOKING_ID" ]; then
     -d '{"action":"accept"}' \
     -o /tmp/s4.json
   
-  if [ -f /tmp/s4.json ] && jq -e '.success' /tmp/s4.json >/dev/null 2>&1; then
+  if [[ -f /tmp/s4.json ]] && jq -e '.success' /tmp/s4.json >/dev/null 2>&1; then
     echo "   ✓ OK - Booking validated by parent"
   else
     echo "   ✗ FAIL - Parent validation failed"
@@ -66,7 +66,7 @@ else
 fi
 
 # 5. POST aid_simulation
-if [ -n "$BOOKING_ID" ]; then
+if [[ -n "$BOOKING_ID" ]]; then
   echo "5) POST /aid_simulations (save simulation)"
   curl -s -X POST "${API_BASE}/bookings/simulate-aid" \
     -H "Authorization: ${T_FAMILY}" \
@@ -74,7 +74,7 @@ if [ -n "$BOOKING_ID" ]; then
     -d "{\"booking_id\":\"${BOOKING_ID}\",\"user_id\":\"user-demo\",\"child_id\":\"child-demo\",\"activity_id\":\"${ACTIVITY_ID}\",\"simulated_aids\":{\"caf\":40}}" \
     -o /tmp/s5.json
   
-  if [ -f /tmp/s5.json ]; then
+  if [[ -f /tmp/s5.json ]]; then
     echo "   ✓ OK - Aid simulation saved"
     echo "   Total aids: $(jq -r '.total_aid // "N/A"' /tmp/s5.json 2>/dev/null)"
   else
@@ -90,7 +90,7 @@ fi
 echo "6) GET /reports/modal_split"
 curl -s "${API_BASE}/reports/modal_split" -o /tmp/s6.json
 
-if [ -f /tmp/s6.json ] && jq -e '.data' /tmp/s6.json >/dev/null 2>&1; then
+if [[ -f /tmp/s6.json ]] && jq -e '.data' /tmp/s6.json >/dev/null 2>&1; then
   echo "   ✓ OK - Modal split report retrieved"
   echo "   Report:"
   jq '.' /tmp/s6.json 2>/dev/null | head -20
@@ -104,7 +104,7 @@ echo ""
 echo "7) GET /reports/check_migrations"
 curl -s "${API_BASE}/reports/check_migrations" -o /tmp/s7.json
 
-if [ -f /tmp/s7.json ] && jq -e '.migration_status' /tmp/s7.json >/dev/null 2>&1; then
+if [[ -f /tmp/s7.json ]] && jq -e '.migration_status' /tmp/s7.json >/dev/null 2>&1; then
   echo "   ✓ OK - Migration status retrieved"
   echo "   Status:"
   jq '.migration_status' /tmp/s7.json 2>/dev/null

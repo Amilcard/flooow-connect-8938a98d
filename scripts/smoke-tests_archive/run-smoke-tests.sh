@@ -86,9 +86,9 @@ LOGIN_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -c "${COOKIES}" \
 HTTP_CODE=$(echo "${LOGIN_RESP}" | grep "HTTP_CODE:" | cut -d: -f2)
 BODY=$(echo "${LOGIN_RESP}" | sed '/HTTP_CODE:/d')
 
-if [ "${HTTP_CODE}" == "200" ]; then
+if [[ "${HTTP_CODE}" == "200" ]]; then
   SESSION_ID=$(echo "${BODY}" | jq -r '.session_id // empty')
-  if [ -n "${SESSION_ID}" ]; then
+  if [[ -n "${SESSION_ID}" ]]; then
     log_pass "Login successful - Session: ${SESSION_ID}"
     
     # Check cookies
@@ -130,9 +130,9 @@ INFO_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -b "${COOKIES}" \
 HTTP_CODE=$(echo "${INFO_RESP}" | grep "HTTP_CODE:" | cut -d: -f2)
 BODY=$(echo "${INFO_RESP}" | sed '/HTTP_CODE:/d')
 
-if [ "${HTTP_CODE}" == "200" ]; then
+if [[ "${HTTP_CODE}" == "200" ]]; then
   log_pass "Session info retrieved"
-  if [ "${VERBOSE}" == "true" ]; then
+  if [[ "${VERBOSE}" == "true" ]]; then
     echo "${BODY}" | jq '.'
   fi
   add_test "session_info" "PASS" "${HTTP_CODE}" "$(echo "${BODY}" | jq -c)"
@@ -156,7 +156,7 @@ REFRESH_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -b "${COOKIES}" -c "${COOKI
 HTTP_CODE=$(echo "${REFRESH_RESP}" | grep "HTTP_CODE:" | cut -d: -f2)
 BODY=$(echo "${REFRESH_RESP}" | sed '/HTTP_CODE:/d')
 
-if [ "${HTTP_CODE}" == "200" ]; then
+if [[ "${HTTP_CODE}" == "200" ]]; then
   log_pass "Token refresh successful"
   
   # Verify new cookies
@@ -185,7 +185,7 @@ LOGOUT_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -b "${COOKIES}" -c "${COOKIE
 HTTP_CODE=$(echo "${LOGOUT_RESP}" | grep "HTTP_CODE:" | cut -d: -f2)
 BODY=$(echo "${LOGOUT_RESP}" | sed '/HTTP_CODE:/d')
 
-if [ "${HTTP_CODE}" == "200" ]; then
+if [[ "${HTTP_CODE}" == "200" ]]; then
   log_pass "Logout successful"
   add_test "logout" "PASS" "${HTTP_CODE}" "$(echo "${BODY}" | jq -c)"
 else
@@ -205,7 +205,7 @@ VERIFY_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -b "${COOKIES}" \
 
 HTTP_CODE=$(echo "${VERIFY_RESP}" | grep "HTTP_CODE:" | cut -d: -f2)
 
-if [ "${HTTP_CODE}" == "401" ]; then
+if [[ "${HTTP_CODE}" == "401" ]]; then
   log_pass "Session correctly revoked (401 as expected)"
   add_test "verify_revoked" "PASS" "${HTTP_CODE}" "{\"message\":\"Session revoked\"}"
 else
@@ -241,7 +241,7 @@ echo -e "Failed: ${RED}${FAILED}${NC}"
 echo ""
 echo "Full report: ${REPORT_JSON}"
 
-if [ "${FAILED}" -gt 0 ]; then
+if [[ "${FAILED}" -gt 0 ]]; then
   log_fail "Some tests failed!"
   exit 1
 else

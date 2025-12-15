@@ -5,14 +5,14 @@ echo "=================================================="
 
 # Vérifier que les composants existent
 echo "✅ Vérification des fichiers..."
-if [ -f "src/pages/account/kids/KidAddModal.tsx" ]; then
+if [[ -f "src/pages/account/kids/KidAddModal.tsx" ]]; then
     echo "   ✓ KidAddModal.tsx trouvé"
 else
     echo "   ❌ KidAddModal.tsx manquant"
     exit 1
 fi
 
-if [ -f "src/pages/account/kids/MesEnfants.tsx" ]; then
+if [[ -f "src/pages/account/kids/MesEnfants.tsx" ]]; then
     echo "   ✓ MesEnfants.tsx trouvé"
 else
     echo "   ❌ MesEnfants.tsx manquant"

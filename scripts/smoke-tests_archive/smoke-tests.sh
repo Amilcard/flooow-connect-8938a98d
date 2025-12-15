@@ -75,7 +75,7 @@ LOGIN_RESPONSE=$(curl -s -c $COOKIE_FILE -w "\n%{http_code}" -X POST \
 HTTP_CODE=$(echo "$LOGIN_RESPONSE" | tail -n1)
 LOGIN_BODY=$(echo "$LOGIN_RESPONSE" | sed '$d')
 
-if [ "$HTTP_CODE" == "200" ]; then
+if [[ "$HTTP_CODE" == "200" ]]; then
   echo -e "${GREEN}✓ Login successful${NC}"
   SESSION_ID=$(echo "$LOGIN_BODY" | jq -r '.session_id')
   echo "  Session ID: $SESSION_ID"
@@ -114,7 +114,7 @@ SESSION_INFO_RESPONSE=$(curl -s -b $COOKIE_FILE -w "\n%{http_code}" \
 HTTP_CODE=$(echo "$SESSION_INFO_RESPONSE" | tail -n1)
 SESSION_INFO_BODY=$(echo "$SESSION_INFO_RESPONSE" | sed '$d')
 
-if [ "$HTTP_CODE" == "200" ]; then
+if [[ "$HTTP_CODE" == "200" ]]; then
   echo -e "${GREEN}✓ Session info retrieved${NC}"
   echo "$SESSION_INFO_BODY" | jq '.'
   add_test_result "session_info" "PASS" "$(echo "$SESSION_INFO_BODY" | jq -c '.')"
@@ -139,7 +139,7 @@ REFRESH_RESPONSE=$(curl -s -b $COOKIE_FILE -c $COOKIE_FILE -w "\n%{http_code}" -
 HTTP_CODE=$(echo "$REFRESH_RESPONSE" | tail -n1)
 REFRESH_BODY=$(echo "$REFRESH_RESPONSE" | sed '$d')
 
-if [ "$HTTP_CODE" == "200" ]; then
+if [[ "$HTTP_CODE" == "200" ]]; then
   echo -e "${GREEN}✓ Token refresh successful${NC}"
   echo "$REFRESH_BODY" | jq '.'
   
@@ -168,7 +168,7 @@ LOGOUT_RESPONSE=$(curl -s -b $COOKIE_FILE -c $COOKIE_FILE -w "\n%{http_code}" -X
 HTTP_CODE=$(echo "$LOGOUT_RESPONSE" | tail -n1)
 LOGOUT_BODY=$(echo "$LOGOUT_RESPONSE" | sed '$d')
 
-if [ "$HTTP_CODE" == "200" ]; then
+if [[ "$HTTP_CODE" == "200" ]]; then
   echo -e "${GREEN}✓ Logout successful${NC}"
   echo "$LOGOUT_BODY" | jq '.'
   
@@ -195,7 +195,7 @@ REVOKED_TEST=$(curl -s -b $COOKIE_FILE -w "\n%{http_code}" \
 
 HTTP_CODE=$(echo "$REVOKED_TEST" | tail -n1)
 
-if [ "$HTTP_CODE" == "401" ]; then
+if [[ "$HTTP_CODE" == "401" ]]; then
   echo -e "${GREEN}✓ Session correctly revoked (401 as expected)${NC}"
   add_test_result "verify_revoked" "PASS" "{\"http_code\": 401, \"message\": \"Session correctly revoked\"}"
 else
@@ -234,7 +234,7 @@ echo "Full report saved to: $OUTPUT_FILE"
 rm -f $COOKIE_FILE
 
 # Exit with error if any tests failed
-if [ "$FAILED_TESTS" -gt 0 ]; then
+if [[ "$FAILED_TESTS" -gt 0 ]]; then
   echo -e "${RED}Some tests failed!${NC}"
   exit 1
 else
