@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActivityCard } from "@/components/Activity/ActivityCard";
@@ -14,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
+
+type ActivityRow = Database['public']['Tables']['activities']['Row'];
 
 const Alternatives = () => {
   const navigate = useNavigate();
@@ -142,7 +145,7 @@ const Alternatives = () => {
             <LoadingState />
           ) : alternatives && alternatives.length > 0 ? (
             <div className="grid gap-4">
-              {alternatives.map((activity: any) => (
+              {alternatives.map((activity: ActivityRow) => (
                 <ActivityCard
                   key={activity.id}
                   id={activity.id}

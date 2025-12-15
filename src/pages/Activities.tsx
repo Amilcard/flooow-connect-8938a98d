@@ -69,17 +69,23 @@ const Activities = () => {
 
   // Filtres pour l'onglet "Toutes" - sans filtrage par catégorie
   const getAllFilters = () => {
-    const filters: any = {};
+    const filters: {
+      maxPrice?: number;
+      hasAccessibility?: boolean;
+      vacationPeriod?: string;
+      ageMin?: number;
+      ageMax?: number;
+    } = {};
     if (type === "budget") filters.maxPrice = 50;
     if (type === "health") filters.hasAccessibility = true;
     if (selectedVacationPeriod) filters.vacationPeriod = selectedVacationPeriod;
-    
+
     // Pré-filtrage par profil enfant
     if (ageMin && ageMax) {
       filters.ageMin = parseInt(ageMin);
       filters.ageMax = parseInt(ageMax);
     }
-    
+
     return filters;
   };
 

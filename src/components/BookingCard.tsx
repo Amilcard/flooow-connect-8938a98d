@@ -124,7 +124,7 @@ export const BookingCard = ({
               <Separator />
               <div className="space-y-2">
                 <p className="text-sm font-semibold text-foreground">Options tarifaires</p>
-                {activity.payment_plans.map((plan: any, idx: number) => (
+                {activity.payment_plans.map((plan: { label: string; price: number }, idx: number) => (
                   <div
                     key={idx}
                     className="flex justify-between text-sm p-2 rounded-lg hover:bg-muted/50 transition-colors"
