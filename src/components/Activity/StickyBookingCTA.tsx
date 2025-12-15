@@ -106,7 +106,7 @@ export function StickyBookingCTA({
       {/* Floating Action Buttons - Au-dessus de la CTA bar */}
       <div
         className={`fixed right-4 z-40 flex flex-col gap-2 ${mobileOnly ? "md:hidden" : ""}`}
-        style={{ bottom: "88px" }} // Au-dessus de la CTA bar (60px) + gap
+        style={{ bottom: 'calc(88px + var(--safe-area-bottom))' }} // Au-dessus de la CTA bar (60px) + gap + safe-area
       >
         {/* Bouton Favoris */}
         {onToggleFavorite && (
@@ -141,6 +141,7 @@ export function StickyBookingCTA({
         className={`fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-2xl ${
           mobileOnly ? "md:hidden" : ""
         }`}
+        style={{ paddingBottom: 'var(--safe-area-bottom)' }}
       >
         <div className="flex items-center gap-3 px-4 py-3">
           {/* Prix */}

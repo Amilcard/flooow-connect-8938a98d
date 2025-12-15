@@ -125,6 +125,15 @@
     --z-tooltip: 90;
     --z-toast: 100;
     --z-skip-link: 9999;
+
+    /* 14. Safe Area (iOS notch/home indicator) */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+
+    /* 15. Navigation heights */
+    --nav-bottom-height: 80px;
   }
 
   .dark {
