@@ -27,10 +27,10 @@ export const authConfig = {
    */
   OAUTH_PROVIDERS: [
     { id: 'google', name: 'Google', label: 'Continuer avec Google', enabled: true, priority: 1 },
-    { id: 'apple', name: 'Apple', label: 'Continuer avec Apple', enabled: true, priority: 2 },
+    { id: 'apple', name: 'Apple', label: 'Continuer avec Apple', enabled: false, priority: 2 },
     { id: 'facebook', name: 'Facebook', label: 'Continuer avec Facebook', enabled: true, priority: 3 },
-    { id: 'linkedin_oidc', name: 'LinkedIn', label: 'Continuer avec LinkedIn', enabled: true, priority: 4 },
-    { id: 'azure', name: 'Microsoft', label: 'Continuer avec Microsoft', enabled: true, priority: 5 },
+    { id: 'linkedin_oidc', name: 'LinkedIn', label: 'Continuer avec LinkedIn', enabled: false, priority: 4 },
+    { id: 'azure', name: 'Microsoft', label: 'Continuer avec Microsoft', enabled: false, priority: 5 },
   ] as OAuthProviderConfig[],
 
   /**
