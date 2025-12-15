@@ -12,11 +12,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Calendar, MapPin, User, Euro, CheckCircle2, AlertCircle, Bus, Bike } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+interface AidItem {
+  aid_name: string;
+  amount: number;
+  territory_level?: string;
+  official_link?: string | null;
+  is_informational?: boolean;
+}
+
 interface LocationState {
   childId: string;
   quotientFamilial: string;
   cityCode: string;
-  aids: any[];
+  aids: AidItem[];
   totalAids: number;
   remainingPrice: number;
   transportMode?: {
@@ -294,7 +302,7 @@ const BookingRecap = () => {
                 <Separator />
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Aides appliquées</p>
-                  {state.aids.map((aid: any, index: number) => (
+                  {state.aids.map((aid, index) => (
                     <div key={index} className="flex justify-between items-center text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-muted-foreground">{aid.aid_name}</span>
