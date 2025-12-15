@@ -108,10 +108,10 @@ const SignUp = () => {
       });
 
       navigate('/home');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur lors de l'inscription",
-        description: error.message || "Une erreur s'est produite. Veuillez réessayer.",
+        description: error instanceof Error ? error.message : "Une erreur s'est produite. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -124,7 +124,7 @@ const SignUp = () => {
     try {
       await signInWithProvider(provider);
       // La redirection est automatique après OAuth
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Inscription non aboutie",
         description: getOAuthErrorMessage(error),

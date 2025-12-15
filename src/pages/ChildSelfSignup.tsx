@@ -51,10 +51,10 @@ export default function ChildSelfSignup() {
       });
 
       navigate('/home');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de t'inscrire. Vérifie le code avec tes parents.",
+        description: error instanceof Error ? error.message : "Impossible de t'inscrire. Vérifie le code avec tes parents.",
         variant: "destructive"
       });
     } finally {
@@ -83,10 +83,10 @@ export default function ChildSelfSignup() {
       });
 
       setEmailForm({ parentEmail: '', childName: '', childDob: '' });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible d'envoyer l'email",
+        description: error instanceof Error ? error.message : "Impossible d'envoyer l'email",
         variant: "destructive"
       });
     } finally {

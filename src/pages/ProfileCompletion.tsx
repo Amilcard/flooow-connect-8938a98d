@@ -94,10 +94,10 @@ const ProfileCompletion = () => {
       });
 
       navigate("/home");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de sauvegarder le profil",
+        description: error instanceof Error ? error.message : "Impossible de sauvegarder le profil",
         variant: "destructive"
       });
     } finally {

@@ -147,10 +147,10 @@ const BookingRecap = () => {
       });
 
       navigate(`/booking-status/${data.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur lors de la réservation",
-        description: error.message || "Une erreur est survenue",
+        description: error instanceof Error ? error.message : "Une erreur est survenue",
         variant: "destructive"
       });
     } finally {

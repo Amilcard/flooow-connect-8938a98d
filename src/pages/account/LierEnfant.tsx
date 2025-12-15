@@ -141,9 +141,9 @@ const LierEnfant = () => {
       } else {
         setLinkError(result.error || "Code invalide ou expire");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Link error:", err);
-      setLinkError(err.message || "Une erreur est survenue. Reessaie dans quelques instants.");
+      setLinkError(err instanceof Error ? err.message : "Une erreur est survenue. Reessaie dans quelques instants.");
     } finally {
       setIsLinking(false);
     }

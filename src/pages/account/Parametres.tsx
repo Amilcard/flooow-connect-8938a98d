@@ -130,11 +130,11 @@ const Parametres: React.FC = () => {
 				title: 'Mot de passe mis à jour',
 				description: 'Votre mot de passe a été modifié avec succès.',
 			});
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('Password change error:', error);
 			toast({
 				title: 'Erreur',
-				description: error.message || 'Impossible de changer le mot de passe.',
+				description: error instanceof Error ? error.message : 'Impossible de changer le mot de passe.',
 				variant: 'destructive',
 			});
 		}
@@ -170,11 +170,11 @@ const Parametres: React.FC = () => {
 				title: 'Export réussi',
 				description: 'Vos données ont été téléchargées avec succès.'
 			});
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('Export error:', error);
 			toast({
 				title: 'Erreur',
-				description: error.message || 'Impossible d\'exporter vos données.',
+				description: error instanceof Error ? error.message : 'Impossible d\'exporter vos données.',
 				variant: 'destructive'
 			});
 		}
@@ -214,11 +214,11 @@ const Parametres: React.FC = () => {
 
 			// Optionally redirect to a confirmation page
 			// navigate('/account-deletion-scheduled');
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('Delete account error:', error);
 			toast({
 				title: 'Erreur',
-				description: error.message || 'Impossible de supprimer votre compte.',
+				description: error instanceof Error ? error.message : 'Impossible de supprimer votre compte.',
 				variant: 'destructive',
 			});
 			setShowDeleteDialog(false);
@@ -251,11 +251,11 @@ const Parametres: React.FC = () => {
 			setTimeout(() => {
 				navigate('/login');
 			}, 2000);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('Deactivate account error:', error);
 			toast({
 				title: 'Erreur',
-				description: error.message || 'Impossible de désactiver votre compte.',
+				description: error instanceof Error ? error.message : 'Impossible de désactiver votre compte.',
 				variant: 'destructive',
 			});
 			setShowDeactivateDialog(false);

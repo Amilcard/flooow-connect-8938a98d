@@ -78,10 +78,10 @@ const ProfileEdit = () => {
       });
 
       navigate(-1);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de sauvegarder",
+        description: error instanceof Error ? error.message : "Impossible de sauvegarder",
         variant: "destructive"
       });
     } finally {

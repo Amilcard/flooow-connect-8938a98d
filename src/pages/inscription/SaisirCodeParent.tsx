@@ -82,7 +82,7 @@ const SaisirCodeParent = () => {
           variant: "destructive",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error linking parent:", error);
       toast({
         title: "Oups, quelque chose s'est mal passe",

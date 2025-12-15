@@ -112,10 +112,10 @@ const ParentSignup = () => {
 
       localStorage.removeItem("parent-signup-draft");
       navigate("/home");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur d'inscription",
-        description: error.message || "Une erreur est survenue",
+        description: error instanceof Error ? error.message : "Une erreur est survenue",
         variant: "destructive"
       });
     } finally {

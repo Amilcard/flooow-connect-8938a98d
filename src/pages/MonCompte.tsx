@@ -78,10 +78,10 @@ const MonCompte = () => {
         description: "\u00C0 bient\u00F4t !",
       });
       navigate("/home");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error?.message || String(error),
+        description: error instanceof Error ? error.message : String(error),
         variant: "destructive",
       });
     }

@@ -277,9 +277,9 @@ export const GeneralSimulateAidModal = ({
       }
 
       setHasSimulated(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur simulation:', err);
-      setError(err.message || "Erreur lors de la simulation");
+      setError(err instanceof Error ? err.message : "Erreur lors de la simulation");
     } finally {
       setIsLoading(false);
     }

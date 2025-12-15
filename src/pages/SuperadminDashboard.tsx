@@ -153,10 +153,10 @@ export default function SuperadminDashboard() {
 
       // Refresh pending accounts
       await supabase.from('profiles').select('*').eq('account_status', 'pending');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de valider le compte",
+        description: error instanceof Error ? error.message : "Impossible de valider le compte",
         variant: "destructive"
       });
     }
@@ -205,10 +205,10 @@ export default function SuperadminDashboard() {
       
       // Refresh user roles list
       await supabase.from('user_roles').select('*');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de créer l'utilisateur",
+        description: error instanceof Error ? error.message : "Impossible de créer l'utilisateur",
         variant: "destructive"
       });
     } finally {

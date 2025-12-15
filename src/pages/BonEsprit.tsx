@@ -77,10 +77,10 @@ const BonEsprit = () => {
         class_or_group: "",
       });
       setAcceptTerms(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error?.message || "Une erreur s'est produite lors de l'envoi.",
+        description: error instanceof Error ? error.message : "Une erreur s'est produite lors de l'envoi.",
         variant: "destructive",
       });
     } finally {

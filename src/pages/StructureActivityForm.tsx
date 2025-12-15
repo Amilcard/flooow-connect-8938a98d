@@ -167,11 +167,11 @@ const StructureActivityForm = () => {
       }
 
       navigate("/dashboard/structure");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Activity save error:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible d'enregistrer l'activité",
+        description: error instanceof Error ? error.message : "Impossible d'enregistrer l'activité",
         variant: "destructive"
       });
     } finally {

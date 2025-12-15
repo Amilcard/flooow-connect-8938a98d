@@ -49,7 +49,7 @@ const GenererCodeEnfant = () => {
         setCode(data[0].linking_code);
         setRequestId(data[0].request_id);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error generating code:", error);
       toast({
         title: "Oups !",

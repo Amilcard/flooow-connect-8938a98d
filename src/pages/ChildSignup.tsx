@@ -68,20 +68,22 @@ const ChildSignup = () => {
       setTimeout(() => {
         navigate("/mon-compte/enfants");
       }, 100);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating child:", error);
-      
+
       // More specific error messages
       let errorMessage = "Erreur lors de la création du profil";
-      
-      if (error?.code === "23505") {
+
+      // Type guard for Supabase/Postgres error codes
+      const errorWithCode = error as { code?: string; message?: string };
+      if (errorWithCode?.code === "23505") {
         errorMessage = "Un profil similaire existe déjà";
-      } else if (error?.code === "42501") {
+      } else if (errorWithCode?.code === "42501") {
         errorMessage = "Vous n'avez pas les permissions nécessaires";
-      } else if (error?.message) {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);

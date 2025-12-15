@@ -97,11 +97,11 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded, allowAnonymous =
 
       onChildAdded(newChild?.id);
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error adding child:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible d'ajouter l'enfant",
+        description: error instanceof Error ? error.message : "Impossible d'ajouter l'enfant",
         variant: "destructive"
       });
     } finally {

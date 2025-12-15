@@ -94,10 +94,10 @@ const ValidationParentale = () => {
       
       navigate("/mon-compte/validations");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Erreur",
-        description: error.message || "Une erreur est survenue",
+        description: error instanceof Error ? error.message : "Une erreur est survenue",
         variant: "destructive"
       });
     }

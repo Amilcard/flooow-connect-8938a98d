@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { Users, Euro, Search, Bus } from "lucide-react";
-import logoFlooow from "@/assets/logo-flooow.png";
 
 const Splash = () => {
   const navigate = useNavigate();

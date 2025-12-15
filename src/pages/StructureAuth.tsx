@@ -107,11 +107,11 @@ const StructureAuth = () => {
       });
 
       navigate("/dashboard/structure");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Structure signup error:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de créer le compte",
+        description: error instanceof Error ? error.message : "Impossible de créer le compte",
         variant: "destructive"
       });
     } finally {
