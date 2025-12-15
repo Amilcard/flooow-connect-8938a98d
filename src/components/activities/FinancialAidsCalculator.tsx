@@ -45,12 +45,11 @@ export const FinancialAidsCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // CRITICAL: If activity price <= 0, don't render anything
-  if (activityPrice <= 0) {
-    return null;
-  }
-
   useEffect(() => {
+    // Skip calculation if activity price is invalid
+    if (activityPrice <= 0) {
+      return;
+    }
     const calculateAids = async () => {
       setLoading(true);
       setError(null);
@@ -130,6 +129,11 @@ export const FinancialAidsCalculator = ({
   const totalAids = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
+
+  // CRITICAL: If activity price <= 0, don't render anything (moved after hooks)
+  if (activityPrice <= 0) {
+    return null;
+  }
 
   return (
     <Card className="p-4 space-y-4">
