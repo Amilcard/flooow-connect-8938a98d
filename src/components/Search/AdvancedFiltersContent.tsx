@@ -130,14 +130,14 @@ export const AdvancedFiltersContent = ({
       >
         <div className="space-y-6 px-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-muted-foreground">6 ans</span>
+            <span className="text-sm font-medium text-muted-foreground">4 ans</span>
             <span className="text-lg font-bold text-primary">
               {filters.age_range[0]} - {filters.age_range[1]} ans
             </span>
             <span className="text-sm font-medium text-muted-foreground">17 ans</span>
           </div>
           <Slider
-            min={6}
+            min={4}
             max={17}
             step={1}
             value={filters.age_range}
