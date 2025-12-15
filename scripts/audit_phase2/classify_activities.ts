@@ -1,31 +1,11 @@
 // ARCHIVE TOOL - utilise le projet Supabase actuel Flooow
 import { supabase } from './lib/supabase-client';
+import { isVacation } from './lib/vacation-ranges';
 
 // --- CONFIGURATION ---
 
-const VACANCES_ZONE_A = [
-  { nom: "Vacances Toussaint 2025", debut: "2025-10-18", fin: "2025-11-03" },
-  { nom: "Vacances Noël 2025", debut: "2025-12-20", fin: "2026-01-05" },
-  { nom: "Vacances Hiver 2026", debut: "2026-02-21", fin: "2026-03-09" },
-  { nom: "Vacances Printemps 2026", debut: "2026-04-18", fin: "2026-05-04" },
-  { nom: "Vacances Été 2026", debut: "2026-07-04", fin: "2026-09-01" },
-  { nom: "Vacances Toussaint 2026", debut: "2026-10-17", fin: "2026-11-02" },
-  { nom: "Vacances Noël 2026", debut: "2026-12-19", fin: "2027-01-05" }
-];
-
 const AIDES_SCOLAIRE = ["CAF", "Ville", "Pass'Sport", "Pass Culture"];
 const AIDES_VACANCES = ["CAF", "Ville", "ANCV", "Pass'Vacances"];
-
-// --- LOGIC ---
-
-function isDateInVacation(dateStr: string): boolean {
-  const date = new Date(dateStr);
-  return VACANCES_ZONE_A.some(vacance => {
-    const start = new Date(vacance.debut);
-    const end = new Date(vacance.fin);
-    return date >= start && date <= end;
-  });
-}
 
 async function classifyActivities() {
   console.log("Fetching activities and sessions...");
@@ -57,9 +37,9 @@ async function classifyActivities() {
     // For each session, classify it
     activity.activity_sessions.forEach((session: any) => {
       const dateStr = session.start_date.split('T')[0]; // Extract YYYY-MM-DD
-      const isVacation = isDateInVacation(dateStr);
-      const periode = isVacation ? 'vacances' : 'scolaire';
-      const aides = isVacation ? AIDES_VACANCES : AIDES_SCOLAIRE;
+      const isVacationPeriod = isVacation(dateStr);
+      const periode = isVacationPeriod ? 'vacances' : 'scolaire';
+      const aides = isVacationPeriod ? AIDES_VACANCES : AIDES_SCOLAIRE;
 
       results.push({
         nom_activite: activity.title,

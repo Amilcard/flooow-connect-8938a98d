@@ -1,25 +1,6 @@
 // ARCHIVE TOOL - utilise le projet Supabase actuel Flooow
 import { supabase } from './lib/supabase-client';
-
-// Plages de vacances (Zone A)
-const VACATION_RANGES = [
-  { name: "Automne 2025", start: "2025-10-18", end: "2025-11-03" },
-  { name: "Fin d'année 2025", start: "2025-12-20", end: "2026-01-05" },
-  { name: "Hiver 2026", start: "2026-02-21", end: "2026-03-09" },
-  { name: "Printemps 2026", start: "2026-04-18", end: "2026-05-04" },
-  { name: "Été 2026", start: "2026-07-04", end: "2026-09-01" },
-  { name: "Automne 2026", start: "2026-10-17", end: "2026-11-02" },
-  { name: "Fin d'année 2026", start: "2026-12-19", end: "2027-01-05" }
-];
-
-function isVacation(dateStr: string): boolean {
-  const date = new Date(dateStr);
-  return VACATION_RANGES.some(range => {
-    const start = new Date(range.start);
-    const end = new Date(range.end);
-    return date >= start && date <= end;
-  });
-}
+import { isVacation } from './lib/vacation-ranges';
 
 async function listAllActivities() {
   console.log("📋 Récupération de toutes les activités...\n");
