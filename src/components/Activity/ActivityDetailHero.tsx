@@ -97,7 +97,7 @@ export const ActivityDetailHero = ({
     : `${priceBase}€`;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
+    <div className="max-w-5xl mx-auto px-4 py-4 md:py-6">
       <div className="grid md:grid-cols-12 gap-6">
         {/* Colonne gauche: Photo (4/12 sur desktop) */}
         <div className="md:col-span-5 lg:col-span-4">
