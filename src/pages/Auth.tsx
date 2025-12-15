@@ -74,10 +74,11 @@ const Auth = () => {
       });
 
       navigate("/home");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Identifiants incorrects";
       toast({
         title: "Erreur de connexion",
-        description: error.message || "Identifiants incorrects",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -131,10 +132,11 @@ const Auth = () => {
 
       // Rediriger vers l'onboarding bêta
       navigate("/onboarding");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue";
       toast({
         title: "Erreur d'inscription",
-        description: error.message || "Une erreur est survenue",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

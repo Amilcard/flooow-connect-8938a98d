@@ -35,8 +35,7 @@ const ForgotPassword = () => {
         title: "E-mail envoyé",
         description: "Vérifiez votre boîte de réception",
       });
-    } catch (error: any) {
-      console.error('Reset password error:', error);
+    } catch {
       toast({
         title: "Envoi non abouti",
         description: "Nous n'avons pas pu envoyer l'email. Vérifiez l'adresse et réessayez.",

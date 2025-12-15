@@ -82,11 +82,11 @@ const ResetPassword = () => {
 
       // Rediriger vers login après 3 secondes
       setTimeout(() => navigate('/login'), 3000);
-    } catch (error: any) {
-      console.error('Reset password error:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Impossible de réinitialiser le mot de passe. Veuillez réessayer.";
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de réinitialiser le mot de passe. Veuillez réessayer.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
