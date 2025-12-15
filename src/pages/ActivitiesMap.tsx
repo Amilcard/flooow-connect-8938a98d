@@ -38,8 +38,8 @@ const ActivitiesMap = () => {
         (position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
         },
-        (error) => {
-          console.log("Geolocation denied or unavailable", error);
+        () => {
+          // Geolocation denied or unavailable - use default location
         }
       );
     }

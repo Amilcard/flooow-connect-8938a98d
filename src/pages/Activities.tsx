@@ -118,13 +118,6 @@ const Activities = () => {
     setSearchTerm(query);
   };
 
-  console.log("📊 Activities page state:", { 
-    mode: USE_MOCK_DATA ? 'MOCK' : 'REAL',
-    activitiesCount: allActivities.length, 
-    activeTab,
-    universeFromUrl
-  });
-
   const getTitle = () => {
     if (activeTab !== "all") return `Activités ${activeTab}`;
     if (type === "budget") return "Activités Petits budgets";
@@ -137,7 +130,7 @@ const Activities = () => {
     return (
       <PageLayout>
         <SearchBar
-          onFilterClick={() => console.log("Filter clicked")}
+          onFilterClick={() => {}}
           onSearch={handleSearch}
         />
         <main className="container px-4 py-6">
@@ -157,7 +150,7 @@ const Activities = () => {
           <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/home" />
         </div>
         <SearchBar
-          onFilterClick={() => console.log("Filter clicked")}
+          onFilterClick={() => {}}
           onSearch={handleSearch}
         />
       </div>
@@ -216,7 +209,7 @@ const Activities = () => {
               <ActivitySection
                 title={getTitle()}
                 activities={allActivities}
-                onActivityClick={(id) => console.log("Activity clicked:", id)}
+                onActivityClick={() => {}}
               />
             )}
           </TabsContent>
@@ -271,7 +264,7 @@ const CategoryActivities = ({
     <ActivitySection
       title={`Activités ${category}`}
       activities={activities}
-      onActivityClick={(id) => console.log("Activity clicked:", id)}
+      onActivityClick={() => {}}
     />
   );
 };

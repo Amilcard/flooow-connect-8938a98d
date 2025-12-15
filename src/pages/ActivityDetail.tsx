@@ -370,8 +370,9 @@ const ActivityDetail = () => {
           url: shareUrl,
         });
       } catch (err) {
+        // Ignore AbortError (user cancelled share)
         if ((err as Error).name !== 'AbortError') {
-          console.error('Error sharing:', err);
+          // Share failed silently
         }
       }
     } else {
@@ -388,8 +389,8 @@ const ActivityDetail = () => {
         setCopied(false);
         setShowShareMenu(false);
       }, 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      // Clipboard copy failed silently
     }
   };
 
@@ -787,9 +788,7 @@ const ActivityDetail = () => {
                     } : undefined}
                     structureName={activity.organism_name}
                     structureContactJson={activity.organism_phone}
-                    onTransportModeSelected={(mode) => {
-                      console.log('Transport mode selected:', mode);
-                    }}
+                    onTransportModeSelected={() => {}}
                   />
                 </div>
               </TabsContent>

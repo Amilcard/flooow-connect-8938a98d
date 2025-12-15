@@ -198,8 +198,6 @@ export const SharedAidCalculator = ({
 
 
   const handleCalculate = async () => {
-    console.log("Calculating aids...", { isLoggedIn, showChildSelector, manualChildAge, selectedChildId });
-    
     // Validation: soit un enfant sélectionné (mode selecteur), soit un âge manuel (mode manuel)
     if (showChildSelector && !selectedChildId) {
       toast({
@@ -272,8 +270,6 @@ export const SharedAidCalculator = ({
 
       // Déduction du type d'activité (NOUVEAU - Étape 2.2)
       const typeActivite = getTypeActivite(activityCategories);
-      console.log('🎯 Type activité détecté:', typeActivite, 'Catégories:', activityCategories);
-      console.log('📅 Période:', activityPeriod, 'Âge:', childAge, 'CP:', cityCode);
 
       // Déduction du type d'activité (ANCIEN CODE - à supprimer plus tard)
       let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';

@@ -44,13 +44,6 @@ export const ContactOrganizerModal = ({
         description: "Vous recevrez une réponse par email sous 48h."
       });
 
-      // Log pour debug (phase test)
-      console.log("Message envoyé à:", organizerEmail, {
-        from: { name, email, phone },
-        message,
-        activity: activityTitle
-      });
-
       // Reset form
       setName("");
       setEmail("");

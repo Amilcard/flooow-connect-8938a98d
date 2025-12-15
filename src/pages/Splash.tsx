@@ -41,11 +41,9 @@ const Splash = () => {
       if (viewCount < 8) {
         // Incrémenter le compteur AVANT de naviguer
         localStorage.setItem("onboardingViewCount", String(viewCount + 1));
-        console.log(`[Onboarding] Affiché (visite ${viewCount + 1}/8)`);
         navigate("/onboarding", { replace: true });
       } else {
         // Après 8 visites, aller directement à /home
-        console.log("[Onboarding] Visites max (8) atteintes, passage direct à /home");
         navigate("/home", { replace: true });
       }
     }, 2000);

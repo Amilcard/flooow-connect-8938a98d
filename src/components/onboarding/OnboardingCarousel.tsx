@@ -18,7 +18,7 @@ export const OnboardingCarousel = () => {
   useEffect(() => {
     import("@/assets/lottie/familia.json")
       .then((data) => setFamiliaAnimation(data.default))
-      .catch(() => console.warn("Failed to load familia animation"));
+      .catch(() => { /* Animation load failed silently */ });
   }, []);
 
   // Preload animations progressively
@@ -26,12 +26,12 @@ export const OnboardingCarousel = () => {
     if (currentStep >= 1 && !financeGuruAnimation) {
       import("@/assets/lottie/finance-guru.json")
         .then((data) => setFinanceGuruAnimation(data.default))
-        .catch(() => console.warn("Failed to load finance-guru animation"));
+        .catch(() => { /* Animation load failed silently */ });
     }
     if (currentStep >= 2 && !confetiAnimation) {
       import("@/assets/lottie/confeti.json")
         .then((data) => setConfetiAnimation(data.default))
-        .catch(() => console.warn("Failed to load confetti animation"));
+        .catch(() => { /* Animation load failed silently */ });
     }
   }, [currentStep, financeGuruAnimation, confetiAnimation]);
 

@@ -101,17 +101,14 @@ const Index = () => {
             // Trigger the main tour (replace 'flooow-main-tour' with your actual tour ID from Usetiful dashboard)
             try {
               (window as any).usetiful.start();
-              console.log(`[Usetiful] Tour auto-triggered (visit ${visitCount + 1}/8)`);
-            } catch (error) {
-              console.warn('[Usetiful] Failed to auto-trigger tour:', error);
+            } catch {
+              // Usetiful tour failed silently
             }
           }
         }, 500); // Check every 500ms
 
         // Cleanup after 10 seconds
         setTimeout(() => clearInterval(checkUsetiful), 10000);
-      } else {
-        console.log('[Usetiful] Visit count exceeded (8), tour not triggered');
       }
     };
 

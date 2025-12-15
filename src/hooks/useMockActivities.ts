@@ -14,8 +14,6 @@ export const useMockActivities = (limit?: number) => {
     refetchOnWindowFocus: false,
     retry: false, // Pas de retry automatique (évite saccades)
     queryFn: async () => {
-      console.log("🔵 [D1] Fetching mock activities from Edge Function...");
-
       const { data, error } = await supabase.functions.invoke('mock-activities', {
         headers: {
           'Content-Type': 'application/json',
@@ -28,12 +26,9 @@ export const useMockActivities = (limit?: number) => {
       });
 
       if (error) {
-        console.error("❌ Error fetching mock activities:", error);
         // Fallback sur tableau vide au lieu d'erreur
         return [];
       }
-
-      console.log("✅ Mock activities received:", data?.length || 0);
       
       const mockActivities = (data || []) as ActivityRaw[];
       
@@ -44,22 +39,17 @@ export const useMockActivities = (limit?: number) => {
       
       mockActivities.forEach((raw) => {
         const result = validateAndParseActivity(raw);
-        
+
         if (result.activity) {
           validatedActivities.push(result.activity);
-          
+
           if (result.success) {
             validCount++;
           } else {
             correctedCount++;
-            console.warn(`🟨 [D1] Activité ${raw.id} corrigée via defaults:`, result.errors);
           }
-        } else {
-          console.error(`❌ [D1] Activité ${raw.id} rejetée (erreur critique)`);
         }
       });
-      
-      console.log(`📊 [D1] Validation: ${validCount} OK / ${correctedCount} corrigées / ${mockActivities.length - validatedActivities.length} rejetées`);
       
       return limit ? validatedActivities.slice(0, limit) : validatedActivities;
     },

@@ -203,7 +203,7 @@ export const ActivityCard = ({
           className="absolute top-2 right-2 bg-white/90 hover:bg-white h-7 w-7"
           onClick={(e) => {
             e.stopPropagation();
-            console.log("Favori:", title);
+            // TODO: Implement favorites functionality
           }}
           aria-label="Ajouter aux favoris"
         >

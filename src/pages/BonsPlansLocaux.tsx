@@ -45,7 +45,6 @@ const BonsPlansLocaux = () => {
   const handleCTA = (card: DealCard) => {
     if (card.cta_action === "open_local_youth_card") {
       // TODO: implémenter navigation vers page carte jeune locale
-      console.log("Ouverture page carte jeune locale");
     } else if (card.cta_url) {
       window.open(card.cta_url, "_blank", "noopener,noreferrer");
     }

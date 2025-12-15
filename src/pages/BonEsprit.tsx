@@ -57,8 +57,6 @@ const BonEsprit = () => {
 
     try {
       // TODO: Implémenter l'envoi vers Supabase ou API
-      // Pour l'instant, simulation
-      console.log("Proposition Bon Esprit:", formData);
 
       toast({
         title: "Proposition envoyée !",
