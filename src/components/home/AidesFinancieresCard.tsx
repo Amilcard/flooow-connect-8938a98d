@@ -9,9 +9,18 @@ import { calculateQuickEstimate, QuickEstimateParams } from "@/utils/FinancialAi
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
 
+interface UserProfileData {
+  postal_code?: string | null;
+}
+
+interface ChildData {
+  dob: string;
+  first_name?: string | null;
+}
+
 interface AidesFinancieresCardProps {
-  userProfile?: any;
-  children?: any[];
+  userProfile?: UserProfileData;
+  children?: ChildData[];
 }
 
 export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieresCardProps) => {

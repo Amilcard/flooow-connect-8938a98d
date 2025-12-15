@@ -75,10 +75,10 @@ const LierEnfant = () => {
         description: "Ton code Family Flooow est pret a etre partage avec ton enfant.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Oups !",
-        description: error.message || "Impossible de generer le code. Reessaie dans quelques instants.",
+        description: error instanceof Error ? error.message : "Impossible de generer le code. Reessaie dans quelques instants.",
         variant: "destructive",
       });
     },
@@ -180,10 +180,10 @@ const LierEnfant = () => {
         });
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Oups !",
-        description: error.message || "Une erreur est survenue. Reessaie dans quelques instants.",
+        description: error instanceof Error ? error.message : "Une erreur est survenue. Reessaie dans quelques instants.",
         variant: "destructive",
       });
     },
@@ -435,7 +435,7 @@ const LierEnfant = () => {
                 </div>
               </Card>
 
-              {pendingRequests.map((request: any) => (
+              {pendingRequests.map((request) => (
                 <Card key={request.id} className="overflow-hidden">
                   <CardContent className="pt-6 space-y-4">
                     {/* Info enfant */}
