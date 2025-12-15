@@ -40,7 +40,7 @@ const MonCompte = () => {
 
   // Redirect to auth if not authenticated
   if (!isLoading && !isAuthenticated) {
-    navigate("/auth");
+    navigate("/login");
     return null;
   }
 

@@ -159,7 +159,7 @@ const App = () => (
 
               {/* Auth & Onboarding (lazy) */}
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth" element={<Navigate to="/login" replace />} />
               <Route path="/profile-completion" element={<ProfileCompletion />} />
               <Route path="/profile-edit" element={<ProfileEdit />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

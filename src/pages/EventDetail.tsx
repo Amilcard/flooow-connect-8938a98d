@@ -275,7 +275,7 @@ const EventDetail = () => {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/login")}
                 >
                   <Heart className="h-4 w-4 mr-2" />
                   Ajouter à mon agenda

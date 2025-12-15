@@ -34,7 +34,7 @@ const ChildSignup = () => {
     
     if (!session?.user) {
       toast.error("Vous devez être connecté");
-      navigate("/auth");
+      navigate("/login");
       return;
     }
 

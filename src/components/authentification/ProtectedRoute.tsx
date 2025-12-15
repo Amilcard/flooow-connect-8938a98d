@@ -28,7 +28,7 @@ const ProtectedRoute = ({ children, requireAuth = true }: ProtectedRouteProps) =
 
   // Si l'authentification est requise et l'utilisateur n'est pas connecté
   if (requireAuth && !isAuthenticated) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Si l'utilisateur est connecté et essaie d'accéder aux pages d'auth

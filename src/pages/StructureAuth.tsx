@@ -106,7 +106,7 @@ const StructureAuth = () => {
         description: "Bienvenue ! Vous pouvez maintenant créer vos activités."
       });
 
-      navigate("/structure-dashboard");
+      navigate("/dashboard/structure");
     } catch (error: any) {
       console.error("Structure signup error:", error);
       toast({

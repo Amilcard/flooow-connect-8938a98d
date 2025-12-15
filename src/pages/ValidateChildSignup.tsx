@@ -54,7 +54,7 @@ export default function ValidateChildSignup() {
         // Rediriger après 3 secondes
         if (action === 'approve') {
           setTimeout(() => {
-            navigate('/mon-compte/mes-enfants');
+            navigate('/mon-compte/enfants');
           }, 3000);
         }
 

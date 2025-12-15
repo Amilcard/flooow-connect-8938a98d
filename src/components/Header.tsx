@@ -36,7 +36,7 @@ const Header = () => {
                   variant="ghost"
                   size="icon"
                   className="relative"
-                  onClick={() => navigate("/account/mes-notifications")}
+                  onClick={() => navigate("/mon-compte/notifications")}
                   aria-label="Notifications"
                 >
                   <Bell className="h-5 w-5" />
