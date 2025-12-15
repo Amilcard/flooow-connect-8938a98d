@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.child_temp_requests (
   parent_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   validated_at TIMESTAMPTZ,
   rejected_at TIMESTAMPTZ,
-  rejection_reason TEXT,
+  rejection_reason VARCHAR(1000),
   expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
