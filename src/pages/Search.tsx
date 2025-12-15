@@ -8,21 +8,26 @@ import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, List, X, SlidersHorizontal, Info } from "lucide-react";
+import { MapPin, List, X, SlidersHorizontal, Info, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { logSearch } from "@/lib/tracking";
 import { InteractiveMapActivities } from "@/components/Search/InteractiveMapActivities";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+
+// Nombre d'activités affichées initialement et par "Charger plus"
+const ITEMS_PER_PAGE = 10;
 
 const Search = () => {
   const navigate = useNavigate();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  
+  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
+
   // Use the unified hook for filter state management
-  const { 
-    filterState, 
+  const {
+    filterState,
     updateSearchQuery,
     updateAdvancedFilters,
     getActiveFilterTags,
@@ -57,8 +62,18 @@ const Search = () => {
 
   const { activities, isRelaxed, isLoading, error } = useActivities(activityFilters);
 
-  const displayActivities = activities || [];
+  const allActivities = activities || [];
   const activeTags = getActiveFilterTags();
+
+  // Pagination: afficher seulement displayCount activités
+  const displayActivities = allActivities.slice(0, displayCount);
+  const hasMore = displayCount < allActivities.length;
+  const remainingCount = allActivities.length - displayCount;
+
+  // Reset pagination quand les filtres changent
+  useEffect(() => {
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, [searchQuery, advancedFilters]);
 
   // Logger la recherche quand les résultats changent
   useEffect(() => {
@@ -69,6 +84,10 @@ const Search = () => {
       });
     }
   }, [activities, isLoading]);
+
+  const handleLoadMore = () => {
+    setDisplayCount(prev => prev + ITEMS_PER_PAGE);
+  };
 
   if (error) {
     return <ErrorState message="Impossible de charger les activités" />;
@@ -134,7 +153,7 @@ const Search = () => {
         {/* View toggle + Results count */}
         <div className="flex items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            {displayActivities?.length || 0} activité(s) trouvée(s)
+            {displayActivities.length} sur {allActivities.length} activité(s)
           </p>
           
           <div className="flex gap-2">
@@ -168,13 +187,29 @@ const Search = () => {
         {isLoading ? (
           <LoadingState />
         ) : viewMode === "list" ? (
-          <ActivitySection
-            title="Résultats de recherche"
-            activities={displayActivities || []}
-          />
+          <>
+            <ActivitySection
+              title="Résultats de recherche"
+              activities={displayActivities}
+            />
+            {/* Bouton Charger plus */}
+            {hasMore && (
+              <div className="flex justify-center pt-4 pb-2">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleLoadMore}
+                  className="gap-2 px-8"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                  Voir {Math.min(remainingCount, ITEMS_PER_PAGE)} activités de plus
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <InteractiveMapActivities
-            activities={displayActivities || []}
+            activities={allActivities}
             height="600px"
           />
         )}
@@ -185,12 +220,13 @@ const Search = () => {
         onClose={() => setIsFiltersOpen(false)}
         filters={advancedFilters}
         onFiltersChange={updateAdvancedFilters}
-        resultsCount={displayActivities.length}
+        resultsCount={allActivities.length}
         isCountLoading={isLoading}
         onApply={() => setIsFiltersOpen(false)}
         onClear={clearAllFilters}
       />
 
+      <ScrollToTopButton />
       <BottomNavigation />
     </div>
   );
