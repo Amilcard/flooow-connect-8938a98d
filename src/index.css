@@ -113,6 +113,18 @@
     /* 12. Animation */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* 13. Z-Index Scale (centralisé pour éviter conflits) */
+    --z-base: 0;
+    --z-dropdown: 10;
+    --z-sticky: 40;
+    --z-fixed: 50;
+    --z-modal-backdrop: 60;
+    --z-modal: 70;
+    --z-popover: 80;
+    --z-tooltip: 90;
+    --z-toast: 100;
+    --z-skip-link: 9999;
   }
 
   .dark {
@@ -420,6 +432,12 @@
     }
   }
 
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  /* Animations avec support prefers-reduced-motion */
   .animate-scale-in {
     animation: scaleIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -428,16 +446,24 @@
     animation: fadeIn 0.8s ease forwards;
   }
 
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
   .animation-delay-500 {
     animation-delay: 0.5s;
   }
 
-  @keyframes bounce-slow {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-  }
-
-  .animate-bounce-slow {
-    animation: bounce-slow 2s ease-in-out infinite;
-    animation-delay: 1s;
+  /* Désactiver les animations pour les utilisateurs sensibles au mouvement */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-scale-in,
+    .animate-fade-in,
+    .animate-fadeIn,
+    .animate-slideUp,
+    .animate-bounce-slow {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
   }
