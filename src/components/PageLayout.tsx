@@ -29,7 +29,7 @@ const PageLayout = ({
   }
 
   return (
-    <div className={`min-h-screen bg-background pb-20 ${className}`}>
+    <div className={`min-h-screen bg-background pb-20 px-4 sm:px-6 ${className}`}>
       {showHeader && <Header />}
       {children}
       <BottomNavigation />

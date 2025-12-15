@@ -5,7 +5,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-border bg-card">
+    <footer className="hidden md:block w-full border-t border-border bg-card">
       {/* Container aligné avec le reste de l'app (max-w-5xl standard) */}
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         {/* Grid: 3 colonnes alignées */}
