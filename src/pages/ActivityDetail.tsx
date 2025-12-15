@@ -64,6 +64,14 @@ import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
+interface CalculatedAidItem {
+  aid_name: string;
+  amount: number;
+  territory_level: string;
+  official_link: string | null;
+  is_informational?: boolean;
+}
+
 const getCategoryImage = (category: string): string => {
   const categoryMap: Record<string, string> = {
     Sport: activitySportImg,
@@ -111,7 +119,7 @@ const ActivityDetail = () => {
     childId: string;
     quotientFamilial: string;
     cityCode: string;
-    aids: any[];
+    aids: CalculatedAidItem[];
     totalAids: number;
     remainingPrice: number;
   } | null>(null);
@@ -344,7 +352,7 @@ const ActivityDetail = () => {
     childId: string;
     quotientFamilial: string;
     cityCode: string;
-    aids: any[];
+    aids: CalculatedAidItem[];
     totalAids: number;
     remainingPrice: number;
   }) => {
@@ -1009,7 +1017,7 @@ const ActivityDetail = () => {
                     {isActivityClosed && alternatives.length > 0 && (
                       <div className="mt-4 space-y-3">
                         <p className="text-sm font-medium text-center">Autres idées pour votre enfant :</p>
-                        {alternatives.map((alt: any) => (
+                        {alternatives.map((alt) => (
                           <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate("/activity/" + alt.id)}>
                             <div className="flex justify-between items-center">
                               <div>

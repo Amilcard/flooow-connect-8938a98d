@@ -76,7 +76,7 @@ export const AdvancedFiltersContent = ({
   const currentActivityTypes = getActivityTypes(filters.period);
 
   // --- HANDLERS ---
-  const updateFilter = (key: keyof AdvancedFilters, value: any) => {
+  const updateFilter = <K extends keyof AdvancedFilters>(key: K, value: AdvancedFilters[K]) => {
     onFiltersChange({ ...filters, [key]: value });
   };
 

@@ -376,7 +376,7 @@ export default function CollectiviteDashboard() {
               <CardContent>
                 <div className="text-xs space-y-1">
                   {/* Source: bookings.transport_mode */}
-                  {kpis.mobilite?.distribution?.slice(0, 3).map((item: any) => (
+                  {kpis.mobilite?.distribution?.slice(0, 3).map((item: { mode: string; percentage: number }) => (
                     <div key={item.mode} className="flex justify-between">
                       <span className="capitalize">{item.mode}:</span>
                       <span className="font-semibold">{item.percentage}%</span>
