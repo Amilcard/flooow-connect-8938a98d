@@ -6,6 +6,18 @@ import { validateCoordinates } from "@/utils/sanitize";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Couleurs par catégorie
+const CATEGORY_COLORS: Record<string, string> = {
+  'Sport': '#EF4444',
+  'Culture': '#8B5CF6',
+  'Loisirs': '#F59E0B',
+  'Scolarité': '#3B82F6',
+};
+
+const getCategoryColor = (category: string): string => {
+  return CATEGORY_COLORS[category] || '#8B5CF6';
+};
+
 /**
  * Interface étendue pour activités avec coordonnées géographiques
  */
@@ -156,7 +168,7 @@ export function InteractiveMapActivities({
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 12,
-          fillColor: '#8B5CF6', // Primary violet
+          fillColor: getCategoryColor(activity.category),
           fillOpacity: 1,
           strokeColor: '#ffffff',
           strokeWeight: 3,

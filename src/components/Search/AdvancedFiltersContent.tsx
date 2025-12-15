@@ -68,8 +68,8 @@ export const AdvancedFiltersContent = ({
       'Culture',
       'Loisirs',
       'Scolarité',
-      'Vacances',
-      'Insertion'
+      'Vacances'
+      // 'Insertion' // supprimé temporairement
     ];
   };
 
