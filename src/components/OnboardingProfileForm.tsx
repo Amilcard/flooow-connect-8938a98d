@@ -16,10 +16,13 @@ interface ChildData {
   education_level?: string;
 }
 
+/** Marital status options */
+type MaritalStatus = 'single' | 'couple' | 'divorced' | 'widowed';
+
 interface ProfileFormData {
   postal_code: string;
   quotient_familial?: number;
-  marital_status?: 'single' | 'couple' | 'divorced' | 'widowed';
+  marital_status?: MaritalStatus;
   children: ChildData[];
 }
 
@@ -169,7 +172,7 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
           </legend>
           
           <div className="mt-4">
-            <Select onValueChange={(value) => setValue('marital_status', value as any)}>
+            <Select onValueChange={(value) => setValue('marital_status', value as MaritalStatus)}>
               <SelectTrigger>
                 <SelectValue placeholder="Non renseigné" />
               </SelectTrigger>
