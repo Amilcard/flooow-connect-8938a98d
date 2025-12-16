@@ -136,7 +136,7 @@ export function AidCard({ aid }: AidCardProps) {
               <div>
                 {aid.contacts.phone.tel_href ? (
                   <button
-                    onClick={() => handlePhoneClick(aid.contacts.phone!.tel_href)}
+                    onClick={() => handlePhoneClick(aid.contacts.phone?.tel_href ?? '')}
                     className="flex items-center gap-2 font-poppins text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                   >
                     <Phone size={14} />
@@ -175,7 +175,7 @@ export function AidCard({ aid }: AidCardProps) {
         <div className="space-y-2">
           {/* Primary CTA */}
           <button
-            onClick={() => handleCTAClick(aid.primary_cta!.url, aid.primary_cta!.open_mode)}
+            onClick={() => handleCTAClick(aid.primary_cta?.url ?? '', aid.primary_cta?.open_mode)}
             className="w-full bg-primary hover:bg-primary/90 text-white font-poppins text-sm font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
             {aid.primary_cta.label}

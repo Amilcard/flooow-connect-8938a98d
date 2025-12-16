@@ -180,7 +180,7 @@ export const BookingRecap = ({
             <>
               <div className="flex items-center justify-between text-sm text-green-600">
                 <span>Aides appliquées</span>
-                <span>-{totalAids!.toFixed(2)} €</span>
+                <span>-{(totalAids ?? 0).toFixed(2)} €</span>
               </div>
               <div className="flex items-center justify-between pt-2 border-t">
                 <span className="font-medium">Reste à charge</span>

@@ -205,7 +205,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
                 <div>
                   {solution.contacts.phone.tel_href ? (
                     <button
-                      onClick={() => handlePhoneClick(solution.contacts!.phone!.tel_href)}
+                      onClick={() => handlePhoneClick(solution.contacts.phone?.tel_href ?? '')}
                       className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium font-poppins transition-colors"
                     >
                       <Phone size={14} className="shrink-0" />
@@ -228,7 +228,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
               {/* Email */}
               {solution.contacts.email && (
                 <button
-                  onClick={() => handleEmailClick(solution.contacts!.email!)}
+                  onClick={() => handleEmailClick(solution.contacts.email ?? '')}
                   className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium font-poppins transition-colors"
                 >
                   <Mail size={14} className="shrink-0" />
@@ -255,7 +255,7 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
         {/* Primary CTA (legacy mode only) */}
         {!isPlainTextMode && solution.primary_cta && (
           <button
-            onClick={() => handleCTAClick(solution.primary_cta!.url, solution.primary_cta!.open_mode)}
+            onClick={() => handleCTAClick(solution.primary_cta?.url ?? '', solution.primary_cta?.open_mode)}
             className="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-all hover:-translate-y-0.5 font-poppins text-sm shadow-md"
           >
             {solution.primary_cta.label}

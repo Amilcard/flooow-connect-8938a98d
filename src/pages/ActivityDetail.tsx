@@ -298,13 +298,15 @@ const ActivityDetail = () => {
   const { data: alternatives = [] } = useQuery({
     queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
     queryFn: async () => {
+      // Guard: query only enabled when activity exists (isActivityClosed requires activity)
+      if (!activity) return [];
       const { data, error } = await supabase
         .from("activities")
         .select("id, title, categories, age_min, age_max, price_base, period_type, images")
-        .neq("id", activity!.id)
+        .neq("id", activity.id)
         .eq("is_published", true)
-        .lte("age_min", activity!.age_max)
-        .gte("age_max", activity!.age_min)
+        .lte("age_min", activity.age_max ?? 99)
+        .gte("age_max", activity.age_min ?? 0)
         .limit(3);
       if (error) throw error;
       return data || [];
