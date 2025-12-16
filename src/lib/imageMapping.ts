@@ -32,6 +32,49 @@ import activitySoutien69 from "@/assets/activity-soutien-6-9.jpg";
 import activityStageFoot69 from "@/assets/activity-stage-foot-6-9.jpg";
 import activityTheatre69 from "@/assets/activity-theatre-6-9.jpg";
 
+// Keyword-to-image mappings for reduced cognitive complexity
+type ImageMapper = { keywords: string[]; getImage: (avgAge: number) => string };
+
+const TITLE_MAPPINGS: ImageMapper[] = [
+  // SPORT
+  { keywords: ['football', 'foot', 'asse'], getImage: (age) => age <= 9 ? activityStageFoot69 : activityMultisports1013 },
+  { keywords: ['judo'], getImage: (age) => age <= 9 ? activityJudo69 : activityJudoKids },
+  { keywords: ['escalade', 'grimpe'], getImage: () => activityEscalade1417 },
+  { keywords: ['natation', 'piscine', 'nautique'], getImage: () => activityNatation69 },
+  { keywords: ['hip-hop', 'danse'], getImage: () => activityHiphop1417 },
+  { keywords: ['multisport', 'basket', 'tennis', 'rugby'], getImage: (age) => age <= 9 ? activityStageFoot69 : activityMultisports1013 },
+  // CULTURE
+  { keywords: ['musique', 'piano', 'guitare', 'chant'], getImage: () => activityMusique69 },
+  { keywords: ['théâtre', 'theater', 'scène'], getImage: () => activityTheatre69 },
+  { keywords: ['arts', 'dessin', 'peinture'], getImage: (age) => age <= 9 ? activityArts69 : activityArts1013 },
+  { keywords: ['photo', 'vidéo', 'cinéma'], getImage: () => activityPhoto1417 },
+  // LOISIRS / TECHNOLOGIE
+  { keywords: ['robotique', 'code', 'programmation', 'numérique'], getImage: (age) => age <= 13 ? activityCode1013 : activityRobotique1013 },
+  { keywords: ['cuisine', 'chef', 'culinaire'], getImage: () => activityCuisine69 },
+  { keywords: ['jardin', 'nature', 'écologie'], getImage: () => activityJardinage1013 },
+  { keywords: ['jeux', 'ludothèque', 'échecs'], getImage: () => activityJeux69 },
+  // VACANCES / SÉJOURS
+  { keywords: ['séjour', 'colonie', 'camp'], getImage: (age) => age <= 13 ? activityCamp1013 : activitySejour1417 },
+  { keywords: ['centre de loisirs', 'accueil de loisirs'], getImage: (age) => age <= 9 ? activityJeux69 : activityCamp1013 },
+  // SCOLARITÉ
+  { keywords: ['soutien', 'aide aux devoirs', 'cours', 'tutorat'], getImage: () => activitySoutien69 },
+];
+
+const THEME_FALLBACKS: Record<string, string> = {
+  sport: activitySport,
+  culture: activityCulture,
+  vacances: activityVacances,
+  loisir: activityLoisirs,
+  scolarité: activitySoutien69,
+  apprentissage: activitySoutien69,
+};
+
+function getImageByAge(avgAge: number): string {
+  if (avgAge <= 9) return activityJeux69;
+  if (avgAge <= 13) return activityMultisports1013;
+  return activitySejour1417;
+}
+
 /**
  * Détermine l'image la plus appropriée pour une activité
  * selon son titre, thème et tranche d'âge
@@ -46,108 +89,18 @@ export function getActivityImage(
   const themeLower = theme.toLowerCase();
   const avgAge = (ageMin + ageMax) / 2;
 
-  // Mapping par mots-clés spécifiques + âge
-  
-  // SPORT
-  if (titleLower.includes('football') || titleLower.includes('foot') || titleLower.includes('asse')) {
-    return avgAge <= 9 ? activityStageFoot69 : activityMultisports1013;
-  }
-  
-  if (titleLower.includes('judo')) {
-    return avgAge <= 9 ? activityJudo69 : activityJudoKids;
-  }
-  
-  if (titleLower.includes('escalade') || titleLower.includes('grimpe')) {
-    return activityEscalade1417;
-  }
-  
-  if (titleLower.includes('natation') || titleLower.includes('piscine') || titleLower.includes('nautique')) {
-    return activityNatation69;
-  }
-  
-  if (titleLower.includes('hip-hop') || titleLower.includes('danse')) {
-    return activityHiphop1417;
-  }
-  
-  if (titleLower.includes('multisport') || titleLower.includes('basket') || titleLower.includes('tennis') || titleLower.includes('rugby')) {
-    return avgAge <= 9 ? activityStageFoot69 : activityMultisports1013;
-  }
+  // Check title keywords
+  const titleMatch = TITLE_MAPPINGS.find(mapping =>
+    mapping.keywords.some(kw => titleLower.includes(kw))
+  );
+  if (titleMatch) return titleMatch.getImage(avgAge);
 
-  // CULTURE
-  if (titleLower.includes('musique') || titleLower.includes('piano') || titleLower.includes('guitare') || titleLower.includes('chant')) {
-    return activityMusique69;
-  }
-  
-  if (titleLower.includes('théâtre') || titleLower.includes('theater') || titleLower.includes('scène')) {
-    return activityTheatre69;
-  }
-  
-  if (titleLower.includes('arts') || titleLower.includes('dessin') || titleLower.includes('peinture')) {
-    return avgAge <= 9 ? activityArts69 : activityArts1013;
-  }
-  
-  if (titleLower.includes('photo') || titleLower.includes('vidéo') || titleLower.includes('cinéma')) {
-    return activityPhoto1417;
-  }
+  // Fallback by theme
+  const themeMatch = Object.entries(THEME_FALLBACKS).find(([key]) =>
+    themeLower.includes(key)
+  );
+  if (themeMatch) return themeMatch[1];
 
-  // LOISIRS / TECHNOLOGIE
-  if (titleLower.includes('robotique') || titleLower.includes('code') || titleLower.includes('programmation') || titleLower.includes('numérique')) {
-    return avgAge <= 13 ? activityCode1013 : activityRobotique1013;
-  }
-  
-  if (titleLower.includes('cuisine') || titleLower.includes('chef') || titleLower.includes('culinaire')) {
-    return activityCuisine69;
-  }
-  
-  if (titleLower.includes('jardin') || titleLower.includes('nature') || titleLower.includes('écologie')) {
-    return activityJardinage1013;
-  }
-  
-  if (titleLower.includes('jeux') || titleLower.includes('ludothèque') || titleLower.includes('échecs')) {
-    return activityJeux69;
-  }
-
-  // VACANCES / SÉJOURS
-  if (titleLower.includes('séjour') || titleLower.includes('colonie') || titleLower.includes('camp')) {
-    return avgAge <= 13 ? activityCamp1013 : activitySejour1417;
-  }
-  
-  if (titleLower.includes('centre de loisirs') || titleLower.includes('accueil de loisirs')) {
-    return avgAge <= 9 ? activityJeux69 : activityCamp1013;
-  }
-
-  // SCOLARITÉ / SOUTIEN
-  if (titleLower.includes('soutien') || titleLower.includes('aide aux devoirs') || titleLower.includes('cours') || titleLower.includes('tutorat')) {
-    return activitySoutien69;
-  }
-
-  // Fallback par thème général
-  if (themeLower.includes('sport')) {
-    return activitySport;
-  }
-  
-  if (themeLower.includes('culture')) {
-    return activityCulture;
-  }
-  
-  if (themeLower.includes('vacances')) {
-    return activityVacances;
-  }
-  
-  if (themeLower.includes('loisir')) {
-    return activityLoisirs;
-  }
-  
-  if (themeLower.includes('scolarité') || themeLower.includes('apprentissage')) {
-    return activitySoutien69;
-  }
-
-  // Fallback ultime selon âge
-  if (avgAge <= 9) {
-    return activityJeux69;
-  } else if (avgAge <= 13) {
-    return activityMultisports1013;
-  } else {
-    return activitySejour1417;
-  }
+  // Ultimate fallback by age
+  return getImageByAge(avgAge);
 }

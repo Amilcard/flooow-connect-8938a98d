@@ -11,6 +11,64 @@
  */
 
 // ============================================================================
+// HELPER FUNCTIONS FOR QF-BASED CALCULATIONS
+// ============================================================================
+
+type QFThreshold = { max: number; montant: number };
+
+function getMontantByQF(qf: number, thresholds: QFThreshold[], fallback: number = 0): number {
+  const match = thresholds.find(t => qf <= t.max);
+  return match ? match.montant : fallback;
+}
+
+// Reusable QF thresholds
+const PASS_COLO_QF: QFThreshold[] = [
+  { max: 200, montant: 350 },
+  { max: 500, montant: 300 },
+  { max: 700, montant: 250 },
+];
+
+const VACAF_AVE_QF: QFThreshold[] = [
+  { max: 450, montant: 200 },
+  { max: 700, montant: 150 },
+];
+
+const VACAF_AVF_QF: QFThreshold[] = [
+  { max: 400, montant: 400 },
+  { max: 600, montant: 300 },
+];
+
+const CAF_LOIRE_QF: QFThreshold[] = [
+  { max: 350, montant: 80 },
+  { max: 550, montant: 60 },
+  { max: 700, montant: 40 },
+];
+
+// Tarifs Sociaux Saint-Étienne by QF tranche and activity type
+const STE_REDUCTIONS: Record<string, Record<string, number>> = {
+  A: { sport: 60, culture: 70, default: 50 },
+  B: { sport: 40, culture: 50, default: 30 },
+  C: { sport: 20, culture: 30, default: 15 },
+};
+
+function getSTEReduction(qf: number, typeActivite: string): { tranche: string; reduction: number } | null {
+  let tranche = '';
+  if (qf <= 400) tranche = 'A';
+  else if (qf <= 700) tranche = 'B';
+  else if (qf <= 1000) tranche = 'C';
+  else return null;
+
+  const reductions = STE_REDUCTIONS[tranche];
+  const reduction = reductions[typeActivite] || reductions['default'];
+  return { tranche, reduction };
+}
+
+function isSaintEtienne(ville: string): boolean {
+  const villeLower = ville.toLowerCase().replace(/[éè]/g, 'e').replace(/[àâ]/g, 'a');
+  return villeLower.includes('saint') && villeLower.includes('etienne');
+}
+
+// ============================================================================
 // TYPES & INTERFACES
 // ============================================================================
 
@@ -258,24 +316,9 @@ function evaluatePassCulture(params: EligibilityParams): CalculatedAid | null {
 function evaluatePassColo(params: EligibilityParams): CalculatedAid | null {
   const { age, quotient_familial, type_activite } = params;
 
-  if (age !== 11) {
-    return null;
-  }
+  if (age !== 11 || type_activite !== 'vacances') return null;
 
-  if (type_activite !== 'vacances') {
-    return null;
-  }
-
-  let montant = 0;
-  if (quotient_familial <= 200) {
-    montant = 350;
-  } else if (quotient_familial <= 500) {
-    montant = 300;
-  } else if (quotient_familial <= 700) {
-    montant = 250;
-  } else {
-    montant = 200;
-  }
+  const montant = getMontantByQF(quotient_familial, PASS_COLO_QF, 200);
 
   return {
     id: 'pass_colo',
@@ -296,64 +339,21 @@ function evaluatePassColo(params: EligibilityParams): CalculatedAid | null {
 function evaluateVACAFAVE(params: EligibilityParams): CalculatedAid | null {
   const { age, allocataire_caf, sejour_labellise, quotient_familial, type_activite } = params;
 
-  if (type_activite !== 'vacances') {
-    return null;
-  }
+  if (type_activite !== 'vacances' || !allocataire_caf || age < 3 || age > 17) return null;
 
-  if (!allocataire_caf) {
-    return null;
-  }
-
-  if (age < 3 || age > 17) {
-    return null;
-  }
+  const baseResult = { id: 'vacaf_ave', code: 'VACAF_AVE', name: 'VACAF AVE', niveau: 'caf' as const, official_link: 'https://www.vacaf.org' };
 
   if (!sejour_labellise) {
-    return {
-      id: 'vacaf_ave',
-      code: 'VACAF_AVE',
-      name: 'VACAF AVE',
-      montant: 0,
-      eligible: false,
-      niveau: 'caf',
-      criteres_manquants: ['Séjour labellisé VACAF requis'],
-      official_link: 'https://www.vacaf.org',
-    };
+    return { ...baseResult, montant: 0, eligible: false, criteres_manquants: ['Séjour labellisé VACAF requis'] };
   }
 
   if (quotient_familial > 900) {
-    return {
-      id: 'vacaf_ave',
-      code: 'VACAF_AVE',
-      name: 'VACAF AVE',
-      montant: 0,
-      eligible: false,
-      niveau: 'caf',
-      criteres_manquants: ['QF maximum 900€'],
-      official_link: 'https://www.vacaf.org',
-    };
+    return { ...baseResult, montant: 0, eligible: false, criteres_manquants: ['QF maximum 900€'] };
   }
 
-  // Montant variable selon QF (à adapter selon barème CAF exact)
-  let montant = 0;
-  if (quotient_familial <= 450) {
-    montant = 200;
-  } else if (quotient_familial <= 700) {
-    montant = 150;
-  } else {
-    montant = 100;
-  }
+  const montant = getMontantByQF(quotient_familial, VACAF_AVE_QF, 100);
 
-  return {
-    id: 'vacaf_ave',
-    code: 'VACAF_AVE',
-    name: 'VACAF AVE',
-    montant: Math.min(montant, params.prix_activite),
-    eligible: true,
-    niveau: 'caf',
-    message: 'Aide CAF pour séjours labellisés',
-    official_link: 'https://www.vacaf.org',
-  };
+  return { ...baseResult, montant: Math.min(montant, params.prix_activite), eligible: true, message: 'Aide CAF pour séjours labellisés' };
 }
 
 /**
@@ -363,27 +363,9 @@ function evaluateVACAFAVE(params: EligibilityParams): CalculatedAid | null {
 function evaluateVACAFAVF(params: EligibilityParams): CalculatedAid | null {
   const { allocataire_caf, quotient_familial, type_activite } = params;
 
-  if (type_activite !== 'vacances') {
-    return null;
-  }
+  if (type_activite !== 'vacances' || !allocataire_caf || quotient_familial > 800) return null;
 
-  if (!allocataire_caf) {
-    return null;
-  }
-
-  if (quotient_familial > 800) {
-    return null;
-  }
-
-  // Montant variable (max 400€) selon barème CAF
-  let montant = 0;
-  if (quotient_familial <= 400) {
-    montant = 400;
-  } else if (quotient_familial <= 600) {
-    montant = 300;
-  } else {
-    montant = 200;
-  }
+  const montant = getMontantByQF(quotient_familial, VACAF_AVF_QF, 200);
 
   return {
     id: 'vacaf_avf',
@@ -428,32 +410,9 @@ function evaluateCAFLoireTempsLibre(params: EligibilityParams): CalculatedAid | 
   const { age, allocataire_caf, quotient_familial, periode } = params;
 
   // RESTRICTION: Uniquement pour les vacances (demande utilisateur)
-  if (periode !== 'vacances') {
-    return null;
-  }
+  if (periode !== 'vacances' || !allocataire_caf || age < 3 || age > 17 || quotient_familial > 850) return null;
 
-  if (!allocataire_caf) {
-    return null;
-  }
-
-  if (age < 3 || age > 17) {
-    return null;
-  }
-
-  if (quotient_familial > 850) {
-    return null;
-  }
-
-  let montant = 0;
-  if (quotient_familial <= 350) {
-    montant = 80;
-  } else if (quotient_familial <= 550) {
-    montant = 60;
-  } else if (quotient_familial <= 700) {
-    montant = 40;
-  } else {
-    montant = 20;
-  }
+  const montant = getMontantByQF(quotient_familial, CAF_LOIRE_QF, 20);
 
   return {
     id: 'caf_loire_temps_libre',
@@ -501,37 +460,19 @@ function evaluateChequesLoisirs42(params: EligibilityParams): CalculatedAid | nu
 function evaluateTarifsSociauxSaintEtienne(params: EligibilityParams): CalculatedAid | null {
   const { ville, quotient_familial, type_activite, prix_activite } = params;
 
-  const villeLower = ville.toLowerCase().replace(/[éè]/g, 'e').replace(/[àâ]/g, 'a');
-  if (!villeLower.includes('saint') || !villeLower.includes('etienne')) {
-    return null;
-  }
+  if (!isSaintEtienne(ville)) return null;
 
-  let tranche = '';
-  let reduction = 0;
-
-  if (quotient_familial <= 400) {
-    tranche = 'A';
-    reduction = type_activite === 'sport' ? 60 : type_activite === 'culture' ? 70 : 50;
-  } else if (quotient_familial <= 700) {
-    tranche = 'B';
-    reduction = type_activite === 'sport' ? 40 : type_activite === 'culture' ? 50 : 30;
-  } else if (quotient_familial <= 1000) {
-    tranche = 'C';
-    reduction = type_activite === 'sport' ? 20 : type_activite === 'culture' ? 30 : 15;
-  } else {
-    return null;
-  }
-
-  const montant = Math.min(reduction, prix_activite);
+  const result = getSTEReduction(quotient_familial, type_activite);
+  if (!result) return null;
 
   return {
     id: 'tarifs_sociaux_st_etienne',
     code: 'TARIFS_SOCIAUX_STE',
     name: 'Tarifs sociaux Saint-Étienne',
-    montant,
+    montant: Math.min(result.reduction, prix_activite),
     eligible: true,
     niveau: 'communal',
-    message: `Tranche ${tranche} - Réduction ${type_activite}`,
+    message: `Tranche ${result.tranche} - Réduction ${type_activite}`,
     official_link: 'https://www.saint-etienne.fr',
   };
 }
@@ -905,16 +846,7 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
 
   // 3. Pass Colo (si 11 ans + QF + vacances)
   if (params.age === 11 && params.type_activite === 'vacances' && params.quotient_familial) {
-    let montant = 0;
-    if (params.quotient_familial <= 200) {
-      montant = 350;
-    } else if (params.quotient_familial <= 500) {
-      montant = 300;
-    } else if (params.quotient_familial <= 700) {
-      montant = 250;
-    } else {
-      montant = 200;
-    }
+    const montant = getMontantByQF(params.quotient_familial, PASS_COLO_QF, 200);
     aides_detectees.push({
       id: 'pass_colo',
       code: 'PASS_COLO',
@@ -929,15 +861,7 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
   // 4. VACAF (si CAF + QF + vacances)
   if (params.allocataire_caf && params.type_activite === 'vacances' && params.quotient_familial) {
     if (params.quotient_familial <= 800) {
-      // VACAF AVF
-      let montant = 0;
-      if (params.quotient_familial <= 400) {
-        montant = 400;
-      } else if (params.quotient_familial <= 600) {
-        montant = 300;
-      } else {
-        montant = 200;
-      }
+      const montant = getMontantByQF(params.quotient_familial, VACAF_AVF_QF, 200);
       aides_detectees.push({
         id: 'vacaf_avf',
         code: 'VACAF_AVF',
@@ -973,23 +897,8 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
   }
 
   // 6. CAF Loire Temps Libre (si CAF + QF ≤850 + âge 3-17)
-  if (
-    params.allocataire_caf &&
-    params.quotient_familial &&
-    params.quotient_familial <= 850 &&
-    params.age >= 3 &&
-    params.age <= 17
-  ) {
-    let montant = 0;
-    if (params.quotient_familial <= 350) {
-      montant = 80;
-    } else if (params.quotient_familial <= 550) {
-      montant = 60;
-    } else if (params.quotient_familial <= 700) {
-      montant = 40;
-    } else {
-      montant = 20;
-    }
+  if (params.allocataire_caf && params.quotient_familial && params.quotient_familial <= 850 && params.age >= 3 && params.age <= 17) {
+    const montant = getMontantByQF(params.quotient_familial, CAF_LOIRE_QF, 20);
     aides_detectees.push({
       id: 'caf_loire_temps_libre',
       code: 'CAF_LOIRE_TEMPS_LIBRE',
@@ -1015,29 +924,18 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
   }
 
   // 8. Tarifs sociaux Saint-Étienne (si ville + QF)
-  if (params.ville && params.quotient_familial) {
-    const villeLower = params.ville.toLowerCase().replace(/[éè]/g, 'e').replace(/[àâ]/g, 'a');
-    if (villeLower.includes('saint') && villeLower.includes('etienne')) {
-      let reduction = 0;
-      if (params.quotient_familial <= 400) {
-        reduction = params.type_activite === 'sport' ? 60 : params.type_activite === 'culture' ? 70 : 50;
-      } else if (params.quotient_familial <= 700) {
-        reduction = params.type_activite === 'sport' ? 40 : params.type_activite === 'culture' ? 50 : 30;
-      } else if (params.quotient_familial <= 1000) {
-        reduction = params.type_activite === 'sport' ? 20 : params.type_activite === 'culture' ? 30 : 15;
-      }
-
-      if (reduction > 0) {
-        aides_detectees.push({
-          id: 'tarifs_sociaux_st_etienne',
-          code: 'TARIFS_SOCIAUX_STE',
-          name: 'Tarifs sociaux Saint-Étienne',
-          montant: Math.min(reduction, params.prix_activite),
-          eligible: true,
-          niveau: 'communal',
-          message: `Réduction ${params.type_activite}`,
-        });
-      }
+  if (params.ville && params.quotient_familial && isSaintEtienne(params.ville)) {
+    const steResult = getSTEReduction(params.quotient_familial, params.type_activite);
+    if (steResult) {
+      aides_detectees.push({
+        id: 'tarifs_sociaux_st_etienne',
+        code: 'TARIFS_SOCIAUX_STE',
+        name: 'Tarifs sociaux Saint-Étienne',
+        montant: Math.min(steResult.reduction, params.prix_activite),
+        eligible: true,
+        niveau: 'communal',
+        message: `Réduction ${params.type_activite}`,
+      });
     }
   }
 
