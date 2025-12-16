@@ -750,7 +750,7 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
     const matches = aid.montant_possible.match(/(\d+)/g);
     if (matches && matches.length > 0) {
       const lastMatch = matches[matches.length - 1];
-      return sum + (lastMatch ? parseInt(lastMatch) : 0);
+      return sum + (lastMatch ? parseInt(lastMatch, 10) : 0);
     }
     return sum;
   }, 0);
@@ -991,7 +991,7 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
     const matches = aid.montant_possible.match(/(\d+)/g);
     if (matches && matches.length > 0) {
       const lastMatch = matches[matches.length - 1];
-      return sum + (lastMatch ? parseInt(lastMatch) : 20);
+      return sum + (lastMatch ? parseInt(lastMatch, 10) : 20);
     }
     return sum + 20; // Default pour "Variable"
   }, 0);

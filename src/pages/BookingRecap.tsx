@@ -133,11 +133,13 @@ const BookingRecap = () => {
         }
       });
 
-      if (!error && data && (data as any).success === false) {
-        const err = (data as any).error || {};
+      // Type-safe response handling
+      const response = data as { success?: boolean; error?: { message?: string }; id?: string } | null;
+      if (!error && response && response.success === false) {
+        const errMsg = response.error?.message ?? "Cette réservation n'est pas possible";
         toast({
           title: "Réservation non éligible",
-          description: err.message || "Cette réservation n'est pas possible",
+          description: errMsg,
           variant: "destructive",
         });
         setIsSubmitting(false);
@@ -154,7 +156,7 @@ const BookingRecap = () => {
         description: "Votre demande de réservation a bien été enregistrée"
       });
 
-      navigate(`/booking-status/${data.id}`);
+      navigate(`/booking-status/${response?.id ?? id}`);
     } catch (error: unknown) {
       toast({
         title: "Erreur lors de la réservation",

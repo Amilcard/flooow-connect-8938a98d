@@ -44,8 +44,8 @@ export const ActivityCardCompact = ({
 }: ActivityCardCompactProps) => {
   // Fallback image
   const ageMatch = ageRange?.match(/^(\d+)-(\d+)/);
-  const ageMin = ageMatch ? parseInt(ageMatch[1]) : 6;
-  const ageMax = ageMatch ? parseInt(ageMatch[2]) : 17;
+  const ageMin = ageMatch ? parseInt(ageMatch[1], 10) : 6;
+  const ageMax = ageMatch ? parseInt(ageMatch[2], 10) : 17;
   const displayImage = image || getActivityImage(title, category, ageMin, ageMax);
 
   const categoryStyle = getCategoryStyle(category);

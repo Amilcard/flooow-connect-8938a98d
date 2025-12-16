@@ -5,6 +5,15 @@ import { MapPin, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { DEFAULT_MAP_CENTER } from '@/constants/locations';
 
+interface ActivityLocation {
+  lat: number;
+  lng: number;
+}
+
+interface ActivityWithLocation extends Activity {
+  location?: ActivityLocation | null;
+}
+
 interface ActivityMapProps {
   activities: Activity[];
 }
@@ -42,9 +51,8 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
 
   // Filter activities with valid coordinates
   const activitiesWithCoords = useMemo(() => {
-    return activities.filter((activity) => {
-      const activityLocation = (activity as any).location as { lat: number; lng: number } | null;
-      return activityLocation?.lat && activityLocation?.lng;
+    return (activities as ActivityWithLocation[]).filter((activity) => {
+      return activity.location?.lat && activity.location?.lng;
     });
   }, [activities]);
 
@@ -55,13 +63,11 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
     }
 
     const avgLat = activitiesWithCoords.reduce((sum, a) => {
-      const loc = (a as any).location as { lat: number; lng: number };
-      return sum + (loc?.lat || 0);
+      return sum + (a.location?.lat ?? 0);
     }, 0) / activitiesWithCoords.length;
 
     const avgLng = activitiesWithCoords.reduce((sum, a) => {
-      const loc = (a as any).location as { lat: number; lng: number };
-      return sum + (loc?.lng || 0);
+      return sum + (a.location?.lng ?? 0);
     }, 0) / activitiesWithCoords.length;
 
     return { lat: avgLat, lng: avgLng };
@@ -138,7 +144,8 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
 
     // Create markers for each activity
     activitiesWithCoords.forEach((activity) => {
-      const activityLocation = (activity as any).location as { lat: number; lng: number };
+      const activityLocation = activity.location;
+      if (!activityLocation) return;
       const color = getCategoryColor(activity.category);
 
       const marker = new google.maps.Marker({
@@ -194,8 +201,9 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
     if (activitiesWithCoords.length > 1) {
       const bounds = new google.maps.LatLngBounds();
       activitiesWithCoords.forEach((activity) => {
-        const loc = (activity as any).location as { lat: number; lng: number };
-        bounds.extend({ lat: loc.lat, lng: loc.lng });
+        if (activity.location) {
+          bounds.extend({ lat: activity.location.lat, lng: activity.location.lng });
+        }
       });
       mapRef.current.fitBounds(bounds, { padding: 50 });
     }
