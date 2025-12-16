@@ -85,7 +85,7 @@ export const InlineChildForm = ({
 
     try {
       // Créer l'enfant en base de données
-      // Note: les types Supabase générés peuvent être obsolètes, on utilise un cast
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- children table insert type may be out of sync
       const { data: newChild, error } = await supabase
         .from("children")
         .insert({
@@ -94,7 +94,7 @@ export const InlineChildForm = ({
           last_name: lastName.trim() || null,
           dob: birthDate,
           needs_json: {}
-        } as any)
+        } as { user_id: string; first_name: string; last_name: string | null; dob: string; needs_json: Record<string, unknown> })
         .select()
         .single();
 

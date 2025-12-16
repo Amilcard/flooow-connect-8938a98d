@@ -52,7 +52,8 @@ export const SearchBar = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleSearch(e as any);
+                  // Use the form's submit handler - KeyboardEvent satisfies FormEvent interface for preventDefault
+                  handleSearch(e as unknown as React.FormEvent);
                 }
               }}
               className="pl-12 pr-4 h-full rounded-xl text-[15px] font-normal bg-white border border-border-subtle focus-visible:ring-0 focus-visible:border-border-subtle placeholder:text-text-muted"
