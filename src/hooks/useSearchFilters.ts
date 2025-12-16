@@ -7,6 +7,115 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FilterState, QuickFilters, AdvancedFilters, ActiveFilterTag } from '@/types/searchFilters';
 
+// HELPERS: Reduce cognitive complexity by extracting URL parsing logic
+
+const QUICK_FILTER_KEYS: (keyof QuickFilters)[] = [
+  'gratuit', 'vacances_ete', 'age_6_12', 'avec_aides', 'proche', 'mercredi', 'sport', 'culture'
+];
+
+const QUICK_FILTER_LABELS: Record<string, string> = {
+  gratuit: 'Gratuit',
+  vacances_ete: 'Vacances été',
+  age_6_12: '6-12 ans',
+  avec_aides: 'Aides acceptées',
+  proche: '< 2 km',
+  mercredi: 'Mercredi',
+  sport: 'Sport',
+  culture: 'Culture'
+};
+
+const PERIOD_LABELS: Record<string, string> = {
+  spring_2026: 'Printemps 2026',
+  summer_2026: 'Été 2026',
+  school_year_2026: 'Année scolaire',
+  wednesdays: 'Mercredis'
+};
+
+/**
+ * Parse quick filters from URL search params
+ */
+const parseQuickFiltersFromURL = (searchParams: URLSearchParams): QuickFilters => {
+  const filters = { ...DEFAULT_QUICK_FILTERS };
+  QUICK_FILTER_KEYS.forEach(key => {
+    if (searchParams.get(key) === '1') {
+      filters[key] = true;
+    }
+  });
+  return filters;
+};
+
+/**
+ * Parse advanced filters from URL search params
+ */
+const parseAdvancedFiltersFromURL = (searchParams: URLSearchParams): AdvancedFilters => {
+  const filters = { ...DEFAULT_ADVANCED_FILTERS };
+
+  const city = searchParams.get('city');
+  if (city) filters.city = city;
+
+  const maxDistance = searchParams.get('max_distance');
+  if (maxDistance) filters.max_distance = Number(maxDistance);
+
+  const period = searchParams.get('period');
+  if (period) filters.period = period;
+
+  const ageMin = searchParams.get('age_min');
+  const ageMax = searchParams.get('age_max');
+  if (ageMin && ageMax) {
+    filters.age_range = [Number(ageMin), Number(ageMax)];
+  }
+
+  if (searchParams.get('payment_echelon') === '1') filters.payment_echelon = true;
+
+  const mobility = searchParams.get('mobility');
+  if (mobility) filters.mobility_types = mobility.split(',');
+
+  const details = searchParams.get('details');
+  if (details) filters.details = details.split(',');
+
+  return filters;
+};
+
+/**
+ * Build active filter tags from quick filters
+ */
+const buildQuickFilterTags = (quickFilters: QuickFilters): ActiveFilterTag[] => {
+  return Object.entries(quickFilters)
+    .filter(([, value]) => value)
+    .map(([key]) => ({
+      id: `quick_${key}`,
+      label: QUICK_FILTER_LABELS[key] || key,
+      value: key,
+      section: 'quick' as const
+    }));
+};
+
+/**
+ * Build active filter tags from advanced filters
+ */
+const buildAdvancedFilterTags = (advancedFilters: AdvancedFilters): ActiveFilterTag[] => {
+  const tags: ActiveFilterTag[] = [];
+
+  if (advancedFilters.city) {
+    tags.push({ id: 'adv_city', label: `Ville: ${advancedFilters.city}`, value: 'city', section: 'advanced' });
+  }
+
+  if (advancedFilters.period !== 'all') {
+    tags.push({
+      id: 'adv_period',
+      label: PERIOD_LABELS[advancedFilters.period] || advancedFilters.period,
+      value: 'period',
+      section: 'advanced'
+    });
+  }
+
+  if (advancedFilters.payment_echelon) {
+    tags.push({ id: 'adv_payment_echelon', label: 'Paiement échelonné', value: 'payment_echelon', section: 'advanced' });
+  }
+
+  return tags;
+};
+
 export const DEFAULT_QUICK_FILTERS: QuickFilters = {
   gratuit: false,
   vacances_ete: false,
@@ -58,31 +167,10 @@ export const useSearchFilters = () => {
     viewMode: defaultView
   });
 
-  // Load filters from URL on mount
+  // Load filters from URL on mount (using helpers to reduce CC)
   useEffect(() => {
-    const quickFilters = { ...DEFAULT_QUICK_FILTERS };
-    if (searchParams.get('gratuit') === '1') quickFilters.gratuit = true;
-    if (searchParams.get('vacances_ete') === '1') quickFilters.vacances_ete = true;
-    if (searchParams.get('age_6_12') === '1') quickFilters.age_6_12 = true;
-    if (searchParams.get('avec_aides') === '1') quickFilters.avec_aides = true;
-    if (searchParams.get('proche') === '1') quickFilters.proche = true;
-    if (searchParams.get('mercredi') === '1') quickFilters.mercredi = true;
-    if (searchParams.get('sport') === '1') quickFilters.sport = true;
-    if (searchParams.get('culture') === '1') quickFilters.culture = true;
-
-    const advancedFilters = { ...DEFAULT_ADVANCED_FILTERS };
-    if (searchParams.get('city')) advancedFilters.city = searchParams.get('city')!;
-    if (searchParams.get('max_distance')) advancedFilters.max_distance = Number(searchParams.get('max_distance'));
-    if (searchParams.get('period')) advancedFilters.period = searchParams.get('period')!;
-    if (searchParams.get('age_min') && searchParams.get('age_max')) {
-      advancedFilters.age_range = [
-        Number(searchParams.get('age_min')),
-        Number(searchParams.get('age_max'))
-      ];
-    }
-    if (searchParams.get('payment_echelon') === '1') advancedFilters.payment_echelon = true;
-    if (searchParams.get('mobility')) advancedFilters.mobility_types = searchParams.get('mobility')!.split(',');
-    if (searchParams.get('details')) advancedFilters.details = searchParams.get('details')!.split(',');
+    const quickFilters = parseQuickFiltersFromURL(searchParams);
+    const advancedFilters = parseAdvancedFiltersFromURL(searchParams);
 
     setFilterState((prev) => ({
       ...prev,
@@ -161,65 +249,10 @@ export const useSearchFilters = () => {
   }, []);
 
   const getActiveFilterTags = useCallback((): ActiveFilterTag[] => {
-    const tags: ActiveFilterTag[] = [];
-
-    // Quick filters
-    Object.entries(filterState.quickFilters).forEach(([key, value]) => {
-      if (value) {
-        const labels: Record<string, string> = {
-          gratuit: 'Gratuit',
-          vacances_ete: 'Vacances été',
-          age_6_12: '6-12 ans',
-          avec_aides: 'Aides acceptées',
-          proche: '< 2 km',
-          mercredi: 'Mercredi',
-          sport: 'Sport',
-          culture: 'Culture'
-        };
-        tags.push({
-          id: `quick_${key}`,
-          label: labels[key] || key,
-          value: key,
-          section: 'quick'
-        });
-      }
-    });
-
-    // Advanced filters
-    if (filterState.advancedFilters.city) {
-      tags.push({
-        id: 'adv_city',
-        label: `Ville: ${filterState.advancedFilters.city}`,
-        value: 'city',
-        section: 'advanced'
-      });
-    }
-
-    if (filterState.advancedFilters.period !== 'all') {
-      const periodLabels: Record<string, string> = {
-        spring_2026: 'Printemps 2026',
-        summer_2026: 'Été 2026',
-        school_year_2026: 'Année scolaire',
-        wednesdays: 'Mercredis'
-      };
-      tags.push({
-        id: 'adv_period',
-        label: periodLabels[filterState.advancedFilters.period] || filterState.advancedFilters.period,
-        value: 'period',
-        section: 'advanced'
-      });
-    }
-
-    if (filterState.advancedFilters.payment_echelon) {
-      tags.push({
-        id: 'adv_payment_echelon',
-        label: 'Paiement échelonné',
-        value: 'payment_echelon',
-        section: 'advanced'
-      });
-    }
-
-    return tags;
+    // Use helpers to reduce cognitive complexity
+    const quickTags = buildQuickFilterTags(filterState.quickFilters);
+    const advancedTags = buildAdvancedFilterTags(filterState.advancedFilters);
+    return [...quickTags, ...advancedTags];
   }, [filterState]);
 
   const removeFilterTag = useCallback((tagId: string) => {

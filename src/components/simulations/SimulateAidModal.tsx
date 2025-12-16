@@ -29,6 +29,48 @@ import { useAuth } from "@/hooks/useAuth";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
 
+// HELPERS: Reduce cognitive complexity
+
+/**
+ * Get statut scolaire based on age
+ */
+const getStatutScolaire = (age: number): 'primaire' | 'college' | 'lycee' => {
+  if (age >= 15) return 'lycee';
+  if (age >= 11) return 'college';
+  return 'primaire';
+};
+
+/**
+ * Build eligibility params for the calculation engine
+ */
+const buildSimulationParams = (
+  childAge: number,
+  qf: number,
+  cityCode: string,
+  activityPrice: number,
+  activityCategories: string[]
+): EligibilityParams => ({
+  age: childAge,
+  quotient_familial: qf,
+  code_postal: cityCode || "",
+  ville: "",
+  departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+  prix_activite: activityPrice,
+  type_activite: getTypeActivite(activityCategories),
+  periode: 'saison_scolaire',
+  nb_fratrie: 0,
+  allocataire_caf: !!qf,
+  statut_scolaire: getStatutScolaire(childAge),
+  est_qpv: false,
+  conditions_sociales: {
+    beneficie_ARS: false,
+    beneficie_AEEH: false,
+    beneficie_AESH: false,
+    beneficie_bourse: false,
+    beneficie_ASE: false
+  }
+});
+
 interface SimulateAidModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -203,30 +245,10 @@ export const SimulateAidModal = ({
       // Simulation d'un délai pour l'UX
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Préparation des paramètres pour le moteur TypeScript
-      const params: EligibilityParams = {
-        age: childAge,
-        quotient_familial: qf,
-        code_postal: form.cityCode || "",
-        ville: "", // Non disponible
-        departement: form.cityCode ? parseInt(form.cityCode.substring(0, 2)) : 0,
-        prix_activite: activityPrice,
-        type_activite: getTypeActivite(activityCategories), // Utilisation du helper
-        periode: 'saison_scolaire', // Par défaut
-        nb_fratrie: 0,
-        allocataire_caf: !!qf,
-        statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
-        est_qpv: false,
-        conditions_sociales: {
-          beneficie_ARS: false,
-          beneficie_AEEH: false,
-          beneficie_AESH: false,
-          beneficie_bourse: false,
-          beneficie_ASE: false
-        }
-      };
+      // Build params using helper
+      const params = buildSimulationParams(childAge, qf, form.cityCode, activityPrice, activityCategories);
 
-      // Exécution du moteur de calcul unifié
+      // Execute calculation engine
       const engineResults = calculateAllEligibleAids(params);
       
       // Mapping vers le format d'affichage local

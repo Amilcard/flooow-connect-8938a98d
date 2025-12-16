@@ -4,12 +4,35 @@
  * - Formatage âge cohérent via formatAgeRange()
  * - Labels aides via formatAidLabel()
  */
-import { MapPin, Users, Accessibility } from "lucide-react";
+import { MapPin, Accessibility, Heart } from "lucide-react";
 import { getMainCategory, getPeriodLabel } from "@/utils/categoryMapping";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getCategoryStyle } from "@/constants/categories";
 import { getActivityImage } from "@/lib/imageMapping";
-import { formatAgeRangeShort } from "@/utils/activityFormatters";
+import { formatAgeRangeShort, formatAidLabel } from "@/utils/activityFormatters";
+
+// HELPERS: Reduce cognitive complexity by extracting badge rendering logic
+
+type VacationType = 'sejour_hebergement' | 'centre_loisirs' | 'stage_journee';
+
+const VACATION_TYPE_STYLES: Record<VacationType, { bg: string; text: string; label: string }> = {
+  sejour_hebergement: { bg: 'bg-purple-100/95', text: 'text-purple-600', label: 'Séjour' },
+  centre_loisirs: { bg: 'bg-blue-100/95', text: 'text-blue-600', label: 'Centre' },
+  stage_journee: { bg: 'bg-amber-100/95', text: 'text-amber-600', label: 'Stage' }
+};
+
+/**
+ * Get price unit label based on period and vacation type
+ */
+const getPriceUnitLabel = (periodType: string | undefined, vacationType: VacationType | undefined): string => {
+  if (periodType === 'annual') return 'par an';
+  if (periodType === 'trimester') return 'par trimestre';
+  if (vacationType === 'sejour_hebergement') return 'par semaine';
+  if (vacationType === 'centre_loisirs') return 'par jour';
+  if (vacationType === 'stage_journee') return 'la session';
+  return 'par période';
+};
 
 /**
  * ActivityCard - Optimized for grid layout with reduced whitespace
@@ -161,24 +184,10 @@ export const ActivityCard = ({
             </div>
           )}
           
-          {vacationType === 'sejour_hebergement' && (
-            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-purple-100/95">
-              <span className="text-xs font-bold uppercase font-poppins text-purple-600">
-                Séjour
-              </span>
-            </div>
-          )}
-          {vacationType === 'centre_loisirs' && (
-            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-blue-100/95">
-              <span className="text-xs font-bold uppercase font-poppins text-blue-600">
-                Centre
-              </span>
-            </div>
-          )}
-          {vacationType === 'stage_journee' && (
-            <div className="px-3 py-1.5 rounded-lg backdrop-blur-sm bg-amber-100/95">
-              <span className="text-xs font-bold uppercase font-poppins text-amber-600">
-                Stage
+          {vacationType && VACATION_TYPE_STYLES[vacationType] && (
+            <div className={`px-3 py-1.5 rounded-lg backdrop-blur-sm ${VACATION_TYPE_STYLES[vacationType].bg}`}>
+              <span className={`text-xs font-bold uppercase font-poppins ${VACATION_TYPE_STYLES[vacationType].text}`}>
+                {VACATION_TYPE_STYLES[vacationType].label}
               </span>
             </div>
           )}
@@ -244,12 +253,7 @@ export const ActivityCard = ({
               </div>
             {!priceUnit && price > 0 && (
               <p className="text-[10px] text-muted-foreground">
-                {periodType === 'annual' ? 'par an' : 
-                 periodType === 'trimester' ? 'par trimestre' : 
-                 vacationType === 'sejour_hebergement' ? 'par semaine' :
-                 vacationType === 'centre_loisirs' ? 'par jour' :
-                 vacationType === 'stage_journee' ? 'la session' :
-                 'par période'}
+                {getPriceUnitLabel(periodType, vacationType)}
               </p>
             )}
             {/* LOT 1 T1_3: Utilise formatAidLabel() pour les labels */}

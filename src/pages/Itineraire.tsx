@@ -24,6 +24,47 @@ const STEPS_PER_KM = 1350; // pas moyens par km
 const CALORIES_WALK_PER_MIN = 5; // kcal par minute de marche
 const CALORIES_BIKE_PER_MIN = 8; // kcal par minute de vélo
 
+// HELPERS: Reduce cognitive complexity
+
+type TransportType = 'bike' | 'walk' | 'bus';
+type TravelMode = 'BICYCLING' | 'WALKING' | 'TRANSIT';
+
+const TRANSPORT_TO_TRAVEL_MODE: Record<string, TravelMode> = {
+  bike: 'BICYCLING',
+  walk: 'WALKING',
+  bus: 'TRANSIT'
+};
+
+const TRANSPORT_COLORS: Record<TransportType, string> = {
+  bike: '#10b981',
+  walk: '#9333ea',
+  bus: '#3b82f6'
+};
+
+/**
+ * Get travel mode from transport type
+ */
+const getTravelMode = (transportType: string): TravelMode => {
+  return TRANSPORT_TO_TRAVEL_MODE[transportType] || 'TRANSIT';
+};
+
+/**
+ * Get route color for transport type
+ */
+const getRouteColor = (transportType: string): string => {
+  return TRANSPORT_COLORS[transportType as TransportType] || '#3b82f6';
+};
+
+/**
+ * Build full address from activity data
+ */
+const buildActivityAddress = (activity: { venue_name?: string; address?: string; city?: string; postal_code?: string } | null): string => {
+  if (!activity) return '';
+  return [activity.venue_name, activity.address, activity.city, activity.postal_code]
+    .filter(Boolean)
+    .join(', ');
+};
+
 const Itineraire = () => {
   const [searchParams] = useSearchParams();
   const _navigate = useNavigate(); // Reserved for future navigation features
@@ -41,11 +82,7 @@ const Itineraire = () => {
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
   // Travel mode state (setter reserved for future mode switching feature)
-  const [travelMode, _setTravelMode] = useState(
-    transportType === 'bike' ? 'BICYCLING' :
-    transportType === 'walk' ? 'WALKING' :
-    'TRANSIT'
-  );
+  const [travelMode, _setTravelMode] = useState(getTravelMode(transportType));
   const [routeData, setRouteData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [tripValidated, setTripValidated] = useState(false);
@@ -141,20 +178,16 @@ const Itineraire = () => {
     prefillDeparture();
   }, [userProfile, googleMapsLoaded, departure]);
 
-  // Pre-fill arrival from activity if better address available
+  // Pre-fill arrival from activity if better address available (using helper)
   useEffect(() => {
     if (activity && !arrival) {
-      const fullAddress = [
-        activity.venue_name,
-        activity.address,
-        activity.city,
-        activity.postal_code
-      ].filter(Boolean).join(', ');
-
+      const fullAddress = buildActivityAddress(activity);
       if (fullAddress) {
         setArrival(fullAddress);
+        return;
       }
-    } else if (!arrival && destination) {
+    }
+    if (!arrival && destination) {
       setArrival(destination);
     }
   }, [activity, destination, arrival]);
@@ -237,7 +270,7 @@ const Itineraire = () => {
     directionsRenderer.current = new google.maps.DirectionsRenderer({
       map: mapRef.current,
       polylineOptions: {
-        strokeColor: transportType === 'bike' ? '#10b981' : transportType === 'walk' ? '#9333ea' : '#3b82f6',
+        strokeColor: getRouteColor(transportType),
         strokeWeight: 5,
         strokeOpacity: 0.75,
       },

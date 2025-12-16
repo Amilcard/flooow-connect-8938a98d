@@ -58,6 +58,50 @@ const TERRITORY_ICONS = {
   commune: "🏘️"
 } as const;
 
+// HELPERS: Reduce cognitive complexity
+
+/**
+ * Calculate age from date of birth
+ */
+const calculateAge = (dob: string): number => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+/**
+ * Get statut scolaire based on age
+ */
+const getStatutScolaire = (age: number): 'primaire' | 'college' | 'lycee' => {
+  if (age >= 15) return 'lycee';
+  if (age >= 11) return 'college';
+  return 'primaire';
+};
+
+/**
+ * Determine activity type from categories
+ */
+const determineActivityType = (categories: string[]): 'sport' | 'culture' | 'vacances' | 'loisirs' => {
+  if (categories.some(c => c.toLowerCase().includes('sport'))) return 'sport';
+  if (categories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) return 'culture';
+  if (categories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) return 'vacances';
+  return 'loisirs';
+};
+
+/**
+ * Map territory level from engine result
+ */
+const mapTerritoryLevel = (niveau: string): string => {
+  if (niveau === 'departemental') return 'departement';
+  if (niveau === 'communal') return 'commune';
+  return niveau;
+};
+
 export const EnhancedFinancialAidCalculator = ({
   activityId,
   activityPrice,
@@ -124,17 +168,6 @@ export const EnhancedFinancialAidCalculator = ({
       }
     };
   }, [clearState]);
-
-  const calculateAge = (dob: string): number => {
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
 
   const handleCalculate = async () => {
     // Validation: soit un enfant sélectionné (logged in), soit un âge manuel (not logged in)
@@ -211,16 +244,9 @@ export const EnhancedFinancialAidCalculator = ({
 
     setLoading(true);
     try {
-      // Déduction du statut scolaire
-      let statut_scolaire: 'primaire' | 'college' | 'lycee' = 'primaire';
-      if (childAge >= 11 && childAge <= 14) statut_scolaire = 'college';
-      if (childAge >= 15) statut_scolaire = 'lycee';
-
-      // Déduction du type d'activité
-      let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';
-      if (activityCategories.some(c => c.toLowerCase().includes('sport'))) type_activite = 'sport';
-      else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) type_activite = 'culture';
-      else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) type_activite = 'vacances';
+      // Use helpers to reduce cognitive complexity
+      const statut_scolaire = getStatutScolaire(childAge);
+      const type_activite = determineActivityType(activityCategories);
 
       // UTILISER LE MOTEUR COMPLET avec filtrage par période
       const context: EligibilityParams = {
@@ -250,7 +276,7 @@ export const EnhancedFinancialAidCalculator = ({
       const calculatedAids: FinancialAid[] = engineResults.map(res => ({
         aid_name: res.name,
         amount: res.montant,
-        territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+        territory_level: mapTerritoryLevel(res.niveau),
         official_link: res.official_link || null,
         is_informational: false
       }));

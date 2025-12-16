@@ -12,7 +12,61 @@ interface TerritoryChoiceScreenProps {
   onSkip: () => void;
 }
 
-const COVERED_TERRITORIES = [
+interface CoveredTerritory {
+  value: string;
+  label: string;
+  postalCode: string;
+}
+
+// HELPERS: Reduce cognitive complexity
+
+/**
+ * Get postal code to check, handling territory selection
+ */
+const getPostalCodeToCheck = (
+  postalCode: string,
+  selectedTerritory: string,
+  territories: CoveredTerritory[]
+): string | null => {
+  if (selectedTerritory) {
+    const territory = territories.find(t => t.value === selectedTerritory);
+    if (territory && (!postalCode || postalCode.length < 5)) {
+      return territory.postalCode + "000";
+    }
+  }
+  return postalCode || null;
+};
+
+/**
+ * Save territory info to localStorage
+ */
+const saveTerritoryToStorage = (territoryId: string | null, postalCode: string): void => {
+  if (territoryId) {
+    localStorage.setItem('userTerritoryId', territoryId);
+  }
+  localStorage.setItem('userPostalCode', postalCode);
+};
+
+/**
+ * Try to find territory by name when postal code lookup fails
+ */
+const findTerritoryByName = async (
+  selectedTerritory: string,
+  territories: CoveredTerritory[]
+): Promise<{ id: string; name: string } | null> => {
+  const territory = territories.find(t => t.value === selectedTerritory);
+  if (!territory) return null;
+
+  const { data: territoryData } = await supabase
+    .from('territories')
+    .select('id, name')
+    .ilike('name', `%${territory.label}%`)
+    .maybeSingle();
+
+  return territoryData;
+};
+
+const COVERED_TERRITORIES: CoveredTerritory[] = [
   { value: "paris", label: "Paris / Île-de-France", postalCode: "75" },
   { value: "lyon", label: "Lyon Métropole", postalCode: "69" },
   { value: "grenoble", label: "Grenoble Alpes Métropole", postalCode: "38" },
@@ -54,20 +108,10 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
 
   const handleValidate = async () => {
     setIsLoading(true);
-    
+
     try {
-      let codeToCheck = postalCode;
-      
-      // Si un territoire est sélectionné, utiliser son code postal comme référence
-      if (selectedTerritory) {
-        const territory = COVERED_TERRITORIES.find(t => t.value === selectedTerritory);
-        if (territory) {
-          // On garde le code postal saisi mais on utilise le territoire sélectionné
-          if (!postalCode || postalCode.length < 5) {
-            codeToCheck = territory.postalCode + "000";
-          }
-        }
-      }
+      // Get postal code to check using helper
+      const codeToCheck = getPostalCodeToCheck(postalCode, selectedTerritory, COVERED_TERRITORIES);
 
       if (!codeToCheck) {
         toast.error("Veuillez saisir un code postal ou sélectionner un territoire");
@@ -86,36 +130,26 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
         console.error("Erreur lors de la vérification du territoire:", error);
       }
 
-      if (data && data.territory_id) {
-        // Territoire trouvé et couvert
-        localStorage.setItem('userTerritoryId', data.territory_id);
-        localStorage.setItem('userPostalCode', codeToCheck);
+      // Territory found in postal_codes table
+      if (data?.territory_id) {
+        saveTerritoryToStorage(data.territory_id, codeToCheck);
         onNext(data.territory_id, true);
-      } else {
-        // Code postal non trouvé: essayer avec le territoire sélectionné
-        if (selectedTerritory) {
-          const territory = COVERED_TERRITORIES.find(t => t.value === selectedTerritory);
-          if (territory) {
-            // Récupérer l'ID du territoire par son nom
-            const { data: territoryData } = await supabase
-              .from('territories')
-              .select('id, name')
-              .ilike('name', `%${territory.label}%`)
-              .maybeSingle();
-
-            if (territoryData) {
-              localStorage.setItem('userTerritoryId', territoryData.id);
-              localStorage.setItem('userPostalCode', codeToCheck);
-              onNext(territoryData.id, true);
-              return;
-            }
-          }
-        }
-
-        // Territoire non couvert
-        localStorage.setItem('userPostalCode', codeToCheck);
-        onNext(null, false);
+        return;
       }
+
+      // Try to find territory by name if postal code lookup failed
+      if (selectedTerritory) {
+        const territoryData = await findTerritoryByName(selectedTerritory, COVERED_TERRITORIES);
+        if (territoryData) {
+          saveTerritoryToStorage(territoryData.id, codeToCheck);
+          onNext(territoryData.id, true);
+          return;
+        }
+      }
+
+      // Territory not covered
+      saveTerritoryToStorage(null, codeToCheck);
+      onNext(null, false);
     } catch (error) {
       console.error("Erreur:", error);
       toast.error("Une erreur est survenue");

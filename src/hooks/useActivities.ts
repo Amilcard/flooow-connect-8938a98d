@@ -7,6 +7,85 @@ import { sanitizeSearchQuery } from "@/utils/sanitize";
 
 export type { Activity } from "@/types/domain";
 
+// HELPERS: Reduce cognitive complexity by extracting filter application logic
+
+/**
+ * Apply search filter to query
+ */
+const applySearchFilter = (
+  query: ReturnType<typeof supabase.from>,
+  searchQuery: string | undefined,
+  search: string | undefined
+): ReturnType<typeof supabase.from> => {
+  const rawSearchTerm = searchQuery || search;
+  if (!rawSearchTerm) return query;
+
+  const searchTerm = sanitizeSearchQuery(rawSearchTerm);
+  if (!searchTerm) return query;
+
+  return query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+};
+
+/**
+ * Apply category filters to query
+ */
+const applyCategoryFilters = (
+  query: ReturnType<typeof supabase.from>,
+  category: string | undefined,
+  categories: string[] | undefined
+): ReturnType<typeof supabase.from> => {
+  if (category) {
+    query = query.overlaps("categories", [category]);
+  }
+  if (categories && categories.length > 0) {
+    query = query.overlaps("categories", categories);
+  }
+  return query;
+};
+
+/**
+ * Apply age and period filters to query
+ */
+const applyAgeAndPeriodFilters = (
+  query: ReturnType<typeof supabase.from>,
+  ageMin: number | undefined,
+  ageMax: number | undefined,
+  periodType: 'vacances' | 'scolaire' | 'all' | undefined
+): ReturnType<typeof supabase.from> => {
+  if (ageMin !== undefined && ageMax !== undefined) {
+    query = query.lte("age_min", ageMax).gte("age_max", ageMin);
+  }
+  if (periodType && periodType !== 'all') {
+    query = query.eq("period_type", periodType);
+  }
+  return query;
+};
+
+/**
+ * Apply miscellaneous filters to query
+ */
+const applyMiscFilters = (
+  query: ReturnType<typeof supabase.from>,
+  maxPrice: number | undefined,
+  hasAccessibility: boolean | undefined,
+  mobilityTypes: string[] | undefined,
+  hasFinancialAid: boolean | undefined
+): ReturnType<typeof supabase.from> => {
+  if (maxPrice) {
+    query = query.lte("price_base", maxPrice);
+  }
+  if (hasAccessibility) {
+    query = query.not("accessibility_checklist", "is", null);
+  }
+  if (mobilityTypes?.includes('Covoiturage')) {
+    query = query.eq("covoiturage_enabled", true);
+  }
+  if (hasFinancialAid) {
+    query = query.not("accepts_aid_types", "is", null);
+  }
+  return query;
+};
+
 export async function fetchMockActivities() {
   const { data, error } = await supabase.functions.invoke('mock-activities', {
     headers: { 'Content-Type': 'application/json' }
@@ -110,65 +189,16 @@ export const useActivities = (filters?: ActivityFilters) => {
     retry: false,
     queryFn: async () => {
       // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
-      const buildBaseQuery = () => {
-        return supabase
-          .from("activities")
-          .select("*")
-          .eq("is_published", true);
-      };
+      let query = supabase.from("activities").select("*").eq("is_published", true);
 
-      let query = buildBaseQuery();
+      // Apply filters using helper functions to reduce cognitive complexity
+      query = applySearchFilter(query, filters?.searchQuery, filters?.search);
+      query = applyCategoryFilters(query, filters?.category, filters?.categories);
+      query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
+      query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
 
-      const rawSearchTerm = filters?.searchQuery || filters?.search;
-      let searchTerm: string | null = null;
-
-      if (rawSearchTerm) {
-        searchTerm = sanitizeSearchQuery(rawSearchTerm);
-        if (searchTerm) {
-          query = query.or("title.ilike.%" + searchTerm + "%,description.ilike.%" + searchTerm + "%");
-        }
-      }
-
-      if (filters?.category) {
-        query = query.overlaps("categories", [filters.category]);
-      }
-
-      if (filters?.categories && filters.categories.length > 0) {
-        query = query.overlaps("categories", filters.categories);
-      }
-
-      // REFACTOR: Utilise age_min/age_max de activities (pas session_age_*)
-      if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
-      }
-
-      if (filters?.periodType && filters.periodType !== 'all') {
-        query = query.eq("period_type", filters.periodType);
-      }
-
-      if (filters?.maxPrice) {
-        query = query.lte("price_base", filters.maxPrice);
-      }
-
-      // REFACTOR: Utilise accessibility_checklist (pas has_accessibility)
-      if (filters?.hasAccessibility) {
-        query = query.not("accessibility_checklist", "is", null);
-      }
-
-      // REFACTOR: Covoiturage uniquement (mobility_types n'existe pas en BDD)
-      if (filters?.mobilityTypes?.includes('Covoiturage')) {
-        query = query.eq("covoiturage_enabled", true);
-      }
-
-      if (filters?.hasFinancialAid) {
-        query = query.not("accepts_aid_types", "is", null);
-      }
-
-      if (filters?.limit) {
-        query = query.limit(filters.limit);
-      } else {
-        query = query.limit(50);
-      }
+      // Apply limit
+      query = query.limit(filters?.limit || 50);
 
       const { data, error } = await query.order("title", { ascending: true });
 

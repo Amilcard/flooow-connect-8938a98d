@@ -73,6 +73,16 @@ function formatNotificationDate(dateString: string): string {
   return format(date, 'd MMM', { locale: fr });
 }
 
+// Helper to safely get preference boolean value with fallback
+function getPreferenceBool(preferences: any, key: string, fallback: boolean): boolean {
+  return preferences && key in preferences ? preferences[key] : fallback;
+}
+
+// Helper to safely get preference array value
+function getPreferenceArray(preferences: any, key: string): string[] {
+  return preferences && key in preferences ? preferences[key] || [] : [];
+}
+
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -291,8 +301,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="notify_territory_events"
-                        checked={preferences && 'notify_territory_events' in preferences ? preferences.notify_territory_events : true}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'notify_territory_events', true)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ notify_territory_events: checked })
                         }
                       />
@@ -320,8 +330,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="notify_favorite_categories"
-                        checked={preferences && 'notify_favorite_categories' in preferences ? preferences.notify_favorite_categories : false}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'notify_favorite_categories', false)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ notify_favorite_categories: checked })
                         }
                       />
@@ -334,7 +344,7 @@ const MesNotifications = () => {
                           <div key={category.value} className="flex items-center space-x-2">
                             <Checkbox
                               id={`category-${category.value}`}
-                              checked={preferences && 'interested_categories' in preferences ? preferences.interested_categories?.includes(category.value) ?? false : false}
+                              checked={getPreferenceArray(preferences, 'interested_categories').includes(category.value)}
                               onCheckedChange={() => toggleCategory(category.value)}
                             />
                             <Label
@@ -370,8 +380,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="email_notifications"
-                        checked={preferences && 'email_notifications' in preferences ? preferences.email_notifications : false}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'email_notifications', false)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ email_notifications: checked })
                         }
                       />
@@ -388,8 +398,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="recommendation_emails"
-                        checked={preferences && 'recommendation_emails' in preferences ? preferences.recommendation_emails : false}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'recommendation_emails', false)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ recommendation_emails: checked })
                         }
                       />
@@ -417,14 +427,14 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="event_reminders_enabled"
-                        checked={preferences && 'event_reminders_enabled' in preferences ? preferences.event_reminders_enabled : true}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'event_reminders_enabled', true)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ event_reminders_enabled: checked })
                         }
                       />
                     </div>
 
-                    {preferences && 'event_reminders_enabled' in preferences && preferences.event_reminders_enabled && (
+                    {getPreferenceBool(preferences, 'event_reminders_enabled', true) && (
                       <>
                         <div className="space-y-3 pt-4 border-t">
                           <Label htmlFor="event_reminder_days_before">
@@ -460,8 +470,8 @@ const MesNotifications = () => {
                           </Label>
                           <Switch
                             id="event_reminder_email"
-                            checked={preferences && 'event_reminder_email' in preferences ? preferences.event_reminder_email : true}
-                            onCheckedChange={(checked) => 
+                            checked={getPreferenceBool(preferences, 'event_reminder_email', true)}
+                            onCheckedChange={(checked) =>
                               updatePreferences.mutate({ event_reminder_email: checked })
                             }
                           />
