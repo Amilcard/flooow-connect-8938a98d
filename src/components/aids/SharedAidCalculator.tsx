@@ -42,6 +42,68 @@ function getChildAgeForDisplay(
 }
 
 // ============================================================================
+// HELPER: Determine school status from age
+// ============================================================================
+
+function getStatutScolaire(childAge: number): 'primaire' | 'college' | 'lycee' {
+  if (childAge >= 15) return 'lycee';
+  if (childAge >= 11) return 'college';
+  return 'primaire';
+}
+
+// ============================================================================
+// HELPER: Determine activity type from categories
+// ============================================================================
+
+function determineActivityType(categories: string[]): 'sport' | 'culture' | 'vacances' | 'loisirs' {
+  if (categories.some(c => c.toLowerCase().includes('sport'))) return 'sport';
+  if (categories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) return 'culture';
+  if (categories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) return 'vacances';
+  return 'loisirs';
+}
+
+// ============================================================================
+// HELPER: Map engine results to FinancialAid format
+// ============================================================================
+
+function mapEngineResultToAid(res: { name: string; montant: number; niveau: string }): FinancialAid {
+  return {
+    aid_name: res.name,
+    amount: res.montant,
+    territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+    official_link: null,
+    is_informational: false,
+    is_potential: false
+  };
+}
+
+// ============================================================================
+// HELPER: Map quick estimate results to FinancialAid format
+// ============================================================================
+
+function mapQuickEstimateToAids(result: {
+  aides_detectees: Array<{ name: string; montant: number; niveau: string }>;
+  aides_potentielles: Array<{ name: string; montant_possible: string }>;
+}): FinancialAid[] {
+  const detected = result.aides_detectees.map(mapEngineResultToAid);
+
+  const potential = result.aides_potentielles.map(res => {
+    const matches = res.montant_possible.match(/(\d+)/g);
+    const amount = matches ? parseInt(matches[matches.length - 1], 10) : 0;
+    return {
+      aid_name: res.name,
+      amount,
+      territory_level: 'national',
+      official_link: null,
+      is_informational: true,
+      is_potential: true
+    };
+  });
+
+  return [...detected, ...potential];
+}
+
+// ============================================================================
 // SUB-COMPONENT: Condition Sociale Section (reduces main component complexity)
 // ============================================================================
 
@@ -478,21 +540,10 @@ export const SharedAidCalculator = ({
 
     setLoading(true);
     try {
-      // Déduction du statut scolaire
-      let statut_scolaire: 'primaire' | 'college' | 'lycee' = 'primaire';
-      if (childAge >= 11 && childAge <= 14) statut_scolaire = 'college';
-      if (childAge >= 15) statut_scolaire = 'lycee';
+      const statut_scolaire = getStatutScolaire(childAge);
+      const type_activite = determineActivityType(activityCategories);
 
-      // Déduction du type d'activité (NOUVEAU - Étape 2.2) - reserved for future enhanced aid logic
-      const _typeActivite = getTypeActivite(activityCategories);
-
-      // Déduction du type d'activité (ANCIEN CODE - à supprimer plus tard)
-      let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';
-      if (activityCategories.some(c => c.toLowerCase().includes('sport'))) type_activite = 'sport';
-      else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) type_activite = 'culture';
-      else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) type_activite = 'vacances';
-
-      let calculatedAids: FinancialAid[] = [];
+      let calculatedAids: FinancialAid[];
 
       if (hasQF) {
         // FULL ESTIMATION (Mode 3)
@@ -501,15 +552,15 @@ export const SharedAidCalculator = ({
           age: childAge,
           quotient_familial: parseInt(quotientFamilial, 10) || 0,
           code_postal: cityCode || "00000",
-          ville: "", 
+          ville: "",
           departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
           prix_activite: activityPrice,
-          type_activite: type_activite,
+          type_activite,
           periode: activityPeriod === 'vacances' ? 'vacances' : 'saison_scolaire',
           nb_fratrie: nbFratrie,
           allocataire_caf: !!quotientFamilial,
-          statut_scolaire: statut_scolaire, // Ajout pour corriger l'erreur TypeScript
-          est_qpv: false, 
+          statut_scolaire,
+          est_qpv: false,
           conditions_sociales: {
             beneficie_ARS: false,
             beneficie_AEEH: false,
@@ -519,54 +570,19 @@ export const SharedAidCalculator = ({
           }
         };
         const engineResults = calculateAllEligibleAids(context);
-        calculatedAids = engineResults.map(res => ({
-          aid_name: res.name,
-          amount: res.montant, // Correction: utiliser montant au lieu de amount
-          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
-          official_link: null,
-          is_informational: false,
-          is_potential: false
-        }));
-
+        calculatedAids = engineResults.map(mapEngineResultToAid);
       } else {
         // QUICK ESTIMATION (Mode 1)
         setIsQuickEstimate(true);
         const params: QuickEstimateParams = {
           age: childAge,
-          type_activite: type_activite,
+          type_activite,
           prix_activite: activityPrice,
           code_postal: cityCode || undefined,
-          periode: activityPeriod // CRITICAL: Filter aids by period
+          periode: activityPeriod
         };
         const result = calculateQuickEstimate(params);
-        
-        // Add detected aids
-        const detected = result.aides_detectees.map(res => ({
-          aid_name: res.name,
-          amount: res.montant, // Correction: utiliser montant
-          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
-          official_link: null,
-          is_informational: false,
-          is_potential: false
-        }));
-
-        // Add potential aids
-        const potential = result.aides_potentielles.map(res => {
-           // Extract max amount from string "20-80€" -> 80
-           const matches = res.montant_possible.match(/(\d+)/g);
-           const amount = matches ? parseInt(matches[matches.length - 1], 10) : 0;
-           
-           return {
-            aid_name: res.name,
-            amount: amount,
-            territory_level: 'national', // Default for potential
-            official_link: null,
-            is_informational: true,
-            is_potential: true
-           };
-        });
-
-        calculatedAids = [...detected, ...potential];
+        calculatedAids = mapQuickEstimateToAids(result);
       }
 
       setAids(calculatedAids);
