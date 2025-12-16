@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,22 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight, Lightbulb, ChevronDown, Trash2 } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Sparkles, ArrowRight, Lightbulb, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
-import { calculateAidFromQF } from "@/utils/aidesCalculator";
 import { useNavigate } from "react-router-dom";
-import { calculateAllEligibleAids, calculateQuickEstimate, EligibilityParams, QuickEstimateParams, CalculatedAid } from "@/utils/FinancialAidEngine";
-import { 
-  getTypeActivite, 
-  shouldShowQF, 
+import { calculateAllEligibleAids, calculateQuickEstimate, EligibilityParams, QuickEstimateParams } from "@/utils/FinancialAidEngine";
+import {
+  getTypeActivite,
+  shouldShowQF,
   shouldShowConditionSociale,
   shouldShowAllocataireCAF,
   getQFSectionTitle,
-  getQFJustification,
-  getContextualMessage
+  getQFJustification
 } from "@/utils/AidCalculatorHelpers";
 
 interface Child {
@@ -102,7 +98,8 @@ export const SharedAidCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
   const [isQuickEstimate, setIsQuickEstimate] = useState(false); // Track if it's a quick estimate
-  const [showAdvancedCriteria, setShowAdvancedCriteria] = useState(false); // Toggle advanced criteria section
+  // Reserved for future advanced criteria toggle feature
+  const [_showAdvancedCriteria, _setShowAdvancedCriteria] = useState(false);
   // Initialiser depuis periodType prop (si l'activité a déjà une période définie)
   const [activityPeriod, setActivityPeriod] = useState<'scolaire'|'vacances'>(() => {
     // Safety check: ensure periodType is a valid string
@@ -155,6 +152,7 @@ export const SharedAidCalculator = ({
       setAids(aidsWithInfo);
       setCalculated(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentional: restore once when savedState.calculated becomes true
   }, [savedState?.calculated, resetOnMount]);
 
   // Pré-remplir depuis le profil si pas de state sauvegardé
@@ -268,8 +266,8 @@ export const SharedAidCalculator = ({
       if (childAge >= 11 && childAge <= 14) statut_scolaire = 'college';
       if (childAge >= 15) statut_scolaire = 'lycee';
 
-      // Déduction du type d'activité (NOUVEAU - Étape 2.2)
-      const typeActivite = getTypeActivite(activityCategories);
+      // Déduction du type d'activité (NOUVEAU - Étape 2.2) - reserved for future enhanced aid logic
+      const _typeActivite = getTypeActivite(activityCategories);
 
       // Déduction du type d'activité (ANCIEN CODE - à supprimer plus tard)
       let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';
@@ -442,7 +440,8 @@ export const SharedAidCalculator = ({
   const totalAids = Math.min(activityPrice, rawTotalAids);
   const potentialTotal = aids.filter(a => a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
-  const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
+  // Reserved for future savings badge display
+  const _savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
 
   if (activityPrice <= 0) return null;
 
