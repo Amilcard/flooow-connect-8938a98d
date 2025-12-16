@@ -10,6 +10,7 @@ import SecuritySettings from '@/components/account/SecuritySettings';
 import PrivacySettings from '@/components/account/PrivacySettings';
 import DataManagement from '@/components/account/DataManagement';
 import { SettingsType } from '@/components/account/types';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 const Parametres: React.FC = () => {
 	const navigate = useNavigate();
@@ -131,7 +132,7 @@ const Parametres: React.FC = () => {
 				description: 'Votre mot de passe a été modifié avec succès.',
 			});
 		} catch (error: unknown) {
-			console.error('Password change error:', error);
+			console.error(safeErrorMessage(error, 'Password change'));
 			toast({
 				title: 'Erreur',
 				description: error instanceof Error ? error.message : 'Impossible de changer le mot de passe.',
@@ -171,7 +172,7 @@ const Parametres: React.FC = () => {
 				description: 'Vos données ont été téléchargées avec succès.'
 			});
 		} catch (error: unknown) {
-			console.error('Export error:', error);
+			console.error(safeErrorMessage(error, 'Data export'));
 			toast({
 				title: 'Erreur',
 				description: error instanceof Error ? error.message : 'Impossible d\'exporter vos données.',
@@ -215,7 +216,7 @@ const Parametres: React.FC = () => {
 			// Optionally redirect to a confirmation page
 			// navigate('/account-deletion-scheduled');
 		} catch (error: unknown) {
-			console.error('Delete account error:', error);
+			console.error(safeErrorMessage(error, 'Delete account'));
 			toast({
 				title: 'Erreur',
 				description: error instanceof Error ? error.message : 'Impossible de supprimer votre compte.',
@@ -252,7 +253,7 @@ const Parametres: React.FC = () => {
 				navigate('/login');
 			}, 2000);
 		} catch (error: unknown) {
-			console.error('Deactivate account error:', error);
+			console.error(safeErrorMessage(error, 'Deactivate account'));
 			toast({
 				title: 'Erreur',
 				description: error instanceof Error ? error.message : 'Impossible de désactiver votre compte.',

@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface AuthUser {
   id: string;
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
         }
       } catch (error) {
-        console.error('Error ensuring OAuth profile:', error);
+        console.error(safeErrorMessage(error, 'OAuth profile'));
       }
     }
   };
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           await ensureOAuthProfile(session.user);
         }
       } catch (error) {
-        console.error('Error checking auth:', error);
+        console.error(safeErrorMessage(error, 'Auth check'));
       } finally {
         setIsLoading(false);
       }
@@ -253,13 +254,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // 3. Nettoyer sessionStorage
       sessionStorage.clear();
     } catch (error) {
-      console.error('Error clearing storage:', error);
+      console.error(safeErrorMessage(error, 'Clear storage'));
     }
 
     try {
       await supabase.auth.signOut();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error(safeErrorMessage(error, 'Logout'));
       // Continue quand même, l'état est déjà nettoyé
     }
 

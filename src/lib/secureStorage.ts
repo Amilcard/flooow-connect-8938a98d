@@ -15,6 +15,7 @@
  */
 
 import { encryptString, decryptString } from './crypto';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 // Clé de dérivation basée sur le domaine (protection de base)
 const STORAGE_SECRET = `flooow-secure-${window.location.hostname}`;
@@ -39,7 +40,7 @@ export async function setSecureItem(key: string, value: unknown): Promise<void> 
     const encryptedString = ENCRYPTED_PREFIX + JSON.stringify(encrypted);
     localStorage.setItem(key, encryptedString);
   } catch (error) {
-    console.error(`[SecureStorage] Failed to encrypt ${key}:`, error);
+    console.error(safeErrorMessage(error, `SecureStorage encrypt ${key}`));
     // Fallback: stockage non chiffré si le chiffrement échoue
     localStorage.setItem(key, JSON.stringify(value));
   }
@@ -65,7 +66,7 @@ export async function getSecureItem<T>(key: string): Promise<T | null> {
     // On la retourne telle quelle, elle sera re-chiffrée à la prochaine écriture
     return JSON.parse(stored) as T;
   } catch (error) {
-    console.error(`[SecureStorage] Failed to read ${key}:`, error);
+    console.error(safeErrorMessage(error, `SecureStorage read ${key}`));
     return null;
   }
 }
@@ -94,7 +95,7 @@ export async function migrateToSecure(key: string): Promise<boolean> {
     await setSecureItem(key, value);
     return true;
   } catch (error) {
-    console.error(`[SecureStorage] Migration failed for ${key}:`, error);
+    console.error(safeErrorMessage(error, `SecureStorage migrate ${key}`));
     return false;
   }
 }
