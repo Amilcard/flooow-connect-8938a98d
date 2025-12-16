@@ -176,7 +176,7 @@ export const EnhancedFinancialAidCalculator = ({
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = parseInt(manualChildAge);
+      childAge = parseInt(manualChildAge, 10);
       if (isNaN(childAge) || childAge < 0 || childAge > 18) {
         toast({
           title: "Âge invalide",
@@ -225,7 +225,7 @@ export const EnhancedFinancialAidCalculator = ({
       // UTILISER LE MOTEUR COMPLET avec filtrage par période
       const context: EligibilityParams = {
         age: childAge,
-        quotient_familial: parseInt(quotientFamilial) || 0,
+        quotient_familial: parseInt(quotientFamilial, 10) || 0,
         code_postal: cityCode || "00000",
         ville: "",
         departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,

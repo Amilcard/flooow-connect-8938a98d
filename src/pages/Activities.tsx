@@ -82,8 +82,8 @@ const Activities = () => {
 
     // Pré-filtrage par profil enfant
     if (ageMin && ageMax) {
-      filters.ageMin = parseInt(ageMin);
-      filters.ageMax = parseInt(ageMax);
+      filters.ageMin = parseInt(ageMin, 10);
+      filters.ageMax = parseInt(ageMax, 10);
     }
 
     return filters;

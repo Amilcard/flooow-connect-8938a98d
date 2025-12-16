@@ -43,7 +43,7 @@ export function FastEstimateForm({ quickParams, onSubmit, onBack }: FastEstimate
       allocataire_caf: allocataireCaf === 'oui' ? true : allocataireCaf === 'non' ? false : undefined,
       a_condition_sociale: conditionSociale === 'oui' ? true : conditionSociale === 'non' ? false : undefined,
       statut_scolaire: statutScolaire ? (statutScolaire as 'primaire' | 'college' | 'lycee') : undefined,
-      nb_enfants: nbEnfants ? parseInt(nbEnfants) : undefined,
+      nb_enfants: nbEnfants ? parseInt(nbEnfants, 10) : undefined,
     };
 
     onSubmit(params);

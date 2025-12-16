@@ -36,7 +36,7 @@ export function QuickEstimateForm({ onSubmit, defaultPrice = 60 }: QuickEstimate
     e.preventDefault();
 
     const params: QuickEstimateParams = {
-      age: parseInt(age),
+      age: parseInt(age, 10),
       type_activite: typeActivite as 'sport' | 'culture' | 'vacances' | 'loisirs',
       prix_activite: parseFloat(prix),
       ville: ville || undefined,

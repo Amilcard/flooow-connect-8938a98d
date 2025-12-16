@@ -230,7 +230,7 @@ export const GeneralSimulateAidModal = ({
       } else if (form.quotientFamilial.includes('+')) {
         qfValue = parseInt(form.quotientFamilial.replace('+', ''));
       } else {
-        qfValue = parseInt(form.quotientFamilial);
+        qfValue = parseInt(form.quotientFamilial, 10);
       }
 
       // Simulation d'un délai pour l'UX

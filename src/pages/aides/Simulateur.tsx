@@ -54,7 +54,7 @@ const Simulateur = () => {
   // Validation et calcul
   const handleCalculate = () => {
     const qf = parseFloat(quotientFamilial);
-    const age = parseInt(ageEnfant);
+    const age = parseInt(ageEnfant, 10);
     const cp = codePostal;
     const prix = parseFloat(prixActivite);
 

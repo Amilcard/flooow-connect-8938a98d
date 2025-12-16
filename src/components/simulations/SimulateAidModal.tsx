@@ -184,7 +184,7 @@ export const SimulateAidModal = ({
         childAge = calculateAge(selectedChild.dob);
       } else {
         // Saisie manuelle de l'âge
-        childAge = parseInt(form.selectedChildId);
+        childAge = parseInt(form.selectedChildId, 10);
         if (isNaN(childAge) || childAge < 6 || childAge > 18) {
           setError("L'âge doit être entre 6 et 18 ans");
           setIsLoading(false);
@@ -198,7 +198,7 @@ export const SimulateAidModal = ({
         return;
       }
 
-      const qf = parseInt(form.quotientFamilial) || 0;
+      const qf = parseInt(form.quotientFamilial, 10) || 0;
 
       // Simulation d'un délai pour l'UX
       await new Promise(resolve => setTimeout(resolve, 500));

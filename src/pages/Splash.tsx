@@ -32,7 +32,7 @@ const Splash = () => {
     // Système de comptage des visites : onboarding affiché 8 fois maximum
 
     // Récupérer le compteur de visites
-    const viewCount = parseInt(localStorage.getItem("onboardingViewCount") || "0");
+    const viewCount = parseInt(localStorage.getItem("onboardingViewCount", 10) || "0");
 
     const timer = setTimeout(() => {
       // Afficher l'onboarding UNIQUEMENT pendant les 8 premières visites

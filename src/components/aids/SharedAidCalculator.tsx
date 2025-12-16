@@ -217,7 +217,7 @@ export const SharedAidCalculator = ({
       return;
     }
     // Validation âge vs tranche activité
-    const checkAge = showChildSelector ? children?.find(c => c.id === selectedChildId)?.age : parseInt(manualChildAge);
+    const checkAge = showChildSelector ? children?.find(c => c.id === selectedChildId)?.age : parseInt(manualChildAge, 10);
     if (checkAge && (checkAge < ageMin || checkAge > ageMax)) {
       toast({
         title: "Âge non compatible",
@@ -250,7 +250,7 @@ export const SharedAidCalculator = ({
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = parseInt(manualChildAge);
+      childAge = parseInt(manualChildAge, 10);
       if (isNaN(childAge) || childAge < 0 || childAge > 18) {
         toast({
           title: "Âge invalide",
@@ -284,7 +284,7 @@ export const SharedAidCalculator = ({
         setIsQuickEstimate(false);
         const context: EligibilityParams = {
           age: childAge,
-          quotient_familial: parseInt(quotientFamilial) || 0,
+          quotient_familial: parseInt(quotientFamilial, 10) || 0,
           code_postal: cityCode || "00000",
           ville: "", 
           departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
@@ -339,7 +339,7 @@ export const SharedAidCalculator = ({
         const potential = result.aides_potentielles.map(res => {
            // Extract max amount from string "20-80€" -> 80
            const matches = res.montant_possible.match(/(\d+)/g);
-           const amount = matches ? parseInt(matches[matches.length - 1]) : 0;
+           const amount = matches ? parseInt(matches[matches.length - 1], 10) : 0;
            
            return {
             aid_name: res.name,
@@ -553,7 +553,7 @@ export const SharedAidCalculator = ({
         const typeAct = getTypeActivite(activityCategories);
         const childAgeForDisplay = showChildSelector && selectedChildId 
           ? calculateAge(children.find(c => c.id === selectedChildId)?.dob || '')
-          : parseInt(manualChildAge) || 0;
+          : parseInt(manualChildAge, 10) || 0;
         
         return shouldShowConditionSociale(typeAct, childAgeForDisplay) && (
           <div className="space-y-4 border-t pt-4">
@@ -614,7 +614,7 @@ export const SharedAidCalculator = ({
         const typeAct = getTypeActivite(activityCategories);
         const childAgeForDisplay = showChildSelector && selectedChildId 
           ? calculateAge(children.find(c => c.id === selectedChildId)?.dob || '')
-          : parseInt(manualChildAge) || 0;
+          : parseInt(manualChildAge, 10) || 0;
         
         return shouldShowQF(typeAct, activityPeriod, childAgeForDisplay, cityCode) && (
           <div className="space-y-4 border-t pt-4">

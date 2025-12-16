@@ -60,7 +60,7 @@ export const StandaloneAidCalculator = () => {
       return;
     }
 
-    const age = parseInt(ageEnfant);
+    const age = parseInt(ageEnfant, 10);
     if (isNaN(age) || age < 0 || age > 18) {
       toast({
         title: "Âge invalide",
@@ -95,7 +95,7 @@ export const StandaloneAidCalculator = () => {
     try {
       // Utiliser la fonction pure calculateAidFromQF
       const result = calculateAidFromQF({
-        qf: parseInt(quotientFamilial),
+        qf: parseInt(quotientFamilial, 10),
         prixActivite: prix
       });
 

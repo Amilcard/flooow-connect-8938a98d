@@ -86,7 +86,7 @@ const Index = () => {
   useEffect(() => {
     const triggerUsetifulTour = () => {
       // Get visit count from localStorage
-      const visitCount = parseInt(localStorage.getItem('flooow_usetiful_visits') || '0', 10);
+      const visitCount = parseInt(localStorage.getItem('flooow_usetiful_visits', 10) || '0', 10);
 
       // Only trigger for first 8 visits
       if (visitCount < 8) {
