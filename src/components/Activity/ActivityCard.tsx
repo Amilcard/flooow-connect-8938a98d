@@ -4,15 +4,12 @@
  * - Formatage âge cohérent via formatAgeRange()
  * - Labels aides via formatAidLabel()
  */
-import { MapPin, Users, Accessibility, Heart } from "lucide-react";
+import { MapPin, Users, Accessibility } from "lucide-react";
 import { getMainCategory, getPeriodLabel } from "@/utils/categoryMapping";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import type { Activity } from "@/types/domain";
 import { getCategoryStyle } from "@/constants/categories";
 import { getActivityImage } from "@/lib/imageMapping";
-import { formatAgeRangeShort, formatAidLabel } from "@/utils/activityFormatters";
+import { formatAgeRangeShort } from "@/utils/activityFormatters";
 
 /**
  * ActivityCard - Optimized for grid layout with reduced whitespace

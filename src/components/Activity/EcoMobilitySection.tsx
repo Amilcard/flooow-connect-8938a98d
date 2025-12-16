@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
-  Bus, 
-  Bike, 
-  Footprints, 
-  Car, 
-  Leaf, 
+import {
+  Bus,
+  Bike,
+  Footprints,
+  Car,
+  Leaf,
   MapPin,
   Mail,
   Phone,
@@ -22,8 +21,6 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 // Mock coherent durations for eco-mobility (12-45 min range)
 // Rule: Walk > Bike ≈ Bus
