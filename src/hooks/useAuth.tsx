@@ -5,6 +5,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { safeErrorMessage } from '@/utils/sanitize';
+import type { User } from '@supabase/supabase-js';
 
 interface AuthUser {
   id: string;
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
    * Extrait les infos utilisateur depuis la session Supabase
    * Gère à la fois les connexions email et OAuth
    */
-  const extractUserFromSession = (sessionUser: any): AuthUser => {
+  const extractUserFromSession = (sessionUser: User): AuthUser => {
     const metadata = sessionUser.user_metadata || {};
 
     // OAuth providers utilisent des champs différents pour le nom
@@ -82,7 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   /**
    * Assure que l'utilisateur OAuth a un profil parent créé
    */
-  const ensureOAuthProfile = async (sessionUser: any) => {
+  const ensureOAuthProfile = async (sessionUser: User) => {
     const provider = sessionUser.app_metadata?.provider;
 
     // Si c'est un utilisateur OAuth (pas email), vérifier/créer le profil

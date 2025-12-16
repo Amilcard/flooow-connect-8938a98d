@@ -121,6 +121,7 @@ interface ActivityFilters {
  * - Utilise `images` (array) depuis la table activities
  * - TECH-005: Récupère organism_name et city pour affichage sur cartes
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB response has dynamic shape
 const mapActivityFromDB = (dbActivity: any): Activity => {
   const raw: ActivityRaw = {
     id: dbActivity.id,
@@ -228,6 +229,7 @@ export const useActivities = (filters?: ActivityFilters) => {
   };
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB response array has dynamic shape
 const processActivities = (data: any[]): Activity[] => {
   const seenIds = new Set<string>();
   const uniqueActivities = data.filter((activity) => {

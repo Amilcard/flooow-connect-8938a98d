@@ -19,7 +19,7 @@ import { safeErrorMessage } from '@/utils/sanitize';
 
 export const buildActivityQuery = (filters: FilterState) => {
   // FIX: Removed structures join to avoid Supabase embed error
-  // Use any to avoid deep type instantiation errors with chained query methods
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required: Supabase chained query methods cause TS deep instantiation errors
   let query: any = supabase
     .from('activities')
     .select('*')
