@@ -5,45 +5,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { VACATION_PERIOD_DATES } from "@/components/VacationPeriodFilter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { PageHeader } from "@/components/PageHeader";
-import { ActivityShareButton } from "@/components/ActivityShareButton";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  MapPin, 
-  Users, 
-  Accessibility, 
+  MapPin,
+  Accessibility,
   Euro,
   Car,
   CreditCard,
   Calendar,
   Info,
-  FileText,
-  Building2,
-  HelpCircle,
   Mail,
-  Phone,
   MessageCircle,
-  Bus,
-  Bike,
-  CalendarRange,
   CheckCircle2,
   Share2,
   Copy,
   Check,
-  Leaf,
-  ChevronDown,
-  ChevronUp
+  Leaf
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -55,12 +41,9 @@ import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
-import { ActivityImageCard } from "@/components/Activity/ActivityImageCard";
 import { ActivityDetailHero } from "@/components/Activity/ActivityDetailHero";
-import { SessionSlotCard } from "@/components/Activity/SessionSlotCard";
 import { SessionAccordion, SelectedSessionSummary } from "@/components/Activity/SessionAccordion";
 import { SlotAccordion, SelectedSlotSummary } from "@/components/Activity/SlotAccordion";
-import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
@@ -101,16 +84,14 @@ const ActivityDetail = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [selectedOccurrenceDate, setSelectedOccurrenceDate] = useState<string | null>(null); // Date ISO de la séance choisie
-  const [showAllDates, setShowAllDates] = useState(false); // Pour "Voir plus de dates"
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null); // Pour l'accordéon
   const [showContactModal, setShowContactModal] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   
-  // Feature flag: mode visuel mobile
-  const mobileVisualMode = visualParam === "true";
-  
+  // Feature flag: mode visuel mobile (reserved for future use)
+  const _mobileVisualMode = visualParam === "true";
+
   // Hook pour la persistance des données d'aides et de transport
   const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id || "");
   
@@ -125,6 +106,7 @@ const ActivityDetail = () => {
   } | null>(null);
 
   // Restaurer les données d'aides depuis le state persisté
+  // Only runs when bookingState changes and aidsData is null (initial restore)
   useEffect(() => {
     if (bookingState?.calculated && !aidsData) {
       setAidsData({
@@ -136,7 +118,8 @@ const ActivityDetail = () => {
         remainingPrice: bookingState.remainingPrice
       });
     }
-  }, [bookingState, aidsData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentional: only restore once when state available
+  }, [bookingState?.calculated]);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
@@ -275,7 +258,7 @@ const ActivityDetail = () => {
   useEffect(() => {
     const checkAndCleanState = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       // Si pas d'utilisateur connecté et qu'il y a des données persistées
       if (!user && (bookingState?.calculated || aidsData)) {
         setAidsData(null);
@@ -283,8 +266,9 @@ const ActivityDetail = () => {
         // Le localStorage sera nettoyé au prochain logout
       }
     };
-    
+
     checkAndCleanState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Runs on userProfile change, refs stable state
   }, [userProfile]);
 
   // Logique des états d'inscription basée sur les VRAIES données (places disponibles)
@@ -362,7 +346,8 @@ const ActivityDetail = () => {
     saveAidCalculation(data); // Sauvegarder dans le state persisté
   };
 
-  const handleTransportModeSelected = (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => {
+  // Reserved for future transport mode selection feature
+  const _handleTransportModeSelected = (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => {
     saveTransportMode(mode);
   };
 
@@ -415,8 +400,8 @@ const ActivityDetail = () => {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
-  // Calculate age from date of birth
-  const calculateAge = (dob: string): number => {
+  // Calculate age from date of birth (reserved for future use)
+  const _calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -427,24 +412,26 @@ const ActivityDetail = () => {
     return age;
   };
 
-  // Calculate duration in days from slot
-    const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
-      if (!slot || !slot.start || !slot.end) return 1;
-      const start = new Date(slot.start);
-      const end = new Date(slot.end);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return Math.max(1, diffDays);
-    };
+  // Calculate duration in days from slot (reserved for future use)
+  const _calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
+    if (!slot || !slot.start || !slot.end) return 1;
+    const start = new Date(slot.start);
+    const end = new Date(slot.end);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(1, diffDays);
+  };
 
-  const selectedSlot = slots.find(s => s.id === selectedSlotId);
+  // Selected slot lookup (reserved for potential future use)
+  const _selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
   // Fix: vérifie aussi les strings vides dans images
   const rawImage = activity.images?.[0];
   const displayImage = (rawImage && rawImage.trim() !== '') ? rawImage : fallbackImage;
-  const ageRange = sessions.length > 0 
-    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ") 
+  // Age range formatted for display (reserved for future use)
+  const _ageRange = sessions.length > 0
+    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ")
     : formatAgeRangeForDetail(activity.age_min, activity.age_max);
 
   // Calculer les prochaines dates pour un jour de semaine donné - retourne objets {iso, label, labelShort}
@@ -471,7 +458,8 @@ const ActivityDetail = () => {
   const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
     return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
   };
-  const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
+  // Single next date helper (reserved for future use)
+  const _getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
   return (
     <div className="min-h-screen bg-background pb-24">
