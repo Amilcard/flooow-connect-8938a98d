@@ -3,8 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Navigation, MapPin, Clock, Route, Bike, Bus, Footprints, Loader2, AlertCircle, CheckCircle2, Leaf, Trophy, Sparkles } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
@@ -16,7 +15,6 @@ import {
   logLocalTrip,
   getLocalEcoStats,
   getEarnedBadges,
-  getNextMilestone,
   type EcoStats
 } from "@/components/EcoMobility/EcoMobilityBadges";
 
@@ -28,12 +26,12 @@ const CALORIES_BIKE_PER_MIN = 8; // kcal par minute de vélo
 
 const Itineraire = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const _navigate = useNavigate(); // Reserved for future navigation features
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const directionsRenderer = useRef<any>(null);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-  const [googleMapsToken, setGoogleMapsToken] = useState<string>("");
+  const [_googleMapsToken, setGoogleMapsToken] = useState<string>(""); // Token stored for potential future API calls
 
   const transportType = searchParams.get('type') || 'bus';
   const destination = searchParams.get('destination') || '';
@@ -42,7 +40,8 @@ const Itineraire = () => {
 
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState(destination);
-  const [travelMode, setTravelMode] = useState(
+  // Travel mode state (setter reserved for future mode switching feature)
+  const [travelMode, _setTravelMode] = useState(
     transportType === 'bike' ? 'BICYCLING' :
     transportType === 'walk' ? 'WALKING' :
     'TRANSIT'
