@@ -743,29 +743,57 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
     criteres_requis: ['Avoir 2 enfants ou plus dans la famille'],
   });
 
-  // Calcul des montants
+  // Calcul des montants et génération du résultat via helper
+  return buildEstimateResult(aides_detectees, aides_potentielles);
+}
+
+// ============================================================================
+// HELPER: Build estimate result (reduces complexity in estimate functions)
+// ============================================================================
+
+function calculateMaxPotentialAmount(aides_potentielles: EstimateResult['aides_potentielles']): number {
+  return aides_potentielles.reduce((sum, aid) => {
+    const matches = aid.montant_possible.match(/(\d+)/g);
+    if (!matches || matches.length === 0) return sum;
+    const lastMatch = matches[matches.length - 1];
+    return sum + (lastMatch ? parseInt(lastMatch, 10) : 0);
+  }, 0);
+}
+
+function buildIncitationMessage(
+  aidesCount: number,
+  potentiellesCount: number,
+  montantDetecte: number,
+  montantPotentielMin: number,
+  montantPotentielMax: number
+): string {
+  if (aidesCount === 0 && potentiellesCount > 0) {
+    return `⚠️ Vous pourriez être éligible à **${potentiellesCount} aides** (jusqu'à ${montantPotentielMax}€). Répondez à 4 questions supplémentaires pour découvrir vos droits !`;
+  }
+  if (aidesCount > 0 && potentiellesCount > 0) {
+    return `💡 Vous avez **${montantDetecte}€ d'aides confirmées**, mais pourriez obtenir **${montantPotentielMin}-${montantPotentielMax}€ de plus** ! Affinez votre estimation en 2 minutes.`;
+  }
+  if (aidesCount > 0) {
+    return `✅ Vous avez **${montantDetecte}€ d'aides disponibles** pour cette activité.`;
+  }
+  return `📋 Aucune aide automatique détectée. Vérifiez votre éligibilité en renseignant quelques informations supplémentaires.`;
+}
+
+function buildEstimateResult(
+  aides_detectees: CalculatedAid[],
+  aides_potentielles: EstimateResult['aides_potentielles']
+): EstimateResult {
   const montant_detecte = aides_detectees.reduce((sum, aid) => sum + aid.montant, 0);
   const montant_potentiel_min = aides_potentielles.length > 0 ? 20 : 0;
-  const montant_potentiel_max = aides_potentielles.reduce((sum, aid) => {
-    const matches = aid.montant_possible.match(/(\d+)/g);
-    if (matches && matches.length > 0) {
-      const lastMatch = matches[matches.length - 1];
-      return sum + (lastMatch ? parseInt(lastMatch, 10) : 0);
-    }
-    return sum;
-  }, 0);
+  const montant_potentiel_max = calculateMaxPotentialAmount(aides_potentielles);
 
-  // Message d'incitation
-  let message_incitation = '';
-  if (aides_detectees.length === 0 && aides_potentielles.length > 0) {
-    message_incitation = `⚠️ Vous pourriez être éligible à **${aides_potentielles.length} aides** (jusqu'à ${montant_potentiel_max}€). Répondez à 4 questions supplémentaires pour découvrir vos droits !`;
-  } else if (aides_detectees.length > 0 && aides_potentielles.length > 0) {
-    message_incitation = `💡 Vous avez **${montant_detecte}€ d'aides confirmées**, mais pourriez obtenir **${montant_potentiel_min}-${montant_potentiel_max}€ de plus** ! Affinez votre estimation en 2 minutes.`;
-  } else if (aides_detectees.length > 0) {
-    message_incitation = `✅ Vous avez **${montant_detecte}€ d'aides disponibles** pour cette activité.`;
-  } else {
-    message_incitation = `📋 Aucune aide automatique détectée. Vérifiez votre éligibilité en renseignant quelques informations supplémentaires.`;
-  }
+  const message_incitation = buildIncitationMessage(
+    aides_detectees.length,
+    aides_potentielles.length,
+    montant_detecte,
+    montant_potentiel_min,
+    montant_potentiel_max
+  );
 
   return {
     aides_detectees,
@@ -985,28 +1013,60 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
     });
   }
 
-  // Calcul des montants
-  const montant_total = aides_detectees.reduce((sum, aid) => sum + aid.montant, 0);
-  const montant_potentiel_max = aides_potentielles.reduce((sum, aid) => {
-    const matches = aid.montant_possible.match(/(\d+)/g);
-    if (matches && matches.length > 0) {
-      const lastMatch = matches[matches.length - 1];
-      return sum + (lastMatch ? parseInt(lastMatch, 10) : 20);
-    }
-    return sum + 20; // Default pour "Variable"
-  }, 0);
+  // Calcul des montants et génération du résultat via helper (mode fast)
+  return buildFastEstimateResult(aides_detectees, aides_potentielles);
+}
 
-  // Message d'incitation
-  let message_incitation = '';
-  if (aides_detectees.length > 0 && aides_potentielles.length > 0) {
-    message_incitation = `✅ Vous avez **${Math.round(montant_total)}€ d'aides confirmées**. Complétez votre profil pour débloquer jusqu'à **${montant_potentiel_max}€ supplémentaires** !`;
-  } else if (aides_detectees.length > 0) {
-    message_incitation = `✅ Vous bénéficiez de **${Math.round(montant_total)}€ d'aides** pour cette activité.`;
-  } else if (aides_potentielles.length > 0) {
-    message_incitation = `📋 Complétez quelques informations pour découvrir vos aides potentielles (jusqu'à ${montant_potentiel_max}€).`;
-  } else {
-    message_incitation = `📋 Aucune aide détectée avec les informations fournies.`;
+// ============================================================================
+// HELPER: Build fast estimate result (variant for Mode 2)
+// ============================================================================
+
+function calculateMaxPotentialAmountWithDefault(aides_potentielles: EstimateResult['aides_potentielles']): number {
+  return aides_potentielles.reduce((sum, aid) => {
+    const matches = aid.montant_possible.match(/(\d+)/g);
+    if (!matches || matches.length === 0) return sum + 20; // Default for "Variable"
+    const lastMatch = matches[matches.length - 1];
+    return sum + (lastMatch ? parseInt(lastMatch, 10) : 20);
+  }, 0);
+}
+
+function buildFastIncitationMessage(
+  aidesCount: number,
+  potentiellesCount: number,
+  montantTotal: number,
+  montantPotentielMax: number
+): string {
+  if (aidesCount > 0 && potentiellesCount > 0) {
+    return `✅ Vous avez **${Math.round(montantTotal)}€ d'aides confirmées**. Complétez votre profil pour débloquer jusqu'à **${montantPotentielMax}€ supplémentaires** !`;
   }
+  if (aidesCount > 0) {
+    return `✅ Vous bénéficiez de **${Math.round(montantTotal)}€ d'aides** pour cette activité.`;
+  }
+  if (potentiellesCount > 0) {
+    return `📋 Complétez quelques informations pour découvrir vos aides potentielles (jusqu'à ${montantPotentielMax}€).`;
+  }
+  return `📋 Aucune aide détectée avec les informations fournies.`;
+}
+
+function getConfidenceLevel(aidesCount: number): 'faible' | 'moyen' | 'élevé' {
+  if (aidesCount >= 2) return 'élevé';
+  if (aidesCount === 1) return 'moyen';
+  return 'faible';
+}
+
+function buildFastEstimateResult(
+  aides_detectees: CalculatedAid[],
+  aides_potentielles: EstimateResult['aides_potentielles']
+): EstimateResult {
+  const montant_total = aides_detectees.reduce((sum, aid) => sum + aid.montant, 0);
+  const montant_potentiel_max = calculateMaxPotentialAmountWithDefault(aides_potentielles);
+
+  const message_incitation = buildFastIncitationMessage(
+    aides_detectees.length,
+    aides_potentielles.length,
+    montant_total,
+    montant_potentiel_max
+  );
 
   return {
     aides_detectees,
@@ -1014,6 +1074,6 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
     montant_max: montant_total + montant_potentiel_max,
     aides_potentielles,
     message_incitation,
-    niveau_confiance: aides_detectees.length >= 2 ? 'élevé' : aides_detectees.length === 1 ? 'moyen' : 'faible',
+    niveau_confiance: getConfidenceLevel(aides_detectees.length),
   };
 }

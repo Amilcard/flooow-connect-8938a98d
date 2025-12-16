@@ -23,6 +23,223 @@ import {
   getQFJustification
 } from "@/utils/AidCalculatorHelpers";
 
+// ============================================================================
+// HELPER: Extract child age calculation to reduce cognitive complexity
+// ============================================================================
+
+function getChildAgeForDisplay(
+  showChildSelector: boolean,
+  selectedChildId: string,
+  children: Child[],
+  manualChildAge: string,
+  calculateAge: (dob: string) => number
+): number {
+  if (showChildSelector && selectedChildId) {
+    const child = children.find(c => c.id === selectedChildId);
+    return child ? calculateAge(child.dob) : 0;
+  }
+  return parseInt(manualChildAge, 10) || 0;
+}
+
+// ============================================================================
+// SUB-COMPONENT: Condition Sociale Section (reduces main component complexity)
+// ============================================================================
+
+interface ConditionSocialeSectionProps {
+  activityCategories: string[];
+  childAge: number;
+  hasARS: boolean;
+  hasAEEH: boolean;
+  hasBourse: boolean;
+  setHasARS: (value: boolean) => void;
+  setHasAEEH: (value: boolean) => void;
+  setHasBourse: (value: boolean) => void;
+}
+
+function ConditionSocialeSection({
+  activityCategories,
+  childAge,
+  hasARS,
+  hasAEEH,
+  hasBourse,
+  setHasARS,
+  setHasAEEH,
+  setHasBourse
+}: ConditionSocialeSectionProps) {
+  const typeAct = getTypeActivite(activityCategories);
+
+  if (!shouldShowConditionSociale(typeAct, childAge)) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-4 border-t pt-4">
+      <div className="flex items-center gap-2">
+        <Info className="h-4 w-4 text-primary" />
+        <p className="text-sm font-medium">
+          Critères nécessaires pour Pass'Sport (50€)
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Label>Avez-vous une aide sociale ?</Label>
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="ars"
+              checked={hasARS}
+              onChange={(e) => setHasARS(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            <Label htmlFor="ars" className="font-normal cursor-pointer">
+              Allocation de rentrée scolaire (ARS)
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="aeeh"
+              checked={hasAEEH}
+              onChange={(e) => setHasAEEH(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            <Label htmlFor="aeeh" className="font-normal cursor-pointer">
+              Allocation enfant handicapé (AEEH)
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="bourse"
+              checked={hasBourse}
+              onChange={(e) => setHasBourse(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            <Label htmlFor="bourse" className="font-normal cursor-pointer">
+              Bourse scolaire
+            </Label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// SUB-COMPONENT: QF Section (reduces main component complexity)
+// ============================================================================
+
+interface QFSectionProps {
+  activityCategories: string[];
+  activityPeriod: 'scolaire' | 'vacances';
+  childAge: number;
+  cityCode: string;
+  quotientFamilial: string;
+  setQuotientFamilial: (value: string) => void;
+}
+
+function QFSection({
+  activityCategories,
+  activityPeriod,
+  childAge,
+  cityCode,
+  quotientFamilial,
+  setQuotientFamilial
+}: QFSectionProps) {
+  const typeAct = getTypeActivite(activityCategories);
+
+  if (!shouldShowQF(typeAct, activityPeriod, childAge, cityCode)) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-4 border-t pt-4">
+      <div className="flex items-center gap-2">
+        <Info className="h-4 w-4 text-primary" />
+        <p className="text-sm font-medium">
+          {getQFSectionTitle(typeAct, activityPeriod)}
+        </p>
+      </div>
+      <div className="space-y-2" data-tour-id="qf-selector-container">
+        <Label htmlFor="qf" className="flex items-center gap-2">
+          Quotient Familial
+        </Label>
+        <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
+          <SelectTrigger id="qf">
+            <SelectValue placeholder="Je ne sais pas" />
+          </SelectTrigger>
+          <SelectContent>
+            {QF_BRACKETS.map(bracket => (
+              <SelectItem key={bracket.id} value={String(bracket.value)}>
+                {bracket.label}
+              </SelectItem>
+            ))}
+            <SelectItem value="0">Je ne sais pas</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          {getQFJustification(typeAct, activityPeriod)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// SUB-COMPONENT: CAF Section (reduces main component complexity)
+// ============================================================================
+
+interface CAFSectionProps {
+  activityCategories: string[];
+  activityPeriod: 'scolaire' | 'vacances';
+  quotientFamilial: string;
+  isAllocataireCaf: 'oui' | 'non' | '';
+  setIsAllocataireCaf: (value: 'oui' | 'non' | '') => void;
+}
+
+function CAFSection({
+  activityCategories,
+  activityPeriod,
+  quotientFamilial,
+  isAllocataireCaf,
+  setIsAllocataireCaf
+}: CAFSectionProps) {
+  const typeAct = getTypeActivite(activityCategories);
+  const hasQF = !!quotientFamilial && quotientFamilial !== '';
+
+  if (!shouldShowAllocataireCAF(typeAct, activityPeriod) || hasQF) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-4 border-t pt-4">
+      <div className="flex items-center gap-2">
+        <Info className="h-4 w-4 text-primary" />
+        <p className="text-sm font-medium">
+          Statut allocataire CAF (requis pour aides vacances)
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Label>Êtes-vous allocataire CAF ?</Label>
+        <RadioGroup value={isAllocataireCaf} onValueChange={(value) => setIsAllocataireCaf(value as 'oui' | 'non')}>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="oui" id="caf-oui" />
+            <Label htmlFor="caf-oui" className="font-normal cursor-pointer">
+              Oui
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="non" id="caf-non" />
+            <Label htmlFor="caf-non" className="font-normal cursor-pointer">
+              Non
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+    </div>
+  );
+}
+
 interface Child {
   id: string;
   first_name: string;
@@ -548,140 +765,35 @@ export const SharedAidCalculator = ({
       )}
 
       {/* Bloc Condition Sociale - Affichage conditionnel (NOUVEAU - Étape 2.4) */}
-      {(() => {
-        const typeAct = getTypeActivite(activityCategories);
-        const childAgeForDisplay = showChildSelector && selectedChildId 
-          ? calculateAge(children.find(c => c.id === selectedChildId)?.dob || '')
-          : parseInt(manualChildAge, 10) || 0;
-        
-        return shouldShowConditionSociale(typeAct, childAgeForDisplay) && (
-          <div className="space-y-4 border-t pt-4">
-            <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-primary" />
-              <p className="text-sm font-medium">
-                Critères nécessaires pour Pass'Sport (50€)
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label>Avez-vous une aide sociale ?</Label>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="ars"
-                    checked={hasARS}
-                    onChange={(e) => setHasARS(e.target.checked)}
-                    className="h-4 w-4 rounded border-border"
-                  />
-                  <Label htmlFor="ars" className="font-normal cursor-pointer">
-                    Allocation de rentrée scolaire (ARS)
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="aeeh"
-                    checked={hasAEEH}
-                    onChange={(e) => setHasAEEH(e.target.checked)}
-                    className="h-4 w-4 rounded border-border"
-                  />
-                  <Label htmlFor="aeeh" className="font-normal cursor-pointer">
-                    Allocation enfant handicapé (AEEH)
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="bourse"
-                    checked={hasBourse}
-                    onChange={(e) => setHasBourse(e.target.checked)}
-                    className="h-4 w-4 rounded border-border"
-                  />
-                  <Label htmlFor="bourse" className="font-normal cursor-pointer">
-                    Bourse scolaire
-                  </Label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      <ConditionSocialeSection
+        activityCategories={activityCategories}
+        childAge={getChildAgeForDisplay(showChildSelector, selectedChildId, children, manualChildAge, calculateAge)}
+        hasARS={hasARS}
+        hasAEEH={hasAEEH}
+        hasBourse={hasBourse}
+        setHasARS={setHasARS}
+        setHasAEEH={setHasAEEH}
+        setHasBourse={setHasBourse}
+      />
 
       {/* QF Section - Affichage conditionnel (NOUVEAU - Étape 2.3) */}
-      {(() => {
-        // Calculer le type d'activité pour l'affichage conditionnel
-        const typeAct = getTypeActivite(activityCategories);
-        const childAgeForDisplay = showChildSelector && selectedChildId 
-          ? calculateAge(children.find(c => c.id === selectedChildId)?.dob || '')
-          : parseInt(manualChildAge, 10) || 0;
-        
-        return shouldShowQF(typeAct, activityPeriod, childAgeForDisplay, cityCode) && (
-          <div className="space-y-4 border-t pt-4">
-            <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-primary" />
-              <p className="text-sm font-medium">
-                {getQFSectionTitle(typeAct, activityPeriod)}
-              </p>
-            </div>
-            <div className="space-y-2" data-tour-id="qf-selector-container">
-              <Label htmlFor="qf" className="flex items-center gap-2">
-                Quotient Familial
-              </Label>
-              <Select value={quotientFamilial} onValueChange={setQuotientFamilial}>
-                <SelectTrigger id="qf">
-                  <SelectValue placeholder="Je ne sais pas" />
-                </SelectTrigger>
-                <SelectContent>
-                  {QF_BRACKETS.map(bracket => (
-                    <SelectItem key={bracket.id} value={String(bracket.value)}>
-                      {bracket.label}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="0">Je ne sais pas</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {getQFJustification(typeAct, activityPeriod)}
-              </p>
-            </div>
-          </div>
-        );
-      })()}
+      <QFSection
+        activityCategories={activityCategories}
+        activityPeriod={activityPeriod}
+        childAge={getChildAgeForDisplay(showChildSelector, selectedChildId, children, manualChildAge, calculateAge)}
+        cityCode={cityCode}
+        quotientFamilial={quotientFamilial}
+        setQuotientFamilial={setQuotientFamilial}
+      />
 
       {/* Bloc Allocataire CAF - Affichage conditionnel (NOUVEAU - Étape 2.5) */}
-      {/* Masquer si QF déjà renseigné (déduction automatique : QF implique CAF) */}
-      {(() => {
-        const typeAct = getTypeActivite(activityCategories);
-        const hasQF = !!quotientFamilial && quotientFamilial !== '';
-        
-        return shouldShowAllocataireCAF(typeAct, activityPeriod) && !hasQF && (
-          <div className="space-y-4 border-t pt-4">
-            <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-primary" />
-              <p className="text-sm font-medium">
-                Statut allocataire CAF (requis pour aides vacances)
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label>Êtes-vous allocataire CAF ?</Label>
-              <RadioGroup value={isAllocataireCaf} onValueChange={(value) => setIsAllocataireCaf(value as 'oui'|'non')}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="oui" id="caf-oui" />
-                  <Label htmlFor="caf-oui" className="font-normal cursor-pointer">
-                    Oui
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="non" id="caf-non" />
-                  <Label htmlFor="caf-non" className="font-normal cursor-pointer">
-                    Non
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
-        );
-      })()}
+      <CAFSection
+        activityCategories={activityCategories}
+        activityPeriod={activityPeriod}
+        quotientFamilial={quotientFamilial}
+        isAllocataireCaf={isAllocataireCaf}
+        setIsAllocataireCaf={setIsAllocataireCaf}
+      />
 
 
       {/* Bouton Calculer */}

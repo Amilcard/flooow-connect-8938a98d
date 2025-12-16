@@ -11,12 +11,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
-import { 
-  Bell, 
-  Calendar, 
+import {
+  Bell,
+  Calendar,
   CheckCircle,
   Info,
-  Gift,
   Trash2,
   Heart,
   MapPin,
@@ -26,17 +25,68 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReactNode } from 'react';
+
+// ============================================================================
+// LOOKUP TABLES - Reduce cognitive complexity by avoiding switch statements
+// ============================================================================
+
+const NOTIFICATION_ICONS: Record<string, ReactNode> = {
+  event: <Calendar className="w-5 h-5 text-green-600" />,
+  event_reminder: <Clock className="w-5 h-5 text-orange-600" />,
+  favorite: <Heart className="w-5 h-5 text-pink-600" />,
+  booking: <CheckCircle className="w-5 h-5 text-blue-600" />,
+  system: <Info className="w-5 h-5 text-muted-foreground" />,
+};
+
+const NOTIFICATION_LABELS: Record<string, string> = {
+  event: 'Événement du territoire',
+  event_reminder: "Rappel d'événement",
+  favorite: "Centre d'intérêt",
+  booking: 'Réservation',
+  system: 'Système',
+};
+
+const DEFAULT_ICON = <Bell className="w-5 h-5 text-muted-foreground" />;
+const DEFAULT_LABEL = 'Notification';
+
+// ============================================================================
+// HELPER FUNCTIONS - Extracted to reduce main component complexity
+// ============================================================================
+
+function getNotificationIcon(type: string): ReactNode {
+  return NOTIFICATION_ICONS[type] ?? DEFAULT_ICON;
+}
+
+function getNotificationTypeLabel(type: string): string {
+  return NOTIFICATION_LABELS[type] ?? DEFAULT_LABEL;
+}
+
+function formatNotificationDate(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+  if (diffInHours < 1) return "À l'instant";
+  if (diffInHours < 24) return `Il y a ${Math.floor(diffInHours)} h`;
+  if (diffInHours < 48) return 'Hier';
+  return format(date, 'd MMM', { locale: fr });
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 
 const MesNotifications = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { 
-    notifications, 
-    unreadCount, 
+  const {
+    notifications,
+    unreadCount,
     isLoading: notificationsLoading,
     markAsRead,
     markAllAsRead,
-    deleteNotification 
+    deleteNotification
   } = useNotifications(user?.id);
 
   const {
@@ -45,45 +95,7 @@ const MesNotifications = () => {
     updatePreferences
   } = useNotificationPreferences(user?.id);
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'event': return <Calendar className="w-5 h-5 text-green-600" />;
-      case 'event_reminder': return <Clock className="w-5 h-5 text-orange-600" />;
-      case 'favorite': return <Heart className="w-5 h-5 text-pink-600" />;
-      case 'booking': return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'system': return <Info className="w-5 h-5 text-muted-foreground" />;
-      default: return <Bell className="w-5 h-5 text-muted-foreground" />;
-    }
-  };
-
-  const getNotificationTypeLabel = (type: string) => {
-    switch (type) {
-      case 'event': return 'Événement du territoire';
-      case 'event_reminder': return 'Rappel d\'événement';
-      case 'favorite': return 'Centre d\'intérêt';
-      case 'booking': return 'Réservation';
-      case 'system': return 'Système';
-      default: return 'Notification';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
-    if (diffInHours < 1) {
-      return 'À l\'instant';
-    } else if (diffInHours < 24) {
-      return `Il y a ${Math.floor(diffInHours)} h`;
-    } else if (diffInHours < 48) {
-      return 'Hier';
-    } else {
-      return format(date, 'd MMM', { locale: fr });
-    }
-  };
-
-  const handleViewEvent = (eventId: string) => {
+  const handleViewEvent = (_eventId: string) => {
     navigate(`/agenda-community`);
   };
 
@@ -183,7 +195,7 @@ const MesNotifications = () => {
                                 {getNotificationTypeLabel(notification.type)}
                               </Badge>
                               <span className="text-xs text-muted-foreground">
-                                {formatDate(notification.created_at)}
+                                {formatNotificationDate(notification.created_at)}
                               </span>
                               {!notification.read && (
                                 <Badge variant="default" className="text-xs">
