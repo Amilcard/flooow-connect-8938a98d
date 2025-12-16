@@ -2,12 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Calendar, AlertCircle } from "lucide-react";
 import { SlotPicker } from "@/components/SlotPicker";
-import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
-import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
 import type { Activity } from "@/types/domain";
 import type { CalculatedAid } from "@/utils/FinancialAidEngine";
 
@@ -54,19 +50,19 @@ export const BookingCard = ({
   activity,
   slots,
   children,
-  userProfile,
+  userProfile: _userProfile, // Reserved for future aid calculation display
   selectedSlotId,
   selectedChildId,
   onSelectSlot,
-  onSelectChild,
+  onSelectChild: _onSelectChild, // Reserved for future child selection UI
   onBooking,
-  calculateAge,
-  calculateDurationDays,
+  calculateAge: _calculateAge, // Reserved for age-based pricing
+  calculateDurationDays: _calculateDurationDays, // Reserved for multi-day pricing
   adjustedPrice,
-  calculatedAids = [],
+  calculatedAids: _calculatedAids = [], // Reserved for displaying calculated aids
 }: BookingCardProps) => {
-  const selectedSlot = slots.find((s) => s.id === selectedSlotId);
-  const selectedChild = children.find((c) => c.id === selectedChildId);
+  const _selectedSlot = slots.find((s) => s.id === selectedSlotId); // Reserved for slot details display
+  const _selectedChild = children.find((c) => c.id === selectedChildId); // Reserved for child info display
 
   // Filter slots to show only upcoming ones (max 6)
   const upcomingSlots = slots
