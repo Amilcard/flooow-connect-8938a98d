@@ -1,6 +1,6 @@
 // ============================================================================
 // ARCHIVE / OUTIL D'AUDIT - NE PAS MODIFIER SANS BESOIN PRÉCIS
-// Projet Flooow - URL: https://kbrgwezkjaakoecispom.supabase.co
+// Projet Flooow - Uses SUPABASE_URL from environment
 // ⚠️ À exécuter manuellement: npx ts-node scripts/audit_phase2/check_period_distribution.ts
 // ============================================================================
 

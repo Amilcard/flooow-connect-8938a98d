@@ -57,7 +57,7 @@ serve(async (req) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Mapbox API error:', data);
+      console.error('Mapbox API error: status', response.status);
       return new Response(
         JSON.stringify({ error: 'Failed to get directions', details: data }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

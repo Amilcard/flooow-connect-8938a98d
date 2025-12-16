@@ -46,7 +46,7 @@ serve(async (req) => {
 
     const { parentEmail, childName, childDob } = await req.json();
 
-    console.log('Child signup email validation request:', { parentEmail, childName, childDob });
+    console.log('Child signup email validation request received');
 
     // Validate input
     if (!parentEmail || !childName || !childDob) {
@@ -240,8 +240,7 @@ serve(async (req) => {
     });
 
     if (!emailResponse.ok) {
-      const errorData = await emailResponse.json();
-      console.error('Resend API error:', emailResponse.status, errorData);
+      console.error('Resend API error: status', emailResponse.status);
 
       let userMessage = 'Impossible d\'envoyer l\'email';
       let statusCode = emailResponse.status;

@@ -51,7 +51,7 @@ serve(async (req) => {
     const data = await response.json();
 
     if (data.status !== 'OK') {
-      console.error('Google Maps API error:', data);
+      console.error('Google Maps API error: status', data.status);
       throw new Error(`Google Maps API error: ${data.status}`);
     }
 

@@ -64,7 +64,7 @@ serve(async (req) => {
     // Construct Supabase REST URL
     const restUrl = `${SUPABASE_URL}/rest/v1/activities?select=${encodeURIComponent(baseSelect)}&${filters.join("&")}&limit=${limit}&offset=${offset}&order=created_at.desc`;
 
-    console.log(`[activities] Fetching: ${restUrl}`);
+    console.log(`[activities] Fetching activities with ${filters.length} filters`);
 
     // Call Supabase REST API
     const response = await fetch(restUrl, {
@@ -78,11 +78,10 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error(`[activities] Supabase error: ${response.status} ${response.statusText}`);
-      const errorText = await response.text();
-      console.error(`[activities] Error body: ${errorText}`);
-      
+      // Don't log error body - may contain sensitive data
+
       return new Response(
-        JSON.stringify({ error: "upstream_error", details: errorText }), 
+        JSON.stringify({ error: "upstream_error", status: response.status }), 
         {
           status: 502,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
