@@ -69,6 +69,51 @@ function isSaintEtienne(ville: string): boolean {
 }
 
 // ============================================================================
+// HELPER: Create aid objects (reduces repetition in estimate functions)
+// ============================================================================
+
+interface CreateAidParams {
+  id: string;
+  code: string;
+  name: string;
+  montant: number;
+  prixActivite: number;
+  niveau: string;
+  message: string;
+}
+
+function createDetectedAid({ id, code, name, montant, prixActivite, niveau, message }: CreateAidParams): CalculatedAid {
+  return {
+    id,
+    code,
+    name,
+    montant: Math.min(montant, prixActivite),
+    eligible: true,
+    niveau,
+    message,
+  };
+}
+
+interface CreatePotentialAidParams {
+  name: string;
+  montant_possible: string;
+  criteres_requis: string[];
+}
+
+function createPotentialAid({ name, montant_possible, criteres_requis }: CreatePotentialAidParams) {
+  return { name, montant_possible, criteres_requis };
+}
+
+// Age range checkers
+function isInAgeRange(age: number, min: number, max: number): boolean {
+  return age >= min && age <= max;
+}
+
+function getDepartementFromPostalCode(code_postal: string | undefined): number {
+  return code_postal ? parseInt(code_postal.substring(0, 2)) : 0;
+}
+
+// ============================================================================
 // TYPES & INTERFACES
 // ============================================================================
 
@@ -627,124 +672,105 @@ export interface EstimateResult {
 export function calculateQuickEstimate(params: QuickEstimateParams): EstimateResult {
   const aides_detectees: CalculatedAid[] = [];
   const aides_potentielles: EstimateResult['aides_potentielles'] = [];
-
-  // Déterminer le département depuis le code postal (si fourni)
-  const departement = params.code_postal ? parseInt(params.code_postal.substring(0, 2)) : 0;
+  const departement = getDepartementFromPostalCode(params.code_postal);
+  const { age, type_activite, prix_activite, periode } = params;
 
   // 1. Pass Culture (certain si âge 15-17 + culture)
-  if (params.age >= 15 && params.age <= 17 && params.type_activite === 'culture') {
-    const montant = params.age === 15 ? 20 : 30;
-    aides_detectees.push({
-      id: 'pass_culture',
-      code: 'PASS_CULTURE',
-      name: 'Pass Culture',
-      montant: Math.min(montant, params.prix_activite),
-      eligible: true,
-      niveau: 'national',
-      message: 'Aide nationale automatique',
-    });
+  if (isInAgeRange(age, 15, 17) && type_activite === 'culture') {
+    aides_detectees.push(createDetectedAid({
+      id: 'pass_culture', code: 'PASS_CULTURE', name: 'Pass Culture',
+      montant: age === 15 ? 20 : 30, prixActivite: prix_activite,
+      niveau: 'national', message: 'Aide nationale automatique'
+    }));
   }
 
   // 2. Carte BÔGE (certain si âge 13-29)
-  if (params.age >= 13 && params.age <= 29) {
-    aides_detectees.push({
-      id: 'carte_boge',
-      code: 'CARTE_BOGE',
-      name: 'Carte BÔGE',
-      montant: Math.min(10, params.prix_activite),
-      eligible: true,
-      niveau: 'communal',
-      message: 'Carte jeune Saint-Étienne Métropole',
-    });
+  if (isInAgeRange(age, 13, 29)) {
+    aides_detectees.push(createDetectedAid({
+      id: 'carte_boge', code: 'CARTE_BOGE', name: 'Carte BÔGE',
+      montant: 10, prixActivite: prix_activite,
+      niveau: 'communal', message: 'Carte jeune Saint-Étienne Métropole'
+    }));
   }
 
-  // 3. Tarifs sociaux Saint-Étienne (si ville mentionnée)
-  if (params.ville) {
-    const villeLower = params.ville.toLowerCase().replace(/[éè]/g, 'e').replace(/[àâ]/g, 'a');
-    if (villeLower.includes('saint') && villeLower.includes('etienne')) {
-      aides_potentielles.push({
-        name: 'Tarifs sociaux Saint-Étienne',
-        montant_possible: '15-70€ selon QF',
-        criteres_requis: ['Renseignez votre Quotient Familial'],
-      });
-    }
+  // 3. Tarifs sociaux Saint-Étienne
+  if (params.ville && isSaintEtienne(params.ville)) {
+    aides_potentielles.push(createPotentialAid({
+      name: 'Tarifs sociaux Saint-Étienne', montant_possible: '15-70€ selon QF',
+      criteres_requis: ['Renseignez votre Quotient Familial']
+    }));
   }
 
-  // 4. AIDES POTENTIELLES selon l'âge et le type d'activité
+  // 4. AIDES POTENTIELLES selon contexte
+  addQuickEstimatePotentialAids(aides_potentielles, { age, type_activite, periode, departement });
 
-  // Pass'Sport (potentiel si 6-17 ans + sport + SAISON SCOLAIRE)
-  if (params.age >= 6 && params.age <= 17 && params.type_activite === 'sport' && params.periode === 'saison_scolaire') {
-    aides_potentielles.push({
-      name: "Pass'Sport",
-      montant_possible: '50€',
-      criteres_requis: ['Bénéficier d\'une aide sociale (ARS, AEEH, bourse scolaire...)'],
-    });
-  }
-
-  // Pass Colo (potentiel si 11 ans + vacances)
-  // CRITICAL: Check period strictly
-  if (params.age === 11 && params.type_activite === 'vacances' && params.periode === 'vacances') {
-    aides_potentielles.push({
-      name: 'Pass Colo',
-      montant_possible: '200-350€ selon QF',
-      criteres_requis: ['Renseignez votre Quotient Familial'],
-    });
-  }
-
-  // VACAF (potentiel si vacances)
-  // CRITICAL: Check period strictly
-  if (params.type_activite === 'vacances' && params.periode === 'vacances') {
-    aides_potentielles.push({
-      name: 'VACAF (CAF)',
-      montant_possible: '100-400€',
-      criteres_requis: ['Être allocataire CAF', 'QF ≤ 900€', 'Séjour labellisé VACAF'],
-    });
-  }
-
-  // CAF Loire (potentiel si âge 3-17 + VACANCES UNIQUEMENT)
-  // CRITICAL: Check period strictly (Vacation aid only)
-  if (params.age >= 3 && params.age <= 17 && params.periode === 'vacances') {
-    aides_potentielles.push({
-      name: 'CAF Loire – Temps Libre',
-      montant_possible: '20-80€ selon QF',
-      criteres_requis: ['Être allocataire CAF', 'QF ≤ 850€', 'Période vacances scolaires'],
-    });
-  }
-
-  // Chèques Loisirs 42 (potentiel si département 42)
-  if (departement === 42) {
-    aides_potentielles.push({
-      name: 'Chèques Loisirs Loire',
-      montant_possible: '30€',
-      criteres_requis: ['QF ≤ 900€'],
-    });
-  }
-
-  // Pass'Région (potentiel si âge lycéen probable + SAISON SCOLAIRE)
-  if (params.age >= 15 && params.age <= 18 && params.periode === 'saison_scolaire') {
-    aides_potentielles.push({
-      name: "Pass'Région",
-      montant_possible: '30€',
-      criteres_requis: ['Être lycéen'],
-    });
-  }
-
-  // Bonus QPV (potentiel toujours)
-  aides_potentielles.push({
-    name: 'Bonus QPV',
-    montant_possible: '20€',
-    criteres_requis: ['Résider en Quartier Prioritaire de la Ville'],
-  });
-
-  // Réduction fratrie (potentiel)
-  aides_potentielles.push({
-    name: 'Réduction fratrie',
-    montant_possible: '10% du prix',
-    criteres_requis: ['Avoir 2 enfants ou plus dans la famille'],
-  });
-
-  // Calcul des montants et génération du résultat via helper
   return buildEstimateResult(aides_detectees, aides_potentielles);
+}
+
+// Helper to add potential aids for quick estimate (reduces cognitive complexity)
+function addQuickEstimatePotentialAids(
+  aides: EstimateResult['aides_potentielles'],
+  ctx: { age: number; type_activite: string; periode?: string; departement: number }
+): void {
+  const { age, type_activite, periode, departement } = ctx;
+
+  // Pass'Sport (6-17 ans + sport + saison scolaire)
+  if (isInAgeRange(age, 6, 17) && type_activite === 'sport' && periode === 'saison_scolaire') {
+    aides.push(createPotentialAid({
+      name: "Pass'Sport", montant_possible: '50€',
+      criteres_requis: ['Bénéficier d\'une aide sociale (ARS, AEEH, bourse scolaire...)']
+    }));
+  }
+
+  // Pass Colo (11 ans + vacances)
+  if (age === 11 && type_activite === 'vacances' && periode === 'vacances') {
+    aides.push(createPotentialAid({
+      name: 'Pass Colo', montant_possible: '200-350€ selon QF',
+      criteres_requis: ['Renseignez votre Quotient Familial']
+    }));
+  }
+
+  // VACAF (vacances)
+  if (type_activite === 'vacances' && periode === 'vacances') {
+    aides.push(createPotentialAid({
+      name: 'VACAF (CAF)', montant_possible: '100-400€',
+      criteres_requis: ['Être allocataire CAF', 'QF ≤ 900€', 'Séjour labellisé VACAF']
+    }));
+  }
+
+  // CAF Loire (3-17 ans + vacances)
+  if (isInAgeRange(age, 3, 17) && periode === 'vacances') {
+    aides.push(createPotentialAid({
+      name: 'CAF Loire – Temps Libre', montant_possible: '20-80€ selon QF',
+      criteres_requis: ['Être allocataire CAF', 'QF ≤ 850€', 'Période vacances scolaires']
+    }));
+  }
+
+  // Chèques Loisirs 42 (département 42)
+  if (departement === 42) {
+    aides.push(createPotentialAid({
+      name: 'Chèques Loisirs Loire', montant_possible: '30€',
+      criteres_requis: ['QF ≤ 900€']
+    }));
+  }
+
+  // Pass'Région (15-18 ans + saison scolaire)
+  if (isInAgeRange(age, 15, 18) && periode === 'saison_scolaire') {
+    aides.push(createPotentialAid({
+      name: "Pass'Région", montant_possible: '30€',
+      criteres_requis: ['Être lycéen']
+    }));
+  }
+
+  // Aides toujours potentielles
+  aides.push(createPotentialAid({
+    name: 'Bonus QPV', montant_possible: '20€',
+    criteres_requis: ['Résider en Quartier Prioritaire de la Ville']
+  }));
+  aides.push(createPotentialAid({
+    name: 'Réduction fratrie', montant_possible: '10% du prix',
+    criteres_requis: ['Avoir 2 enfants ou plus dans la famille']
+  }));
 }
 
 // ============================================================================
