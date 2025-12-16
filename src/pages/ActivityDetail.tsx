@@ -55,15 +55,115 @@ interface CalculatedAidItem {
   is_informational?: boolean;
 }
 
+interface SessionData {
+  id: string;
+  day_of_week: number | null;
+  start_time: string | null;
+  end_time: string | null;
+  age_min: number | null;
+  age_max: number | null;
+}
+
+interface SlotData {
+  id: string;
+  start: string;
+  end: string;
+}
+
+// ========== Helper Functions (outside component) ==========
+
+const CATEGORY_IMAGES: Record<string, string> = {
+  Sport: activitySportImg,
+  Loisirs: activityLoisirsImg,
+  Vacances: activityVacancesImg,
+  Scolarité: activityCultureImg,
+  Culture: activityCultureImg,
+};
+
 const getCategoryImage = (category: string): string => {
-  const categoryMap: Record<string, string> = {
-    Sport: activitySportImg,
-    Loisirs: activityLoisirsImg,
-    Vacances: activityVacancesImg,
-    Scolarité: activityCultureImg,
-    Culture: activityCultureImg,
+  return CATEGORY_IMAGES[category] || activityLoisirsImg;
+};
+
+const DAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+const formatSessionLabel = (session: SessionData): { dayLabel: string; timeLabel: string } => {
+  const dayLabel = session.day_of_week !== null ? DAY_NAMES[session.day_of_week] : "Vacances";
+  const timeLabel = session.start_time && session.end_time
+    ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
+    : "";
+  return { dayLabel, timeLabel };
+};
+
+const formatSlotLabel = (slot: SlotData): { dayNameCapitalized: string; dateFormatted: string; timeStart: string; timeEnd: string } => {
+  const startDate = new Date(slot.start);
+  const endDate = new Date(slot.end);
+  const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+  return {
+    dayNameCapitalized: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+    dateFormatted: startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+    timeStart: startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+    timeEnd: endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
   };
-  return categoryMap[category] || activityLoisirsImg;
+};
+
+const formatSelectedDate = (dateIso: string | null): string | null => {
+  if (!dateIso) return null;
+  return new Date(dateIso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+};
+
+// ========== Sub-components (outside main component) ==========
+
+interface SelectedCreneauSessionProps {
+  session: SessionData;
+  selectedOccurrenceDate: string | null;
+}
+
+const SelectedCreneauSession = ({ session, selectedOccurrenceDate }: SelectedCreneauSessionProps) => {
+  const { dayLabel, timeLabel } = formatSessionLabel(session);
+  const selectedDateLabel = formatSelectedDate(selectedOccurrenceDate);
+
+  return (
+    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+      <div className="flex items-center gap-2">
+        <CheckCircle2 size={18} className="text-primary" />
+        <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+      </div>
+      <div className="pl-6 space-y-1">
+        <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
+        {selectedDateLabel && (
+          <p className="text-sm font-medium text-primary">
+            📅 Séance du {selectedDateLabel}
+          </p>
+        )}
+        <p className="text-xs text-muted-foreground">
+          {session.age_min}-{session.age_max} ans
+        </p>
+      </div>
+    </div>
+  );
+};
+
+interface SelectedCreneauSlotProps {
+  slot: SlotData;
+}
+
+const SelectedCreneauSlot = ({ slot }: SelectedCreneauSlotProps) => {
+  const { dayNameCapitalized, dateFormatted, timeStart, timeEnd } = formatSlotLabel(slot);
+
+  return (
+    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+      <div className="flex items-center gap-2">
+        <CheckCircle2 size={18} className="text-primary" />
+        <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+      </div>
+      <div className="pl-6 space-y-1">
+        <p className="text-base font-semibold text-foreground">{dayNameCapitalized} {dateFormatted}</p>
+        <p className="text-sm text-muted-foreground">
+          {timeStart} – {timeEnd}
+        </p>
+      </div>
+    </div>
+  );
 };
 
 const ActivityDetail = () => {
@@ -919,60 +1019,20 @@ const ActivityDetail = () => {
                   )}
                     
                     {/* Récap "Créneau sélectionné" - bien visible avant le bouton */}
-                    {activity.period_type === "scolaire" && selectedSessionId && sessions.find(s => s.id === selectedSessionId) && (() => {
-                      const session = sessions.find(s => s.id === selectedSessionId)!;
-                      const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-                      const dayLabel = session.day_of_week !== null ? dayNames[session.day_of_week] : "Vacances";
-                      const timeLabel = session.start_time && session.end_time
-                        ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
-                        : "";
-                      // Formater la date sélectionnée
-                      const selectedDateLabel = selectedOccurrenceDate 
-                        ? new Date(selectedOccurrenceDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
-                        : null;
-                      return (
-                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 size={18} className="text-primary" />
-                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
-                          </div>
-                          <div className="pl-6 space-y-1">
-                            <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
-                            {selectedDateLabel && (
-                              <p className="text-sm font-medium text-primary">
-                                📅 Séance du {selectedDateLabel}
-                              </p>
-                            )}
-                            <p className="text-xs text-muted-foreground">
-                              {session.age_min}-{session.age_max} ans
-                            </p>
-                          </div>
-                        </div>
-                      );
+                    {activity.period_type === "scolaire" && selectedSessionId && (() => {
+                      const session = sessions.find(s => s.id === selectedSessionId);
+                      return session ? (
+                        <SelectedCreneauSession
+                          session={session}
+                          selectedOccurrenceDate={selectedOccurrenceDate}
+                        />
+                      ) : null;
                     })()}
-                    {activity.period_type !== "scolaire" && selectedSlotId && slots.find(s => s.id === selectedSlotId) && (() => {
-                      const selectedSlot = slots.find(s => s.id === selectedSlotId)!;
-                      const startDate = new Date(selectedSlot.start);
-                      const endDate = new Date(selectedSlot.end);
-                      const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
-                      const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-                      const dateFormatted = startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-                      const timeStart = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                      const timeEnd = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                      return (
-                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 size={18} className="text-primary" />
-                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
-                          </div>
-                          <div className="pl-6 space-y-1">
-                            <p className="text-base font-semibold text-foreground">{dayNameCapitalized} {dateFormatted}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {timeStart} – {timeEnd}
-                            </p>
-                          </div>
-                        </div>
-                      );
+                    {activity.period_type !== "scolaire" && selectedSlotId && (() => {
+                      const slot = slots.find(s => s.id === selectedSlotId);
+                      return slot ? (
+                        <SelectedCreneauSlot slot={slot} />
+                      ) : null;
                     })()}
 
                     <Button
