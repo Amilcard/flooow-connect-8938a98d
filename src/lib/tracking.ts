@@ -1,5 +1,6 @@
 import { useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 /**
  * Helper pour le tracking des actions utilisateur
@@ -37,7 +38,7 @@ export const logSearch = async (params: {
     });
   } catch (error) {
     // Fail silently pour ne pas bloquer l'UX
-    console.error('Error logging search:', error);
+    console.error(safeErrorMessage(error, 'Error logging search'));
   }
 };
 
@@ -61,7 +62,7 @@ export const logActivityView = async (params: {
       source: params.source
     });
   } catch (error) {
-    console.error('Error logging activity view:', error);
+    console.error(safeErrorMessage(error, 'Error logging activity view'));
   }
 };
 

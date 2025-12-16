@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface KidQuickAddModalProps {
   open: boolean;
@@ -98,7 +99,7 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded, allowAnonymous =
       onChildAdded(newChild?.id);
       onClose();
     } catch (error: unknown) {
-      console.error("Error adding child:", error);
+      console.error(safeErrorMessage(error, 'KidQuickAddModal.handleSubmit'));
       toast({
         title: "Erreur",
         description: error instanceof Error ? error.message : "Impossible d'ajouter l'enfant",

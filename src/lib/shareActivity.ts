@@ -2,6 +2,8 @@
  * Utilitaires pour partager des activités
  */
 
+import { safeErrorMessage } from '@/utils/sanitize';
+
 export interface ActivityShareData {
   id: string;
   title: string;
@@ -98,7 +100,7 @@ export const copyActivityLink = async (activity: ActivityShareData): Promise<boo
     await navigator.clipboard.writeText(url);
     return true;
   } catch (err) {
-    console.error('Failed to copy link:', err);
+    console.error(safeErrorMessage(err, 'Failed to copy link'));
     return false;
   }
 };

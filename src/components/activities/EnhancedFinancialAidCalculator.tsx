@@ -14,6 +14,7 @@ import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 import { useNavigate } from "react-router-dom";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface Child {
   id: string;
@@ -314,7 +315,7 @@ export const EnhancedFinancialAidCalculator = ({
         });
       }
     } catch (err) {
-      console.error("Error calculating aids:", err);
+      console.error(safeErrorMessage(err, 'EnhancedFinancialAidCalculator.handleCalculate'));
       toast({
         title: "Erreur",
         description: "Impossible de calculer les aides",

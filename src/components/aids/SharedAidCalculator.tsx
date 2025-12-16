@@ -22,6 +22,7 @@ import {
   getQFSectionTitle,
   getQFJustification
 } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 // ============================================================================
 // HELPER: Extract child age calculation to reduce cognitive complexity
@@ -632,7 +633,7 @@ export const SharedAidCalculator = ({
         });
       }
     } catch (err) {
-      console.error("Error calculating aids:", err);
+      console.error(safeErrorMessage(err, 'SharedAidCalculator.handleCalculate'));
       toast({
         title: "Erreur",
         description: "Impossible de calculer les aides",

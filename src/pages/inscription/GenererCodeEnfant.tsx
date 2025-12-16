@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { safeErrorMessage } from "@/utils/sanitize";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ const GenererCodeEnfant = () => {
         setRequestId(data[0].request_id);
       }
     } catch (error: unknown) {
-      console.error("Error generating code:", error);
+      console.error(safeErrorMessage(error, 'GenererCodeEnfant.generateCode'));
       toast({
         title: "Oups !",
         description: "Impossible de generer le code. Reessaie dans quelques instants.",

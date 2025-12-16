@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { safeErrorMessage } from "@/utils/sanitize";
 import { BackButton } from "@/components/BackButton";
 import { FinancialAidSelector } from "@/components/activities/FinancialAidSelector";
 import { LoadingState } from "@/components/LoadingState";
@@ -168,7 +169,7 @@ const StructureActivityForm = () => {
 
       navigate("/dashboard/structure");
     } catch (error: unknown) {
-      console.error("Activity save error:", error);
+      console.error(safeErrorMessage(error, 'StructureActivityForm.handleSubmit'));
       toast({
         title: "Erreur",
         description: error instanceof Error ? error.message : "Impossible d'enregistrer l'activité",

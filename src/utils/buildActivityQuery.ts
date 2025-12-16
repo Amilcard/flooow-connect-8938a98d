@@ -15,6 +15,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { FilterState } from '@/types/searchFilters';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 export const buildActivityQuery = (filters: FilterState) => {
   // FIX: Removed structures join to avoid Supabase embed error
@@ -157,7 +158,7 @@ export const getResultsCount = async (filters: FilterState): Promise<number> => 
   const { count, error } = await query.select('*', { count: 'exact', head: true });
 
   if (error) {
-    console.error('Error counting results:', error);
+    console.error(safeErrorMessage(error, 'Error counting results'));
     return 0;
   }
 

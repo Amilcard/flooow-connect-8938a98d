@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { safeErrorMessage } from '@/utils/sanitize';
 import KidAddModal from './KidAddModal';
 import {
   Plus,
@@ -97,7 +98,7 @@ const MesEnfants = () => {
 
       setChildren(parsedChildren);
     } catch (error) {
-      console.error('Erreur lors du chargement des enfants:', error);
+      console.error(safeErrorMessage(error, 'MesEnfants.loadChildren'));
       toast({
         title: "Chargement interrompu",
         description: "Impossible de charger vos enfants pour le moment. Vérifiez votre connexion et réessayez.",
@@ -147,7 +148,7 @@ const MesEnfants = () => {
         description: `Le profil de ${child?.first_name} a été supprimé.`,
       });
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+      console.error(safeErrorMessage(error, 'MesEnfants.handleDeleteChild'));
       toast({
         title: "Suppression impossible",
         description: "Nous n'avons pas pu supprimer ce profil. Veuillez réessayer.",

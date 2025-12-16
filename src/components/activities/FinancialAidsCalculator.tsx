@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface Props {
   activityPrice: number;
@@ -146,7 +147,7 @@ export const FinancialAidsCalculator = ({
 
         setAids(mappedAids);
       } catch (err) {
-        console.error("Error calculating financial aids:", err);
+        console.error(safeErrorMessage(err, 'FinancialAidsCalculator.calculateAids'));
         setError("Impossible de calculer les aides disponibles");
       } finally {
         setLoading(false);

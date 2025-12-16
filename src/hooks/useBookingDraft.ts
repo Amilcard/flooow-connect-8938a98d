@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 export interface BookingDraft {
   activityId: string;
@@ -32,7 +33,7 @@ export const useBookingDraft = (activityId: string, slotId: string) => {
           localStorage.removeItem(DRAFT_KEY);
         }
       } catch (error) {
-        console.error("Failed to parse booking draft:", error);
+        console.error(safeErrorMessage(error, 'Parse booking draft'));
         localStorage.removeItem(DRAFT_KEY);
       }
     }

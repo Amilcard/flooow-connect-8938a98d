@@ -28,6 +28,7 @@ import { ChildCard } from "@/components/Booking/ChildCard";
 import { BookingSkeleton } from "@/components/Booking/BookingSkeleton";
 import { BookingRecap } from "@/components/Booking/BookingRecap";
 import { InlineChildForm } from "@/components/Booking/InlineChildForm";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 // HELPERS: Reduce cognitive complexity
 
@@ -390,7 +391,7 @@ const Booking = () => {
       });
 
       if (error) {
-        console.error("Edge function error:", error);
+        console.error(safeErrorMessage(error, 'Booking edge function'));
         
         if (error.message?.includes("idempotency") || error.message?.includes("already exists")) {
           toast({
@@ -418,7 +419,7 @@ const Booking = () => {
       navigate(`/booking-status/${id}?status=pending&bookingId=${data.booking?.id}`);
       
     } catch (error: unknown) {
-      console.error("Booking error:", error);
+      console.error(safeErrorMessage(error, 'Booking submit'));
       const errorMessage = error instanceof Error ? error.message : "Impossible de finaliser la réservation";
       toast({
         title: "Erreur",

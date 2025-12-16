@@ -19,6 +19,7 @@ import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { QF_BRACKETS } from "@/lib/qfBrackets";
 import { calculateAidFromQF } from "@/utils/aidesCalculator";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface FinancialAid {
   aid_name: string;
@@ -125,7 +126,7 @@ export const StandaloneAidCalculator = () => {
         });
       }
     } catch (err) {
-      console.error("Error calculating aids:", err);
+      console.error(safeErrorMessage(err, 'StandaloneAidCalculator.handleCalculate'));
       toast({
         title: "Erreur",
         description: "Impossible de calculer les aides",

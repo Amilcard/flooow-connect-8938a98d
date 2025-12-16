@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronRight, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface TerritoryChoiceScreenProps {
   onNext: (territoryId: string | null, isCovered: boolean) => void;
@@ -127,7 +128,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
-        console.error("Erreur lors de la vérification du territoire:", error);
+        console.error(safeErrorMessage(error, 'TerritoryChoiceScreen.handleValidate.postalCodeCheck'));
       }
 
       // Territory found in postal_codes table
@@ -151,7 +152,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
       saveTerritoryToStorage(null, codeToCheck);
       onNext(null, false);
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error(safeErrorMessage(error, 'TerritoryChoiceScreen.handleValidate'));
       toast.error("Une erreur est survenue");
       onNext(null, false);
     } finally {

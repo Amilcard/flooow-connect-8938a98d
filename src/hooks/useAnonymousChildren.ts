@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSecureItem, setSecureItem, removeSecureItem } from '@/lib/secureStorage';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 export interface AnonymousChild {
   id: string;
@@ -33,7 +34,7 @@ export const useAnonymousChildren = () => {
           setAnonymousChildren(children);
         }
       } catch (error) {
-        console.error('Error loading anonymous children:', error);
+        console.error(safeErrorMessage(error, 'Load anonymous children'));
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +48,7 @@ export const useAnonymousChildren = () => {
     try {
       await setSecureItem(STORAGE_KEY, children);
     } catch (error) {
-      console.error('Error saving anonymous children:', error);
+      console.error(safeErrorMessage(error, 'Save anonymous children'));
     }
   }, []);
 

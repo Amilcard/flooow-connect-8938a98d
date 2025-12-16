@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 interface FinancialAid {
   aid_name: string;
@@ -46,7 +47,7 @@ export const useActivityBookingState = (activityId: string) => {
       try {
         localStorage.setItem(storageKey, JSON.stringify(state));
       } catch (error) {
-        console.error("Failed to save booking state:", error);
+        console.error(safeErrorMessage(error, 'Save booking state'));
       }
     }
   }, [state, storageKey, activityId]);

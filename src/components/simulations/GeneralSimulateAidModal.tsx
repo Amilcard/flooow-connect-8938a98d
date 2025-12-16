@@ -30,6 +30,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { KidQuickAddModal } from "@/components/KidQuickAddModal";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 // INTERFACES - Must be before helpers that reference them
 interface FinancialAid {
@@ -251,7 +252,7 @@ export const GeneralSimulateAidModal = ({
         setForm(prev => ({ ...prev, selectedChildId: childrenData[0].id }));
       }
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error(safeErrorMessage(error, 'GeneralSimulateAidModal.loadUserProfile'));
     }
   }, [user]);
 
@@ -263,7 +264,7 @@ export const GeneralSimulateAidModal = ({
         setAnonymousChildren(anonChildren);
       }
     } catch (error) {
-      console.error('Error loading anonymous children:', error);
+      console.error(safeErrorMessage(error, 'GeneralSimulateAidModal.loadAnonymousChildren'));
     }
   }, []);
 
@@ -322,7 +323,7 @@ export const GeneralSimulateAidModal = ({
 
       setHasSimulated(true);
     } catch (err: unknown) {
-      console.error('Erreur simulation:', err);
+      console.error(safeErrorMessage(err, 'GeneralSimulateAidModal.handleSimulate'));
       setError(err instanceof Error ? err.message : "Erreur lors de la simulation");
     } finally {
       setIsLoading(false);

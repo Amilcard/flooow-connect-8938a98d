@@ -15,6 +15,7 @@ import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 /** Profile JSON structure stored in profiles.profile_json */
 interface ProfileJson {
@@ -75,7 +76,7 @@ export default function SuperadminDashboard() {
           territories: territories?.length || 0
         };
       } catch (error) {
-        console.error('Error fetching global stats:', error);
+        console.error(safeErrorMessage(error, 'SuperadminDashboard.globalStats'));
         return {
           kpis: {},
           totalActivities: 0,

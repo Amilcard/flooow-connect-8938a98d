@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, UserPlus, X, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface InlineChildFormProps {
   userId: string;
@@ -113,7 +114,7 @@ export const InlineChildForm = ({
 
       onChildAdded(newChild.id);
     } catch (error: unknown) {
-      console.error("Error adding child:", error);
+      console.error(safeErrorMessage(error, 'InlineChildForm.handleSubmit'));
       toast({
         title: "Erreur",
         description: error instanceof Error ? error.message : "Impossible d'ajouter l'enfant",

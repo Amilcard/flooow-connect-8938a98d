@@ -10,6 +10,7 @@ import { BackButton } from "@/components/BackButton";
 import PageLayout from "@/components/PageLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { safeErrorMessage } from "@/utils/sanitize";
 import {
   EcoMobilityBadges,
   logLocalTrip,
@@ -163,7 +164,7 @@ const Itineraire = () => {
                 setGeolocating(false);
               }
             } catch (error) {
-              console.error('Geocoding error:', error);
+              console.error(safeErrorMessage(error, 'Geocoding'));
               setGeolocating(false);
             }
           },
@@ -203,7 +204,7 @@ const Itineraire = () => {
           loadGoogleMapsScript(data.token);
         }
       } catch (error) {
-        console.error('Error fetching Google Maps token:', error);
+        console.error(safeErrorMessage(error, 'Google Maps token'));
         toast.error("Erreur de configuration de la carte");
       }
     };
@@ -437,7 +438,7 @@ const Itineraire = () => {
         }
       });
     } catch (error) {
-      console.error('Error calculating route:', error);
+      console.error(safeErrorMessage(error, 'Calculate route'));
       setRouteError("Erreur technique lors du calcul. Veuillez réessayer.");
       setLoading(false);
     }

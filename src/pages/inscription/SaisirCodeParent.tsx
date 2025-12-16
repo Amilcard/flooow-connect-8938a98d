@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { safeErrorMessage } from "@/utils/sanitize";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -83,7 +84,7 @@ const SaisirCodeParent = () => {
         });
       }
     } catch (error: unknown) {
-      console.error("Error linking parent:", error);
+      console.error(safeErrorMessage(error, 'SaisirCodeParent.handleValidate'));
       toast({
         title: "Oups, quelque chose s'est mal passe",
         description: "Reessaie dans quelques instants ou demande a ton parent.",

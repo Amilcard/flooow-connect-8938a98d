@@ -11,6 +11,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { UserPlus, Clock } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { toast } from "sonner";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 const ChildSignup = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const ChildSignup = () => {
         .single();
 
       if (error) {
-        console.error("Error creating child:", error);
+        console.error(safeErrorMessage(error, 'Create child'));
         throw error;
       }
 
@@ -69,7 +70,7 @@ const ChildSignup = () => {
         navigate("/mon-compte/enfants");
       }, 100);
     } catch (error: unknown) {
-      console.error("Error creating child:", error);
+      console.error(safeErrorMessage(error, 'Create child'));
 
       // More specific error messages
       let errorMessage = "Erreur lors de la création du profil";

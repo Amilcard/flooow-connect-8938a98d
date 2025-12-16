@@ -2,6 +2,8 @@
  * Utilitaires pour partager des événements
  */
 
+import { safeErrorMessage } from '@/utils/sanitize';
+
 export interface EventShareData {
   id: string;
   title: string;
@@ -101,7 +103,7 @@ export const copyEventLink = async (event: EventShareData): Promise<boolean> => 
     await navigator.clipboard.writeText(url);
     return true;
   } catch (err) {
-    console.error('Failed to copy link:', err);
+    console.error(safeErrorMessage(err, 'Failed to copy link'));
     return false;
   }
 };

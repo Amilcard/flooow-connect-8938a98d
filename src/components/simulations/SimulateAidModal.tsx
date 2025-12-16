@@ -28,6 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 // HELPERS: Reduce cognitive complexity
 
@@ -179,7 +180,7 @@ export const SimulateAidModal = ({
       if (childrenError) throw childrenError;
       setChildren(childrenData || []);
     } catch (err) {
-      console.error('Erreur lors du chargement des données:', err);
+      console.error(safeErrorMessage(err, 'SimulateAidModal.loadUserProfile'));
     }
   }, [user]);
 
@@ -269,7 +270,7 @@ export const SimulateAidModal = ({
         onSimulationComplete(calculatedFinalPrice, mappedAids);
       }
     } catch (err) {
-      console.error('Erreur lors de la simulation:', err);
+      console.error(safeErrorMessage(err, 'SimulateAidModal.handleSimulate'));
       setError(err instanceof Error ? err.message : "Erreur lors du calcul des aides");
     } finally {
       setIsLoading(false);

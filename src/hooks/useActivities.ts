@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Activity } from "@/types/domain";
 import { toActivity } from "@/types/schemas";
 import type { ActivityRaw } from "@/types/domain";
-import { sanitizeSearchQuery } from "@/utils/sanitize";
+import { sanitizeSearchQuery, safeErrorMessage } from "@/utils/sanitize";
 
 export type { Activity } from "@/types/domain";
 
@@ -91,7 +91,7 @@ export async function fetchMockActivities() {
     headers: { 'Content-Type': 'application/json' }
   });
   if (error) {
-    console.error("Error fetching mock activities:", error);
+    console.error(safeErrorMessage(error, 'Fetch mock activities'));
     throw error;
   }
   return data;

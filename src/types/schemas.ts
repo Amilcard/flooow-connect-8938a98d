@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import type { Activity, ActivityRaw } from './domain';
 import { getActivityImage } from '@/lib/imageMapping';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 /**
  * Schema Zod pour validation des créneaux horaires (availability_slots)
@@ -207,7 +208,7 @@ export function validateAndParseActivity(raw: ActivityRaw): {
       success: true,
     };
   } catch (error) {
-    console.error(`❌ Erreur critique parsing activité ${raw.id}:`, error);
+    console.error(safeErrorMessage(error, `Erreur critique parsing activité ${raw.id}`));
     return {
       activity: null,
       success: false,

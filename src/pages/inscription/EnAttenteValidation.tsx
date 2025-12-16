@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { safeErrorMessage } from "@/utils/sanitize";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,7 @@ const EnAttenteValidation = () => {
       const { data, error } = await query.limit(1).single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Error fetching request:", error);
+        console.error(safeErrorMessage(error, 'EnAttenteValidation.fetchRequestStatus'));
       }
 
       if (data) {
@@ -82,7 +83,7 @@ const EnAttenteValidation = () => {
         }
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error(safeErrorMessage(error, 'EnAttenteValidation.fetchRequestStatus'));
     } finally {
       setIsLoading(false);
     }
