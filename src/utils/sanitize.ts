@@ -61,6 +61,7 @@ export function sanitizeSearchQuery(query: string, maxLength: number = 200): str
       .trim()
       .slice(0, maxLength)
       // Remove null bytes and control characters (security best practice)
+      // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x1F\x7F]/g, '')
   );
 }
