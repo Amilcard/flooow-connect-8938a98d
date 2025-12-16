@@ -83,14 +83,66 @@ const formatFullDate = (date: Date): string => {
  */
 const formatTimeRange = (startTime?: string, endTime?: string): string | null => {
   if (!startTime || !endTime) return null;
-  
+
   // Convertir "HH:mm:ss" en "HHhMM"
   const formatTime = (time: string) => {
     const parts = time.slice(0, 5).split(':');
     return `${parts[0]}h${parts[1]}`;
   };
-  
+
   return `${formatTime(startTime)} – ${formatTime(endTime)}`;
+};
+
+/**
+ * Determine card styling based on state
+ */
+const getCardClassName = (isDisabled: boolean, isFull: boolean, isSelected: boolean): string => {
+  if (isDisabled || isFull) {
+    return "opacity-50 bg-muted/50 cursor-not-allowed border-transparent";
+  }
+  if (isSelected) {
+    return "ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary shadow-md";
+  }
+  return "hover:bg-accent/50 hover:border-primary/30 border-transparent";
+};
+
+/**
+ * Get badge styling and text for places remaining
+ */
+interface BadgeConfig {
+  variant: "secondary" | "default" | "outline";
+  className: string;
+  text: string;
+}
+
+const getPlacesBadgeConfig = (
+  placesRemaining: number,
+  isSelected: boolean
+): BadgeConfig => {
+  const isFull = placesRemaining <= 0;
+  const isLowStock = placesRemaining > 0 && placesRemaining <= 3;
+
+  if (isFull) {
+    return {
+      variant: "secondary",
+      className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      text: "Complet",
+    };
+  }
+
+  if (isLowStock) {
+    return {
+      variant: isSelected ? "default" : "outline",
+      className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+      text: `Plus que ${placesRemaining} place${placesRemaining > 1 ? 's' : ''} !`,
+    };
+  }
+
+  return {
+    variant: isSelected ? "default" : "outline",
+    className: isSelected ? "" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    text: `${placesRemaining} places`,
+  };
 };
 
 export const SessionSlotCard = ({
@@ -113,28 +165,29 @@ export const SessionSlotCard = ({
     : null;
   
   const isFull = placesRemaining !== undefined && placesRemaining <= 0;
-  const isLowStock = placesRemaining !== undefined && placesRemaining > 0 && placesRemaining <= 3;
+
+  const handleClick = () => {
+    if (!isDisabled && !isFull) onClick?.();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === 'Enter' || e.key === ' ') && !isDisabled && !isFull) {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
 
   return (
     <Card
       data-slot-id={id}
       className={cn(
         "p-4 transition-all border-2 cursor-pointer",
-        isDisabled || isFull
-          ? "opacity-50 bg-muted/50 cursor-not-allowed border-transparent"
-          : isSelected
-            ? "ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary shadow-md"
-            : "hover:bg-accent/50 hover:border-primary/30 border-transparent"
+        getCardClassName(isDisabled, isFull, isSelected)
       )}
-      onClick={() => !isDisabled && !isFull && onClick?.()}
+      onClick={handleClick}
       role="button"
       tabIndex={isDisabled || isFull ? -1 : 0}
-      onKeyDown={(e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && !isDisabled && !isFull) {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
+      onKeyDown={handleKeyDown}
       aria-selected={isSelected}
       aria-disabled={isDisabled || isFull}
     >
@@ -185,27 +238,17 @@ export const SessionSlotCard = ({
           </div>
           
           {/* Badge places */}
-          {placesRemaining !== undefined && (
-            <Badge
-              variant={isFull ? "secondary" : isSelected ? "default" : "outline"}
-              className={cn(
-                "text-xs",
-                isFull
-                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                  : isLowStock
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : isSelected
-                      ? ""
-                      : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-              )}
-            >
-              {isFull 
-                ? "Complet" 
-                : isLowStock 
-                  ? `Plus que ${placesRemaining} place${placesRemaining > 1 ? 's' : ''} !` 
-                  : `${placesRemaining} places`}
-            </Badge>
-          )}
+          {placesRemaining !== undefined && (() => {
+            const badgeConfig = getPlacesBadgeConfig(placesRemaining, isSelected);
+            return (
+              <Badge
+                variant={badgeConfig.variant}
+                className={cn("text-xs", badgeConfig.className)}
+              >
+                {badgeConfig.text}
+              </Badge>
+            );
+          })()}
         </div>
       </div>
     </Card>
