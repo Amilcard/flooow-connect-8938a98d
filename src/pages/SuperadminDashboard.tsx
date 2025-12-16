@@ -16,6 +16,12 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
+/** Profile JSON structure stored in profiles.profile_json */
+interface ProfileJson {
+  first_name?: string;
+  last_name?: string;
+}
+
 export default function SuperadminDashboard() {
   const { toast } = useToast();
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
@@ -433,7 +439,7 @@ export default function SuperadminDashboard() {
                           <TableRow key={account.id}>
                             <TableCell className="font-medium">{account.email}</TableCell>
                             <TableCell>
-                              {(account.profile_json as any)?.first_name} {(account.profile_json as any)?.last_name}
+                              {(account.profile_json as ProfileJson | null)?.first_name} {(account.profile_json as ProfileJson | null)?.last_name}
                             </TableCell>
                             <TableCell>
                               {new Date(account.created_at).toLocaleDateString('fr-FR')}
