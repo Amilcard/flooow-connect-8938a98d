@@ -28,6 +28,18 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+/** Response type from link_parent_to_minor RPC */
+interface LinkParentResponse {
+  success: boolean;
+  error?: string;
+}
+
+/** Response type from validate_child_request RPC */
+interface ValidateChildResponse {
+  success: boolean;
+  error?: string;
+}
+
 const LierEnfant = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -130,8 +142,8 @@ const LierEnfant = () => {
 
       if (error) throw error;
 
-      const result = data as any;
-      if (result.success) {
+      const result = data as LinkParentResponse | null;
+      if (result?.success) {
         toast({
           title: "Enfant lie avec succes !",
           description: "Le compte a ete lie. Tu peux maintenant valider sa demande d'inscription.",
@@ -139,7 +151,7 @@ const LierEnfant = () => {
         setChildCode("");
         queryClient.invalidateQueries({ queryKey: ["child-requests"] });
       } else {
-        setLinkError(result.error || "Code invalide ou expire");
+        setLinkError(result?.error || "Code invalide ou expire");
       }
     } catch (err: unknown) {
       console.error("Link error:", err);
@@ -162,9 +174,9 @@ const LierEnfant = () => {
       });
 
       if (error) throw error;
-      return data as any;
+      return data as ValidateChildResponse | null;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["child-requests"] });
 
       if (variables.action === "validate") {

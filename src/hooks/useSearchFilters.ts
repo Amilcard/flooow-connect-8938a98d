@@ -40,12 +40,22 @@ export const DEFAULT_ADVANCED_FILTERS: AdvancedFilters = {
 export const useSearchFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // Valid sort options from FilterState type
+  const validSortOptions = ['pertinence', 'date_desc', 'price_asc', 'distance'] as const;
+  const sortParam = searchParams.get('sort');
+  const defaultSort: FilterState['sortBy'] = validSortOptions.includes(sortParam as typeof validSortOptions[number])
+    ? (sortParam as FilterState['sortBy'])
+    : 'pertinence';
+
+  const viewParam = searchParams.get('view');
+  const defaultView: FilterState['viewMode'] = viewParam === 'map' ? 'map' : 'list';
+
   const [filterState, setFilterState] = useState<FilterState>({
     searchQuery: searchParams.get('q') || '',
     quickFilters: { ...DEFAULT_QUICK_FILTERS },
     advancedFilters: { ...DEFAULT_ADVANCED_FILTERS },
-    sortBy: (searchParams.get('sort') as any) || 'pertinence',
-    viewMode: (searchParams.get('view') as any) || 'list'
+    sortBy: defaultSort,
+    viewMode: defaultView
   });
 
   // Load filters from URL on mount
@@ -130,7 +140,10 @@ export const useSearchFilters = () => {
   }, []);
 
   const updateSort = useCallback((sort: string) => {
-    setFilterState((prev) => ({ ...prev, sortBy: sort as any }));
+    const validOptions = ['pertinence', 'date_desc', 'price_asc', 'distance'] as const;
+    if (validOptions.includes(sort as typeof validOptions[number])) {
+      setFilterState((prev) => ({ ...prev, sortBy: sort as FilterState['sortBy'] }));
+    }
   }, []);
 
   const updateViewMode = useCallback((mode: 'map' | 'list') => {

@@ -25,9 +25,15 @@ import {
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
+/** Extended user type with territory - territory_id comes from profile, not auth */
+interface UserWithTerritory {
+  territory_id?: string;
+}
+
 export default function EventStatistics() {
   const { user } = useAuth();
-  const userTerritoryId = (user as any)?.territory_id;
+  // territory_id is an extended property not in base AuthUser type
+  const userTerritoryId = (user as UserWithTerritory | null)?.territory_id;
   
   const { data: stats, isLoading, error } = useEventStats(userTerritoryId);
 
