@@ -24,7 +24,7 @@
 
 | Priorité | Objectif | Status |
 |----------|----------|--------|
-| P0 | Sécurité DeepSource (JS-A1004, JS-0440) | À traiter |
+| P0 | Sécurité DeepSource (JS-A1004, JS-0440) | ✅ Traité |
 | P1 | Quality Gate SonarCloud (CC ≤ 15) | En cours - 16/21 fichiers traités |
 | P2 | Dette technique (any, non-null assertions) | Reporté |
 
@@ -60,9 +60,14 @@
 
 ## TÂCHES RESTANTES (Priorisées)
 
-### P0 - Sécurité (DeepSource)
-- [ ] **JS-A1004** - Données utilisateur dans logs → Implémenter redaction
-- [ ] **JS-0440** - dangerouslySetInnerHTML → Sanitizer ou supprimer
+### P0 - Sécurité (DeepSource) ✅ COMPLÉTÉ
+- [x] **JS-A1004** - Données utilisateur dans logs
+  - Helper `redactSensitiveData()` créé dans `src/utils/sanitize.ts`
+  - Helper `safeErrorMessage()` pour logging d'erreurs sécurisé
+- [x] **JS-0440** - dangerouslySetInnerHTML (XSS)
+  - Composant `FormattedText` créé dans `src/components/ui/formatted-text.tsx`
+  - Remplace `dangerouslySetInnerHTML` par rendu React sécurisé
+  - Fichiers corrigés: `SimulateurV2.tsx`, `QuickEstimateCard.tsx`
 
 ### P1 - Quality Gate (SonarCloud)
 Si les 21 issues persistent après refresh:

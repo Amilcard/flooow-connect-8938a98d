@@ -5,12 +5,12 @@
 
 ---
 
-## ISSUES SÉCURITÉ (P0)
+## ISSUES SÉCURITÉ (P0) ✅ TRAITÉ
 
 ### JS-A1004 - Données utilisateur dans les logs
 
 **Gravité:** Critical
-**Status:** À traiter
+**Status:** ✅ Résolu
 
 **Problème:**
 ```typescript
@@ -42,12 +42,27 @@ console.log("User data:", redact(userData));
 grep -r "console\.\(log\|error\|warn\)" src/ --include="*.ts" --include="*.tsx" | grep -v node_modules
 ```
 
+**✅ Solution implémentée:**
+```typescript
+// src/utils/sanitize.ts - Nouvelles fonctions ajoutées
+
+import { redactSensitiveData, safeErrorMessage } from '@/utils/sanitize';
+
+// Usage pour les objets
+console.log("User data:", redactSensitiveData(userData));
+// Output: { email: '[REDACTED]', name: 'John' }
+
+// Usage pour les erreurs
+console.error(safeErrorMessage(error, 'Auth check'));
+// Output: "[Auth check] Error: message"
+```
+
 ---
 
 ### JS-0440 - dangerouslySetInnerHTML
 
 **Gravité:** High
-**Status:** À traiter
+**Status:** ✅ Résolu
 
 **Problème:**
 ```tsx
@@ -77,6 +92,24 @@ grep -r "dangerouslySetInnerHTML" src/ --include="*.tsx"
 **Fichiers connus avec dangerouslySetInnerHTML:**
 - `src/pages/aides/SimulateurV2.tsx` (ligne ~228) - message_incitation
 - Possiblement d'autres dans les modals d'aide
+
+**✅ Solution implémentée:**
+```tsx
+// src/components/ui/formatted-text.tsx - Nouveau composant
+
+import { FormattedText } from '@/components/ui/formatted-text';
+
+// Avant (dangereux)
+<span dangerouslySetInnerHTML={{ __html: text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+
+// Après (sécurisé)
+<FormattedText>{text}</FormattedText>
+// Supporte: **bold** et *italic*
+```
+
+**Fichiers corrigés:**
+- ✅ `src/pages/aides/SimulateurV2.tsx`
+- ✅ `src/components/aids/QuickEstimateCard.tsx`
 
 ---
 

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EstimateResult } from '@/utils/FinancialAidEngine';
 import { ChevronRight, Sparkles, Info, AlertCircle } from 'lucide-react';
+import { FormattedText } from '@/components/ui/formatted-text';
 
 interface QuickEstimateCardProps {
   result: EstimateResult;
@@ -111,7 +112,7 @@ export function QuickEstimateCard({
               <AlertDescription className={`text-sm ${
                 aides_potentielles.length > 0 ? 'text-blue-900' : 'text-foreground'
               }`}>
-                <span dangerouslySetInnerHTML={{ __html: message_incitation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                <FormattedText>{message_incitation}</FormattedText>
               </AlertDescription>
             </Alert>
           )}

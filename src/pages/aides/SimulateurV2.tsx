@@ -25,6 +25,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, ChevronRight } from 'lucide-react';
+import { FormattedText } from '@/components/ui/formatted-text';
 
 type EstimationMode = 'quick' | 'fast' | 'complete';
 
@@ -222,15 +223,9 @@ const SimulateurV2 = () => {
                 {fastResult.message_incitation && (
                   <Alert className="bg-blue-50 border-blue-200">
                     <Info className="h-4 w-4 text-blue-600" />
-                    <AlertDescription
-                      className="text-sm text-blue-900"
-                      dangerouslySetInnerHTML={{
-                        __html: fastResult.message_incitation.replace(
-                          /\*\*(.*?)\*\*/g,
-                          '<strong>$1</strong>'
-                        ),
-                      }}
-                    />
+                    <AlertDescription className="text-sm text-blue-900">
+                      <FormattedText>{fastResult.message_incitation}</FormattedText>
+                    </AlertDescription>
                   </Alert>
                 )}
 

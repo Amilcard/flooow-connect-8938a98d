@@ -5,7 +5,139 @@
  * - SQL/PostgREST injection
  * - LIKE wildcard abuse
  * - XSS (when needed beyond React's auto-escaping)
+ * - Sensitive data exposure in logs (JS-A1004)
  */
+
+/**
+ * List of sensitive field names that should be redacted in logs
+ */
+const SENSITIVE_FIELDS = [
+  'email',
+  'password',
+  'mot_de_passe',
+  'token',
+  'access_token',
+  'refresh_token',
+  'phone',
+  'telephone',
+  'mobile',
+  'dob',
+  'date_naissance',
+  'birthdate',
+  'ssn',
+  'numero_secu',
+  'address',
+  'adresse',
+  'iban',
+  'carte',
+  'card_number',
+  'cvv',
+  'secret',
+  'api_key',
+  'apikey',
+  'authorization',
+  'cookie',
+  'session',
+] as const;
+
+/**
+ * Redact sensitive data from objects before logging
+ *
+ * Prevents exposure of PII and sensitive information in logs (JS-A1004).
+ * Recursively processes nested objects and arrays.
+ *
+ * @param data - The data to redact
+ * @param maxDepth - Maximum recursion depth (default: 5)
+ * @returns Redacted copy of the data safe for logging
+ *
+ * @example
+ * ```ts
+ * const user = { email: 'test@example.com', name: 'John' };
+ * console.log(redactSensitiveData(user));
+ * // Output: { email: '[REDACTED]', name: 'John' }
+ *
+ * const error = new Error('Auth failed');
+ * console.error('Error:', redactSensitiveData({ error, user }));
+ * ```
+ */
+export function redactSensitiveData(data: unknown, maxDepth: number = 5): unknown {
+  if (maxDepth <= 0) {
+    return '[MAX_DEPTH_REACHED]';
+  }
+
+  // Handle null/undefined
+  if (data === null || data === undefined) {
+    return data;
+  }
+
+  // Handle primitives
+  if (typeof data !== 'object') {
+    return data;
+  }
+
+  // Handle Error objects specially
+  if (data instanceof Error) {
+    return {
+      name: data.name,
+      message: data.message,
+      // Don't include stack trace in production as it may leak file paths
+    };
+  }
+
+  // Handle arrays
+  if (Array.isArray(data)) {
+    return data.map(item => redactSensitiveData(item, maxDepth - 1));
+  }
+
+  // Handle objects
+  const result: Record<string, unknown> = {};
+  const record = data as Record<string, unknown>;
+
+  for (const key of Object.keys(record)) {
+    const lowerKey = key.toLowerCase();
+    const isSensitive = SENSITIVE_FIELDS.some(field => lowerKey.includes(field));
+
+    if (isSensitive) {
+      result[key] = '[REDACTED]';
+    } else {
+      result[key] = redactSensitiveData(record[key], maxDepth - 1);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Create a safe error message for logging
+ *
+ * Extracts error information without exposing sensitive details.
+ *
+ * @param error - The error to process
+ * @param context - Optional context string (will be sanitized)
+ * @returns Safe string for logging
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await login(credentials);
+ * } catch (error) {
+ *   console.error(safeErrorMessage(error, 'Login attempt'));
+ * }
+ * ```
+ */
+export function safeErrorMessage(error: unknown, context?: string): string {
+  const prefix = context ? `[${context}] ` : '';
+
+  if (error instanceof Error) {
+    return `${prefix}${error.name}: ${error.message}`;
+  }
+
+  if (typeof error === 'string') {
+    return `${prefix}Error: ${error}`;
+  }
+
+  return `${prefix}Unknown error occurred`;
+}
 
 /**
  * Escape LIKE wildcard characters in search queries
