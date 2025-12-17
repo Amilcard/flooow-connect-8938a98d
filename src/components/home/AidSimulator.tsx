@@ -36,9 +36,9 @@ export const AidSimulator = () => {
   const [showResult, setShowResult] = useState(false);
 
   const handleSimuler = () => {
-    const qfNum = parseFloat(qf);
-    const ageNum = parseInt(age, 10);
-    const prixNum = parseFloat(prix);
+    const qfNum = Number.parseFloat(qf);
+    const ageNum = Number.parseInt(age, 10);
+    const prixNum = Number.parseFloat(prix);
 
     // Validation simple
     if (!qfNum || !ageNum || !prixNum || qfNum < 0 || ageNum < 0 || prixNum < 0) {

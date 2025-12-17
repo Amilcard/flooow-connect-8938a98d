@@ -12,7 +12,7 @@ export const calculateCarbonSaved = (
   distanceKm: number,
   carbonFactorKgPerKm: number = 0.12
 ): number => {
-  return parseFloat((distanceKm * carbonFactorKgPerKm).toFixed(4));
+  return Number.parseFloat((distanceKm * carbonFactorKgPerKm).toFixed(4));
 };
 
 /**
@@ -74,11 +74,11 @@ export const aggregateCarbonSavings = (
   });
 
   // Arrondir pour affichage
-  summary.total_kg = parseFloat(summary.total_kg.toFixed(2));
-  summary.by_mode.covoiturage = parseFloat(summary.by_mode.covoiturage.toFixed(2));
-  summary.by_mode.bus = parseFloat(summary.by_mode.bus.toFixed(2));
-  summary.by_mode.train = parseFloat(summary.by_mode.train.toFixed(2));
-  summary.by_mode.bike = parseFloat(summary.by_mode.bike.toFixed(2));
+  summary.total_kg = Number.parseFloat(summary.total_kg.toFixed(2));
+  summary.by_mode.covoiturage = Number.parseFloat(summary.by_mode.covoiturage.toFixed(2));
+  summary.by_mode.bus = Number.parseFloat(summary.by_mode.bus.toFixed(2));
+  summary.by_mode.train = Number.parseFloat(summary.by_mode.train.toFixed(2));
+  summary.by_mode.bike = Number.parseFloat(summary.by_mode.bike.toFixed(2));
 
   return summary;
 };

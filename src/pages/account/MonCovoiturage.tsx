@@ -256,7 +256,7 @@ const MonCovoiturage = () => {
                       min="1"
                       max="8"
                       value={newCovoiturage.seats}
-                      onChange={(e) => setNewCovoiturage({...newCovoiturage, seats: parseInt(e.target.value, 10) || 1})}
+                      onChange={(e) => setNewCovoiturage({...newCovoiturage, seats: Number.parseInt(e.target.value, 10) || 1})}
                     />
                   </div>
                 )}

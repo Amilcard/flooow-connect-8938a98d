@@ -36,8 +36,12 @@ export const AdvancedFiltersModal = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Fermer les filtres"
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
       />
 
       {/* Modal */}

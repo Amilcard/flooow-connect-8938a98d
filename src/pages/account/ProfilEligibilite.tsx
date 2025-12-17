@@ -63,8 +63,8 @@ const ProfilEligibilite = () => {
       return;
     }
 
-    const ageNum = parseInt(age, 10);
-    const qfNum = parseInt(qf, 10);
+    const ageNum = Number.parseInt(age, 10);
+    const qfNum = Number.parseInt(qf, 10);
     const aids: EstimatedAid[] = [];
 
     // Pass'Sport

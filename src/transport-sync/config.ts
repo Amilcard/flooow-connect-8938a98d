@@ -31,9 +31,9 @@ export const getConfig = (): TransportSyncConfig => {
     mode,
     supabaseUrl: process.env.TS_SUPABASE_URL,
     supabaseServiceRoleKey: process.env.TS_SUPABASE_SERVICE_ROLE_KEY,
-    chunkSize: parseInt(process.env.TS_CHUNK_SIZE || '200', 10),
-    reconcileDays: parseInt(process.env.TS_RECONCILE_DAYS || '1', 10),
-    defaultSpeedKmh: parseInt(process.env.TS_DEFAULT_SPEED_KMH || '40', 10),
+    chunkSize: Number.parseInt(process.env.TS_CHUNK_SIZE || '200', 10),
+    reconcileDays: Number.parseInt(process.env.TS_RECONCILE_DAYS || '1', 10),
+    defaultSpeedKmh: Number.parseInt(process.env.TS_DEFAULT_SPEED_KMH || '40', 10),
     carbonFactorKgPerKm: 0.12, // 120g CO2/km économisé vs voiture
   };
 };

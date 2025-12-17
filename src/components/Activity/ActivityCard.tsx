@@ -97,8 +97,8 @@ export const ActivityCard = ({
   // LOT 1 - T1_1: Fallback image intelligent basé sur titre, catégorie et âge
   // Extraction de l'âge depuis ageRange si disponible (format: "X-Y ans")
   const ageMatch = ageRange?.match(/^(\d+)-(\d+)/);
-  const ageMin = ageMatch ? parseInt(ageMatch[1], 10) : 6;
-  const ageMax = ageMatch ? parseInt(ageMatch[2], 10) : 17;
+  const ageMin = ageMatch ? Number.parseInt(ageMatch[1], 10) : 6;
+  const ageMax = ageMatch ? Number.parseInt(ageMatch[2], 10) : 17;
   const fallbackImage = getActivityImage(title, category, ageMin, ageMax);
   const displayImage = image || fallbackImage;
 

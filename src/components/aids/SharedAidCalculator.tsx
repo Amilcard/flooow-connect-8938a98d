@@ -39,7 +39,7 @@ function getChildAgeForDisplay(
     const child = children.find(c => c.id === selectedChildId);
     return child ? calculateAge(child.dob) : 0;
   }
-  return parseInt(manualChildAge, 10) || 0;
+  return Number.parseInt(manualChildAge, 10) || 0;
 }
 
 // ============================================================================
@@ -90,7 +90,7 @@ function mapQuickEstimateToAids(result: {
 
   const potential = result.aides_potentielles.map(res => {
     const matches = res.montant_possible.match(/(\d+)/g);
-    const amount = matches ? parseInt(matches[matches.length - 1], 10) : 0;
+    const amount = matches ? Number.parseInt(matches[matches.length - 1], 10) : 0;
     return {
       aid_name: res.name,
       amount,
@@ -495,7 +495,7 @@ export const SharedAidCalculator = ({
       return;
     }
     // Validation âge vs tranche activité
-    const checkAge = showChildSelector ? children?.find(c => c.id === selectedChildId)?.age : parseInt(manualChildAge, 10);
+    const checkAge = showChildSelector ? children?.find(c => c.id === selectedChildId)?.age : Number.parseInt(manualChildAge, 10);
     if (checkAge && (checkAge < ageMin || checkAge > ageMax)) {
       toast({
         title: "Âge non compatible",
@@ -528,8 +528,8 @@ export const SharedAidCalculator = ({
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = parseInt(manualChildAge, 10);
-      if (isNaN(childAge) || childAge < 0 || childAge > 18) {
+      childAge = Number.parseInt(manualChildAge, 10);
+      if (Number.isNaN(childAge) || childAge < 0 || childAge > 18) {
         toast({
           title: "Âge invalide",
           description: "Veuillez indiquer un âge entre 0 et 18 ans",
@@ -551,10 +551,10 @@ export const SharedAidCalculator = ({
         setIsQuickEstimate(false);
         const context: EligibilityParams = {
           age: childAge,
-          quotient_familial: parseInt(quotientFamilial, 10) || 0,
+          quotient_familial: Number.parseInt(quotientFamilial, 10) || 0,
           code_postal: cityCode || "00000",
           ville: "",
-          departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+          departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
           prix_activite: activityPrice,
           type_activite,
           periode: activityPeriod === 'vacances' ? 'vacances' : 'saison_scolaire',

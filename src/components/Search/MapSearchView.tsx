@@ -535,12 +535,22 @@ export const MapSearchView = ({
             )}
           >
             {/* Handle */}
-            <div 
-              className="flex justify-center py-3 cursor-pointer"
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Basculer le panneau de liste"
+              className="flex justify-center py-3 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
               onClick={() => {
                 if (bottomSheetState === 'collapsed') setBottomSheetState('half');
                 else if (bottomSheetState === 'half') setBottomSheetState('full');
                 else setBottomSheetState('collapsed');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  if (bottomSheetState === 'collapsed') setBottomSheetState('half');
+                  else if (bottomSheetState === 'half') setBottomSheetState('full');
+                  else setBottomSheetState('collapsed');
+                }
               }}
             >
               <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />

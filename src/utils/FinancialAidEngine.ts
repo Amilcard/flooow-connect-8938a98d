@@ -110,7 +110,7 @@ function isInAgeRange(age: number, min: number, max: number): boolean {
 }
 
 function getDepartementFromPostalCode(code_postal: string | undefined): number {
-  return code_postal ? parseInt(code_postal.substring(0, 2)) : 0;
+  return code_postal ? Number.parseInt(code_postal.substring(0, 2)) : 0;
 }
 
 // ============================================================================
@@ -782,7 +782,7 @@ function calculateMaxPotentialAmount(aides_potentielles: EstimateResult['aides_p
     const matches = aid.montant_possible.match(/(\d+)/g);
     if (!matches || matches.length === 0) return sum;
     const lastMatch = matches[matches.length - 1];
-    return sum + (lastMatch ? parseInt(lastMatch, 10) : 0);
+    return sum + (lastMatch ? Number.parseInt(lastMatch, 10) : 0);
   }, 0);
 }
 
@@ -853,7 +853,7 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
   const aides_potentielles: EstimateResult['aides_potentielles'] = [];
 
   // Déterminer le département depuis le code postal
-  const departement = params.code_postal ? parseInt(params.code_postal.substring(0, 2)) : 0;
+  const departement = params.code_postal ? Number.parseInt(params.code_postal.substring(0, 2)) : 0;
 
   // 1. Pass Culture (certain si âge 15-17 + culture)
   if (params.age >= 15 && params.age <= 17 && params.type_activite === 'culture') {
@@ -1052,7 +1052,7 @@ function calculateMaxPotentialAmountWithDefault(aides_potentielles: EstimateResu
     const matches = aid.montant_possible.match(/(\d+)/g);
     if (!matches || matches.length === 0) return sum + 20; // Default for "Variable"
     const lastMatch = matches[matches.length - 1];
-    return sum + (lastMatch ? parseInt(lastMatch, 10) : 20);
+    return sum + (lastMatch ? Number.parseInt(lastMatch, 10) : 20);
   }, 0);
 }
 

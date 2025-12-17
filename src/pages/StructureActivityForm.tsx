@@ -132,9 +132,9 @@ const StructureActivityForm = () => {
         title: formData.title,
         description: formData.description || null,
         category: formData.category,
-        price_base: formData.priceBase ? parseFloat(formData.priceBase) : 0,
-        age_min: formData.ageMin ? parseInt(formData.ageMin, 10) : null,
-        age_max: formData.ageMax ? parseInt(formData.ageMax, 10) : null,
+        price_base: formData.priceBase ? Number.parseFloat(formData.priceBase) : 0,
+        age_min: formData.ageMin ? Number.parseInt(formData.ageMin, 10) : null,
+        age_max: formData.ageMax ? Number.parseInt(formData.ageMax, 10) : null,
         accepts_aid_types: JSON.stringify(selectedAids),
         published: true
       };

@@ -55,7 +55,7 @@ const buildSimulationParams = (
   quotient_familial: qf,
   code_postal: cityCode || "",
   ville: "",
-  departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+  departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
   prix_activite: activityPrice,
   type_activite: getTypeActivite(activityCategories),
   periode: 'saison_scolaire',
@@ -227,8 +227,8 @@ export const SimulateAidModal = ({
         childAge = calculateAge(selectedChild.dob);
       } else {
         // Saisie manuelle de l'âge
-        childAge = parseInt(form.selectedChildId, 10);
-        if (isNaN(childAge) || childAge < 6 || childAge > 18) {
+        childAge = Number.parseInt(form.selectedChildId, 10);
+        if (Number.isNaN(childAge) || childAge < 6 || childAge > 18) {
           setError("L'âge doit être entre 6 et 18 ans");
           setIsLoading(false);
           return;
@@ -241,7 +241,7 @@ export const SimulateAidModal = ({
         return;
       }
 
-      const qf = parseInt(form.quotientFamilial, 10) || 0;
+      const qf = Number.parseInt(form.quotientFamilial, 10) || 0;
 
       // Simulation d'un délai pour l'UX
       await new Promise(resolve => setTimeout(resolve, 500));

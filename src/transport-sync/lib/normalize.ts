@@ -77,7 +77,7 @@ export const normalizeOffer = (
 
   // Calcul carbone économisé
   const distance_km = distance_m / 1000;
-  const carbon_saved_kg = raw.carbon_saved_kg || parseFloat((distance_km * carbonFactorKgPerKm).toFixed(4));
+  const carbon_saved_kg = raw.carbon_saved_kg || Number.parseFloat((distance_km * carbonFactorKgPerKm).toFixed(4));
 
   // Prix en centimes (évite float)
   const price_cents = raw.price_cents || 0;

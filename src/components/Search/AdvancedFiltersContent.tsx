@@ -163,9 +163,12 @@ export const AdvancedFiltersContent = ({
             return (
               <div
                 key={type}
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleArrayItem('categories', type)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleArrayItem('categories', type)}
                 className={cn(
-                  "cursor-pointer rounded-lg border p-3 text-sm font-medium transition-all text-center flex items-center justify-center h-14",
+                  "cursor-pointer rounded-lg border p-3 text-sm font-medium transition-all text-center flex items-center justify-center h-14 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1",
                   isSelected
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-muted hover:border-primary/50 hover:bg-accent"
