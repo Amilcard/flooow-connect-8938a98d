@@ -21,6 +21,10 @@ export const MobiliteCard = () => {
         <img
           src={ecoMobiliteImg}
           alt="Mes trajets éco-mobilité"
+          width={320}
+          height={400}
+          loading="eager"
+          decoding="async"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradient overlay pour lisibilité */}

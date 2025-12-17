@@ -13,6 +13,10 @@
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="dns-prefetch" href="https://images.unsplash.com">
 
+    <!-- Preload: Critical font files (FCP optimization) -->
+    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecg.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2" crossorigin>
+
     <!-- Fonts: swap display to prevent FOIT (FCP optimization) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -33,17 +37,19 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Usetiful Integration -->
+    <!-- Usetiful Integration (deferred for TTI optimization) -->
     <script>
-      (function(w,d,s){
-        var a=d.getElementsByTagName('head')[0];
-        var r=d.createElement('script');
-        r.async=1;
-        r.src=s;
-        r.setAttribute('id','usetifulScript');
-        r.dataset.token="f6b1a6fe197572f50824337fc44c5acb";
-        a.appendChild(r);
-      })(window,document,'https://www.usetiful.com/dist/usetiful.js');
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var a=document.getElementsByTagName('head')[0];
+          var r=document.createElement('script');
+          r.async=1;
+          r.src='https://www.usetiful.com/dist/usetiful.js';
+          r.setAttribute('id','usetifulScript');
+          r.dataset.token="f6b1a6fe197572f50824337fc44c5acb";
+          a.appendChild(r);
+        }, 2000);
+      });
     </script>
   </body>
 </html>

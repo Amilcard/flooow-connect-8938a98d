@@ -22,6 +22,10 @@ export const BonEspritCard = () => {
         <img
           src={actualitePrixImg}
           alt="Clubs solidaires"
+          width={320}
+          height={400}
+          loading="eager"
+          decoding="async"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradient overlay pour lisibilité */}
