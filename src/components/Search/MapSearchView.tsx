@@ -563,8 +563,6 @@ export const MapSearchView = ({
               >
                 {bottomSheetState === 'full' ? (
                   <ChevronDown className="w-4 h-4" />
-                ) : bottomSheetState === 'collapsed' ? (
-                  <ChevronUp className="w-4 h-4" />
                 ) : (
                   <ChevronUp className="w-4 h-4" />
                 )}

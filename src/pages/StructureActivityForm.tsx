@@ -89,7 +89,7 @@ const StructureActivityForm = () => {
           ageMin: data.age_min ? String(data.age_min) : "",
           ageMax: data.age_max ? String(data.age_max) : "",
           address: userStructure.address || "",
-          postalCode: userStructure.territory_id ? "" : "" // Will be fetched from territory
+          postalCode: "" // Will be fetched from territory
         });
 
         // Parse accepts_aid_types (it's jsonb, could be array or string array)

@@ -14,14 +14,9 @@ interface AidCardProps {
 }
 
 export function AidCard({ aid }: AidCardProps) {
-  const handleCTAClick = (url: string, openMode: string) => {
-    // In-app webview mode (if supported by platform)
-    if (openMode === 'in_app_webview') {
-      // For web, open in new tab - mobile app can intercept and open webview
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
+  const handleCTAClick = (url: string, _openMode: string) => {
+    // Open in new tab - mobile app can intercept and open webview if needed
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handlePhoneClick = (telHref: string | null) => {
