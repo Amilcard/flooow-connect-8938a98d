@@ -26,7 +26,7 @@ const ValidationsParentales = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showRejectDialog, setShowRejectDialog] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
+  const [selectedBookingId, setSelectedBookingId] = useState("");
   const [rejectReason, setRejectReason] = useState("");
 
   // Fetch bookings awaiting parental validation

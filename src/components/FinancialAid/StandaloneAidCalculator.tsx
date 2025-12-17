@@ -43,9 +43,9 @@ export const StandaloneAidCalculator = () => {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
-  const [ageEnfant, setAgeEnfant] = useState<string>("");
-  const [quotientFamilial, setQuotientFamilial] = useState<string>("");
-  const [cityCode, setCityCode] = useState<string>("");
+  const [ageEnfant, setAgeEnfant] = useState("");
+  const [quotientFamilial, setQuotientFamilial] = useState("");
+  const [cityCode, setCityCode] = useState("");
   const [activityPrice, setActivityPrice] = useState<string>(String(DEFAULT_ACTIVITY_PRICE));
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);

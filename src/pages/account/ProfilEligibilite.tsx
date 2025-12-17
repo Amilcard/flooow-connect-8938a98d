@@ -21,12 +21,12 @@ interface EstimatedAid {
 const ProfilEligibilite = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [age, setAge] = useState<string>("");
-  const [hasARS, setHasARS] = useState<string>("");
-  const [hasAEEH, setHasAEEH] = useState<string>("");
-  const [hasAAH, setHasAAH] = useState<string>("");
-  const [isStudent, setIsStudent] = useState<string>("");
-  const [qf, setQf] = useState<string>("");
+  const [age, setAge] = useState("");
+  const [hasARS, setHasARS] = useState("");
+  const [hasAEEH, setHasAEEH] = useState("");
+  const [hasAAH, setHasAAH] = useState("");
+  const [isStudent, setIsStudent] = useState("");
+  const [qf, setQf] = useState("");
   const [estimatedAids, setEstimatedAids] = useState<EstimatedAid[]>([]);
 
   // Récupérer le profil utilisateur

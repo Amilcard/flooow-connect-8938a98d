@@ -119,10 +119,10 @@ export const EnhancedFinancialAidCalculator = ({
   const { state: savedState, saveAidCalculation, clearState } = useActivityBookingState(activityId);
 
   const [loading, setLoading] = useState(false);
-  const [selectedChildId, setSelectedChildId] = useState<string>("");
-  const [manualChildAge, setManualChildAge] = useState<string>("");
-  const [quotientFamilial, setQuotientFamilial] = useState<string>("");
-  const [cityCode, setCityCode] = useState<string>("");
+  const [selectedChildId, setSelectedChildId] = useState("");
+  const [manualChildAge, setManualChildAge] = useState("");
+  const [quotientFamilial, setQuotientFamilial] = useState("");
+  const [cityCode, setCityCode] = useState("");
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
 

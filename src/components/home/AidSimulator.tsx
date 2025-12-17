@@ -29,9 +29,9 @@ interface SimulationResult {
 
 export const AidSimulator = () => {
   const navigate = useNavigate();
-  const [qf, setQf] = useState<string>('');
-  const [age, setAge] = useState<string>('');
-  const [prix, setPrix] = useState<string>('');
+  const [qf, setQf] = useState('');
+  const [age, setAge] = useState('');
+  const [prix, setPrix] = useState('');
   const [resultat, setResultat] = useState<SimulationResult | null>(null);
   const [showResult, setShowResult] = useState(false);
 

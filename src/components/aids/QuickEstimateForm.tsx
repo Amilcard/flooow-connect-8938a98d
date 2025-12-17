@@ -26,11 +26,11 @@ interface QuickEstimateFormProps {
 }
 
 export function QuickEstimateForm({ onSubmit, defaultPrice = 60 }: QuickEstimateFormProps) {
-  const [age, setAge] = useState<string>('');
-  const [typeActivite, setTypeActivite] = useState<string>('');
+  const [age, setAge] = useState('');
+  const [typeActivite, setTypeActivite] = useState('');
   const [prix, setPrix] = useState<string>(String(defaultPrice));
-  const [ville, setVille] = useState<string>('');
-  const [codePostal, setCodePostal] = useState<string>('');
+  const [ville, setVille] = useState('');
+  const [codePostal, setCodePostal] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

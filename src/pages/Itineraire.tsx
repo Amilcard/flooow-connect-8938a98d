@@ -73,7 +73,7 @@ const Itineraire = () => {
   const mapRef = useRef<GoogleMapsMap | null>(null);
   const directionsRenderer = useRef<GoogleMapsDirectionsRenderer | null>(null);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-  const [_googleMapsToken, setGoogleMapsToken] = useState<string>(""); // Token stored for potential future API calls
+  const [_googleMapsToken, setGoogleMapsToken] = useState(""); // Token stored for potential future API calls
 
   const transportType = searchParams.get('type') || 'bus';
   const destination = searchParams.get('destination') || '';

@@ -535,7 +535,7 @@ const ActivityDetail = () => {
     : formatAgeRangeForDetail(activity.age_min, activity.age_max);
 
   // Calculer les prochaines dates pour un jour de semaine donné - retourne objets {iso, label, labelShort}
-  const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array<{iso: string, label: string, labelShort: string}> => {
+  const getNextDatesWithISO = (dayOfWeek: number | null, count = 5): Array<{iso: string, label: string, labelShort: string}> => {
     if (dayOfWeek === null) return [];
     const dates: Array<{iso: string, label: string, labelShort: string}> = [];
     const today = new Date();
@@ -555,7 +555,7 @@ const ActivityDetail = () => {
     return dates;
   };
   // Ancienne fonction pour compatibilité
-  const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+  const getNextDates = (dayOfWeek: number | null, count = 3): string[] => {
     return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
   };
   // Single next date helper (reserved for future use)

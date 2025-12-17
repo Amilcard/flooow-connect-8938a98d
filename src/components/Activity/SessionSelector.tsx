@@ -73,7 +73,7 @@ const DAYS_OF_WEEK_FULL = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "V
 /**
  * Calcule les 3 prochaines dates pour un jour donné
  */
-const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+const getNextDates = (dayOfWeek: number | null, count = 3): string[] => {
   if (dayOfWeek === null) return [];
   const dates: string[] = [];
   const today = new Date();

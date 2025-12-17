@@ -57,7 +57,7 @@ const Activities = () => {
   };
   
   const [activeTab, setActiveTab] = useState(getInitialTab());
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Mettre à jour l'onglet actif si les paramètres URL changent
   useEffect(() => {

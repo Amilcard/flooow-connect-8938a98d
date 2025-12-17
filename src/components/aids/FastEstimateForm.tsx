@@ -28,11 +28,11 @@ interface FastEstimateFormProps {
 }
 
 export function FastEstimateForm({ quickParams, onSubmit, onBack }: FastEstimateFormProps) {
-  const [quotientFamilial, setQuotientFamilial] = useState<string>('');
-  const [allocataireCaf, setAllocataireCaf] = useState<string>('');
-  const [conditionSociale, setConditionSociale] = useState<string>('');
-  const [statutScolaire, setStatutScolaire] = useState<string>('');
-  const [nbEnfants, setNbEnfants] = useState<string>('1');
+  const [quotientFamilial, setQuotientFamilial] = useState('');
+  const [allocataireCaf, setAllocataireCaf] = useState('');
+  const [conditionSociale, setConditionSociale] = useState('');
+  const [statutScolaire, setStatutScolaire] = useState('');
+  const [nbEnfants, setNbEnfants] = useState('1');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
