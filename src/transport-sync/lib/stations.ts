@@ -128,7 +128,7 @@ export const findNearestStations = async (
  */
 export const calculateBikeCarbonSaved = (
   distanceKm: number,
-  carbonFactorKgPerKm: number = 0.12
+  carbonFactorKgPerKm = 0.12
 ): number => {
   return Number.parseFloat((distanceKm * carbonFactorKgPerKm).toFixed(4));
 };

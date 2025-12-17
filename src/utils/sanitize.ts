@@ -60,7 +60,7 @@ const SENSITIVE_FIELDS = [
  * console.error('Error:', redactSensitiveData({ error, user }));
  * ```
  */
-export function redactSensitiveData(data: unknown, maxDepth: number = 5): unknown {
+export function redactSensitiveData(data: unknown, maxDepth = 5): unknown {
   if (maxDepth <= 0) {
     return '[MAX_DEPTH_REACHED]';
   }
@@ -183,7 +183,7 @@ export function escapeLikeWildcards(input: string): string {
  * sanitizeSearchQuery("a".repeat(300)) // => "a".repeat(200)
  * ```
  */
-export function sanitizeSearchQuery(query: string, maxLength: number = 200): string {
+export function sanitizeSearchQuery(query: string, maxLength = 200): string {
   if (!query || typeof query !== 'string') {
     return '';
   }

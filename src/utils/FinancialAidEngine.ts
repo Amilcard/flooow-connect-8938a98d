@@ -16,7 +16,7 @@
 
 type QFThreshold = { max: number; montant: number };
 
-function getMontantByQF(qf: number, thresholds: QFThreshold[], fallback: number = 0): number {
+function getMontantByQF(qf: number, thresholds: QFThreshold[], fallback = 0): number {
   const match = thresholds.find(t => qf <= t.max);
   return match ? match.montant : fallback;
 }
@@ -599,7 +599,7 @@ function evaluateReductionFratrie(params: EligibilityParams): CalculatedAid | nu
 
 export function calculateTotalAids(
   aids: CalculatedAid[],
-  originalPrice: number = 0
+  originalPrice = 0
 ): {
   totalAids: number;
   remainingPrice: number;
