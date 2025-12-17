@@ -22,6 +22,7 @@ import { useBookingDraft } from "@/hooks/useBookingDraft";
 import { useSmartBack } from "@/hooks/useSmartBack";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { ParentalValidationModal } from "@/components/ParentalValidationModal";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 // Composants spécifiques Booking
 import { ChildCard } from "@/components/Booking/ChildCard";
@@ -348,8 +349,8 @@ const Booking = () => {
       });
 
       if (error) {
-        console.error("Edge function error:", error);
-        
+        console.error(safeErrorMessage(error, 'Booking edge function'));
+
         if (error.message?.includes("idempotency") || error.message?.includes("already exists")) {
           toast({
             title: "Demande déjà envoyée",
@@ -376,7 +377,7 @@ const Booking = () => {
       navigate(`/booking-status/${id}?status=pending&bookingId=${data.booking?.id}`);
       
     } catch (error: unknown) {
-      console.error("Booking error:", error);
+      console.error(safeErrorMessage(error, 'Booking submit'));
       const errorMessage = error instanceof Error ? error.message : "Impossible de finaliser la réservation";
       toast({
         title: "Erreur",

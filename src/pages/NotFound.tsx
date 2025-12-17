@@ -1,11 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    // Log 404 errors without exposing full pathname which could contain PII
+    console.error(safeErrorMessage(new Error(`Route not found: ${location.pathname.split('/')[1] || 'root'}`), '404'));
   }, [location.pathname]);
 
   return (

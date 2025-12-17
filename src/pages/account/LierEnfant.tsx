@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { ProfilLayout } from "@/components/ProfilLayout";
 import { useToast } from "@/hooks/use-toast";
+import { safeErrorMessage } from "@/utils/sanitize";
 import {
   UserPlus,
   Copy,
@@ -142,7 +143,7 @@ const LierEnfant = () => {
         setLinkError(result.error || "Code invalide ou expire");
       }
     } catch (err: any) {
-      console.error("Link error:", err);
+      console.error(safeErrorMessage(err, 'Link child'));
       setLinkError(err.message || "Une erreur est survenue. Reessaie dans quelques instants.");
     } finally {
       setIsLinking(false);

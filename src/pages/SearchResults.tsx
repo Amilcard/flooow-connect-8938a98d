@@ -15,6 +15,7 @@ import { MapSearchView } from '@/components/Search/MapSearchView';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
 import { buildActivityQuery, getResultsCount } from '@/utils/buildActivityQuery';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 const SearchResults = () => {
   const {
@@ -42,7 +43,7 @@ const SearchResults = () => {
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error fetching activities:', error);
+        console.error(safeErrorMessage(error, 'Fetch activities'));
         throw error;
       }
 

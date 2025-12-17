@@ -205,14 +205,7 @@ export const useActivities = (filters?: ActivityFilters) => {
       const { data, error } = await query.order("title", { ascending: true });
 
       if (error) {
-        console.error("[useActivities] Error fetching activities:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-          filters,
-          timestamp: new Date().toISOString()
-        });
+        console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
         throw error;
       }
 

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { DEFAULT_MAP_CENTER } from '@/constants/locations';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface ActivityLocation {
   lat: number;
@@ -105,7 +106,7 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
           throw new Error("Token Google Maps non disponible");
         }
       } catch (err) {
-        console.error('Error loading Google Maps:', err);
+        console.error(safeErrorMessage(err, 'Load Google Maps'));
         setError("Erreur de configuration de la carte");
         setIsLoading(false);
       }

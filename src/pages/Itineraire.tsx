@@ -224,7 +224,7 @@ const Itineraire = () => {
     script.defer = true;
     script.onload = () => setGoogleMapsLoaded(true);
     script.onerror = () => {
-      console.error('Error loading Google Maps script');
+      console.error(safeErrorMessage(new Error('Script load failed'), 'Google Maps'));
       toast.error("Erreur de chargement de Google Maps");
     };
     document.head.appendChild(script);
@@ -424,7 +424,7 @@ const Itineraire = () => {
           }
           toast.success("Itinéraire calculé !");
         } else {
-          console.error('Directions request failed:', status);
+          console.error(safeErrorMessage(new Error(`Directions request failed: ${status}`), 'Google Maps'));
           // Specific error messages based on status
           if (status === 'ZERO_RESULTS') {
             setRouteError("Aucun itinéraire trouvé entre ces deux adresses. Vérifiez les adresses saisies.");

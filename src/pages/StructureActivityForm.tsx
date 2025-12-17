@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BackButton } from "@/components/BackButton";
 import { FinancialAidSelector } from "@/components/activities/FinancialAidSelector";
 import { LoadingState } from "@/components/LoadingState";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 const StructureActivityForm = () => {
   const { id } = useParams(); // If editing
@@ -168,7 +169,7 @@ const StructureActivityForm = () => {
 
       navigate("/dashboard/structure");
     } catch (error: any) {
-      console.error("Activity save error:", error);
+      console.error(safeErrorMessage(error, 'Activity save'));
       toast({
         title: "Erreur",
         description: error.message || "Impossible d'enregistrer l'activité",

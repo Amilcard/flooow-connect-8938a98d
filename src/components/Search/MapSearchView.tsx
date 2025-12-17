@@ -19,6 +19,7 @@ import { MapPreviewCard } from './MapPreviewCard';
 import { DEFAULT_MAP_CENTER } from '@/constants/locations';
 import { getCategoryStyle } from '@/constants/categories';
 import { cn } from '@/lib/utils';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface Activity {
   id: string;
@@ -128,7 +129,7 @@ export const MapSearchView = ({
           throw new Error("Token Google Maps non disponible");
         }
       } catch (err) {
-        console.error('Error loading Google Maps:', err);
+        console.error(safeErrorMessage(err, 'Load Google Maps'));
         setError("Erreur de configuration de la carte");
         setMapLoading(false);
       }

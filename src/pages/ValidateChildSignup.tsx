@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 type ValidationStatus = 'loading' | 'success' | 'error';
 
@@ -39,7 +40,7 @@ export default function ValidateChildSignup() {
         );
 
         if (error) {
-          console.error('Validation error:', error);
+          console.error(safeErrorMessage(error, 'Validate child signup'));
           throw error;
         }
 
@@ -59,7 +60,7 @@ export default function ValidateChildSignup() {
         }
 
       } catch (err: any) {
-        console.error('Unexpected error:', err);
+        console.error(safeErrorMessage(err, 'Validate child signup unexpected'));
         setStatus('error');
         setMessage(err.message || 'Une erreur est survenue');
 

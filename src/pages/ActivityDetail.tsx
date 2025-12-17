@@ -371,7 +371,8 @@ const ActivityDetail = () => {
         });
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
-          console.error('Error sharing:', err);
+          // Share cancelled or failed - non-critical error
+          console.log('Share cancelled or failed');
         }
       }
     } else {
@@ -389,7 +390,8 @@ const ActivityDetail = () => {
         setShowShareMenu(false);
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Copy failed - non-critical, no PII exposure
+      console.log('Copy to clipboard failed');
     }
   };
 

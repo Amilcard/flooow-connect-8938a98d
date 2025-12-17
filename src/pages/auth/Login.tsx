@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { LogoFlooow } from '@/components/LogoFlooow';
 import { authConfig, OAuthProvider } from '@/config/auth.config';
 import { signInWithProvider, getEnabledProviders, providerIcons, getOAuthErrorMessage } from '@/utils/oauthUtils';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -43,8 +44,8 @@ const Login = () => {
       // Petit délai pour laisser la session se stabiliser
       setTimeout(() => navigate('/home'), 100);
     } catch (error: any) {
-      console.error("Login error:", error);
-      
+      console.error(safeErrorMessage(error, 'Login'));
+
       // Message d'erreur plus explicite selon le type d'erreur
       let errorMessage = "Vérifiez votre email et mot de passe";
       

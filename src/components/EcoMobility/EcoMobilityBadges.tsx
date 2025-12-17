@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Leaf, Footprints, Bike, Award, Sparkles } from "lucide-react";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 // Milestone definitions
 export const ECO_MILESTONES = [
@@ -113,7 +114,7 @@ export const getLocalEcoStats = (): EcoStats => {
       return JSON.parse(stored);
     }
   } catch (e) {
-    console.error("Error reading eco stats:", e);
+    console.error(safeErrorMessage(e, 'Read eco stats'));
   }
   return {
     totalTrips: 0,
