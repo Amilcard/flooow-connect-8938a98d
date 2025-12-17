@@ -64,7 +64,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (parentError) {
-      console.error('Error checking parent:', parentError);
+      console.error('[child-signup-email] Error checking parent');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la vérification du compte parent' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -98,7 +98,7 @@ serve(async (req) => {
       .gte('created_at', oneDayAgo);
 
     if (countError) {
-      console.error('Error checking rate limit:', countError);
+      console.error('[child-signup-email] Error checking rate limit');
     }
 
     const requestCount = recentRequests?.length || 0;
@@ -142,7 +142,7 @@ serve(async (req) => {
       .single();
 
     if (requestError) {
-      console.error('Error creating signup request:', requestError);
+      console.error('[child-signup-email] Error creating signup request');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la création de la demande' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -262,7 +262,7 @@ serve(async (req) => {
           userMessage = 'Service d\'email temporairement indisponible. Réessayez plus tard.';
           break;
         default:
-          userMessage = `Erreur lors de l\'envoi de l\'email (${emailResponse.status})`;
+          userMessage = 'Erreur lors de l\'envoi de l\'email';
       }
 
       return new Response(
@@ -271,7 +271,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Validation email sent successfully to:', parentEmail);
+    console.log('[child-signup-email] Validation email sent successfully');
 
     return new Response(
       JSON.stringify({ 

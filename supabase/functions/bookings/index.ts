@@ -88,7 +88,7 @@ serve(async (req) => {
           .single();
 
         if (existing) {
-          console.log(`[bookings] Idempotency hit: ${idempotency_key}`);
+          console.log('[bookings] Idempotency hit');
           return new Response(
             JSON.stringify({ ...existing, idempotent: true }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -127,7 +127,7 @@ serve(async (req) => {
         });
 
       if (eligibilityError) {
-        console.error('[bookings] Eligibility check failed:', eligibilityError);
+        console.error('[bookings] Eligibility check failed');
         return new Response(
           JSON.stringify({
             code: "ELIGIBILITY_CHECK_FAILED",
@@ -141,7 +141,7 @@ serve(async (req) => {
 
       // Reject if not eligible
       if (eligibilityCheck && !eligibilityCheck.eligible) {
-        console.log(`[bookings] Eligibility rejected: ${eligibilityCheck.reason}`);
+        console.log('[bookings] Eligibility rejected');
         return new Response(
           JSON.stringify({
             success: false,
@@ -205,7 +205,7 @@ serve(async (req) => {
         .single();
 
       if (activityError || !activity) {
-        console.error('[bookings] Activity not found:', activityError);
+        console.error('[bookings] Activity not found');
         return new Response(
           JSON.stringify({
             error: "activity_not_found",
@@ -264,7 +264,7 @@ serve(async (req) => {
           });
 
         if (aidsError) {
-          console.error('[bookings] Aids calculation failed:', aidsError);
+          console.error('[bookings] Aids calculation failed');
           // Continue without aids rather than failing the booking
         } else if (eligibleAids && eligibleAids.length > 0) {
           // Convert aids to cents and build aids_applied array
@@ -291,7 +291,7 @@ serve(async (req) => {
       // Calculate final price (ensure it's not negative)
       const finalPriceCents = Math.max(0, basePriceCents - aidsTotalCents);
 
-      console.log(`[bookings] Pricing: base=${basePriceCents}¢, aids=${aidsTotalCents}¢, final=${finalPriceCents}¢`);
+      console.log('[bookings] Pricing calculated');
 
       // ==========================================
       // V1 FLOW: Auto-validation si express_flag = true
@@ -325,12 +325,7 @@ serve(async (req) => {
         .single();
 
       if (bookingError) {
-        console.error(`[bookings] Creation error:`, JSON.stringify({
-          path: 'create_reservation',
-          step: 'insert_booking',
-          err_code: bookingError.code,
-          detail: bookingError.message
-        }));
+        console.error('[bookings] Creation error');
 
         // Check if it's a seat availability error from trigger
         if (bookingError.message?.includes('Aucune place disponible')) {
@@ -401,7 +396,7 @@ serve(async (req) => {
           validated_at: new Date().toISOString()
         });
         
-        console.log(`[bookings] V1 auto-validated: ${booking.id}`);
+        console.log('[bookings] V1 auto-validated');
       }
 
       // Get updated seat count
@@ -411,7 +406,7 @@ serve(async (req) => {
         .eq('id', slot_id)
         .single();
 
-      console.log(`[bookings] Created: ${booking.id}, seats remaining: ${updatedSlot?.seats_remaining}, pricing: ${basePriceCents}¢ - ${aidsTotalCents}¢ = ${finalPriceCents}¢`);
+      console.log('[bookings] Created successfully');
 
       return new Response(
         JSON.stringify({
@@ -572,7 +567,7 @@ serve(async (req) => {
         );
       }
 
-      console.log(`[bookings] Validated: ${bookingId}, status: ${newStatus}`);
+      console.log('[bookings] Validated successfully');
 
       return new Response(
         JSON.stringify(updated),
@@ -587,7 +582,7 @@ serve(async (req) => {
     );
 
   } catch (err) {
-    console.error("[bookings] Internal error:", err);
+    console.error("[bookings] Internal error");
     return new Response(
       JSON.stringify({ 
         error: "internal_error", 

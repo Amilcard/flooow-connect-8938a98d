@@ -39,7 +39,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`[export-user-data] Exporting data for user ${user.id}`);
+    console.log('[export-user-data] Exporting data for user');
 
     // Fetch all user data from different tables
     const [
@@ -98,7 +98,7 @@ serve(async (req) => {
 
     // Check for errors
     if (profileResult.error) {
-      console.error('[export-user-data] Profile fetch error:', profileResult.error);
+      console.error('[export-user-data] Profile fetch error');
     }
 
     // Build comprehensive export object (GDPR Art. 20 compliant)
@@ -177,7 +177,7 @@ serve(async (req) => {
       read: false
     });
 
-    console.log(`[export-user-data] Export completed for user ${user.id}`);
+    console.log('[export-user-data] Export completed successfully');
 
     // Return export as JSON
     return new Response(
@@ -193,7 +193,7 @@ serve(async (req) => {
     );
 
   } catch (err) {
-    console.error("[export-user-data] Internal error:", err);
+    console.error("[export-user-data] Internal error");
     return new Response(
       JSON.stringify({
         error: "internal_error",

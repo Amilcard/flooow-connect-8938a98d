@@ -87,7 +87,7 @@ serve(async (req) => {
     );
 
     if (deleteError) {
-      console.error('Error deleting user:', deleteError);
+      console.error('[admin-delete-user] Error deleting user');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la suppression', details: deleteError.message }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -104,7 +104,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in admin-delete-user:', error);
+    console.error('[admin-delete-user] Internal error');
     return new Response(
       JSON.stringify({ 
         error: 'internal_error',

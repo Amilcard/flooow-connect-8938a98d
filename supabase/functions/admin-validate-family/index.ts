@@ -53,7 +53,7 @@ serve(async (req) => {
     // Parse request
     const { profileId, action, reason } = await req.json();
 
-    console.log('Validating family account:', { profileId, action, reason });
+    console.log('[admin-validate-family] Processing request');
 
     if (!profileId || !action) {
       return new Response(
@@ -114,7 +114,7 @@ serve(async (req) => {
       .eq('id', profileId);
 
     if (updateError) {
-      console.error('Error updating profile:', updateError);
+      console.error('[admin-validate-family] Error updating profile');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la mise à jour' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -135,7 +135,7 @@ serve(async (req) => {
         }
       });
 
-    console.log('Family account validation completed:', action);
+    console.log('[admin-validate-family] Validation completed');
 
     return new Response(
       JSON.stringify({ 

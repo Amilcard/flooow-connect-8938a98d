@@ -43,7 +43,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in google-maps-token function:', error);
+    console.error('[google-maps-token] Internal error');
     return new Response(
       JSON.stringify({ error: String(error) }),
       { 

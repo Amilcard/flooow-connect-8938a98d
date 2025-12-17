@@ -35,7 +35,7 @@ serve(async (req) => {
 
     const { familyCode, firstName, dob } = await req.json();
 
-    console.log('Child signup via code:', { familyCode, firstName, dob });
+    console.log('[child-signup-code] Processing request');
 
     // Validate input
     if (!familyCode || !firstName || !dob) {
@@ -95,7 +95,7 @@ serve(async (req) => {
       .single();
 
     if (childError) {
-      console.error('Error creating child:', childError);
+      console.error('[child-signup-code] Error creating child');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de l\'inscription' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -116,7 +116,7 @@ serve(async (req) => {
         }
       });
 
-    console.log('Child registered successfully:', newChild.id);
+    console.log('[child-signup-code] Child registered successfully');
 
     return new Response(
       JSON.stringify({ 

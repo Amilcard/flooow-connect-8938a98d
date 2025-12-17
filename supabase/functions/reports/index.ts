@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const pathname = url.pathname;
 
-    console.log(`[reports] ${req.method} ${pathname}`);
+    console.log('[reports] Processing request');
 
     // Route: GET /check_migrations
     if (pathname.includes('/check_migrations') && req.method === 'GET') {
@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
         .select('*', { count: 'exact', head: true });
 
       if (aidError) {
-        console.error('[reports] Error counting aid_simulations:', aidError);
+        console.error('[reports] Error counting aid_simulations');
         throw aidError;
       }
 
@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
         .not('transport_meta', 'is', null);
 
       if (activitiesError) {
-        console.error('[reports] Error counting activities with transport_meta:', activitiesError);
+        console.error('[reports] Error counting activities with transport_meta');
         throw activitiesError;
       }
 
@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
         .not('city_insee', 'is', null);
 
       if (profilesError) {
-        console.error('[reports] Error counting profiles with city_insee:', profilesError);
+        console.error('[reports] Error counting profiles with city_insee');
         throw profilesError;
       }
 
@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
         timestamp: new Date().toISOString(),
       };
 
-      console.log('[reports] Migration check complete:', report);
+      console.log('[reports] Migration check complete');
 
       return new Response(
         JSON.stringify(report),
@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('[reports] Error:', error);
+    console.error('[reports] Internal error');
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     const errorDetails = error instanceof Error ? error.toString() : String(error);
     

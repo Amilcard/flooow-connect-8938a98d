@@ -64,7 +64,7 @@ serve(async (req) => {
     // Construct Supabase REST URL
     const restUrl = `${SUPABASE_URL}/rest/v1/activities?select=${encodeURIComponent(baseSelect)}&${filters.join("&")}&limit=${limit}&offset=${offset}&order=created_at.desc`;
 
-    console.log(`[activities] Fetching activities with ${filters.length} filters`);
+    console.log('[activities] Fetching activities');
 
     // Call Supabase REST API
     const response = await fetch(restUrl, {

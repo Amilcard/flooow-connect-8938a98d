@@ -60,9 +60,9 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (error) {
-      console.error("Error inserting tracking data:", error);
+      console.error("[track-email] Error inserting tracking data");
     } else {
-      console.log(`Tracked ${action} for event ${eventId} by user ${userId}`);
+      console.log("[track-email] Tracking event recorded successfully");
     }
 
     // For 'opened' action, return tracking pixel
