@@ -108,7 +108,7 @@ const MesServices = () => {
         backFallback="/home"
       />
       
-      <div className="max-w-[1200px] mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         {services.map((service) => (
           <section key={service.id} className="space-y-4">
             <div>

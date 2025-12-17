@@ -60,7 +60,7 @@ export const UniversSection = () => {
       className="w-full py-4 bg-[#F8F8F8]" 
       aria-labelledby="univers-title"
     >
-      <div className="max-w-[1200px] mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         <h2 
           id="univers-title" 
           className="text-[18px] font-semibold text-[#222222] mb-4"
