@@ -14,14 +14,9 @@ interface AidCardProps {
 }
 
 export function AidCard({ aid }: AidCardProps) {
-  const handleCTAClick = (url: string, openMode: string) => {
-    // In-app webview mode (if supported by platform)
-    if (openMode === 'in_app_webview') {
-      // For web, open in new tab - mobile app can intercept and open webview
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
+  const handleCTAClick = (url: string) => {
+    // For web, open in new tab - mobile app can intercept and open webview
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handlePhoneClick = (telHref: string | null) => {
@@ -175,7 +170,7 @@ export function AidCard({ aid }: AidCardProps) {
         <div className="space-y-2">
           {/* Primary CTA */}
           <button
-            onClick={() => handleCTAClick(aid.primary_cta?.url ?? '', aid.primary_cta?.open_mode)}
+            onClick={() => handleCTAClick(aid.primary_cta?.url ?? '')}
             className="w-full bg-primary hover:bg-primary/90 text-white font-poppins text-sm font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
           >
             {aid.primary_cta.label}
@@ -186,7 +181,7 @@ export function AidCard({ aid }: AidCardProps) {
           {aid.secondary_ctas && aid.secondary_ctas.map((cta, index) => (
             <button
               key={index}
-              onClick={() => handleCTAClick(cta.url, cta.open_mode)}
+              onClick={() => handleCTAClick(cta.url)}
               className="w-full bg-muted hover:bg-muted/80 text-foreground font-poppins text-sm font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
               {cta.label}

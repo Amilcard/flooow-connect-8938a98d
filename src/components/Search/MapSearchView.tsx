@@ -561,12 +561,10 @@ export const MapSearchView = ({
                   else setBottomSheetState('half');
                 }}
               >
-                {bottomSheetState === 'full' ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : bottomSheetState === 'collapsed' ? (
+                {bottomSheetState === 'collapsed' ? (
                   <ChevronUp className="w-4 h-4" />
                 ) : (
-                  <ChevronUp className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4" />
                 )}
               </Button>
             </div>
