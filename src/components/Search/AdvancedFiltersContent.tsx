@@ -76,7 +76,7 @@ export const AdvancedFiltersContent = ({
   const currentActivityTypes = getActivityTypes(filters.period);
 
   // --- HANDLERS ---
-  const updateFilter = <K extends keyof AdvancedFilters>(key: K, value: AdvancedFilters[K]) => {
+  const updateFilter = (key: keyof AdvancedFilters, value: any) => {
     onFiltersChange({ ...filters, [key]: value });
   };
 
@@ -130,14 +130,14 @@ export const AdvancedFiltersContent = ({
       >
         <div className="space-y-6 px-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-muted-foreground">4 ans</span>
+            <span className="text-sm font-medium text-muted-foreground">6 ans</span>
             <span className="text-lg font-bold text-primary">
               {filters.age_range[0]} - {filters.age_range[1]} ans
             </span>
             <span className="text-sm font-medium text-muted-foreground">17 ans</span>
           </div>
           <Slider
-            min={4}
+            min={6}
             max={17}
             step={1}
             value={filters.age_range}
@@ -163,12 +163,9 @@ export const AdvancedFiltersContent = ({
             return (
               <div
                 key={type}
-                role="button"
-                tabIndex={0}
                 onClick={() => toggleArrayItem('categories', type)}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleArrayItem('categories', type)}
                 className={cn(
-                  "cursor-pointer rounded-lg border p-3 text-sm font-medium transition-all text-center flex items-center justify-center h-14 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1",
+                  "cursor-pointer rounded-lg border p-3 text-sm font-medium transition-all text-center flex items-center justify-center h-14",
                   isSelected
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-muted hover:border-primary/50 hover:bg-accent"

@@ -6,7 +6,7 @@
   
   "network_requests": [
     {
-      "url": "https://YOUR_PROJECT_REF.supabase.co/rest/v1/activities",
+      "url": "https://kbrgwezkjaakoecispom.supabase.co/rest/v1/activities",
       "method": "GET",
       "params": {
         "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "url": "https://YOUR_PROJECT_REF.supabase.co/rest/v1/activities",
+      "url": "https://kbrgwezkjaakoecispom.supabase.co/rest/v1/activities",
       "method": "GET",
       "params": {
         "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",
@@ -47,7 +47,7 @@
       "note": "Budget filter applied correctly"
     },
     {
-      "url": "https://YOUR_PROJECT_REF.supabase.co/rest/v1/activities",
+      "url": "https://kbrgwezkjaakoecispom.supabase.co/rest/v1/activities",
       "method": "GET",
       "params": {
         "select": "id,title,category,age_min,age_max,price_base,images,accessibility_checklist,accepts_aid_types,capacity_policy,covoiturage_enabled,structure_id",

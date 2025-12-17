@@ -120,7 +120,7 @@ export interface ActivityRaw {
   accessibilite?: string[];
   accessibility_checklist?: AccessibilityFlags;
   aidesEligibles?: string[];
-  accepts_aid_types?: string[];
+  accepts_aid_types?: any[];
   mobilite?: Mobility;
   category?: string;
   categories?: string[];

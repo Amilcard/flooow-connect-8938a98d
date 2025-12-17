@@ -5,15 +5,18 @@ import { MapPin, Loader2 } from "lucide-react";
 import { validateCoordinates } from "@/utils/sanitize";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getCategoryStyle, CATEGORY_STYLES } from "@/constants/categories";
 
-// Utilise le design system centralisé pour les couleurs
-const getCategoryColor = (category: string): string => {
-  return getCategoryStyle(category).color;
+// Couleurs par catégorie
+const CATEGORY_COLORS: Record<string, string> = {
+  'Sport': '#EF4444',
+  'Culture': '#8B5CF6',
+  'Loisirs': '#F59E0B',
+  'Scolarité': '#3B82F6',
 };
 
-// Liste des catégories pour la légende (exclut Insertion)
-const LEGEND_CATEGORIES = ['sport', 'culture', 'loisirs', 'vacances', 'scolaire'] as const;
+const getCategoryColor = (category: string): string => {
+  return CATEGORY_COLORS[category] || '#8B5CF6';
+};
 
 /**
  * Interface étendue pour activités avec coordonnées géographiques
@@ -320,25 +323,6 @@ export function InteractiveMapActivities({
           </span>{" "}
           activité{activitiesWithCoords.length > 1 ? "s" : ""} sur la carte
         </p>
-      </div>
-
-      {/* Légende des catégories */}
-      <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-md border border-border">
-        <div className="flex flex-wrap gap-2">
-          {LEGEND_CATEGORIES.map((cat) => {
-            const style = CATEGORY_STYLES[cat];
-            if (!style) return null;
-            return (
-              <div key={cat} className="flex items-center gap-1.5">
-                <span
-                  className="w-3 h-3 rounded-full border border-white shadow-sm"
-                  style={{ backgroundColor: style.color }}
-                />
-                <span className="text-xs text-muted-foreground">{style.label}</span>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ const ValidationsParentales = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showRejectDialog, setShowRejectDialog] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState("");
+  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
   const [rejectReason, setRejectReason] = useState("");
 
   // Fetch bookings awaiting parental validation
@@ -89,10 +89,10 @@ const ValidationsParentales = () => {
       setShowRejectDialog(false);
       setRejectReason("");
     },
-    onError: (error: unknown) => {
+    onError: (error: any) => {
       toast({
         title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue",
+        description: error.message || "Une erreur est survenue",
         variant: "destructive"
       });
     }

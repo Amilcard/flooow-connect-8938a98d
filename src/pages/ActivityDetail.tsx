@@ -5,31 +5,45 @@ import { supabase } from "@/integrations/supabase/client";
 import { VACATION_PERIOD_DATES } from "@/components/VacationPeriodFilter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { PageHeader } from "@/components/PageHeader";
+import { ActivityShareButton } from "@/components/ActivityShareButton";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  MapPin,
-  Accessibility,
+  MapPin, 
+  Users, 
+  Accessibility, 
   Euro,
   Car,
   CreditCard,
   Calendar,
   Info,
+  FileText,
+  Building2,
+  HelpCircle,
   Mail,
+  Phone,
   MessageCircle,
+  Bus,
+  Bike,
+  CalendarRange,
   CheckCircle2,
   Share2,
   Copy,
   Check,
-  Leaf
+  Leaf,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -41,129 +55,24 @@ import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
+import { ActivityImageCard } from "@/components/Activity/ActivityImageCard";
 import { ActivityDetailHero } from "@/components/Activity/ActivityDetailHero";
+import { SessionSlotCard } from "@/components/Activity/SessionSlotCard";
 import { SessionAccordion, SelectedSessionSummary } from "@/components/Activity/SessionAccordion";
 import { SlotAccordion, SelectedSlotSummary } from "@/components/Activity/SlotAccordion";
+import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
-interface CalculatedAidItem {
-  aid_name: string;
-  amount: number;
-  territory_level: string;
-  official_link: string | null;
-  is_informational?: boolean;
-}
-
-interface SessionData {
-  id: string;
-  day_of_week: number | null;
-  start_time: string | null;
-  end_time: string | null;
-  age_min: number | null;
-  age_max: number | null;
-}
-
-interface SlotData {
-  id: string;
-  start: string;
-  end: string;
-}
-
-// ========== Helper Functions (outside component) ==========
-
-const CATEGORY_IMAGES: Record<string, string> = {
-  Sport: activitySportImg,
-  Loisirs: activityLoisirsImg,
-  Vacances: activityVacancesImg,
-  Scolarité: activityCultureImg,
-  Culture: activityCultureImg,
-};
-
 const getCategoryImage = (category: string): string => {
-  return CATEGORY_IMAGES[category] || activityLoisirsImg;
-};
-
-const DAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-
-const formatSessionLabel = (session: SessionData): { dayLabel: string; timeLabel: string } => {
-  const dayLabel = session.day_of_week !== null ? DAY_NAMES[session.day_of_week] : "Vacances";
-  const timeLabel = session.start_time && session.end_time
-    ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
-    : "";
-  return { dayLabel, timeLabel };
-};
-
-const formatSlotLabel = (slot: SlotData): { dayNameCapitalized: string; dateFormatted: string; timeStart: string; timeEnd: string } => {
-  const startDate = new Date(slot.start);
-  const endDate = new Date(slot.end);
-  const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
-  return {
-    dayNameCapitalized: dayName.charAt(0).toUpperCase() + dayName.slice(1),
-    dateFormatted: startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
-    timeStart: startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-    timeEnd: endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+  const categoryMap: Record<string, string> = {
+    Sport: activitySportImg,
+    Loisirs: activityLoisirsImg,
+    Vacances: activityVacancesImg,
+    Scolarité: activityCultureImg,
+    Culture: activityCultureImg,
   };
-};
-
-const formatSelectedDate = (dateIso: string | null): string | null => {
-  if (!dateIso) return null;
-  return new Date(dateIso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-};
-
-// ========== Sub-components (outside main component) ==========
-
-interface SelectedCreneauSessionProps {
-  session: SessionData;
-  selectedOccurrenceDate: string | null;
-}
-
-const SelectedCreneauSession = ({ session, selectedOccurrenceDate }: SelectedCreneauSessionProps) => {
-  const { dayLabel, timeLabel } = formatSessionLabel(session);
-  const selectedDateLabel = formatSelectedDate(selectedOccurrenceDate);
-
-  return (
-    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
-      <div className="flex items-center gap-2">
-        <CheckCircle2 size={18} className="text-primary" />
-        <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
-      </div>
-      <div className="pl-6 space-y-1">
-        <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
-        {selectedDateLabel && (
-          <p className="text-sm font-medium text-primary">
-            📅 Séance du {selectedDateLabel}
-          </p>
-        )}
-        <p className="text-xs text-muted-foreground">
-          {session.age_min}-{session.age_max} ans
-        </p>
-      </div>
-    </div>
-  );
-};
-
-interface SelectedCreneauSlotProps {
-  slot: SlotData;
-}
-
-const SelectedCreneauSlot = ({ slot }: SelectedCreneauSlotProps) => {
-  const { dayNameCapitalized, dateFormatted, timeStart, timeEnd } = formatSlotLabel(slot);
-
-  return (
-    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
-      <div className="flex items-center gap-2">
-        <CheckCircle2 size={18} className="text-primary" />
-        <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
-      </div>
-      <div className="pl-6 space-y-1">
-        <p className="text-base font-semibold text-foreground">{dayNameCapitalized} {dateFormatted}</p>
-        <p className="text-sm text-muted-foreground">
-          {timeStart} – {timeEnd}
-        </p>
-      </div>
-    </div>
-  );
+  return categoryMap[category] || activityLoisirsImg;
 };
 
 const ActivityDetail = () => {
@@ -184,14 +93,16 @@ const ActivityDetail = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [selectedOccurrenceDate, setSelectedOccurrenceDate] = useState<string | null>(null); // Date ISO de la séance choisie
+  const [showAllDates, setShowAllDates] = useState(false); // Pour "Voir plus de dates"
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null); // Pour l'accordéon
   const [showContactModal, setShowContactModal] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   
-  // Feature flag: mode visuel mobile (reserved for future use)
-  const _mobileVisualMode = visualParam === "true";
-
+  // Feature flag: mode visuel mobile
+  const mobileVisualMode = visualParam === "true";
+  
   // Hook pour la persistance des données d'aides et de transport
   const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id || "");
   
@@ -200,13 +111,12 @@ const ActivityDetail = () => {
     childId: string;
     quotientFamilial: string;
     cityCode: string;
-    aids: CalculatedAidItem[];
+    aids: any[];
     totalAids: number;
     remainingPrice: number;
   } | null>(null);
 
   // Restaurer les données d'aides depuis le state persisté
-  // Only runs when bookingState changes and aidsData is null (initial restore)
   useEffect(() => {
     if (bookingState?.calculated && !aidsData) {
       setAidsData({
@@ -218,8 +128,7 @@ const ActivityDetail = () => {
         remainingPrice: bookingState.remainingPrice
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentional: only restore once when state available
-  }, [bookingState?.calculated]);
+  }, [bookingState, aidsData]);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
@@ -237,7 +146,7 @@ const ActivityDetail = () => {
       // FIX: Removed structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("activities")
-        .select("*")
+        .select(`*`)
         .eq("id", id)
         .single();
 
@@ -358,7 +267,7 @@ const ActivityDetail = () => {
   useEffect(() => {
     const checkAndCleanState = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-
+      
       // Si pas d'utilisateur connecté et qu'il y a des données persistées
       if (!user && (bookingState?.calculated || aidsData)) {
         setAidsData(null);
@@ -366,9 +275,8 @@ const ActivityDetail = () => {
         // Le localStorage sera nettoyé au prochain logout
       }
     };
-
+    
     checkAndCleanState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Runs on userProfile change, refs stable state
   }, [userProfile]);
 
   // Logique des états d'inscription basée sur les VRAIES données (places disponibles)
@@ -382,15 +290,13 @@ const ActivityDetail = () => {
   const { data: alternatives = [] } = useQuery({
     queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
     queryFn: async () => {
-      // Guard: query only enabled when activity exists (isActivityClosed requires activity)
-      if (!activity) return [];
       const { data, error } = await supabase
         .from("activities")
         .select("id, title, categories, age_min, age_max, price_base, period_type, images")
-        .neq("id", activity.id)
+        .neq("id", activity!.id)
         .eq("is_published", true)
-        .lte("age_min", activity.age_max ?? 99)
-        .gte("age_max", activity.age_min ?? 0)
+        .lte("age_min", activity!.age_max)
+        .gte("age_max", activity!.age_min)
         .limit(3);
       if (error) throw error;
       return data || [];
@@ -438,7 +344,7 @@ const ActivityDetail = () => {
     childId: string;
     quotientFamilial: string;
     cityCode: string;
-    aids: CalculatedAidItem[];
+    aids: any[];
     totalAids: number;
     remainingPrice: number;
   }) => {
@@ -446,8 +352,7 @@ const ActivityDetail = () => {
     saveAidCalculation(data); // Sauvegarder dans le state persisté
   };
 
-  // Reserved for future transport mode selection feature
-  const _handleTransportModeSelected = (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => {
+  const handleTransportModeSelected = (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => {
     saveTransportMode(mode);
   };
 
@@ -465,9 +370,8 @@ const ActivityDetail = () => {
           url: shareUrl,
         });
       } catch (err) {
-        // Ignore AbortError (user cancelled share)
         if ((err as Error).name !== 'AbortError') {
-          // Share failed silently
+          console.error('Error sharing:', err);
         }
       }
     } else {
@@ -484,8 +388,8 @@ const ActivityDetail = () => {
         setCopied(false);
         setShowShareMenu(false);
       }, 2000);
-    } catch {
-      // Clipboard copy failed silently
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
@@ -500,8 +404,8 @@ const ActivityDetail = () => {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
-  // Calculate age from date of birth (reserved for future use)
-  const _calculateAge = (dob: string): number => {
+  // Calculate age from date of birth
+  const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -512,30 +416,28 @@ const ActivityDetail = () => {
     return age;
   };
 
-  // Calculate duration in days from slot (reserved for future use)
-  const _calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
-    if (!slot || !slot.start || !slot.end) return 1;
-    const start = new Date(slot.start);
-    const end = new Date(slot.end);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(1, diffDays);
-  };
+  // Calculate duration in days from slot
+    const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
+      if (!slot || !slot.start || !slot.end) return 1;
+      const start = new Date(slot.start);
+      const end = new Date(slot.end);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(1, diffDays);
+    };
 
-  // Selected slot lookup (reserved for potential future use)
-  const _selectedSlot = slots.find(s => s.id === selectedSlotId);
+  const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
   // Fix: vérifie aussi les strings vides dans images
   const rawImage = activity.images?.[0];
   const displayImage = (rawImage && rawImage.trim() !== '') ? rawImage : fallbackImage;
-  // Age range formatted for display (reserved for future use)
-  const _ageRange = sessions.length > 0
-    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ")
+  const ageRange = sessions.length > 0 
+    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ") 
     : formatAgeRangeForDetail(activity.age_min, activity.age_max);
 
   // Calculer les prochaines dates pour un jour de semaine donné - retourne objets {iso, label, labelShort}
-  const getNextDatesWithISO = (dayOfWeek: number | null, count = 5): Array<{iso: string, label: string, labelShort: string}> => {
+  const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array<{iso: string, label: string, labelShort: string}> => {
     if (dayOfWeek === null) return [];
     const dates: Array<{iso: string, label: string, labelShort: string}> = [];
     const today = new Date();
@@ -555,11 +457,10 @@ const ActivityDetail = () => {
     return dates;
   };
   // Ancienne fonction pour compatibilité
-  const getNextDates = (dayOfWeek: number | null, count = 3): string[] => {
+  const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
     return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
   };
-  // Single next date helper (reserved for future use)
-  const _getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
+  const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -887,7 +788,9 @@ const ActivityDetail = () => {
                     } : undefined}
                     structureName={activity.organism_name}
                     structureContactJson={activity.organism_phone}
-                    onTransportModeSelected={() => {}}
+                    onTransportModeSelected={(mode) => {
+                      console.log('Transport mode selected:', mode);
+                    }}
                   />
                 </div>
               </TabsContent>
@@ -1069,20 +972,60 @@ const ActivityDetail = () => {
                   )}
                     
                     {/* Récap "Créneau sélectionné" - bien visible avant le bouton */}
-                    {activity.period_type === "scolaire" && selectedSessionId && (() => {
-                      const session = sessions.find(s => s.id === selectedSessionId);
-                      return session ? (
-                        <SelectedCreneauSession
-                          session={session}
-                          selectedOccurrenceDate={selectedOccurrenceDate}
-                        />
-                      ) : null;
+                    {activity.period_type === "scolaire" && selectedSessionId && sessions.find(s => s.id === selectedSessionId) && (() => {
+                      const session = sessions.find(s => s.id === selectedSessionId)!;
+                      const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+                      const dayLabel = session.day_of_week !== null ? dayNames[session.day_of_week] : "Vacances";
+                      const timeLabel = session.start_time && session.end_time
+                        ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
+                        : "";
+                      // Formater la date sélectionnée
+                      const selectedDateLabel = selectedOccurrenceDate 
+                        ? new Date(selectedOccurrenceDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+                        : null;
+                      return (
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-primary" />
+                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
+                            {selectedDateLabel && (
+                              <p className="text-sm font-medium text-primary">
+                                📅 Séance du {selectedDateLabel}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                              {session.age_min}-{session.age_max} ans
+                            </p>
+                          </div>
+                        </div>
+                      );
                     })()}
-                    {activity.period_type !== "scolaire" && selectedSlotId && (() => {
-                      const slot = slots.find(s => s.id === selectedSlotId);
-                      return slot ? (
-                        <SelectedCreneauSlot slot={slot} />
-                      ) : null;
+                    {activity.period_type !== "scolaire" && selectedSlotId && slots.find(s => s.id === selectedSlotId) && (() => {
+                      const selectedSlot = slots.find(s => s.id === selectedSlotId)!;
+                      const startDate = new Date(selectedSlot.start);
+                      const endDate = new Date(selectedSlot.end);
+                      const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+                      const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+                      const dateFormatted = startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                      const timeStart = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                      const timeEnd = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                      return (
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-primary" />
+                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-base font-semibold text-foreground">{dayNameCapitalized} {dateFormatted}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {timeStart} – {timeEnd}
+                            </p>
+                          </div>
+                        </div>
+                      );
                     })()}
 
                     <Button
@@ -1117,7 +1060,7 @@ const ActivityDetail = () => {
                     {isActivityClosed && alternatives.length > 0 && (
                       <div className="mt-4 space-y-3">
                         <p className="text-sm font-medium text-center">Autres idées pour votre enfant :</p>
-                        {alternatives.map((alt) => (
+                        {alternatives.map((alt: any) => (
                           <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate("/activity/" + alt.id)}>
                             <div className="flex justify-between items-center">
                               <div>

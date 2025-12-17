@@ -11,7 +11,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, UserPlus, X, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { safeErrorMessage } from '@/utils/sanitize';
 
 interface InlineChildFormProps {
   userId: string;
@@ -86,7 +85,7 @@ export const InlineChildForm = ({
 
     try {
       // Créer l'enfant en base de données
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- children table insert type may be out of sync
+      // Note: les types Supabase générés peuvent être obsolètes, on utilise un cast
       const { data: newChild, error } = await supabase
         .from("children")
         .insert({
@@ -95,7 +94,7 @@ export const InlineChildForm = ({
           last_name: lastName.trim() || null,
           dob: birthDate,
           needs_json: {}
-        } as { user_id: string; first_name: string; last_name: string | null; dob: string; needs_json: Record<string, unknown> })
+        } as any)
         .select()
         .single();
 
@@ -113,11 +112,11 @@ export const InlineChildForm = ({
       setAgeWarning(null);
 
       onChildAdded(newChild.id);
-    } catch (error: unknown) {
-      console.error(safeErrorMessage(error, 'InlineChildForm.handleSubmit'));
+    } catch (error: any) {
+      console.error("Error adding child:", error);
       toast({
         title: "Erreur",
-        description: error instanceof Error ? error.message : "Impossible d'ajouter l'enfant",
+        description: error.message || "Impossible d'ajouter l'enfant",
         variant: "destructive"
       });
     } finally {
@@ -164,6 +163,7 @@ export const InlineChildForm = ({
               placeholder="Prénom de l'enfant"
               required
               disabled={isSubmitting}
+              autoFocus
             />
           </div>
 

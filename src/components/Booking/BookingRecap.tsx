@@ -39,82 +39,6 @@ interface BookingRecapProps {
 
 const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-// HELPERS: Reduce cognitive complexity
-
-/**
- * Format date string to French format with day name
- */
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const dayName = dayNames[date.getDay()];
-  return `${dayName} ${date.toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  })}`;
-};
-
-/**
- * Format time from date string
- */
-const formatTime = (dateString: string): string => {
-  return new Date(dateString).toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-interface SlotData {
-  start: string;
-  end: string;
-}
-
-interface SessionData {
-  day_of_week?: number | null;
-  start_time?: string | null;
-  end_time?: string | null;
-}
-
-/**
- * Get date and time labels from slot or session
- */
-const getDateTimeLabels = (
-  slot: SlotData | null | undefined,
-  session: SessionData | null | undefined,
-  occurrenceDate: string | null | undefined
-): { dateLabel: string; timeLabel: string } => {
-  if (slot) {
-    return {
-      dateLabel: formatDate(slot.start),
-      timeLabel: `${formatTime(slot.start)} – ${formatTime(slot.end)}`
-    };
-  }
-
-  if (!session) {
-    return { dateLabel: "", timeLabel: "" };
-  }
-
-  let dateLabel = "";
-  if (occurrenceDate) {
-    dateLabel = formatDate(occurrenceDate);
-  } else if (session.day_of_week !== null && session.day_of_week !== undefined) {
-    dateLabel = `Tous les ${dayNames[session.day_of_week].toLowerCase()}s`;
-  }
-
-  const timeLabel = session.start_time && session.end_time
-    ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
-    : "";
-
-  return { dateLabel, timeLabel };
-};
-
-/**
- * Get age label from min/max values
- */
-const getAgeLabel = (ageMin: number, ageMax: number | null | undefined): string => {
-  return ageMax ? `${ageMin}–${ageMax} ans` : `À partir de ${ageMin} ans`;
-};
-
 export const BookingRecap = ({
   activity,
   slot,
@@ -123,13 +47,46 @@ export const BookingRecap = ({
   totalAids,
   remainingPrice,
 }: BookingRecapProps) => {
-  // Use helpers to reduce cognitive complexity
-  const { dateLabel, timeLabel } = getDateTimeLabels(slot, session, occurrenceDate);
+  // Formatage de la date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const dayName = dayNames[date.getDay()];
+    return `${dayName} ${date.toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })}`;
+  };
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Calculer les infos horaire
+  let dateLabel = "";
+  let timeLabel = "";
+
+  if (slot) {
+    dateLabel = formatDate(slot.start);
+    timeLabel = `${formatTime(slot.start)} – ${formatTime(slot.end)}`;
+  } else if (session) {
+    if (occurrenceDate) {
+      dateLabel = formatDate(occurrenceDate);
+    } else if (session.day_of_week !== null && session.day_of_week !== undefined) {
+      dateLabel = `Tous les ${dayNames[session.day_of_week].toLowerCase()}s`;
+    }
+    if (session.start_time && session.end_time) {
+      timeLabel = `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`;
+    }
+  }
 
   // Tranche d'âge (priorité session puis activité)
   const ageMin = session?.age_min ?? activity.age_min ?? 0;
   const ageMax = session?.age_max ?? activity.age_max;
-  const ageLabel = getAgeLabel(ageMin, ageMax);
+  const ageLabel = ageMax ? `${ageMin}–${ageMax} ans` : `À partir de ${ageMin} ans`;
 
   // Prix
   const basePrice = activity.price_base ?? 0;
@@ -223,7 +180,7 @@ export const BookingRecap = ({
             <>
               <div className="flex items-center justify-between text-sm text-green-600">
                 <span>Aides appliquées</span>
-                <span>-{(totalAids ?? 0).toFixed(2)} €</span>
+                <span>-{totalAids!.toFixed(2)} €</span>
               </div>
               <div className="flex items-center justify-between pt-2 border-t">
                 <span className="font-medium">Reste à charge</span>
