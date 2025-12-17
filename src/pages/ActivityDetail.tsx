@@ -712,6 +712,52 @@ const ActivityDetail = () => {
                         </div>
                       )}
 
+                      {/* Dates du séjour (colonies/camps vacances) */}
+                      {activity.period_type === "vacances" && (activity.date_debut || activity.date_fin) && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Dates du séjour</p>
+                            <p className="text-sm text-muted-foreground">
+                              {activity.date_debut && new Date(activity.date_debut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                              {activity.date_debut && activity.date_fin && ' → '}
+                              {activity.date_fin && new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                            </p>
+                            {activity.duration_days && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Durée : {activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Horaires départ/retour et lieu de RDV (séjours avec hébergement) */}
+                      {activity.period_type === "vacances" && activity.jours_horaires && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Info size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Horaires départ / retour</p>
+                            <p className="text-sm text-muted-foreground whitespace-pre-line">
+                              {activity.jours_horaires}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Lieu de rendez-vous */}
+                      {activity.period_type === "vacances" && activity.lieu_nom && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Lieu de rendez-vous</p>
+                            <p className="text-sm text-muted-foreground">
+                              {activity.lieu_nom}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
 
 
 

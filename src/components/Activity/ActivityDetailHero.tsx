@@ -20,7 +20,7 @@ import {
   Euro,
   MessageCircle
 } from "lucide-react";
-import { getMainCategory, getPeriodLabel } from "@/utils/categoryMapping";
+import { getMainCategory, getPeriodLabel, formatAgeRangeForDetail } from "@/utils/categoryMapping";
 import { getCategoryStyle } from "@/constants/categories";
 import { getActivityImage } from "@/lib/imageMapping";
 
@@ -86,9 +86,9 @@ export const ActivityDetailHero = ({
   const locationParts = [address, city, postalCode].filter(Boolean);
   const fullAddress = locationParts.join(', ');
   
-  // Format âge
-  const ageRange = ageMin !== undefined && ageMax !== undefined 
-    ? `${ageMin}–${ageMax} ans` 
+  // Format âge (tranches cohérentes: 3-5, 6-8, 9-11, 12-14, 15-17)
+  const ageRange = ageMin !== undefined && ageMax !== undefined
+    ? formatAgeRangeForDetail(ageMin, ageMax)
     : null;
   
   // Format prix

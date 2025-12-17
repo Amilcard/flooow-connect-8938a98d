@@ -26,6 +26,7 @@ import {
   CheckCircle2 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
 interface SessionData {
   id: string;
@@ -140,7 +141,7 @@ export const SessionAccordion = ({
     : "";
   
   const ageLabel = session.age_min !== null && session.age_max !== null
-    ? `${session.age_min}–${session.age_max} ans`
+    ? formatAgeRangeForDetail(session.age_min, session.age_max)
     : null;
   
   const location = session.location || activityLocation;
@@ -306,7 +307,7 @@ export const SelectedSessionSummary = ({
     : "";
   
   const ageLabel = session.age_min !== null && session.age_max !== null
-    ? `${session.age_min}–${session.age_max} ans`
+    ? formatAgeRangeForDetail(session.age_min, session.age_max)
     : null;
 
   return (

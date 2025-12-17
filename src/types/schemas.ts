@@ -156,8 +156,8 @@ export function toActivity(raw: ActivityRaw): Activity {
   }
 
   // Champs enrichis (nouveaux)
-  if (raw.lieu?.nom) {
-    activity.lieuNom = raw.lieu.nom;
+  if (raw.lieuNom || raw.lieu?.nom) {
+    activity.lieuNom = raw.lieuNom || raw.lieu?.nom;
   }
   if (raw.lieu?.transport) {
     activity.transportInfo = raw.lieu.transport;

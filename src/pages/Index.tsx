@@ -212,11 +212,31 @@ const Index = () => {
     category: 'sport'
   });
 
-  // Activités recommandées
-  const { activities: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({
-    limit: 6,
-    territoryId: territoryId
+  // Activités scolaires (pour le mix)
+  const { activities: scolaireActivities = [], isLoading: loadingScolaire } = useActivities({
+    limit: 4,
+    territoryId: territoryId,
+    periodType: 'scolaire'
   });
+
+  // Activités vacances (pour le mix)
+  const { activities: vacancesActivities = [], isLoading: loadingVacances, error: errorRecommended } = useActivities({
+    limit: 4,
+    territoryId: territoryId,
+    periodType: 'vacances'
+  });
+
+  // Mix équilibré: alterner scolaire et vacances pour les recommandées
+  const loadingRecommended = loadingScolaire || loadingVacances;
+  const recommendedActivities = (() => {
+    const mixed = [];
+    const maxLen = Math.max(scolaireActivities.length, vacancesActivities.length);
+    for (let i = 0; i < maxLen && mixed.length < 6; i++) {
+      if (scolaireActivities[i]) mixed.push(scolaireActivities[i]);
+      if (vacancesActivities[i] && mixed.length < 6) mixed.push(vacancesActivities[i]);
+    }
+    return mixed;
+  })();
 
 
 

@@ -146,6 +146,7 @@ export interface ActivityRaw {
   jours_horaires?: string;
   creneaux?: TimeSlot[];  // JSON array of time slots
   sessions?: string;
+  lieuNom?: string;        // Lieu de RDV pour séjours vacances
   // Santé et prérequis
   santeTags?: string[];
   prerequis?: string[];
