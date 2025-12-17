@@ -218,7 +218,7 @@ const handler = async (req: Request): Promise<Response> => {
         console.log("[send-recommendation-emails] Email sent successfully");
         emailsSent++;
       } catch (error: unknown) {
-        console.error(`[send-recommendation-emails] Failed to process user`);
+        console.error("[send-recommendation-emails] Failed to process user");
         emailsFailed++;
       }
     }
