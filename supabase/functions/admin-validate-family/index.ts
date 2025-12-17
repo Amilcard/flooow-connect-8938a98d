@@ -55,9 +55,19 @@ serve(async (req) => {
 
     console.log('[admin-validate-family] Processing request');
 
+    // Validate required fields
     if (!profileId || !action) {
       return new Response(
         JSON.stringify({ error: 'profileId et action requis' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate UUID format for profileId
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return new Response(
+        JSON.stringify({ error: 'Format profileId invalide' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
