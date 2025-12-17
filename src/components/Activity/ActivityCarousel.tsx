@@ -30,9 +30,11 @@ interface Activity {
 interface ActivityCarouselProps {
   activities: Activity[];
   onActivityClick?: (id: string) => void;
+  /** Mark first card as LCP for performance optimization */
+  isFirstSection?: boolean;
 }
 
-export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarouselProps) => {
+export const ActivityCarousel = ({ activities, onActivityClick, isFirstSection = false }: ActivityCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // For desktop, show 3 cards per view
@@ -88,7 +90,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
 
         {/* Grid layout - Desktop (3 cols ≥1200px, 2 cols 768-1199px) */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentActivities.map((activity) => (
+          {currentActivities.map((activity, index) => (
             <div key={activity.id} className="w-full">
               <ActivityCard
                 {...activity}
@@ -101,6 +103,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
                 aidesEligibles={activity.aidesEligibles}
                 mobility={activity.mobility}
                 onRequestClick={() => onActivityClick?.(activity.id)}
+                isLCP={isFirstSection && currentIndex === 0 && index === 0}
               />
             </div>
           ))}
@@ -116,7 +119,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
             role="list"
             aria-label="Activités en vedette"
           >
-            {activities.map((activity) => (
+            {activities.map((activity, index) => (
               <div
                 key={activity.id}
                 className="w-[280px] flex-shrink-0 snap-start"
@@ -133,6 +136,7 @@ export const ActivityCarousel = ({ activities, onActivityClick }: ActivityCarous
                   aidesEligibles={activity.aidesEligibles}
                   mobility={activity.mobility}
                   onRequestClick={() => onActivityClick?.(activity.id)}
+                  isLCP={isFirstSection && index === 0}
                 />
               </div>
             ))}

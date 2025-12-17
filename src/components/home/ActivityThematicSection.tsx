@@ -32,6 +32,8 @@ interface ActivityThematicSectionProps {
   badge?: string;
   onActivityClick?: (id: string) => void;
   onSeeAllClick?: () => void;
+  /** LCP optimization: mark first section for priority loading */
+  isFirstSection?: boolean;
 }
 
 export const ActivityThematicSection = ({
@@ -41,7 +43,8 @@ export const ActivityThematicSection = ({
   showSeeAll = false,
   badge,
   onActivityClick,
-  onSeeAllClick
+  onSeeAllClick,
+  isFirstSection = false
 }: ActivityThematicSectionProps) => {
   const navigate = useNavigate();
 
@@ -81,9 +84,10 @@ export const ActivityThematicSection = ({
         )}
       </div>
       
-      <ActivityCarousel 
+      <ActivityCarousel
         activities={activities}
         onActivityClick={onActivityClick || ((id) => navigate(`/activity/${id}`))}
+        isFirstSection={isFirstSection}
       />
     </section>
   );

@@ -69,6 +69,8 @@ interface ActivityCardProps {
   hasAccommodation?: boolean;
   hasFreeTrial?: boolean; // Nouveau: pour afficher "Initiation gratuite"
   "data-tour-id"?: string;
+  /** LCP optimization: prioritize loading for above-the-fold cards */
+  isLCP?: boolean;
 }
 
 // LOT 1 - Supprimé: getCategoryImage() remplacé par getActivityImage() de lib/imageMapping.ts
@@ -93,6 +95,7 @@ export const ActivityCard = ({
   onRequestClick,
   vacationType,
   priceUnit,
+  isLCP = false,
 }: ActivityCardProps) => {
   // LOT 1 - T1_1: Fallback image intelligent basé sur titre, catégorie et âge
   // Extraction de l'âge depuis ageRange si disponible (format: "X-Y ans")
@@ -118,7 +121,11 @@ export const ActivityCard = ({
         <img
           src={displayImage}
           alt={title}
-          loading="eager"
+          width={320}
+          height={400}
+          loading={isLCP ? "eager" : "lazy"}
+          decoding={isLCP ? "sync" : "async"}
+          fetchPriority={isLCP ? "high" : "auto"}
           className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.currentTarget.src = fallbackImage;

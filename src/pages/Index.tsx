@@ -324,6 +324,7 @@ const Index = () => {
                     showSeeAll
                     onActivityClick={handleActivityClick}
                     onSeeAllClick={() => navigate('/activities')}
+                    isFirstSection
                   />
                 </section>
               )
