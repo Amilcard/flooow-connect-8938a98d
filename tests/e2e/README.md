@@ -48,7 +48,8 @@ npx playwright install
 Créer `.env.test` :
 
 ```env
-VITE_SUPABASE_URL=https://lddlzlthtwuwxxrrbxuc.supabase.co
+# Remplacer YOUR_PROJECT_REF par votre ID projet Supabase
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=<votre_service_role_key>
 VITE_PREVIEW_URL=http://localhost:8080

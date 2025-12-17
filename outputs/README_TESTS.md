@@ -67,7 +67,7 @@ Les résultats sont sauvegardés dans:
 ```json
 {
   "timestamp": "2025-10-13T14:00:00Z",
-  "base_url": "https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1",
+  "base_url": "https://YOUR_PROJECT_REF.supabase.co/functions/v1",
   "tests": [
     {
       "name": "login",

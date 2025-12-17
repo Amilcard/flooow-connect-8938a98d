@@ -124,9 +124,9 @@ TS_MODE=mock node src/transport-sync/index.ts
 ⚠️ **ATTENTION:** Ne jamais exécuter en production sans validation explicite !
 
 ```bash
-# Test en staging/dev uniquement
+# Test en staging/dev uniquement (remplacer YOUR_PROJECT_REF)
 TS_MODE=auto \
-TS_SUPABASE_URL=https://lddlzlthtwuwxxrrbxuc.supabase.co \
+TS_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co \
 TS_SUPABASE_SERVICE_ROLE_KEY=<SERVICE_ROLE_KEY> \
 node src/transport-sync/index.ts
 ```

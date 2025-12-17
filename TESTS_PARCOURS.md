@@ -106,7 +106,7 @@ Ouvrir console navigateur (F12) → Onglet Network
 
 - [ ] Recharger page dashboard
 - [ ] Filtrer par "supabase"
-- [ ] **Attendu** : Requêtes vers `lddlzlthtwuwxxrrbxuc.supabase.co` OU `kbrgwezjkaakoecisspom.supabase.co`
+- [ ] **Attendu** : Requêtes vers votre projet Supabase (voir .env pour l'URL)
 - [ ] **Attendu** : Statut 200 (pas 401/403/500)
 - [ ] ❌ **Si 401 Unauthorized** : Problème clés API
 

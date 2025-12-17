@@ -16,7 +16,8 @@ servers:
     description: Supabase Edge Functions
     variables:
       project_id:
-        default: lddlzlthtwuwxxrrbxuc
+        default: YOUR_PROJECT_REF
+        description: Votre ID de projet Supabase (voir Settings > General)
 
 tags:
   - name: Authentication

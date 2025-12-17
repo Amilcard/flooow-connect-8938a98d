@@ -86,7 +86,8 @@ supabase functions deploy validate-child-signup-token
 
 **Si erreur "project not found" :**
 ```bash
-supabase link --project-ref lddlzlthtwuwxxrrbxuc
+# Remplacez YOUR_PROJECT_REF par votre ID projet Supabase
+supabase link --project-ref YOUR_PROJECT_REF
 ```
 
 ---
@@ -115,8 +116,8 @@ Vous devriez voir :
 **Tester les endpoints :**
 
 ```bash
-# Test 1 : Vérifier que validate-child-signup-token répond
-curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/validate-child-signup-token \
+# Test 1 : Vérifier que validate-child-signup-token répond (remplacer YOUR_PROJECT_REF)
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/validate-child-signup-token \
   -H "Content-Type: application/json" \
   -d '{"token":"test","action":"approve"}'
 
@@ -124,7 +125,7 @@ curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/validate-chil
 # C'est NORMAL - la fonction fonctionne !
 
 # Test 2 : Vérifier que child-signup-email vérifie le parent
-curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/child-signup-email \
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/child-signup-email \
   -H "Content-Type: application/json" \
   -d '{"parentEmail":"nonexistent@test.com","childName":"Test","childDob":"2010-01-01"}'
 
@@ -146,7 +147,7 @@ curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/child-signup-
    ```bash
    # Via l'interface : /child-self-signup (onglet Email)
    # OU via curl :
-   curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/child-signup-email \
+   curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/child-signup-email \
      -H "Content-Type: application/json" \
      -d '{
        "parentEmail":"test-parent@votre-domaine.com",

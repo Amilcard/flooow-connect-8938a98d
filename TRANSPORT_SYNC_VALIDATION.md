@@ -133,9 +133,9 @@ TS_MODE=mock node src/transport-sync/index.ts
 ⚠️ **UNIQUEMENT sur environnement staging/dev ! JAMAIS en production !**
 
 ```bash
-# Variables Supabase (remplacer par valeurs staging)
+# Variables Supabase (remplacer YOUR_PROJECT_REF par votre ID projet)
 export TS_MODE=auto
-export TS_SUPABASE_URL="https://lddlzlthtwuwxxrrbxuc.supabase.co"
+export TS_SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
 export TS_SUPABASE_SERVICE_ROLE_KEY="<STAGING_SERVICE_ROLE_KEY>"
 export TS_CHUNK_SIZE=50  # Prudence: batch réduit pour 1er test
 
