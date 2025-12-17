@@ -712,51 +712,6 @@ const ActivityDetail = () => {
                         </div>
                       )}
 
-                      {/* Dates du séjour (colonies/camps vacances) */}
-                      {activity.period_type === "vacances" && (activity.date_debut || activity.date_fin) && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Dates du séjour</p>
-                            <p className="text-sm text-muted-foreground">
-                              {activity.date_debut && new Date(activity.date_debut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                              {activity.date_debut && activity.date_fin && ' → '}
-                              {activity.date_fin && new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                            </p>
-                            {activity.duration_days && (
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Durée : {activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Horaires départ/retour et lieu de RDV (séjours avec hébergement) */}
-                      {activity.period_type === "vacances" && activity.jours_horaires && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <Info size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Horaires départ / retour</p>
-                            <p className="text-sm text-muted-foreground whitespace-pre-line">
-                              {activity.jours_horaires}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Lieu de rendez-vous */}
-                      {activity.period_type === "vacances" && activity.lieu_nom && (
-                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                          <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-medium text-sm">Lieu de rendez-vous</p>
-                            <p className="text-sm text-muted-foreground">
-                              {activity.lieu_nom}
-                            </p>
-                          </div>
-                        </div>
-                      )}
 
 
 
@@ -981,6 +936,55 @@ const ActivityDetail = () => {
                   </>
                 )}
               </div>
+
+              {/* Dates du séjour - VACANCES UNIQUEMENT - Info stratégique pour la réservation */}
+              {activity.period_type === "vacances" && (activity.date_debut || activity.date_fin) && (
+                <>
+                  <Separator />
+                  <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={18} className="text-primary" />
+                      <h3 className="font-semibold text-primary">Dates du séjour</h3>
+                    </div>
+                    <div className="space-y-2 pl-6">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">Départ :</span>
+                        <span>{activity.date_debut ? new Date(activity.date_debut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">Retour :</span>
+                        <span>{activity.date_fin ? new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                      </div>
+                      {activity.duration_days && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span className="font-medium">Durée :</span>
+                          <span>{activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Horaires départ/retour et lieu RDV */}
+                    {(activity.jours_horaires || activity.lieu_nom) && (
+                      <div className="space-y-2 pl-6 pt-2 border-t border-primary/10">
+                        {activity.jours_horaires && (
+                          <div className="text-sm">
+                            <span className="font-medium">Horaires :</span>
+                            <p className="text-muted-foreground whitespace-pre-line mt-1">{activity.jours_horaires}</p>
+                          </div>
+                        )}
+                        {activity.lieu_nom && (
+                          <div className="flex items-start gap-2 text-sm">
+                            <MapPin size={14} className="text-primary mt-0.5 flex-shrink-0" />
+                            <div>
+                              <span className="font-medium">Lieu de RDV :</span>
+                              <p className="text-muted-foreground">{activity.lieu_nom}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
 
               {/* Créneaux disponibles */}
               {(activity.period_type === "scolaire" ? sessions.length > 0 : slots.length > 0) && (
