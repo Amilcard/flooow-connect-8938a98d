@@ -50,6 +50,10 @@ export const MapPreviewCard = ({ activity, onClose, onViewDetail }: MapPreviewCa
         <img
           src={displayImage}
           alt={title}
+          width={320}
+          height={128}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover"
           onError={(e) => {
             e.currentTarget.src = getActivityImage(title, category, ageMin, ageMax);

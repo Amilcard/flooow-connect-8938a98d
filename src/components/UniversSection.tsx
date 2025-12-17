@@ -94,9 +94,13 @@ export const UniversSection = () => {
                   data-testid={item.testId}
                 >
                   {/* Image de fond */}
-                  <img 
+                  <img
                     src={item.image}
                     alt={item.name}
+                    width={85}
+                    height={105}
+                    loading="lazy"
+                    decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                   

@@ -69,6 +69,10 @@ export const ActivityCardCompact = ({
           <img
             src={displayImage}
             alt={title}
+            width={80}
+            height={80}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.src = getActivityImage(title, category, ageMin, ageMax);
