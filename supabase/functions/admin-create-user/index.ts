@@ -57,10 +57,27 @@ serve(async (req) => {
 
     console.log('[admin-create-user] Creating user');
 
-    // Validate input
+    // Validate required fields
     if (!email || !firstName || !lastName || !role) {
       return new Response(
         JSON.stringify({ error: 'Données manquantes (email, firstName, lastName, role requis)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: 'Format email invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate name lengths (prevent overflow)
+    if (firstName.length > 100 || lastName.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Nom ou prénom trop long (max 100 caractères)' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

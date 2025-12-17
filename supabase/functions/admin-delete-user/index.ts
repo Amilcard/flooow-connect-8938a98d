@@ -62,6 +62,24 @@ serve(async (req) => {
       );
     }
 
+    // Validate UUID format if provided
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (userId && !uuidRegex.test(userId)) {
+      return new Response(
+        JSON.stringify({ error: 'Format userId invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate email format if provided
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: 'Format email invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Find user by email if provided
     let targetUserId = userId;
     if (email && !userId) {
@@ -103,13 +121,10 @@ serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('[admin-delete-user] Internal error');
     return new Response(
-      JSON.stringify({ 
-        error: 'internal_error',
-        message: error instanceof Error ? error.message : String(error)
-      }),
+      JSON.stringify({ error: 'Erreur interne' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
