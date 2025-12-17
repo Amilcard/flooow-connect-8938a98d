@@ -22,8 +22,8 @@
 |---------|----------|
 | **GitHub Repo** | `https://github.com/Amilcard/flooow-connect-8938a98d` |
 | **Branche dev Claude** | `claude/flooow-connect-audit-01Ffyh9JC6NV6Qa7c2wS4S6j` |
-| **Supabase Project ID** | `kbrgwezkjaakoecispom` |
-| **Supabase URL** | `https://kbrgwezkjaakoecispom.supabase.co` |
+| **Supabase Project ID** | See Supabase Dashboard |
+| **Supabase URL** | `https://YOUR_PROJECT_REF.supabase.co` (see .env) |
 | **Netlify** | Déploiement automatique depuis `main` |
 | **Chemin local utilisateur** | `~/dev-flooow` (PAS flooow-connect) |
 
@@ -319,7 +319,7 @@ Le fichier `.github/workflows/auto-sync-claude.yml` merge automatiquement les br
 | Ressource | Lien |
 |-----------|------|
 | GitHub Issues | https://github.com/Amilcard/flooow-connect-8938a98d/issues |
-| Supabase Dashboard | https://supabase.com/dashboard/project/kbrgwezkjaakoecispom |
+| Supabase Dashboard | https://supabase.com/dashboard (see project settings) |
 | Tailwind Docs | https://tailwindcss.com/docs |
 | Shadcn/ui | https://ui.shadcn.com |
 | TanStack Query | https://tanstack.com/query/latest |

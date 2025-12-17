@@ -1,7 +1,7 @@
 {
-  "_note": "ARCHIVE - exemples générés avec un ancien projet Supabase. À adapter avec https://kbrgwezkjaakoecispom.supabase.co",
+  "_note": "ARCHIVE - exemples de tests. Remplacer YOUR_PROJECT_REF par votre ID projet Supabase",
   "timestamp": "2025-10-13T13:45:00Z",
-  "base_url": "https://kbrgwezkjaakoecispom.supabase.co/functions/v1",
+  "base_url": "https://YOUR_PROJECT_REF.supabase.co/functions/v1",
   "description": "Smoke tests pour l'API d'authentification et gestion de sessions",
   "tests": [
     {
@@ -14,7 +14,7 @@
         "Set cookies: access_token (HttpOnly), refresh_token (HttpOnly), session_id",
         "Retourne session_id et user info"
       ],
-      "curl_example": "curl -c cookies.txt -X POST https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"pass123\",\"device\":\"web\"}'"
+      "curl_example": "curl -c cookies.txt -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/auth-sessions/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"pass123\",\"device\":\"web\"}'"
     },
     {
       "name": "session_info",
@@ -24,7 +24,7 @@
         "Lit session_id depuis cookie",
         "Retourne metadata session (user_id, roles, device, ip, etc.)"
       ],
-      "curl_example": "curl -b cookies.txt https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/session-info"
+      "curl_example": "curl -b cookies.txt https://YOUR_PROJECT_REF.supabase.co/functions/v1/auth-sessions/session-info"
     },
     {
       "name": "refresh",
@@ -37,7 +37,7 @@
         "Génère nouveau JWT access_token",
         "Set nouveaux cookies"
       ],
-      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/refresh"
+      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/auth-sessions/refresh"
     },
     {
       "name": "logout",
@@ -49,7 +49,7 @@
         "Clear tous les cookies",
         "Log audit event"
       ],
-      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://kbrgwezkjaakoecispom.supabase.co/functions/v1/auth-sessions/logout"
+      "curl_example": "curl -b cookies.txt -c cookies.txt -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/auth-sessions/logout"
     },
     {
       "name": "verify_revoked",

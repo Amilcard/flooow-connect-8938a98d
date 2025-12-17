@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================
 # ARCHIVE - Run Smoke Tests - Flooow Connect Auth API
-# Projet Flooow - URL: https://kbrgwezkjaakoecispom.supabase.co
+# Requires SUPABASE_URL environment variable
 # ============================================
 
 set -e

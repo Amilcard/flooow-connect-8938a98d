@@ -2,8 +2,8 @@
 set -e
 
 # ARCHIVE - Exemples de smoke tests pour le projet Flooow
-# Configuration
-API_BASE="${API_BASE:-https://kbrgwezkjaakoecispom.supabase.co/functions/v1}"
+# Configuration - Set SUPABASE_URL env var before running
+API_BASE="${API_BASE:-${SUPABASE_URL:-https://YOUR_PROJECT_REF.supabase.co}/functions/v1}"
 T_FAMILY="${T_FAMILY:-Bearer <FAMILY_TOKEN>}"
 T_PARENT="${T_PARENT:-Bearer <PARENT_TOKEN>}"
 

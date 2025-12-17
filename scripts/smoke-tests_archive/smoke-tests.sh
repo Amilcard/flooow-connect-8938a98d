@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ARCHIVE - NE PAS UTILISER TEL QUEL
-# Ancien projet Supabase. À adapter si jamais on réactive ces tests.
+# Set SUPABASE_URL env var before running these tests.
 
 # ============================================
 # SMOKE TESTS - Auth & Session Management
@@ -9,8 +9,8 @@
 
 set -e
 
-# Configuration
-BASE_URL="https://kbrgwezkjaakoecispom.supabase.co/functions/v1"
+# Configuration - Requires SUPABASE_URL environment variable
+BASE_URL="${SUPABASE_URL:-https://YOUR_PROJECT_REF.supabase.co}/functions/v1"
 COOKIE_FILE="cookies.txt"
 OUTPUT_FILE="outputs/smoke_report.json"
 
