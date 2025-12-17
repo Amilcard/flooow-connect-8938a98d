@@ -802,7 +802,7 @@ function buildIncitationMessage(
   if (aidesCount > 0) {
     return `✅ Vous avez **${montantDetecte}€ d'aides disponibles** pour cette activité.`;
   }
-  return `📋 Aucune aide automatique détectée. Vérifiez votre éligibilité en renseignant quelques informations supplémentaires.`;
+  return "📋 Aucune aide automatique détectée. Vérifiez votre éligibilité en renseignant quelques informations supplémentaires.";
 }
 
 function buildEstimateResult(
@@ -1071,7 +1071,7 @@ function buildFastIncitationMessage(
   if (potentiellesCount > 0) {
     return `📋 Complétez quelques informations pour découvrir vos aides potentielles (jusqu'à ${montantPotentielMax}€).`;
   }
-  return `📋 Aucune aide détectée avec les informations fournies.`;
+  return "📋 Aucune aide détectée avec les informations fournies.";
 }
 
 function getConfidenceLevel(aidesCount: number): 'faible' | 'moyen' | 'élevé' {

@@ -237,7 +237,7 @@ const ActivityDetail = () => {
       // FIX: Removed structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("activities")
-        .select(`*`)
+        .select("*")
         .eq("id", id)
         .single();
 

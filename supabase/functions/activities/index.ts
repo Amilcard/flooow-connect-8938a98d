@@ -55,10 +55,10 @@ serve(async (req) => {
       filters.push(`price_base=lte.${encodeURIComponent(qp.get("max_price")!)}`);
     }
     if (qp.get("accessibility") === "true") {
-      filters.push(`accessibility_checklist->>wheelchair=eq.true`);
+      filters.push("accessibility_checklist->>wheelchair=eq.true");
     }
     if (qp.get("covoiturage") === "true") {
-      filters.push(`covoiturage_enabled=eq.true`);
+      filters.push("covoiturage_enabled=eq.true");
     }
 
     // Construct Supabase REST URL

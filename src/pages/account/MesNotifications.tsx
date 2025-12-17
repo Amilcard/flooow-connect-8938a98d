@@ -139,7 +139,7 @@ const MesNotifications = () => {
   } = useNotificationPreferences(user?.id);
 
   const handleViewEvent = (_eventId: string) => {
-    navigate(`/agenda-community`);
+    navigate("/agenda-community");
   };
 
   const categoryOptions = [

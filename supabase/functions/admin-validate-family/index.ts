@@ -141,8 +141,8 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true,
         message: action === 'approve' 
-          ? `Compte validé avec succès`
-          : `Compte rejeté`,
+          ? "Compte validé avec succès"
+          : "Compte rejeté",
         email: profile.email
       }),
       { 
