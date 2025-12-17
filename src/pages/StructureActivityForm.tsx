@@ -28,8 +28,19 @@ const StructureActivityForm = () => {
     ageMin: "",
     ageMax: "",
     address: "",
-    postalCode: ""
+    postalCode: "",
+    vacationType: "",
+    dateDebut: "",
+    dateFin: "",
+    durationDays: "",
+    departureTime: "",
+    returnTime: "",
+    meetingPoint: ""
   });
+
+  // Séjours avec hébergement (colonies, camps) nécessitent dates et durée obligatoires
+  const isSejourAvecHebergement = formData.category === "Vacances" && formData.vacationType === "sejour_hebergement";
+  const requiresDates = isSejourAvecHebergement;
 
   const [selectedAids, setSelectedAids] = useState<string[]>([]);
 
@@ -89,8 +100,24 @@ const StructureActivityForm = () => {
           ageMin: data.age_min ? String(data.age_min) : "",
           ageMax: data.age_max ? String(data.age_max) : "",
           address: userStructure.address || "",
-          postalCode: "" // Will be fetched from territory via useEffect
+          postalCode: "", // Will be fetched from territory via useEffect
+          vacationType: data.vacation_type || "",
+          dateDebut: data.date_debut || "",
+          dateFin: data.date_fin || "",
+          durationDays: data.duration_days ? String(data.duration_days) : "",
+          // Parse jours_horaires for departure/return/meeting info
+          departureTime: "",
+          returnTime: "",
+          meetingPoint: data.lieu_nom || ""
         });
+
+        // Parse jours_horaires if it contains structured info
+        if (data.jours_horaires) {
+          const match = data.jours_horaires.match(/Départ[:\s]*(\d{1,2}[h:]\d{2})/i);
+          const matchReturn = data.jours_horaires.match(/Retour[:\s]*(\d{1,2}[h:]\d{2})/i);
+          if (match) setFormData(prev => ({ ...prev, departureTime: match[1].replace('h', ':') }));
+          if (matchReturn) setFormData(prev => ({ ...prev, returnTime: matchReturn[1].replace('h', ':') }));
+        }
 
         // Parse accepts_aid_types (it's jsonb, could be array or string array)
         if (data.accepts_aid_types) {
@@ -127,6 +154,17 @@ const StructureActivityForm = () => {
     try {
       if (!userStructure) throw new Error("Structure introuvable");
 
+      // Validation pour séjours avec hébergement
+      if (requiresDates && (!formData.dateDebut || !formData.dateFin)) {
+        toast({
+          title: "Dates requises",
+          description: "Les séjours avec hébergement nécessitent une date de début et de fin",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const activityData = {
         structure_id: userStructure.id,
         title: formData.title,
@@ -136,7 +174,19 @@ const StructureActivityForm = () => {
         age_min: formData.ageMin ? Number.parseInt(formData.ageMin, 10) : null,
         age_max: formData.ageMax ? Number.parseInt(formData.ageMax, 10) : null,
         accepts_aid_types: JSON.stringify(selectedAids),
-        published: true
+        published: true,
+        // Champs vacances/séjours
+        vacation_type: formData.category === "Vacances" ? formData.vacationType || null : null,
+        date_debut: formData.dateDebut || null,
+        date_fin: formData.dateFin || null,
+        duration_days: formData.durationDays ? Number.parseInt(formData.durationDays, 10) : null,
+        is_overnight: formData.vacationType === "sejour_hebergement",
+        has_accommodation: formData.vacationType === "sejour_hebergement",
+        // Horaires et lieu RDV pour séjours
+        jours_horaires: isSejourAvecHebergement && (formData.departureTime || formData.returnTime)
+          ? `Départ: ${formData.departureTime || 'À définir'} | Retour: ${formData.returnTime || 'À définir'}`
+          : null,
+        lieu_nom: formData.meetingPoint || null
       };
 
       if (id) {
@@ -213,7 +263,7 @@ const StructureActivityForm = () => {
 
             <div className="space-y-2">
               <Label htmlFor="category">Catégorie *</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value, vacationType: value !== "Vacances" ? "" : formData.vacationType })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez..." />
                 </SelectTrigger>
@@ -225,6 +275,103 @@ const StructureActivityForm = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Champs spécifiques Vacances/Séjours */}
+            {formData.category === "Vacances" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="vacationType">Type de séjour *</Label>
+                  <Select value={formData.vacationType} onValueChange={(value) => setFormData({ ...formData, vacationType: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez le type..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sejour_hebergement">Séjour avec hébergement (colonie, camp)</SelectItem>
+                      <SelectItem value="centre_loisirs">Centre de loisirs (sans nuitée)</SelectItem>
+                      <SelectItem value="stage_journee">Stage à la journée</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="dateDebut">
+                      Date de début {requiresDates && <span className="text-destructive">*</span>}
+                    </Label>
+                    <Input
+                      id="dateDebut"
+                      type="date"
+                      value={formData.dateDebut}
+                      onChange={(e) => setFormData({ ...formData, dateDebut: e.target.value })}
+                      required={requiresDates}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dateFin">
+                      Date de fin {requiresDates && <span className="text-destructive">*</span>}
+                    </Label>
+                    <Input
+                      id="dateFin"
+                      type="date"
+                      value={formData.dateFin}
+                      onChange={(e) => setFormData({ ...formData, dateFin: e.target.value })}
+                      required={requiresDates}
+                      min={formData.dateDebut}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="durationDays">Nombre de jours</Label>
+                  <Input
+                    id="durationDays"
+                    type="number"
+                    min="1"
+                    value={formData.durationDays}
+                    onChange={(e) => setFormData({ ...formData, durationDays: e.target.value })}
+                    placeholder="7"
+                  />
+                </div>
+
+                {/* Horaires et lieu de RDV pour séjours */}
+                {isSejourAvecHebergement && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="departureTime">Heure de départ</Label>
+                        <Input
+                          id="departureTime"
+                          type="time"
+                          value={formData.departureTime}
+                          onChange={(e) => setFormData({ ...formData, departureTime: e.target.value })}
+                          placeholder="09:00"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="returnTime">Heure de retour</Label>
+                        <Input
+                          id="returnTime"
+                          type="time"
+                          value={formData.returnTime}
+                          onChange={(e) => setFormData({ ...formData, returnTime: e.target.value })}
+                          placeholder="17:00"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="meetingPoint">Lieu de rendez-vous</Label>
+                      <Input
+                        id="meetingPoint"
+                        value={formData.meetingPoint}
+                        onChange={(e) => setFormData({ ...formData, meetingPoint: e.target.value })}
+                        placeholder="Parvis de la gare, devant l'entrée principale"
+                      />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
