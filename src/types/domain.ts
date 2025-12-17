@@ -120,7 +120,7 @@ export interface ActivityRaw {
   accessibilite?: string[];
   accessibility_checklist?: AccessibilityFlags;
   aidesEligibles?: string[];
-  accepts_aid_types?: string[];
+  accepts_aid_types?: any[];
   mobilite?: Mobility;
   category?: string;
   categories?: string[];
@@ -144,9 +144,14 @@ export interface ActivityRaw {
   date_debut?: string;
   date_fin?: string;
   jours_horaires?: string;
+<<<<<<< Updated upstream
   creneaux?: TimeSlot[];  // JSON array of time slots
   sessions?: string;
   lieuNom?: string;        // Lieu de RDV pour séjours vacances
+=======
+  creneaux?: any[];  // JSON array of time slots
+  sessions?: any;
+>>>>>>> Stashed changes
   // Santé et prérequis
   santeTags?: string[];
   prerequis?: string[];

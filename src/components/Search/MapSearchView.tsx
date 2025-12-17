@@ -535,22 +535,12 @@ export const MapSearchView = ({
             )}
           >
             {/* Handle */}
-            <div
-              role="button"
-              tabIndex={0}
-              aria-label="Basculer le panneau de liste"
-              className="flex justify-center py-3 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
+            <div 
+              className="flex justify-center py-3 cursor-pointer"
               onClick={() => {
                 if (bottomSheetState === 'collapsed') setBottomSheetState('half');
                 else if (bottomSheetState === 'half') setBottomSheetState('full');
                 else setBottomSheetState('collapsed');
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  if (bottomSheetState === 'collapsed') setBottomSheetState('half');
-                  else if (bottomSheetState === 'half') setBottomSheetState('full');
-                  else setBottomSheetState('collapsed');
-                }
               }}
             >
               <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
@@ -571,10 +561,12 @@ export const MapSearchView = ({
                   else setBottomSheetState('half');
                 }}
               >
-                {bottomSheetState === 'collapsed' ? (
+                {bottomSheetState === 'full' ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : bottomSheetState === 'collapsed' ? (
                   <ChevronUp className="w-4 h-4" />
                 ) : (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronUp className="w-4 h-4" />
                 )}
               </Button>
             </div>

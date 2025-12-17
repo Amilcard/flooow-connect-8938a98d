@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Check, X, Eye, EyeOff } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { Progress } from "@/components/ui/progress";
-import { safeErrorMessage } from "@/utils/sanitize";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ const Auth = () => {
           navigate("/", { replace: true });
         }
       } catch (error) {
-        console.error(safeErrorMessage(error, 'Auth check'));
+        console.error("Auth check error:", error);
       }
     };
     
@@ -75,11 +74,10 @@ const Auth = () => {
       });
 
       navigate("/home");
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Identifiants incorrects";
+    } catch (error: any) {
       toast({
         title: "Erreur de connexion",
-        description: errorMessage,
+        description: error.message || "Identifiants incorrects",
         variant: "destructive"
       });
     } finally {
@@ -133,11 +131,10 @@ const Auth = () => {
 
       // Rediriger vers l'onboarding bêta
       navigate("/onboarding");
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue";
+    } catch (error: any) {
       toast({
         title: "Erreur d'inscription",
-        description: errorMessage,
+        description: error.message || "Une erreur est survenue",
         variant: "destructive"
       });
     } finally {

@@ -29,6 +29,8 @@ export default function ValidateChildSignup() {
       }
 
       try {
+        console.log('Validating child signup:', { token, action });
+
         const { data, error } = await supabase.functions.invoke(
           'validate-child-signup-token',
           {
@@ -37,6 +39,7 @@ export default function ValidateChildSignup() {
         );
 
         if (error) {
+          console.error('Validation error:', error);
           throw error;
         }
 
@@ -55,14 +58,14 @@ export default function ValidateChildSignup() {
           }, 3000);
         }
 
-      } catch (err: unknown) {
+      } catch (err: any) {
+        console.error('Unexpected error:', err);
         setStatus('error');
-        const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
-        setMessage(errorMessage);
+        setMessage(err.message || 'Une erreur est survenue');
 
         toast({
           title: 'Erreur',
-          description: errorMessage || 'Lien invalide ou expiré',
+          description: err.message || 'Lien invalide ou expiré',
           variant: 'destructive'
         });
       }

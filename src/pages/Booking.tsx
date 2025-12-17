@@ -28,60 +28,6 @@ import { ChildCard } from "@/components/Booking/ChildCard";
 import { BookingSkeleton } from "@/components/Booking/BookingSkeleton";
 import { BookingRecap } from "@/components/Booking/BookingRecap";
 import { InlineChildForm } from "@/components/Booking/InlineChildForm";
-import { safeErrorMessage } from "@/utils/sanitize";
-
-// HELPERS: Reduce cognitive complexity
-
-/**
- * Calculate age from birth date with reference date
- */
-const calculateAgeAtDate = (dob: string, referenceDate: Date): number => {
-  const birthDate = new Date(dob);
-  let age = referenceDate.getFullYear() - birthDate.getFullYear();
-  const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
-};
-
-/**
- * Get eligibility reason message
- */
-const getEligibilityReason = (minAge: number, maxAge: number): string => {
-  const ageRange = maxAge < 999 ? `${minAge}–${maxAge} ans` : `à partir de ${minAge} ans`;
-  return `Activité réservée aux enfants de ${ageRange}`;
-};
-
-interface ButtonStateConfig {
-  disabled: boolean;
-  label: string;
-}
-
-/**
- * Get button state based on children and selection
- */
-const getButtonState = (
-  childrenCount: number,
-  showAddChildForm: boolean,
-  selectedChildId: string,
-  isSelectedChildEligible: boolean,
-  isSubmitting: boolean
-): ButtonStateConfig => {
-  if (isSubmitting) {
-    return { disabled: true, label: "En cours..." };
-  }
-  if (childrenCount === 0 && !showAddChildForm) {
-    return { disabled: true, label: "Ajoutez un enfant pour continuer" };
-  }
-  if (!selectedChildId) {
-    return { disabled: true, label: "Sélectionnez un enfant" };
-  }
-  if (!isSelectedChildEligible) {
-    return { disabled: true, label: "Enfant non éligible" };
-  }
-  return { disabled: false, label: "Confirmer la demande" };
-};
 
 const Booking = () => {
   const { id } = useParams();
@@ -252,19 +198,30 @@ const Booking = () => {
   }, [selectedChildId, id, slotId, sessionId, saveDraft]);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ELIGIBILITY HELPERS (using extracted functions to reduce CC)
+  // ELIGIBILITY HELPERS
   // ═══════════════════════════════════════════════════════════════════════════
   const getChildEligibility = (child: { dob: string }) => {
     if (!activity) return { age: 0, isEligible: true, reason: null };
-
+    
+    const birthDate = new Date(child.dob);
     const referenceDate = slot ? new Date(slot.start) : new Date();
-    const age = calculateAgeAtDate(child.dob, referenceDate);
-
+    let age = referenceDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
     const minAge = session?.age_min ?? activity.age_min ?? 0;
     const maxAge = session?.age_max ?? activity.age_max ?? 999;
     const isEligible = age >= minAge && age <= maxAge;
-    const reason = isEligible ? null : getEligibilityReason(minAge, maxAge);
-
+    
+    let reason: string | null = null;
+    if (!isEligible) {
+      const ageRange = maxAge < 999 ? `${minAge}–${maxAge} ans` : `à partir de ${minAge} ans`;
+      reason = `Activité réservée aux enfants de ${ageRange}`;
+    }
+    
     return { age, isEligible, reason };
   };
 
@@ -391,7 +348,7 @@ const Booking = () => {
       });
 
       if (error) {
-        console.error(safeErrorMessage(error, 'Booking edge function'));
+        console.error("Edge function error:", error);
         
         if (error.message?.includes("idempotency") || error.message?.includes("already exists")) {
           toast({
@@ -419,7 +376,7 @@ const Booking = () => {
       navigate(`/booking-status/${id}?status=pending&bookingId=${data.booking?.id}`);
       
     } catch (error: unknown) {
-      console.error(safeErrorMessage(error, 'Booking submit'));
+      console.error("Booking error:", error);
       const errorMessage = error instanceof Error ? error.message : "Impossible de finaliser la réservation";
       toast({
         title: "Erreur",
@@ -485,19 +442,29 @@ const Booking = () => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // BUTTON STATE LOGIC (using helper to reduce CC)
+  // BUTTON STATE LOGIC
   // ═══════════════════════════════════════════════════════════════════════════
   const selectedChild = children.find(c => c.id === selectedChildId);
   const selectedChildEligibility = selectedChild ? getChildEligibility(selectedChild) : null;
   const isSelectedChildEligible = selectedChildEligibility?.isEligible ?? true;
 
-  const { disabled: buttonDisabled, label: buttonLabel } = getButtonState(
-    children.length,
-    showAddChildForm,
-    selectedChildId,
-    isSelectedChildEligible,
-    isSubmitting
-  );
+  let buttonDisabled = false;
+  let buttonLabel = "Confirmer la demande";
+
+  if (children.length === 0 && !showAddChildForm) {
+    buttonDisabled = true;
+    buttonLabel = "Ajoutez un enfant pour continuer";
+  } else if (!selectedChildId) {
+    buttonDisabled = true;
+    buttonLabel = "Sélectionnez un enfant";
+  } else if (!isSelectedChildEligible) {
+    buttonDisabled = true;
+    buttonLabel = "Enfant non éligible";
+  }
+
+  if (isSubmitting) {
+    buttonLabel = "En cours...";
+  }
 
   // Age range for display
   const ageMin = session?.age_min ?? activity.age_min ?? 0;

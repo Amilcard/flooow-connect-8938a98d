@@ -11,7 +11,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { ProfilLayout } from "@/components/ProfilLayout";
 import { useToast } from "@/hooks/use-toast";
-import { safeErrorMessage } from "@/utils/sanitize";
 import {
   UserPlus,
   Copy,
@@ -28,18 +27,6 @@ import {
   Users,
   ArrowRight,
 } from "lucide-react";
-
-/** Response type from link_parent_to_minor RPC */
-interface LinkParentResponse {
-  success: boolean;
-  error?: string;
-}
-
-/** Response type from validate_child_request RPC */
-interface ValidateChildResponse {
-  success: boolean;
-  error?: string;
-}
 
 const LierEnfant = () => {
   const { toast } = useToast();
@@ -88,10 +75,10 @@ const LierEnfant = () => {
         description: "Ton code Family Flooow est pret a etre partage avec ton enfant.",
       });
     },
-    onError: (error: unknown) => {
+    onError: (error: any) => {
       toast({
         title: "Oups !",
-        description: error instanceof Error ? error.message : "Impossible de generer le code. Reessaie dans quelques instants.",
+        description: error.message || "Impossible de generer le code. Reessaie dans quelques instants.",
         variant: "destructive",
       });
     },
@@ -143,8 +130,8 @@ const LierEnfant = () => {
 
       if (error) throw error;
 
-      const result = data as LinkParentResponse | null;
-      if (result?.success) {
+      const result = data as any;
+      if (result.success) {
         toast({
           title: "Enfant lie avec succes !",
           description: "Le compte a ete lie. Tu peux maintenant valider sa demande d'inscription.",
@@ -152,11 +139,11 @@ const LierEnfant = () => {
         setChildCode("");
         queryClient.invalidateQueries({ queryKey: ["child-requests"] });
       } else {
-        setLinkError(result?.error || "Code invalide ou expire");
+        setLinkError(result.error || "Code invalide ou expire");
       }
-    } catch (err: unknown) {
-      console.error(safeErrorMessage(err, 'LierEnfant.handleLinkChild'));
-      setLinkError(err instanceof Error ? err.message : "Une erreur est survenue. Reessaie dans quelques instants.");
+    } catch (err: any) {
+      console.error("Link error:", err);
+      setLinkError(err.message || "Une erreur est survenue. Reessaie dans quelques instants.");
     } finally {
       setIsLinking(false);
     }
@@ -175,9 +162,9 @@ const LierEnfant = () => {
       });
 
       if (error) throw error;
-      return data as ValidateChildResponse | null;
+      return data as any;
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["child-requests"] });
 
       if (variables.action === "validate") {
@@ -193,10 +180,10 @@ const LierEnfant = () => {
         });
       }
     },
-    onError: (error: unknown) => {
+    onError: (error: any) => {
       toast({
         title: "Oups !",
-        description: error instanceof Error ? error.message : "Une erreur est survenue. Reessaie dans quelques instants.",
+        description: error.message || "Une erreur est survenue. Reessaie dans quelques instants.",
         variant: "destructive",
       });
     },
@@ -448,7 +435,7 @@ const LierEnfant = () => {
                 </div>
               </Card>
 
-              {pendingRequests.map((request) => (
+              {pendingRequests.map((request: any) => (
                 <Card key={request.id} className="overflow-hidden">
                   <CardContent className="pt-6 space-y-4">
                     {/* Info enfant */}

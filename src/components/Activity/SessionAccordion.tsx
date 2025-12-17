@@ -55,7 +55,7 @@ const dayNamesShort = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 /**
  * Génère les N prochaines dates pour un jour de la semaine donné
  */
-const getNextDates = (dayOfWeek: number, count = 3): { date: Date; iso: string; label: string }[] => {
+const getNextDates = (dayOfWeek: number, count: number = 3): { date: Date; iso: string; label: string }[] => {
   const dates: { date: Date; iso: string; label: string }[] = [];
   const today = new Date();
   today.setHours(0, 0, 0, 0);

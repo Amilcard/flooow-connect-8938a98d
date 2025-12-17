@@ -15,24 +15,6 @@ import { MapSearchView } from '@/components/Search/MapSearchView';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
 import { buildActivityQuery, getResultsCount } from '@/utils/buildActivityQuery';
-import { safeErrorMessage } from '@/utils/sanitize';
-
-interface MappedActivity {
-  id: string;
-  title: string;
-  category: string;
-  images: string[];
-  age_min: number | null;
-  age_max: number | null;
-  period_type: string | null;
-  price_amount: number | null;
-  price_is_free: boolean;
-  organism_name: string | null;
-  organism_city: string | null;
-  location: { lat: number; lng: number } | null;
-  location_name: string | undefined;
-  financial_aids_accepted: string[];
-}
 
 const SearchResults = () => {
   const {
@@ -60,13 +42,13 @@ const SearchResults = () => {
       const { data, error } = await query;
 
       if (error) {
-        console.error(safeErrorMessage(error, 'Fetch search activities'));
+        console.error('Error fetching activities:', error);
         throw error;
       }
 
       // LOT 1 - T1_4: Mapping amélioré pour cohérence avec les cartes
       // Refonte vue carte: ajout coordonnées + organism info
-      const mappedActivities: MappedActivity[] = (data || []).map((activity) => ({
+      const mappedActivities = (data || []).map((activity: any) => ({
         id: activity.id,
         title: activity.title,
         category: activity.category || (activity.categories && activity.categories[0]) || 'Loisirs',
@@ -93,13 +75,13 @@ const SearchResults = () => {
       }));
 
       // Deduplicate by ID first
-      const uniqueById = mappedActivities.filter((activity, index, self) =>
-        index === self.findIndex((t) => t.id === activity.id)
+      const uniqueById = mappedActivities.filter((activity: any, index: number, self: any[]) =>
+        index === self.findIndex((t: any) => t.id === activity.id)
       );
 
       // Aggressive deduplication by normalized title
-      const uniqueActivities = uniqueById.filter((activity, index, self) =>
-        index === self.findIndex((t) =>
+      const uniqueActivities = uniqueById.filter((activity: any, index: number, self: any[]) =>
+        index === self.findIndex((t: any) => 
           t.title?.trim().toLowerCase() === activity.title?.trim().toLowerCase()
         )
       );
@@ -186,8 +168,8 @@ const SearchResults = () => {
 
       {/* Results Grid or Map */}
       {filterState.viewMode === 'map' ? (
-        <MapSearchView
-          activities={activities.map((a) => ({
+        <MapSearchView 
+          activities={activities.map((a: any) => ({
             id: a.id,
             title: a.title,
             category: a.category,
