@@ -261,11 +261,11 @@ const MonCompte = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {item.badge && (
+                    {item.badge ? (
                       <Badge variant="secondary" className="bg-primary/10 text-primary">
                         {item.badge}
                       </Badge>
-                    )}
+                    ) : null}
                     <ChevronRight className="text-muted-foreground" size={20} />
                   </div>
                 </div>
