@@ -52,7 +52,7 @@ const ActivitiesMap = () => {
       // FIX: Removed structures join to avoid Supabase embed error
       let query = supabase
         .from("activities")
-        .select(`*`)
+        .select("*")
         .eq("published", true);
 
       // FIX: column is 'categories' (array), not 'category'

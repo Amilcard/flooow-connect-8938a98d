@@ -26,7 +26,7 @@ const Covoiturage = () => {
       // FIX: Removed structures join to avoid Supabase embed error
       const { data } = await supabase
         .from("activities")
-        .select(`*`)
+        .select("*")
         .eq("id", activityId)
         .single();
       return data;
