@@ -195,10 +195,19 @@ serve(async (req) => {
       `)
       .eq('status', 'validee');
 
-    const territoryStats = territoryBookings?.reduce((acc: Record<string, any>, booking: any) => {
+    interface TerritoryBooking {
+      activities?: { structures?: { territory_id?: string; territories?: { name?: string } } };
+    }
+    interface TerritoryStat {
+      territory_id: string;
+      territory_name: string;
+      bookings_count: number;
+    }
+
+    const territoryStats = (territoryBookings as TerritoryBooking[] | null)?.reduce((acc: Record<string, TerritoryStat>, booking) => {
       const territoryId = booking.activities?.structures?.territory_id;
       const territoryName = booking.activities?.structures?.territories?.name;
-      
+
       if (territoryId && territoryName) {
         if (!acc[territoryId]) {
           acc[territoryId] = {
@@ -213,7 +222,7 @@ serve(async (req) => {
     }, {}) || {};
 
     const territoryImpact = Object.values(territoryStats)
-      .sort((a: any, b: any) => b.bookings_count - a.bookings_count)
+      .sort((a, b) => b.bookings_count - a.bookings_count)
       .slice(0, 10); // Top 10 territoires
 
     const response = {
@@ -291,11 +300,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Error calculating KPIs:', error);
+  } catch (error: unknown) {
+    console.error('[dashboard-kpis] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Unknown error' }),
-      { 
+      JSON.stringify({ error: 'Internal server error' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }

@@ -167,11 +167,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[admin-create-user] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
-      { 
+      JSON.stringify({ error: 'Erreur interne' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }

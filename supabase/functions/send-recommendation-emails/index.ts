@@ -237,10 +237,10 @@ const handler = async (req: Request): Promise<Response> => {
         status: 200,
       }
     );
-  } catch (error: any) {
-    console.error("Error in send-recommendation-emails function:", error);
+  } catch (error: unknown) {
+    console.error("[send-recommendation-emails] Internal error");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,

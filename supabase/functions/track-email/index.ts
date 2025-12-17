@@ -79,8 +79,8 @@ const handler = async (req: Request): Promise<Response> => {
     // For 'clicked' action, redirect to event page
     const redirectUrl = url.searchParams.get("redirect") || `${supabaseUrl.replace("supabase.co", "flooow-connect.fr")}/agenda-community`;
     return Response.redirect(redirectUrl, 302);
-  } catch (error: any) {
-    console.error("Error in track-email function:", error);
+  } catch (error: unknown) {
+    console.error("[track-email] Internal error");
     // Always return tracking pixel on error to avoid breaking emails
     return new Response(TRACKING_PIXEL, {
       headers: {

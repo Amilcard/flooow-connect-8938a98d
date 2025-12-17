@@ -26,8 +26,32 @@ function transformAides(aides: string[]): string[] {
   return Array.from(transformed);
 }
 
+// Type pour les données de mobilité
+interface MobiliteData {
+  transportCommun?: { disponible?: boolean; lignes?: string[] };
+  velo?: { disponible?: boolean; station?: string };
+  covoiturage?: { disponible?: boolean };
+}
+
+// Type pour les activités mock
+interface MockActivity {
+  id: string;
+  theme: string;
+  titre: string;
+  description: string;
+  ageMin: number;
+  ageMax: number;
+  accessibilite: string[];
+  creneaux: Array<{ jour: string; heureDebut: string; heureFin: string; dates?: string[] }>;
+  lieu: { nom: string; adresse: string; transport: string };
+  cout: number;
+  priceUnit: string;
+  aidesEligibles: string[];
+  mobilite: MobiliteData;
+}
+
 // Fonction pour transformer la mobilité au format simplifié
-function transformMobilite(mobilite: any): { TC: string; velo: boolean; covoit: boolean } {
+function transformMobilite(mobilite: MobiliteData | undefined): { TC: string; velo: boolean; covoit: boolean } {
   const lignes = mobilite?.transportCommun?.lignes || [];
   const premiereLigne = lignes[0] || "Bus disponible";
   
@@ -38,7 +62,7 @@ function transformMobilite(mobilite: any): { TC: string; velo: boolean; covoit: 
   };
 }
 
-const mockActivities = [
+const mockActivities: MockActivity[] = [
   {
     "id": "sport-judo-6-10",
     "theme": "Sport",
@@ -1330,7 +1354,7 @@ serve(async (req) => {
     // Un filtrage par date pourra être implémenté ultérieurement si nécessaire
 
     // Transformer les activités au format demandé
-    const transformedActivities = mockActivities.map((activity: any) => ({
+    const transformedActivities = mockActivities.map((activity) => ({
       ...activity,
       aidesEligibles: transformAides(activity.aidesEligibles || []),
       mobilite: transformMobilite(activity.mobilite)

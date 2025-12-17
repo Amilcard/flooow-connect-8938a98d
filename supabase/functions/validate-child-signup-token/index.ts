@@ -213,10 +213,10 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[validate-child-signup-token] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
+      JSON.stringify({ error: 'Erreur interne' }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

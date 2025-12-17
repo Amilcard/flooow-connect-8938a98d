@@ -98,7 +98,7 @@ serve(async (req) => {
     }
 
     // Update profile status
-    const updateData: any = {
+    const updateData: Record<string, string | undefined> = {
       account_status: action === 'approve' ? 'active' : 'rejected',
       validated_at: new Date().toISOString(),
       validated_by: user.id
@@ -151,11 +151,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[admin-validate-family] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
-      { 
+      JSON.stringify({ error: 'Erreur interne' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }
