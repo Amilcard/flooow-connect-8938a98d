@@ -57,10 +57,10 @@ serve(async (req) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Mapbox API error: status', response.status);
+      console.error('[mapbox-directions] API request failed');
       return new Response(
-        JSON.stringify({ error: 'Failed to get directions', details: data }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Failed to get directions' }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -70,9 +70,9 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in mapbox-directions:', error);
+    console.error('[mapbox-directions] Internal error');
     return new Response(
-      JSON.stringify({ error: String(error) }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

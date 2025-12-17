@@ -240,7 +240,7 @@ serve(async (req) => {
     });
 
     if (!emailResponse.ok) {
-      console.error('Resend API error: status', emailResponse.status);
+      console.error('[child-signup-email] Email API request failed');
 
       let userMessage = 'Impossible d\'envoyer l\'email';
       let statusCode = emailResponse.status;
@@ -285,11 +285,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[child-signup-email] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
-      { 
+      JSON.stringify({ error: 'Erreur interne' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }

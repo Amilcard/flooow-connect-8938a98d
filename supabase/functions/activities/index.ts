@@ -77,11 +77,10 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      console.error(`[activities] Supabase error: ${response.status} ${response.statusText}`);
-      // Don't log error body - may contain sensitive data
+      console.error('[activities] Upstream request failed');
 
       return new Response(
-        JSON.stringify({ error: "upstream_error", status: response.status }), 
+        JSON.stringify({ error: "upstream_error" }), 
         {
           status: 502,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -90,7 +89,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log(`[activities] Success: ${data.length} activities returned`);
+    console.log('[activities] Request successful');
 
     // Return with cache headers (60 seconds)
     return new Response(JSON.stringify(data), {
@@ -103,12 +102,9 @@ serve(async (req) => {
     });
 
   } catch (err) {
-    console.error("[activities] Internal error:", err);
+    console.error("[activities] Internal error");
     return new Response(
-      JSON.stringify({ 
-        error: "internal_error", 
-        message: err instanceof Error ? err.message : String(err) 
-      }), 
+      JSON.stringify({ error: "internal_error" }), 
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

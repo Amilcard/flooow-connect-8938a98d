@@ -45,14 +45,14 @@ serve(async (req) => {
 
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${travelMode}&key=${apiKey}`;
 
-    console.log('Requesting directions:', { origin, destination, mode: travelMode });
+    console.log('[google-maps-directions] Requesting directions');
 
     const response = await fetch(url);
     const data = await response.json();
 
     if (data.status !== 'OK') {
-      console.error('Google Maps API error: status', data.status);
-      throw new Error(`Google Maps API error: ${data.status}`);
+      console.error('[google-maps-directions] API request failed');
+      throw new Error('Google Maps API error');
     }
 
     return new Response(
@@ -63,12 +63,12 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in google-maps-directions function:', error);
+    console.error('[google-maps-directions] Internal error');
     return new Response(
-      JSON.stringify({ error: String(error) }),
-      { 
+      JSON.stringify({ error: 'Internal server error' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: 500
       }
     );
   }
