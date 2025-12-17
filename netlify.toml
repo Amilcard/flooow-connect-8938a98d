@@ -1,8 +1,24 @@
-[build]
-  command = "npm run build"
-  publish = "dist"
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  [plugins.inputs]
+    fail_deploy_on_score_thresholds = "true"
+
+  [plugins.inputs.thresholds]
+    performance    = 0.9
+    accessibility  = 1.0
+    best-practices = 0.9
+    seo            = 0.8
+    pwa            = 0.5
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+  [plugins.inputs]
+    fail_deploy_on_score_thresholds = "true"
+
+  [plugins.inputs.thresholds]
+    performance    = 0.9
+    accessibility  = 1.0
+    best-practices = 0.9
+    seo            = 0.8
+    pwa            = 0.5
