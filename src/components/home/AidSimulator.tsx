@@ -18,12 +18,21 @@ import {
   QF_AID_BRACKETS
 } from '@/utils/aidesCalculator';
 
+interface SimulationResult {
+  montantAide: number;
+  prixInitial: number;
+  resteACharge: number;
+  pourcentageEconomie: number;
+  trancheQF: string;
+  message: string;
+}
+
 export const AidSimulator = () => {
   const navigate = useNavigate();
   const [qf, setQf] = useState<string>('');
   const [age, setAge] = useState<string>('');
   const [prix, setPrix] = useState<string>('');
-  const [resultat, setResultat] = useState<any>(null);
+  const [resultat, setResultat] = useState<SimulationResult | null>(null);
   const [showResult, setShowResult] = useState(false);
 
   const handleSimuler = () => {

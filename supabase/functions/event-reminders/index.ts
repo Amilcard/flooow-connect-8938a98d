@@ -85,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       // Pour chaque événement favori
       for (const favorite of favoriteEvents || []) {
-        const event = favorite.territory_events as any;
+        const event = favorite.territory_events as { id: string; title: string; start_date: string; location?: string } | null;
         if (!event || Array.isArray(event)) continue;
 
         const eventDate = new Date(event.start_date);

@@ -157,7 +157,7 @@ serve(async (req) => {
             .select('profile_json')
             .eq('id', user.id)
             .single()
-            .then((result: any) => {
+            .then((result: { data?: { profile_json?: Record<string, unknown> } }) => {
               const profileJson = result.data?.profile_json || {};
               delete profileJson.deletion_scheduled_at;
               delete profileJson.deletion_scheduled_for;
@@ -204,7 +204,7 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .in('status', ['en_attente', 'validee']);
 
-    const futureBookings = activeBookings?.filter((booking: any) => {
+    const futureBookings = activeBookings?.filter((booking: { availability_slots?: { start?: string } }) => {
       const slotStart = new Date(booking.availability_slots?.start);
       return slotStart > new Date();
     }) || [];

@@ -219,7 +219,7 @@ serve(async (req) => {
 
       const basePriceCents = Math.round((activity.price_base || 0) * 100);
       let aidsTotalCents = 0;
-      let aidsApplied: any[] = [];
+      let aidsApplied: Array<{ aid_name: string; amount_cents: number; territory_level: string }> = [];
 
       // Only calculate aids if activity has a price > 0
       if (activity.price_base > 0) {
@@ -268,7 +268,7 @@ serve(async (req) => {
           // Continue without aids rather than failing the booking
         } else if (eligibleAids && eligibleAids.length > 0) {
           // Convert aids to cents and build aids_applied array
-          aidsApplied = eligibleAids.map((aid: any) => ({
+          aidsApplied = eligibleAids.map((aid: { aid_name: string; amount: number; territory_level: string }) => ({
             aid_name: aid.aid_name,
             amount_cents: Math.round(aid.amount * 100),
             territory_level: aid.territory_level

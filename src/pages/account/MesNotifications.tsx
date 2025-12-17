@@ -28,6 +28,35 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ReactNode } from 'react';
 
 // ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+interface NotificationPreferencesRecord {
+  notify_territory_events?: boolean;
+  notify_favorite_categories?: boolean;
+  interested_categories?: string[];
+  email_notifications?: boolean;
+  recommendation_emails?: boolean;
+  event_reminders_enabled?: boolean;
+  event_reminder_days_before?: number;
+  event_reminder_email?: boolean;
+}
+
+interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  message?: string;
+  read: boolean;
+  created_at: string;
+  related_event_id?: string;
+  payload?: {
+    event_id?: string;
+    event_title?: string;
+  };
+}
+
+// ============================================================================
 // LOOKUP TABLES - Reduce cognitive complexity by avoiding switch statements
 // ============================================================================
 
@@ -74,13 +103,17 @@ function formatNotificationDate(dateString: string): string {
 }
 
 // Helper to safely get preference boolean value with fallback
-function getPreferenceBool(preferences: any, key: string, fallback: boolean): boolean {
-  return preferences && key in preferences ? preferences[key] : fallback;
+function getPreferenceBool(preferences: NotificationPreferencesRecord | null | undefined, key: keyof NotificationPreferencesRecord, fallback: boolean): boolean {
+  if (!preferences || !(key in preferences)) return fallback;
+  const value = preferences[key];
+  return typeof value === 'boolean' ? value : fallback;
 }
 
 // Helper to safely get preference array value
-function getPreferenceArray(preferences: any, key: string): string[] {
-  return preferences && key in preferences ? preferences[key] || [] : [];
+function getPreferenceArray(preferences: NotificationPreferencesRecord | null | undefined, key: keyof NotificationPreferencesRecord): string[] {
+  if (!preferences || !(key in preferences)) return [];
+  const value = preferences[key];
+  return Array.isArray(value) ? value : [];
 }
 
 // ============================================================================
@@ -181,7 +214,7 @@ const MesNotifications = () => {
                 variant="inspiring"
               />
             ) : (
-              notifications.map((notification: any) => (
+              notifications.map((notification: NotificationItem) => (
                 <Card 
                   key={notification.id} 
                   className={`cursor-pointer hover:shadow-md transition-all ${

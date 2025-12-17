@@ -10,6 +10,30 @@ import { ArrowLeft, Calendar, CheckCircle, Clock, Trophy, Sparkles } from "lucid
 import { LoadingState } from "@/components/LoadingState";
 import { useSmartBack } from "@/hooks/useSmartBack";
 
+interface BookingData {
+  id: string;
+  status: string;
+  updated_at: string;
+  created_at: string;
+  activities: {
+    title: string;
+    images?: string[];
+    category?: string;
+  };
+  children: {
+    first_name: string;
+  };
+  availability_slots: {
+    start: string;
+    end: string;
+  };
+}
+
+interface BookingCardProps {
+  booking: BookingData;
+  showBadge?: boolean;
+}
+
 const ChildDashboard = () => {
   const navigate = useNavigate();
   const handleBack = useSmartBack("/");
@@ -74,7 +98,7 @@ const ChildDashboard = () => {
 
   if (isLoading) return <LoadingState />;
 
-  const BookingCard = ({ booking, showBadge = false }: any) => (
+  const BookingCard = ({ booking, showBadge = false }: BookingCardProps) => (
     <Card
       className="p-4 cursor-pointer hover:bg-accent transition-colors"
       onClick={() => navigate(`/booking-status/${booking.id}`)}

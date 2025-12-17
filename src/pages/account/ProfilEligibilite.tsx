@@ -12,6 +12,12 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
+interface EstimatedAid {
+  name: string;
+  amount: string;
+  description: string;
+}
+
 const ProfilEligibilite = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -21,7 +27,7 @@ const ProfilEligibilite = () => {
   const [hasAAH, setHasAAH] = useState<string>("");
   const [isStudent, setIsStudent] = useState<string>("");
   const [qf, setQf] = useState<string>("");
-  const [estimatedAids, setEstimatedAids] = useState<any[]>([]);
+  const [estimatedAids, setEstimatedAids] = useState<EstimatedAid[]>([]);
 
   // Récupérer le profil utilisateur
   const { data: userProfile } = useQuery({
@@ -59,7 +65,7 @@ const ProfilEligibilite = () => {
 
     const ageNum = parseInt(age, 10);
     const qfNum = parseInt(qf, 10);
-    const aids: any[] = [];
+    const aids: EstimatedAid[] = [];
 
     // Pass'Sport
     if (ageNum >= 6 && ageNum <= 18 && (hasARS === "oui" || hasAEEH === "oui" || hasAAH === "oui")) {

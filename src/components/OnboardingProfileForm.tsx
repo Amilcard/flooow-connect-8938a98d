@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormRegister, UseFormWatch, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -256,12 +256,12 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
 // Composant enfant individuel
 interface ChildFormSectionProps {
   index: number;
-  register: any;
-  watch: any;
-  setValue: any;
+  register: UseFormRegister<ProfileFormData>;
+  watch: UseFormWatch<ProfileFormData>;
+  setValue: UseFormSetValue<ProfileFormData>;
   remove: () => void;
   canRemove: boolean;
-  errors: any;
+  errors: FieldErrors<ProfileFormData>;
 }
 
 function ChildFormSection({ index, register, watch, setValue, remove, canRemove, errors }: ChildFormSectionProps) {
