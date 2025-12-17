@@ -127,7 +127,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
         .eq('code', codeToCheck)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error?.code !== 'PGRST116' && error) {
         console.error(safeErrorMessage(error, 'TerritoryChoiceScreen.handleValidate.postalCodeCheck'));
       }
 

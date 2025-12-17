@@ -82,7 +82,7 @@ const EnAttenteValidation = () => {
 
       const { data, error } = await query.limit(1).single();
 
-      if (error && error.code !== "PGRST116") {
+      if (error?.code !== "PGRST116" && error) {
         console.error(safeErrorMessage(error, 'EnAttenteValidation.fetchRequestStatus'));
       }
 

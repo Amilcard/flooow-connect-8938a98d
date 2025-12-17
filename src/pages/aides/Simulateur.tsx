@@ -113,7 +113,7 @@ const Simulateur = () => {
     setPrixActivite(String(DEFAULT_ACTIVITY_PRICE));
   };
 
-  const isEligible = calculationResult && calculationResult.montantAide > 0;
+  const isEligible = (calculationResult?.montantAide ?? 0) > 0;
 
   return (
     <PageLayout>

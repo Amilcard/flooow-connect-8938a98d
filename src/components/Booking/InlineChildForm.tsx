@@ -164,7 +164,6 @@ export const InlineChildForm = ({
               placeholder="Prénom de l'enfant"
               required
               disabled={isSubmitting}
-              autoFocus
             />
           </div>
 

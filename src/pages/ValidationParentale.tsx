@@ -114,7 +114,7 @@ const ValidationParentale = () => {
   }
 
   const validation = booking.validations_parentales?.[0];
-  const isAlreadyValidated = validation && validation.status !== "en_attente";
+  const isAlreadyValidated = validation?.status !== "en_attente";
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR", {

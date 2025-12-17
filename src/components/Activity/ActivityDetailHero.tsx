@@ -77,8 +77,8 @@ export const ActivityDetailHero = ({
   onContactClick,
 }: ActivityDetailHeroProps) => {
   // Fallback image basé sur catégorie - vérifie aussi les strings vides
-  const displayImage = (imageUrl && imageUrl.trim() !== '') 
-    ? imageUrl 
+  const displayImage = (imageUrl?.trim() !== '')
+    ? imageUrl
     : getActivityImage(title, category, ageMin || 6, ageMax || 17);
   const categoryStyle = getCategoryStyle(category);
   
