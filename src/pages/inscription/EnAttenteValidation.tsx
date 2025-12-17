@@ -32,12 +32,26 @@ const EnAttenteValidation = () => {
 
   const [request, setRequest] = useState<RequestData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [pollCount, setPollCount] = useState(0);
+
+  // Maximum polling: 5 minutes (30 attempts at 10s intervals)
+  const MAX_POLL_ATTEMPTS = 30;
 
   useEffect(() => {
     fetchRequestStatus();
 
-    // Poll for status updates every 10 seconds
-    const interval = setInterval(fetchRequestStatus, 10000);
+    // Poll for status updates every 10 seconds, max 5 minutes
+    const interval = setInterval(() => {
+      setPollCount(prev => {
+        if (prev >= MAX_POLL_ATTEMPTS) {
+          clearInterval(interval);
+          return prev;
+        }
+        fetchRequestStatus();
+        return prev + 1;
+      });
+    }, 10000);
+
     return () => clearInterval(interval);
   }, [user?.id, requestId]);
 
@@ -143,7 +157,7 @@ const EnAttenteValidation = () => {
         onBackClick={() => navigate("/home")}
       />
 
-      <div className="max-w-[1200px] mx-auto px-4 space-y-6 pb-8">
+      <div className="max-w-5xl mx-auto px-4 space-y-6 pb-8">
         {/* Message inspirant Family Flooow */}
         <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/10 p-5">
           <div className="flex items-start gap-4">
@@ -274,7 +288,9 @@ const EnAttenteValidation = () => {
 
         {/* Footer */}
         <p className="text-xs text-center text-muted-foreground pt-2">
-          La page se rafraichit automatiquement toutes les 10 secondes.
+          {pollCount >= MAX_POLL_ATTEMPTS
+            ? "Actualisation automatique terminée. Utilisez le bouton pour rafraîchir."
+            : "La page se rafraichit automatiquement toutes les 10 secondes."}
         </p>
       </div>
     </PageLayout>
