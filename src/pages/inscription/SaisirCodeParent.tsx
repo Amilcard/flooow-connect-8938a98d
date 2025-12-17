@@ -58,7 +58,7 @@ const SaisirCodeParent = () => {
     try {
       // Call the RPC function to link parent to minor
       const { data, error } = await supabase.rpc("link_parent_to_minor", {
-        p_parent_id: code, // Actually this is the parent's linking code
+        p_parent_id: user.id,
         p_linking_code: code,
       });
 
