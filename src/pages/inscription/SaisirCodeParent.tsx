@@ -107,7 +107,7 @@ const SaisirCodeParent = () => {
         onBackClick={handleBack}
       />
 
-      <div className="max-w-[1200px] mx-auto px-4 space-y-6 pb-8">
+      <div className="max-w-5xl mx-auto px-4 space-y-6 pb-8">
         {/* Message inspirant Family Flooow */}
         <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/10 p-5">
           <div className="flex items-start gap-4">
