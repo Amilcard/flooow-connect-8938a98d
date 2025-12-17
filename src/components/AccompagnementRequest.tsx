@@ -38,7 +38,7 @@ export const AccompagnementRequest = () => {
         .eq('id', user.id)
         .single();
 
-      const currentJson = profile?.profile_json as Record<string, any> || {};
+      const currentJson = (profile?.profile_json as Record<string, unknown>) || {};
 
       // Mettre à jour le profil avec les infos d'accompagnement dans profile_json
       const { error } = await supabase

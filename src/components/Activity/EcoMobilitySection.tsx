@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +54,7 @@ interface EcoMobilitySectionProps {
   activityAddress?: string;
   activityLatLng?: { lat: number; lng: number };
   structureName?: string;
-  structureContactJson?: any;
+  structureContactJson?: Record<string, unknown> | null;
   onTransportModeSelected?: (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => void;
   selectedTransportMode?: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string } | null;
 }

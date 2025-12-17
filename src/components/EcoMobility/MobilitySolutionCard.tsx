@@ -6,13 +6,13 @@
  */
 
 import { MobilitySolution, TransportMode } from '@/types/Mobility';
-import { Globe, Phone, Mail, ExternalLink, Bus, Bike, Users, Car, Train, Smartphone, Info, Clock } from 'lucide-react';
+import { Globe, Phone, Mail, ExternalLink, Bus, Bike, Users, Car, Train, Smartphone, Info, Clock, LucideIcon } from 'lucide-react';
 
 interface MobilitySolutionCardProps {
   solution: MobilitySolution;
 }
 
-const MODE_ICONS: Record<TransportMode, any> = {
+const MODE_ICONS: Record<TransportMode, LucideIcon> = {
   tram: Bus,
   bus: Bus,
   trolleybus: Bus,

@@ -5,7 +5,7 @@ type EventType = 'search' | 'view_activity' | 'simulate_aid' | 'click_details' |
 interface LogEventParams {
   eventType: EventType;
   activityId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Session ID pour les utilisateurs anonymes

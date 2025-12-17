@@ -95,12 +95,12 @@ const Index = () => {
 
         // Wait for Usetiful to load, then trigger tours
         const checkUsetiful = setInterval(() => {
-          if (typeof window !== 'undefined' && (window as any).usetiful) {
+          if (typeof window !== 'undefined' && window.usetiful) {
             clearInterval(checkUsetiful);
 
             // Trigger the main tour (replace 'flooow-main-tour' with your actual tour ID from Usetiful dashboard)
             try {
-              (window as any).usetiful.start();
+              window.usetiful.start();
             } catch {
               // Usetiful tour failed silently
             }

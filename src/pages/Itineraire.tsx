@@ -70,8 +70,8 @@ const Itineraire = () => {
   const [searchParams] = useSearchParams();
   const _navigate = useNavigate(); // Reserved for future navigation features
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
-  const directionsRenderer = useRef<any>(null);
+  const mapRef = useRef<GoogleMapsMap | null>(null);
+  const directionsRenderer = useRef<GoogleMapsDirectionsRenderer | null>(null);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
   const [_googleMapsToken, setGoogleMapsToken] = useState<string>(""); // Token stored for potential future API calls
 
@@ -84,7 +84,7 @@ const Itineraire = () => {
   const [arrival, setArrival] = useState(destination);
   // Travel mode state (setter reserved for future mode switching feature)
   const [travelMode, _setTravelMode] = useState(getTravelMode(transportType));
-  const [routeData, setRouteData] = useState<any>(null);
+  const [routeData, setRouteData] = useState<GoogleMapsDirectionsLeg | null>(null);
   const [loading, setLoading] = useState(false);
   const [tripValidated, setTripValidated] = useState(false);
   const [departureError, setDepartureError] = useState<string | null>(null);
@@ -93,7 +93,7 @@ const Itineraire = () => {
   const [routeError, setRouteError] = useState<string | null>(null);
   const [ecoStats, setEcoStats] = useState<EcoStats>(getLocalEcoStats());
   const [newBadgeUnlocked, setNewBadgeUnlocked] = useState<string | null>(null);
-  const markersRef = useRef<any[]>([]);
+  const markersRef = useRef<GoogleMapsMarker[]>([]);
 
   // Fetch user profile for pre-filling departure
   const { data: userProfile } = useQuery({
@@ -149,11 +149,11 @@ const Itineraire = () => {
           async (position) => {
             try {
               // Reverse geocode using Google Maps API if available
-              if (googleMapsLoaded && (window as any).google) {
-                const geocoder = new (window as any).google.maps.Geocoder();
+              if (googleMapsLoaded && window.google) {
+                const geocoder = new window.google.maps.Geocoder();
                 geocoder.geocode(
                   { location: { lat: position.coords.latitude, lng: position.coords.longitude } },
-                  (results: any[], status: string) => {
+                  (results: GoogleMapsGeocodeResult[], status: string) => {
                     if (status === 'OK' && results[0]) {
                       setDeparture(results[0].formatted_address);
                     }
@@ -213,7 +213,7 @@ const Itineraire = () => {
 
   // Load Google Maps script
   const loadGoogleMapsScript = (apiKey: string) => {
-    if ((window as any).google && (window as any).google.maps) {
+    if (window.google?.maps) {
       setGoogleMapsLoaded(true);
       return;
     }
@@ -262,7 +262,7 @@ const Itineraire = () => {
   useEffect(() => {
     if (!mapContainer.current || !googleMapsLoaded) return;
 
-    const google = (window as any).google;
+    const google = window.google;
     mapRef.current = new google.maps.Map(mapContainer.current, {
       center: { lat: 45.4397, lng: 4.3872 }, // Saint-Étienne
       zoom: 12,
@@ -291,7 +291,7 @@ const Itineraire = () => {
   useEffect(() => {
     if (!mapRef.current || !googleMapsLoaded) return;
 
-    const google = (window as any).google;
+    const google = window.google;
 
     // Clear existing markers
     markersRef.current.forEach(marker => marker.setMap(null));
@@ -395,7 +395,7 @@ const Itineraire = () => {
 
     setLoading(true);
     try {
-      const google = (window as any).google;
+      const google = window.google;
       const directionsService = new google.maps.DirectionsService();
 
       // Build smart origin/destination (don't append city if already contains it)
@@ -414,7 +414,7 @@ const Itineraire = () => {
         travelMode: travelMode,
       };
 
-      directionsService.route(request, (result: any, status: any) => {
+      directionsService.route(request, (result: GoogleMapsDirectionsResult | null, status: GoogleMapsDirectionsStatus) => {
         setLoading(false);
         if (status === 'OK' && result) {
           setRouteData(result.routes[0].legs[0]);

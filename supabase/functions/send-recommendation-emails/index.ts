@@ -217,8 +217,8 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log(`Email sent to ${profile.email}:`, emailResponse);
         emailsSent++;
-      } catch (error) {
-        console.error(`Failed to send email to user ${user.user_id}:`, error);
+      } catch (error: unknown) {
+        console.error(`[send-recommendation-emails] Failed to process user`);
         emailsFailed++;
       }
     }

@@ -22,7 +22,7 @@ const getSessionId = (): string => {
  */
 export const logSearch = async (params: {
   searchQuery?: string;
-  filtersApplied: Record<string, any>;
+  filtersApplied: Record<string, unknown>;
   resultsCount: number;
 }) => {
   try {
