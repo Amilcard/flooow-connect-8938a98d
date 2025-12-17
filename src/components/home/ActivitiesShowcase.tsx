@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ActivityCard } from "@/components/Activity/ActivityCard";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { formatAgeRangeForCard } from "@/utils/categoryMapping";
 
 interface Activity {
@@ -38,7 +38,7 @@ interface ActivitiesShowcaseProps {
 
 export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
   const navigate = useNavigate();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [_currentSlide, setCurrentSlide] = useState(0);
 
   // Autoplay pour le carrousel principal
   useEffect(() => {
@@ -57,12 +57,12 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
 
   // Filtrer les activités pour les sous-carrousels
   const budgetActivities = activities.filter(a => a.price < 50 || a.hasFinancialAid).slice(0, 6);
-  const innovativeActivities = activities.filter(a => 
+  const _innovativeActivities = activities.filter(a => 
     a.category === 'innovation' || 
     a.title.toLowerCase().includes('nouveau') ||
     a.title.toLowerCase().includes('innovant')
   ).slice(0, 6);
-  const nearbyActivities = activities.slice(0, 6); // Déjà triées par proximité
+  const _nearbyActivities = activities.slice(0, 6); // Déjà triées par proximité
 
   // Carrousel principal (5 premières activités)
   const heroActivities = activities.slice(0, 5);

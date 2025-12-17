@@ -5,7 +5,7 @@
  * - Legacy mode: contacts, CTAs (with click actions)
  */
 
-import { Building2, Phone, Mail, ExternalLink, Globe, Clock, Info } from 'lucide-react';
+import { Phone, Mail, ExternalLink, Globe, Clock, Info } from 'lucide-react';
 import { FinancialAid } from '@/types/FinancialAid';
 import { Badge } from '@/components/ui/badge';
 
