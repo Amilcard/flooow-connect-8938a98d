@@ -89,8 +89,8 @@ export const findNearestStations = async (
   client: SupabaseClient,
   originLat: number,
   originLon: number,
-  radiusMeters: number = 2000,
-  limit: number = 5
+  radiusMeters = 2000,
+  limit = 5
 ): Promise<Array<NormalizedBikeStation & { distance_m: number }>> => {
   // Approximation rapide bbox
   const latDelta = radiusMeters / 111000;

@@ -82,8 +82,8 @@ function getImageByAge(avgAge: number): string {
 export function getActivityImage(
   title: string,
   theme: string,
-  ageMin: number = 6,
-  ageMax: number = 17
+  ageMin = 6,
+  ageMax = 17
 ): string {
   const titleLower = title.toLowerCase();
   const themeLower = theme.toLowerCase();

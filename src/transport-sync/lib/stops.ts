@@ -108,8 +108,8 @@ export const findNearestStops = async (
   client: SupabaseClient,
   originLat: number,
   originLon: number,
-  radiusMeters: number = 2000,
-  limit: number = 5
+  radiusMeters = 2000,
+  limit = 5
 ): Promise<Array<NormalizedTransportStop & { distance_m: number }>> => {
   // Approximation rapide: 1 degré ≈ 111km
   const latDelta = radiusMeters / 111000;

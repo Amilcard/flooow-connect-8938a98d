@@ -10,7 +10,7 @@
  */
 export const calculateCarbonSaved = (
   distanceKm: number,
-  carbonFactorKgPerKm: number = 0.12
+  carbonFactorKgPerKm = 0.12
 ): number => {
   return Number.parseFloat((distanceKm * carbonFactorKgPerKm).toFixed(4));
 };
@@ -23,7 +23,7 @@ export const calculateCarbonSaved = (
  */
 export const calculateWalkingTime = (
   distanceMeters: number,
-  walkingSpeedKmh: number = 4.5
+  walkingSpeedKmh = 4.5
 ): number => {
   const distanceKm = distanceMeters / 1000;
   const timeHours = distanceKm / walkingSpeedKmh;

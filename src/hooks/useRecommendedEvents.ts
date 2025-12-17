@@ -19,7 +19,7 @@ export interface RecommendedEvent {
   recommendation_reason: string;
 }
 
-export const useRecommendedEvents = (userId: string | undefined, limit: number = 6) => {
+export const useRecommendedEvents = (userId: string | undefined, limit = 6) => {
   return useQuery({
     queryKey: ["recommended-events", userId, limit],
     queryFn: async () => {
