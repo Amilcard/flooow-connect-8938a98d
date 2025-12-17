@@ -64,7 +64,7 @@ const ProfileEdit = () => {
         .from("profiles")
         .update({
           postal_code: formData.postalCode,
-          quotient_familial: formData.quotientFamilial ? parseFloat(formData.quotientFamilial) : null,
+          quotient_familial: formData.quotientFamilial ? Number.parseFloat(formData.quotientFamilial) : null,
           marital_status: formData.maritalStatus || null,
           updated_at: new Date().toISOString()
         })

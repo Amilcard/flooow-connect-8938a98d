@@ -221,15 +221,15 @@ export function validateCoordinates(
 ): { isValid: boolean; lat: number; lng: number } {
   const isLatValid =
     typeof lat === 'number' &&
-    !isNaN(lat) &&
-    isFinite(lat) &&
+    !Number.isNaN(lat) &&
+    Number.isFinite(lat) &&
     lat >= -90 &&
     lat <= 90;
 
   const isLngValid =
     typeof lng === 'number' &&
-    !isNaN(lng) &&
-    isFinite(lng) &&
+    !Number.isNaN(lng) &&
+    Number.isFinite(lng) &&
     lng >= -180 &&
     lng <= 180;
 

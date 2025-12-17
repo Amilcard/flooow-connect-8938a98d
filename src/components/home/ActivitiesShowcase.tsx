@@ -84,9 +84,12 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                 key={activity.id} 
                 className="w-[70vw] max-w-[500px] flex-shrink-0 snap-start"
               >
-                <div 
-                  className="bg-white rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer hover:shadow-lg transition-shadow"
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="bg-white rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   onClick={() => handleActivityClick(activity.id)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleActivityClick(activity.id)}
                 >
                   {/* Image 70% de la hauteur - ratio 4:3 */}
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">

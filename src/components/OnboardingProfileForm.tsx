@@ -96,11 +96,12 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
           
           <div className="mt-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="postal-code" className="block text-sm font-medium mb-2">
                 Code postal
               </label>
               <Input
-                {...register('postal_code', { 
+                id="postal-code"
+                {...register('postal_code', {
                   required: 'Code postal requis',
                   pattern: {
                     value: /^[0-9]{5}$/,
@@ -132,10 +133,11 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
           </legend>
           
           <div className="mt-4">
-            <label className="block text-sm font-medium mb-2">
+            <label htmlFor="quotient-familial" className="block text-sm font-medium mb-2">
               Quotient familial CAF (en €/mois)
             </label>
             <Input
+              id="quotient-familial"
               {...register('quotient_familial', {
                 min: { value: 0, message: 'Montant invalide' },
                 max: { value: 5000, message: 'Montant trop élevé' }

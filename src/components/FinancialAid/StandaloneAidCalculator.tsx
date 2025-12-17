@@ -61,8 +61,8 @@ export const StandaloneAidCalculator = () => {
       return;
     }
 
-    const age = parseInt(ageEnfant, 10);
-    if (isNaN(age) || age < 0 || age > 18) {
+    const age = Number.parseInt(ageEnfant, 10);
+    if (Number.isNaN(age) || age < 0 || age > 18) {
       toast({
         title: "Âge invalide",
         description: "Veuillez indiquer un âge entre 0 et 18 ans",
@@ -90,13 +90,13 @@ export const StandaloneAidCalculator = () => {
       return;
     }
 
-    const prix = parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
+    const prix = Number.parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
 
     setLoading(true);
     try {
       // Utiliser la fonction pure calculateAidFromQF
       const result = calculateAidFromQF({
-        qf: parseInt(quotientFamilial, 10),
+        qf: Number.parseInt(quotientFamilial, 10),
         prixActivite: prix
       });
 
@@ -146,7 +146,7 @@ export const StandaloneAidCalculator = () => {
     setCalculated(false);
   };
 
-  const prix = parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
+  const prix = Number.parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
   const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, prix - totalAids);
   const savingsPercent = prix > 0 ? Math.round((totalAids / prix) * 100) : 0;

@@ -69,28 +69,26 @@ export const UniversSection = () => {
         </h2>
 
         {/* Desktop: Ligne centrée - Mobile: Scrollable horizontal */}
-        <div 
+        <nav
           className="w-full overflow-x-auto scrollbar-hide pb-2"
-          role="list"
           aria-label="Univers d'activités"
         >
-          <div className="flex gap-3 justify-center md:justify-between items-center min-w-max md:min-w-0">
+          <ul className="flex gap-3 justify-center md:justify-between items-center min-w-max md:min-w-0 list-none m-0 p-0">
             {univers.map((item) => {
               const isActive = activeUniverse === item.id;
-              
+
               return (
+                <li key={item.id}>
                 <button
-                  key={item.id}
                   onClick={() => handleUniversClick(item.id)}
                   className={cn(
                     "relative w-[85px] h-[105px] rounded-[14px] overflow-hidden",
                     "group transition-all duration-300 ease-out",
                     "hover:scale-105 hover:shadow-lg",
-                    isActive 
-                      ? "shadow-[0_4px_12px_rgba(127,86,217,0.3)]" 
+                    isActive
+                      ? "shadow-[0_4px_12px_rgba(127,86,217,0.3)]"
                       : "shadow-[0_2px_6px_rgba(0,0,0,0.04)]"
                   )}
-                  role="listitem"
                   aria-label={`Voir les activités ${item.name}`}
                   aria-current={isActive ? 'page' : undefined}
                   data-testid={item.testId}
@@ -118,10 +116,11 @@ export const UniversSection = () => {
                     </span>
                   </div>
                 </button>
+                </li>
               );
             })}
-          </div>
-        </div>
+          </ul>
+        </nav>
       </div>
     </section>
   );

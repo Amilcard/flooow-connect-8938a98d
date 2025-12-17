@@ -59,9 +59,9 @@ const parseQFBracket = (qfString: string): number => {
     return (min + max) / 2;
   }
   if (qfString.includes('+')) {
-    return parseInt(qfString.replace('+', ''), 10);
+    return Number.parseInt(qfString.replace('+', ''), 10);
   }
-  return parseInt(qfString, 10);
+  return Number.parseInt(qfString, 10);
 };
 
 /**
@@ -107,8 +107,8 @@ const buildEligibilityParams = (
   quotient_familial: qfValue,
   code_postal: cityCode || "",
   ville: "",
-  departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
-  prix_activite: parseFloat(activityPrice),
+  departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
+  prix_activite: Number.parseFloat(activityPrice),
   type_activite: getTypeActivite([activityCategory]),
   periode: 'saison_scolaire',
   nb_fratrie: 0,
@@ -350,7 +350,7 @@ export const GeneralSimulateAidModal = ({
   };
 
   const totalAids = aids.reduce((sum, aid) => sum + aid.amount, 0);
-  const priceNumeric = parseFloat(form.activityPrice) || 0;
+  const priceNumeric = Number.parseFloat(form.activityPrice) || 0;
   const remainingCost = Math.max(0, priceNumeric - totalAids);
 
   const allChildren = [...children, ...anonymousChildren];

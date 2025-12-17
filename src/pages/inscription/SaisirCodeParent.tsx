@@ -134,10 +134,11 @@ const SaisirCodeParent = () => {
 
         {/* Input code */}
         <div className="space-y-3">
-          <label className="text-sm font-medium text-foreground">
+          <label htmlFor="parent-code" className="text-sm font-medium text-foreground">
             Code parent (6 caracteres)
           </label>
           <Input
+            id="parent-code"
             type="text"
             value={code}
             onChange={handleCodeChange}

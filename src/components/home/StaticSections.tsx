@@ -30,8 +30,11 @@ interface ActualiteCardProps {
 const ActualiteCard = ({ gradient, icon: Icon, text, onClick }: ActualiteCardProps) => {
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
-      className="cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98]"
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
+      className="cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
       style={{
         width: "100%",
         height: "70px",

@@ -72,7 +72,7 @@ const buildEligibilityParams = (
   quotient_familial: quotientFamilial,
   code_postal: cityCode,
   ville: "",
-  departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+  departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
   prix_activite: activityPrice,
   type_activite: getTypeActivite(activityCategories),
   periode: mappedPeriod,

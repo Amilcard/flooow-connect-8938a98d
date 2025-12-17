@@ -210,8 +210,8 @@ export const EnhancedFinancialAidCalculator = ({
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = parseInt(manualChildAge, 10);
-      if (isNaN(childAge) || childAge < 0 || childAge > 18) {
+      childAge = Number.parseInt(manualChildAge, 10);
+      if (Number.isNaN(childAge) || childAge < 0 || childAge > 18) {
         toast({
           title: "Âge invalide",
           description: "Veuillez indiquer un âge entre 0 et 18 ans",
@@ -252,10 +252,10 @@ export const EnhancedFinancialAidCalculator = ({
       // UTILISER LE MOTEUR COMPLET avec filtrage par période
       const context: EligibilityParams = {
         age: childAge,
-        quotient_familial: parseInt(quotientFamilial, 10) || 0,
+        quotient_familial: Number.parseInt(quotientFamilial, 10) || 0,
         code_postal: cityCode || "00000",
         ville: "",
-        departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+        departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
         prix_activite: activityPrice,
         type_activite: type_activite,
         periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire', // CRITICAL: Filtrage par période

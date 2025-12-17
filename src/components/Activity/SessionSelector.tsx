@@ -117,7 +117,7 @@ export function SessionSelector({
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-slate-700">
+          <label htmlFor="session-select" className="text-sm font-medium text-slate-700">
             Choisir une session
           </label>
           {periodBadge && (
@@ -131,9 +131,9 @@ export function SessionSelector({
           value={selectedSessionIdx !== null && selectedSessionIdx !== undefined
             ? String(selectedSessionIdx)
             : undefined}
-          onValueChange={(val) => onSessionSelect?.(parseInt(val, 10))}
+          onValueChange={(val) => onSessionSelect?.(Number.parseInt(val, 10))}
         >
-          <SelectTrigger className="w-full h-12 text-left">
+          <SelectTrigger id="session-select" className="w-full h-12 text-left">
             <SelectValue placeholder="Sélectionner un créneau..." />
           </SelectTrigger>
           <SelectContent>
@@ -188,7 +188,7 @@ export function SessionSelector({
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-slate-700">
+          <label htmlFor="slot-select" className="text-sm font-medium text-slate-700">
             Choisir un créneau
           </label>
           {periodBadge && (
@@ -202,7 +202,7 @@ export function SessionSelector({
           value={selectedSlotId}
           onValueChange={(val) => onSlotSelect?.(val)}
         >
-          <SelectTrigger className="w-full h-12 text-left">
+          <SelectTrigger id="slot-select" className="w-full h-12 text-left">
             <SelectValue placeholder="Sélectionner un créneau..." />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">

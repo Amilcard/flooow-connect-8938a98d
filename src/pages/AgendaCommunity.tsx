@@ -225,9 +225,9 @@ const AgendaCommunity = () => {
                   {/* Filtres de période et territoire */}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Période</label>
+                      <label htmlFor="period-filter" className="text-sm font-medium mb-2 block">Période</label>
                       <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-                        <SelectTrigger>
+                        <SelectTrigger id="period-filter">
                           <SelectValue placeholder="Toutes les périodes" />
                         </SelectTrigger>
                         <SelectContent>
@@ -239,9 +239,9 @@ const AgendaCommunity = () => {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Territoire</label>
+                      <label htmlFor="territory-filter" className="text-sm font-medium mb-2 block">Territoire</label>
                       <Select value={selectedTerritory} onValueChange={setSelectedTerritory}>
-                        <SelectTrigger>
+                        <SelectTrigger id="territory-filter">
                           <SelectValue placeholder="Tous les territoires" />
                         </SelectTrigger>
                         <SelectContent>

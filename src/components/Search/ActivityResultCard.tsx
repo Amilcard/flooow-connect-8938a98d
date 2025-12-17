@@ -55,8 +55,11 @@ export const ActivityResultCard = ({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={handleClick}
-      className="rounded-2xl bg-card shadow-sm hover:shadow-xl overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer"
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
+      className="rounded-2xl bg-card shadow-sm hover:shadow-xl overflow-hidden transition-all duration-200 hover:-translate-y-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
     >
       {/* Image Section */}
       <div className="relative h-[180px] w-full overflow-hidden">

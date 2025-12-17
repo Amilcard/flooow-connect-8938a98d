@@ -53,10 +53,10 @@ const Simulateur = () => {
 
   // Validation et calcul
   const handleCalculate = () => {
-    const qf = parseFloat(quotientFamilial);
-    const age = parseInt(ageEnfant, 10);
+    const qf = Number.parseFloat(quotientFamilial);
+    const age = Number.parseInt(ageEnfant, 10);
     const cp = codePostal;
-    const prix = parseFloat(prixActivite);
+    const prix = Number.parseFloat(prixActivite);
 
     // Validation
     if (!qf || qf < 0 || qf > 3000) {

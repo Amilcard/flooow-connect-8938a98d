@@ -130,5 +130,5 @@ export const calculateBikeCarbonSaved = (
   distanceKm: number,
   carbonFactorKgPerKm: number = 0.12
 ): number => {
-  return parseFloat((distanceKm * carbonFactorKgPerKm).toFixed(4));
+  return Number.parseFloat((distanceKm * carbonFactorKgPerKm).toFixed(4));
 };
