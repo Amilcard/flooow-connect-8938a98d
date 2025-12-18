@@ -77,14 +77,14 @@ export function ActivityImageCard({
       <div className="relative w-full overflow-hidden rounded-2xl shadow-md">
         {/* Conteneur image - hauteur réduite pour cohérence avec cards Accueil/Résultats */}
         <div className="relative w-full h-[140px] md:h-[180px] lg:h-[200px]">
-          {/* Image - Optimized for PageSpeed (lazy loading, async decoding) */}
+          {/* Image - Optimized for PageSpeed (LCP priority, async decoding) */}
           <img
             src={finalImageUrl}
             alt={title}
-            loading="lazy"
+            fetchPriority="high"
             decoding="async"
             width={400}
-            height={200}
+            height={140}
             className="absolute inset-0 w-full h-full object-cover"
             style={{
               objectPosition: "center 40%"
