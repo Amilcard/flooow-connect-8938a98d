@@ -75,6 +75,72 @@ const getCategoryImage = (category: string): string => {
   return categoryMap[category] || activityLoisirsImg;
 };
 
+// ============================================================================
+// HELPER FUNCTIONS - Extracted to reduce cognitive complexity
+// ============================================================================
+
+/**
+ * Calculate age from date of birth
+ */
+const calculateAge = (dob: string): number => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+/**
+ * Calculate duration in days from slot
+ */
+const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
+  if (!slot || !slot.start || !slot.end) return 1;
+  const start = new Date(slot.start);
+  const end = new Date(slot.end);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays);
+};
+
+/**
+ * Get next dates with ISO format for a given day of week
+ */
+const DAY_NAMES_SHORT = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+
+const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array<{iso: string, label: string, labelShort: string}> => {
+  if (dayOfWeek === null) return [];
+  const dates: Array<{iso: string, label: string, labelShort: string}> = [];
+  const today = new Date();
+  const currentDay = today.getDay();
+  let daysUntil = dayOfWeek - currentDay;
+  if (daysUntil <= 0) daysUntil += 7;
+  for (let i = 0; i < count; i++) {
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + daysUntil + (i * 7));
+    dates.push({
+      iso: nextDate.toISOString().split('T')[0],
+      label: nextDate.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }),
+      labelShort: `${DAY_NAMES_SHORT[nextDate.getDay()]} ${nextDate.getDate()} ${nextDate.toLocaleDateString("fr-FR", { month: "short" })}`
+    });
+  }
+  return dates;
+};
+
+/**
+ * Get next dates labels (simplified)
+ */
+const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+  return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
+};
+
+/**
+ * Get next single date label
+ */
+const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
+
 const ActivityDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -406,63 +472,15 @@ const ActivityDetail = () => {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
-  // Calculate age from date of birth
-  const calculateAge = (dob: string): number => {
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
-  // Calculate duration in days from slot
-    const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
-      if (!slot || !slot.start || !slot.end) return 1;
-      const start = new Date(slot.start);
-      const end = new Date(slot.end);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return Math.max(1, diffDays);
-    };
-
   const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
   // Fix: vérifie aussi les strings vides dans images
   const rawImage = activity.images?.[0];
   const displayImage = (rawImage && rawImage.trim() !== '') ? rawImage : fallbackImage;
-  const ageRange = sessions.length > 0 
-    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ") 
+  const ageRange = sessions.length > 0
+    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ")
     : formatAgeRangeForDetail(activity.age_min, activity.age_max);
-
-  // Calculer les prochaines dates pour un jour de semaine donné - retourne objets {iso, label, labelShort}
-  const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array<{iso: string, label: string, labelShort: string}> => {
-    if (dayOfWeek === null) return [];
-    const dates: Array<{iso: string, label: string, labelShort: string}> = [];
-    const today = new Date();
-    const currentDay = today.getDay();
-    let daysUntil = dayOfWeek - currentDay;
-    if (daysUntil <= 0) daysUntil += 7;
-    const dayNames = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-    for (let i = 0; i < count; i++) {
-      const nextDate = new Date(today);
-      nextDate.setDate(today.getDate() + daysUntil + (i * 7));
-      dates.push({
-        iso: nextDate.toISOString().split('T')[0],
-        label: nextDate.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }),
-        labelShort: `${dayNames[nextDate.getDay()]} ${nextDate.getDate()} ${nextDate.toLocaleDateString("fr-FR", { month: "short" })}`
-      });
-    }
-    return dates;
-  };
-  // Ancienne fonction pour compatibilité
-  const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
-    return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
-  };
-  const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
   return (
     <div className="min-h-screen bg-background pb-24">
