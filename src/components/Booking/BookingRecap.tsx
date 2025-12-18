@@ -39,6 +39,66 @@ interface BookingRecapProps {
 
 const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
+// Helper: format date string to French format
+const formatDateFr = (dateString: string): string => {
+  const date = new Date(dateString);
+  const dayName = dayNames[date.getDay()];
+  return `${dayName} ${date.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })}`;
+};
+
+// Helper: format time string
+const formatTimeFr = (dateString: string): string => {
+  return new Date(dateString).toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+// Helper: get date and time labels based on slot or session
+const getDateTimeLabels = (
+  slot: BookingRecapProps['slot'],
+  session: BookingRecapProps['session'],
+  occurrenceDate: string | null | undefined
+): { dateLabel: string; timeLabel: string } => {
+  if (slot) {
+    return {
+      dateLabel: formatDateFr(slot.start),
+      timeLabel: `${formatTimeFr(slot.start)} – ${formatTimeFr(slot.end)}`
+    };
+  }
+
+  if (!session) return { dateLabel: "", timeLabel: "" };
+
+  let dateLabel = "";
+  if (occurrenceDate) {
+    dateLabel = formatDateFr(occurrenceDate);
+  } else if (session.day_of_week !== null && session.day_of_week !== undefined) {
+    dateLabel = `Tous les ${dayNames[session.day_of_week].toLowerCase()}s`;
+  }
+
+  const timeLabel = session.start_time && session.end_time
+    ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
+    : "";
+
+  return { dateLabel, timeLabel };
+};
+
+// Helper: get age label
+const getAgeLabel = (
+  sessionAgeMin: number | null | undefined,
+  sessionAgeMax: number | null | undefined,
+  activityAgeMin: number | null | undefined,
+  activityAgeMax: number | null | undefined
+): string => {
+  const ageMin = sessionAgeMin ?? activityAgeMin ?? 0;
+  const ageMax = sessionAgeMax ?? activityAgeMax;
+  return ageMax ? `${ageMin}–${ageMax} ans` : `À partir de ${ageMin} ans`;
+};
+
 export const BookingRecap = ({
   activity,
   slot,
@@ -47,46 +107,9 @@ export const BookingRecap = ({
   totalAids,
   remainingPrice,
 }: BookingRecapProps) => {
-  // Formatage de la date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const dayName = dayNames[date.getDay()];
-    return `${dayName} ${date.toLocaleDateString("fr-FR", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })}`;
-  };
-
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  // Calculer les infos horaire
-  let dateLabel = "";
-  let timeLabel = "";
-
-  if (slot) {
-    dateLabel = formatDate(slot.start);
-    timeLabel = `${formatTime(slot.start)} – ${formatTime(slot.end)}`;
-  } else if (session) {
-    if (occurrenceDate) {
-      dateLabel = formatDate(occurrenceDate);
-    } else if (session.day_of_week !== null && session.day_of_week !== undefined) {
-      dateLabel = `Tous les ${dayNames[session.day_of_week].toLowerCase()}s`;
-    }
-    if (session.start_time && session.end_time) {
-      timeLabel = `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`;
-    }
-  }
-
-  // Tranche d'âge (priorité session puis activité)
-  const ageMin = session?.age_min ?? activity.age_min ?? 0;
-  const ageMax = session?.age_max ?? activity.age_max;
-  const ageLabel = ageMax ? `${ageMin}–${ageMax} ans` : `À partir de ${ageMin} ans`;
+  // Use helpers to calculate labels (reduces cognitive complexity)
+  const { dateLabel, timeLabel } = getDateTimeLabels(slot, session, occurrenceDate);
+  const ageLabel = getAgeLabel(session?.age_min, session?.age_max, activity.age_min, activity.age_max);
 
   // Prix
   const basePrice = activity.price_base ?? 0;

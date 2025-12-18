@@ -29,6 +29,32 @@ import { FormattedText } from '@/components/ui/formatted-text';
 
 type EstimationMode = 'quick' | 'fast' | 'complete';
 
+// Helper: get step indicator state classes
+const getStepClasses = (
+  stepMode: EstimationMode,
+  currentMode: EstimationMode,
+  hasResult: boolean
+): { containerClass: string; badgeClass: string; content: string } => {
+  const isActive = currentMode === stepMode;
+  const isCompleted = hasResult && !isActive;
+
+  const containerClass = isActive
+    ? 'text-primary font-medium'
+    : 'text-muted-foreground';
+
+  let badgeClass = 'bg-muted text-muted-foreground';
+  if (isActive) {
+    badgeClass = 'bg-primary text-white';
+  } else if (isCompleted) {
+    badgeClass = 'bg-green-500 text-white';
+  }
+
+  const stepNumber = stepMode === 'quick' ? '1' : stepMode === 'fast' ? '2' : '3';
+  const content = isCompleted ? '✓' : stepNumber;
+
+  return { containerClass, badgeClass, content };
+};
+
 const SimulateurV2 = () => {
   const navigate = useNavigate();
 
@@ -100,64 +126,27 @@ const SimulateurV2 = () => {
             </Badge>
           </div>
 
-          {/* Breadcrumb des étapes */}
+          {/* Breadcrumb des étapes - using helper to reduce cognitive complexity */}
           <div className="flex items-center gap-2 text-sm">
-            <div
-              className={`flex items-center gap-2 ${
-                mode === 'quick' ? 'text-primary font-medium' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                  mode === 'quick'
-                    ? 'bg-primary text-white'
-                    : quickResult
-                    ? 'bg-green-500 text-white'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {quickResult && mode !== 'quick' ? '✓' : '1'}
-              </div>
-              <span className="hidden sm:inline">Rapide</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <div
-              className={`flex items-center gap-2 ${
-                mode === 'fast' ? 'text-primary font-medium' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                  mode === 'fast'
-                    ? 'bg-primary text-white'
-                    : fastResult
-                    ? 'bg-green-500 text-white'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {fastResult && mode !== 'fast' ? '✓' : '2'}
-              </div>
-              <span className="hidden sm:inline">Affinage</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <div
-              className={`flex items-center gap-2 ${
-                mode === 'complete' ? 'text-primary font-medium' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                  mode === 'complete'
-                    ? 'bg-primary text-white'
-                    : completeResult
-                    ? 'bg-green-500 text-white'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                3
-              </div>
-              <span className="hidden sm:inline">Complète</span>
-            </div>
+            {(['quick', 'fast', 'complete'] as const).map((stepMode, index) => {
+              const hasResult = stepMode === 'quick' ? !!quickResult
+                : stepMode === 'fast' ? !!fastResult
+                : !!completeResult;
+              const step = getStepClasses(stepMode, mode, hasResult);
+              const labels = { quick: 'Rapide', fast: 'Affinage', complete: 'Complète' };
+
+              return (
+                <div key={stepMode} className="flex items-center gap-2">
+                  {index > 0 && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                  <div className={`flex items-center gap-2 ${step.containerClass}`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step.badgeClass}`}>
+                      {step.content}
+                    </div>
+                    <span className="hidden sm:inline">{labels[stepMode]}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

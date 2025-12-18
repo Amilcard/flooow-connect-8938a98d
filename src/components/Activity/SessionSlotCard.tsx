@@ -37,29 +37,72 @@ interface SessionSlotCardProps {
 
 /**
  * Calcule l'aide à la projection temporelle
+ * Refactored: early returns to reduce cognitive complexity
  */
 const getTimeProjection = (date: Date): { label: string; subLabel?: string } => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const targetDate = new Date(date);
   targetDate.setHours(0, 0, 0, 0);
-  
+
   const diffTime = targetDate.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  if (diffDays === 0) {
-    return { label: "Aujourd'hui" };
-  } else if (diffDays === 1) {
-    return { label: "Demain" };
-  } else if (diffDays < 7) {
-    return { label: `Dans ${diffDays} jours`, subLabel: "Cette semaine" };
-  } else if (diffDays < 14) {
-    return { label: `Dans ${diffDays} jours`, subLabel: "Semaine prochaine" };
-  } else {
-    const weeks = Math.ceil(diffDays / 7);
-    return { label: `Dans ${diffDays} jours`, subLabel: `Dans ${weeks} semaines` };
+
+  if (diffDays === 0) return { label: "Aujourd'hui" };
+  if (diffDays === 1) return { label: "Demain" };
+  if (diffDays < 7) return { label: `Dans ${diffDays} jours`, subLabel: "Cette semaine" };
+  if (diffDays < 14) return { label: `Dans ${diffDays} jours`, subLabel: "Semaine prochaine" };
+
+  const weeks = Math.ceil(diffDays / 7);
+  return { label: `Dans ${diffDays} jours`, subLabel: `Dans ${weeks} semaines` };
+};
+
+/**
+ * Get badge variant and classes based on slot state
+ */
+const getPlacesBadgeConfig = (
+  placesRemaining: number | undefined,
+  isFull: boolean,
+  isLowStock: boolean,
+  isSelected: boolean
+): { variant: "secondary" | "default" | "outline"; className: string; text: string } | null => {
+  if (placesRemaining === undefined) return null;
+
+  if (isFull) {
+    return {
+      variant: "secondary",
+      className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      text: "Complet"
+    };
   }
+
+  if (isLowStock) {
+    return {
+      variant: isSelected ? "default" : "outline",
+      className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+      text: `Plus que ${placesRemaining} place${placesRemaining > 1 ? 's' : ''} !`
+    };
+  }
+
+  return {
+    variant: isSelected ? "default" : "outline",
+    className: isSelected ? "" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    text: `${placesRemaining} places`
+  };
+};
+
+/**
+ * Get card className based on state
+ */
+const getCardClassName = (isDisabled: boolean, isFull: boolean, isSelected: boolean): string => {
+  if (isDisabled || isFull) {
+    return "opacity-50 bg-muted/50 cursor-not-allowed border-transparent";
+  }
+  if (isSelected) {
+    return "ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary shadow-md";
+  }
+  return "hover:bg-accent/50 hover:border-primary/30 border-transparent";
 };
 
 /**
@@ -114,17 +157,14 @@ export const SessionSlotCard = ({
   
   const isFull = placesRemaining !== undefined && placesRemaining <= 0;
   const isLowStock = placesRemaining !== undefined && placesRemaining > 0 && placesRemaining <= 3;
+  const badgeConfig = getPlacesBadgeConfig(placesRemaining, isFull, isLowStock, isSelected);
 
   return (
     <Card
       data-slot-id={id}
       className={cn(
         "p-4 transition-all border-2 cursor-pointer",
-        isDisabled || isFull
-          ? "opacity-50 bg-muted/50 cursor-not-allowed border-transparent"
-          : isSelected
-            ? "ring-2 ring-primary ring-offset-2 bg-primary/5 border-primary shadow-md"
-            : "hover:bg-accent/50 hover:border-primary/30 border-transparent"
+        getCardClassName(isDisabled, isFull, isSelected)
       )}
       onClick={() => !isDisabled && !isFull && onClick?.()}
       role="button"
@@ -185,25 +225,12 @@ export const SessionSlotCard = ({
           </div>
           
           {/* Badge places */}
-          {placesRemaining !== undefined && (
+          {badgeConfig && (
             <Badge
-              variant={isFull ? "secondary" : isSelected ? "default" : "outline"}
-              className={cn(
-                "text-xs",
-                isFull
-                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                  : isLowStock
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : isSelected
-                      ? ""
-                      : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-              )}
+              variant={badgeConfig.variant}
+              className={cn("text-xs", badgeConfig.className)}
             >
-              {isFull 
-                ? "Complet" 
-                : isLowStock 
-                  ? `Plus que ${placesRemaining} place${placesRemaining > 1 ? 's' : ''} !` 
-                  : `${placesRemaining} places`}
+              {badgeConfig.text}
             </Badge>
           )}
         </div>

@@ -133,51 +133,52 @@ const Itineraire = () => {
     staleTime: 300000
   });
 
+  // Helper: reverse geocode position to address (extracted to reduce nesting)
+  const reverseGeocode = (position: GeolocationPosition) => {
+    if (!googleMapsLoaded || !window.google) {
+      setGeolocating(false);
+      return;
+    }
+
+    const geocoder = new window.google.maps.Geocoder();
+    const location = { lat: position.coords.latitude, lng: position.coords.longitude };
+
+    geocoder.geocode({ location }, (results: GoogleMapsGeocodeResult[], status: string) => {
+      if (status === 'OK' && results[0]) {
+        setDeparture(results[0].formatted_address);
+      }
+      setGeolocating(false);
+    });
+  };
+
+  // Helper: handle geolocation success
+  const handleGeolocationSuccess = (position: GeolocationPosition) => {
+    try {
+      reverseGeocode(position);
+    } catch (error) {
+      console.error(safeErrorMessage(error, 'Geocoding'));
+      setGeolocating(false);
+    }
+  };
+
   // Pre-fill departure from user profile or try geolocation
   useEffect(() => {
-    const prefillDeparture = async () => {
-      // Priority 1: User profile with postal code
-      if (userProfile?.postal_code && !departure) {
-        const city = userProfile.city || "Saint-Étienne";
-        setDeparture(`${userProfile.postal_code} ${city}`);
-        return;
-      }
+    // Priority 1: User profile with postal code
+    if (userProfile?.postal_code && !departure) {
+      const city = userProfile.city || "Saint-Étienne";
+      setDeparture(`${userProfile.postal_code} ${city}`);
+      return;
+    }
 
-      // Priority 2: Try geolocation if no profile
-      if (!userProfile && !departure && navigator.geolocation) {
-        setGeolocating(true);
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            try {
-              // Reverse geocode using Google Maps API if available
-              if (googleMapsLoaded && window.google) {
-                const geocoder = new window.google.maps.Geocoder();
-                geocoder.geocode(
-                  { location: { lat: position.coords.latitude, lng: position.coords.longitude } },
-                  (results: GoogleMapsGeocodeResult[], status: string) => {
-                    if (status === 'OK' && results[0]) {
-                      setDeparture(results[0].formatted_address);
-                    }
-                    setGeolocating(false);
-                  }
-                );
-              } else {
-                setGeolocating(false);
-              }
-            } catch (error) {
-              console.error(safeErrorMessage(error, 'Geocoding'));
-              setGeolocating(false);
-            }
-          },
-          () => {
-            setGeolocating(false);
-          },
-          { timeout: 5000 }
-        );
-      }
-    };
-
-    prefillDeparture();
+    // Priority 2: Try geolocation if no profile
+    if (!userProfile && !departure && navigator.geolocation) {
+      setGeolocating(true);
+      navigator.geolocation.getCurrentPosition(
+        handleGeolocationSuccess,
+        () => setGeolocating(false),
+        { timeout: 5000 }
+      );
+    }
   }, [userProfile, googleMapsLoaded, departure]);
 
   // Pre-fill arrival from activity if better address available (using helper)
