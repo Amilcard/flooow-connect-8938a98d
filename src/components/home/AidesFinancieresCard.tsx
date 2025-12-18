@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight, Clock, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { calculateQuickEstimate, QuickEstimateParams } from "@/utils/FinancialAidEngine";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import NonRecoursQuiz from "@/components/home/NonRecoursQuiz";
+
+// Lazy load NonRecoursQuiz (contient Lottie 614KB) - chargé uniquement quand dialog ouvert
+const NonRecoursQuiz = lazy(() => import("@/components/home/NonRecoursQuiz"));
 
 interface AidesFinancieresCardProps {
   userProfile?: any;
@@ -166,7 +168,9 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
           <DialogHeader>
             <DialogTitle className="sr-only">Quiz Zéro non-recours</DialogTitle>
           </DialogHeader>
-          <NonRecoursQuiz />
+          <Suspense fallback={<div className="flex items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+            <NonRecoursQuiz />
+          </Suspense>
         </DialogContent>
       </Dialog>
     </>

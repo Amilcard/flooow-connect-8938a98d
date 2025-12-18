@@ -23,15 +23,18 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Core - toujours chargé
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tabs', '@radix-ui/react-tooltip', '@radix-ui/react-accordion', '@radix-ui/react-select', '@radix-ui/react-checkbox', '@radix-ui/react-radio-group', '@radix-ui/react-switch', '@radix-ui/react-popover'],
-          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
           'supabase': ['@supabase/supabase-js'],
-          'charts': ['recharts'],
           'query-vendor': ['@tanstack/react-query'],
-          'date-vendor': ['date-fns'],
-          'lottie-vendor': ['lottie-web', 'lottie-react'],
-          'icons-vendor': ['lucide-react'],
+          // UI essentiels uniquement
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tooltip', '@radix-ui/react-popover'],
+          // SUPPRIMÉ du bundle initial (lazy-loaded avec leurs composants):
+          // - recharts (103 KiB) → lazy avec CollectiviteDashboard
+          // - lottie-web/lottie-react → lazy avec composants qui l'utilisent
+          // - date-fns → utilisé partout, gardé dans index
+          // - lucide-react → tree-shaked automatiquement
+          // - form-vendor → lazy avec pages de formulaire
         }
       }
     }
