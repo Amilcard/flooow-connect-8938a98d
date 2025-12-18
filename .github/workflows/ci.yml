@@ -7,8 +7,54 @@ on:
     branches: [main, 'claude/**']
 
 jobs:
+  # Job 0: Security check - MUST pass before anything else
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for exposed secrets in frontend
+        run: |
+          echo "Scanning for exposed secrets in frontend code..."
+
+          FOUND=0
+
+          # Check for service_role key
+          if grep -r "service_role" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+            echo "::error::SECURITY: service_role found in frontend code!"
+            FOUND=1
+          fi
+
+          # Check for SUPABASE_SERVICE_ROLE
+          if grep -r "SUPABASE_SERVICE_ROLE" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+            echo "::error::SECURITY: SUPABASE_SERVICE_ROLE found in frontend code!"
+            FOUND=1
+          fi
+
+          # Check for private keys
+          if grep -r "PRIVATE KEY" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+            echo "::error::SECURITY: Private key found in frontend code!"
+            FOUND=1
+          fi
+
+          # Check for hardcoded Stripe keys
+          if grep -rE "sk_(live|test)_" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+            echo "::error::SECURITY: Stripe secret key found in frontend code!"
+            FOUND=1
+          fi
+
+          if [ $FOUND -eq 1 ]; then
+            echo "::error::Security check FAILED - secrets detected in frontend"
+            exit 1
+          fi
+
+          echo "Security check passed - no secrets in frontend code"
+
   # Job 1: Vérification du code (lint + types)
   lint:
+    needs: security
     name: Lint & Type Check
     runs-on: ubuntu-latest
     steps:
