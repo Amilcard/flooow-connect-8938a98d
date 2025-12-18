@@ -36,20 +36,6 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Usetiful Integration (deferred for TTI optimization) -->
-    <script>
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          var a=document.getElementsByTagName('head')[0];
-          var r=document.createElement('script');
-          r.async=1;
-          r.src='https://www.usetiful.com/dist/usetiful.js';
-          r.setAttribute('id','usetifulScript');
-          r.dataset.token="f6b1a6fe197572f50824337fc44c5acb";
-          a.appendChild(r);
-        }, 2000);
-      });
-    </script>
+    <!-- Usetiful: loaded via useUsetiful hook with VITE_USETIFUL_TOKEN -->
   </body>
 </html>

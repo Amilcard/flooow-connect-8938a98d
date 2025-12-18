@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
+import { useUsetiful } from "@/hooks/useUsetiful";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
@@ -136,6 +137,14 @@ const PageLoader = () => (
   </div>
 );
 
+// ============================================
+// USETIFUL LOADER - Loads script from env var
+// ============================================
+const UsetifulLoader = ({ children }: { children: React.ReactNode }) => {
+  useUsetiful();
+  return <>{children}</>;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -145,6 +154,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <UsetifulLoader>
           <SkipToContent />
           <Suspense fallback={<PageLoader />}>
             <main id="main-content">
@@ -303,6 +313,7 @@ const App = () => (
             </Routes>
             </main>
           </Suspense>
+          </UsetifulLoader>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
