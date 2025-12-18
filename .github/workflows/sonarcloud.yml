@@ -31,9 +31,15 @@ jobs:
         run: npx tsc --noEmit --skipLibCheck || true
 
       - name: Run tests with coverage
-        run: npm run test:coverage || true
-        # Generate lcov.info for Sonar coverage analysis
-        # Allow failure if no tests exist yet
+        run: npm run test:coverage
+
+      - name: Verify coverage report exists
+        run: |
+          if [ ! -f coverage/lcov.info ]; then
+            echo "ERROR: coverage/lcov.info not found"
+            exit 1
+          fi
+          echo "✓ Coverage report generated: $(wc -l < coverage/lcov.info) lines"
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
