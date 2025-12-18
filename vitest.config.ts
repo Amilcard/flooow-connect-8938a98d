@@ -8,7 +8,7 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['node_modules', 'tests/e2e'],
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
       exclude: ['node_modules', 'tests', '**/*.d.ts'],
     },
   },
