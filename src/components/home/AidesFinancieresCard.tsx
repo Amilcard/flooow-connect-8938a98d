@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, ArrowRight, Clock, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import aidesFinancieresImg from "@/assets/aides-financieres.jpg";
+import aidesFinancieresImg from "@/assets/aides-financieres.webp";
 import { useEffect, useState, lazy, Suspense } from "react";
 import { calculateQuickEstimate, QuickEstimateParams } from "@/utils/FinancialAidEngine";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";

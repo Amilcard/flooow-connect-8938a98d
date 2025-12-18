@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Train, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import ecoMobiliteImg from "@/assets/eco-mobilite.jpg";
+import ecoMobiliteImg from "@/assets/eco-mobilite.webp";
 
 /**
  * Carte portrait "Mes trajets" - CityCrunch

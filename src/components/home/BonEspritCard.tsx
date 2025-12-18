@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Award, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import actualitePrixImg from "@/assets/actualite-prix.jpg";
+import actualitePrixImg from "@/assets/actualite-prix.webp";
 
 /**
  * Carte portrait "Clubs solidaires" - CityCrunch
