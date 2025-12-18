@@ -78,9 +78,11 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
             alt="Mes aides"
             width={320}
             height={400}
+            loading="eager"
             fetchPriority="high"
             decoding="async"
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            style={{ contentVisibility: 'auto', containIntrinsicSize: '320px 400px' }}
           />
           {/* Gradient overlay pour lisibilité */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
