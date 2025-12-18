@@ -878,7 +878,7 @@ const ActivityDetail = () => {
                         <span className="font-medium">Retour :</span>
                         <span>{activity.date_fin ? new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
                       </div>
-                      {activity.duration_days && (
+                      {(activity.duration_days ?? 0) > 0 && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <span className="font-medium">Durée :</span>
                           <span>{activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}</span>
