@@ -14,11 +14,15 @@ import { useUsetiful } from "@/hooks/useUsetiful";
 // ============================================
 import Index from "./pages/Index";
 import Splash from "./pages/Splash";
-import Search from "./pages/Search";
-import ActivityDetail from "./pages/ActivityDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
+
+// ============================================
+// IMPORTS LAZY - Pages navigation depuis Home (code-splitting)
+// ============================================
+const Search = lazy(() => import("./pages/Search"));
+const ActivityDetail = lazy(() => import("./pages/ActivityDetail"));
 
 // ============================================
 // IMPORTS LAZY - Pages secondaires (code-splitting)
@@ -162,9 +166,11 @@ const App = () => (
               {/* Pages critiques (static imports) */}
               <Route path="/" element={<Splash />} />
               <Route path="/home" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+
+              {/* Pages navigation depuis Home (lazy loaded) */}
               <Route path="/search" element={<Search />} />
               <Route path="/activity/:id" element={<ActivityDetail />} />
-              <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
 
               {/* Auth & Onboarding (lazy) */}
