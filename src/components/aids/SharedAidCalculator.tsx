@@ -79,6 +79,44 @@ function mapEngineResultToAid(res: { name: string; montant: number; niveau: stri
 }
 
 // ============================================================================
+// VALIDATION HELPERS - Extracted to reduce cognitive complexity in handleCalculate
+// ============================================================================
+
+type ValidationError = { title: string; description: string } | null;
+
+function validateChildOrAgeSelected(showSelector: boolean, childId: string, manualAge: string): ValidationError {
+  if (showSelector && !childId) {
+    return { title: "Enfant requis", description: "Veuillez sélectionner un enfant" };
+  }
+  if (!showSelector && !manualAge) {
+    return { title: "Âge requis", description: "Veuillez indiquer l'âge de votre enfant" };
+  }
+  return null;
+}
+
+function validateAgeRange(age: number | undefined, ageMin: number, ageMax: number): ValidationError {
+  if (age && (age < ageMin || age > ageMax)) {
+    return { title: "Âge non compatible", description: `Cette activité est prévue pour les enfants de ${ageMin} à ${ageMax} ans.` };
+  }
+  return null;
+}
+
+function validatePostalCodeFormat(code: string): ValidationError {
+  if (code && !/^\d{5}$/.test(code)) {
+    return { title: "Code postal invalide", description: "Le code postal doit contenir 5 chiffres" };
+  }
+  return null;
+}
+
+function validateManualAge(ageStr: string): ValidationError {
+  const age = Number.parseInt(ageStr, 10);
+  if (Number.isNaN(age) || age < 0 || age > 18) {
+    return { title: "Âge invalide", description: "Veuillez indiquer un âge entre 0 et 18 ans" };
+  }
+  return null;
+}
+
+// ============================================================================
 // HELPER: Map quick estimate results to FinancialAid format
 // ============================================================================
 
@@ -476,42 +514,23 @@ export const SharedAidCalculator = ({
 
 
   const handleCalculate = async () => {
-    // Validation: soit un enfant sélectionné (mode selecteur), soit un âge manuel (mode manuel)
-    if (showChildSelector && !selectedChildId) {
-      toast({
-        title: "Enfant requis",
-        description: "Veuillez sélectionner un enfant",
-        variant: "destructive"
-      });
+    // Run validation helpers (reduces cognitive complexity)
+    const selectionError = validateChildOrAgeSelected(showChildSelector, selectedChildId, manualChildAge);
+    if (selectionError) {
+      toast({ title: selectionError.title, description: selectionError.description, variant: "destructive" });
       return;
     }
 
-    if (!showChildSelector && !manualChildAge) {
-      toast({
-        title: "Âge requis",
-        description: "Veuillez indiquer l'âge de votre enfant",
-        variant: "destructive"
-      });
-      return;
-    }
-    // Validation âge vs tranche activité
     const checkAge = showChildSelector ? children?.find(c => c.id === selectedChildId)?.age : Number.parseInt(manualChildAge, 10);
-    if (checkAge && (checkAge < ageMin || checkAge > ageMax)) {
-      toast({
-        title: "Âge non compatible",
-        description: `Cette activité est prévue pour les enfants de ${ageMin} à ${ageMax} ans.`,
-        variant: "destructive"
-      });
+    const ageRangeError = validateAgeRange(checkAge, ageMin, ageMax);
+    if (ageRangeError) {
+      toast({ title: ageRangeError.title, description: ageRangeError.description, variant: "destructive" });
       return;
     }
 
-    // Validate postal code format (5 digits for French postal codes)
-    if (cityCode && !/^\d{5}$/.test(cityCode)) {
-      toast({
-        title: "Code postal invalide",
-        description: "Le code postal doit contenir 5 chiffres",
-        variant: "destructive"
-      });
+    const postalError = validatePostalCodeFormat(cityCode);
+    if (postalError) {
+      toast({ title: postalError.title, description: postalError.description, variant: "destructive" });
       return;
     }
 
@@ -521,22 +540,19 @@ export const SharedAidCalculator = ({
     // Déterminer l'âge de l'enfant
     let childAge: number;
     let nbFratrie = 0;
-    
+
     if (showChildSelector) {
       const selectedChild = children.find(c => c.id === selectedChildId);
       if (!selectedChild) return;
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = Number.parseInt(manualChildAge, 10);
-      if (Number.isNaN(childAge) || childAge < 0 || childAge > 18) {
-        toast({
-          title: "Âge invalide",
-          description: "Veuillez indiquer un âge entre 0 et 18 ans",
-          variant: "destructive"
-        });
+      const manualAgeError = validateManualAge(manualChildAge);
+      if (manualAgeError) {
+        toast({ title: manualAgeError.title, description: manualAgeError.description, variant: "destructive" });
         return;
       }
+      childAge = Number.parseInt(manualChildAge, 10);
     }
 
     setLoading(true);

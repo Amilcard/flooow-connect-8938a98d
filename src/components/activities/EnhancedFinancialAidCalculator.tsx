@@ -103,6 +103,50 @@ const mapTerritoryLevel = (niveau: string): string => {
   return niveau;
 };
 
+// ═══════════════════════════════════════════════════════════════════════════
+// VALIDATION HELPERS - Extracted to reduce cognitive complexity
+// ═══════════════════════════════════════════════════════════════════════════
+
+type ValidationResult = { valid: boolean; title?: string; description?: string };
+
+const validateChildSelection = (isLoggedIn: boolean, selectedChildId: string, manualChildAge: string): ValidationResult => {
+  if (isLoggedIn && !selectedChildId) {
+    return { valid: false, title: "Enfant requis", description: "Veuillez sélectionner un enfant" };
+  }
+  if (!isLoggedIn && !manualChildAge) {
+    return { valid: false, title: "Âge requis", description: "Veuillez indiquer l'âge de votre enfant" };
+  }
+  return { valid: true };
+};
+
+const validatePostalCode = (cityCode: string): ValidationResult => {
+  if (cityCode && !/^\d{5}$/.test(cityCode)) {
+    return { valid: false, title: "Code postal invalide", description: "Le code postal doit contenir 5 chiffres" };
+  }
+  return { valid: true };
+};
+
+const validateChildAge = (manualChildAge: string): ValidationResult => {
+  const age = Number.parseInt(manualChildAge, 10);
+  if (Number.isNaN(age) || age < 0 || age > 18) {
+    return { valid: false, title: "Âge invalide", description: "Veuillez indiquer un âge entre 0 et 18 ans" };
+  }
+  return { valid: true };
+};
+
+const validateAgeEligibility = (childAge: number, ageMin?: number, ageMax?: number): ValidationResult => {
+  if (ageMin !== undefined && ageMax !== undefined) {
+    if (childAge < ageMin || childAge > ageMax) {
+      return {
+        valid: false,
+        title: "Âge incompatible",
+        description: `Cette activité est réservée aux enfants de ${ageMin} à ${ageMax} ans. Votre enfant a ${childAge} ans.`
+      };
+    }
+  }
+  return { valid: true };
+};
+
 export const EnhancedFinancialAidCalculator = ({
   activityId,
   activityPrice,
@@ -171,66 +215,42 @@ export const EnhancedFinancialAidCalculator = ({
   }, [clearState]);
 
   const handleCalculate = async () => {
-    // Validation: soit un enfant sélectionné (logged in), soit un âge manuel (not logged in)
-    if (isLoggedIn && !selectedChildId) {
-      toast({
-        title: "Enfant requis",
-        description: "Veuillez sélectionner un enfant",
-        variant: "destructive"
-      });
+    // Run validation helpers (reduces cognitive complexity)
+    const childSelectionResult = validateChildSelection(isLoggedIn, selectedChildId, manualChildAge);
+    if (!childSelectionResult.valid) {
+      toast({ title: childSelectionResult.title!, description: childSelectionResult.description!, variant: "destructive" });
       return;
     }
 
-    if (!isLoggedIn && !manualChildAge) {
-      toast({
-        title: "Âge requis",
-        description: "Veuillez indiquer l'âge de votre enfant",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Validate postal code format (5 digits for French postal codes)
-    if (cityCode && !/^\d{5}$/.test(cityCode)) {
-      toast({
-        title: "Code postal invalide",
-        description: "Le code postal doit contenir 5 chiffres",
-        variant: "destructive"
-      });
+    const postalResult = validatePostalCode(cityCode);
+    if (!postalResult.valid) {
+      toast({ title: postalResult.title!, description: postalResult.description!, variant: "destructive" });
       return;
     }
 
     // Déterminer l'âge de l'enfant: depuis profil (logged in) ou manuel (not logged in)
     let childAge: number;
     let nbFratrie = 0;
-    
+
     if (isLoggedIn) {
       const selectedChild = children.find(c => c.id === selectedChildId);
       if (!selectedChild) return;
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = Number.parseInt(manualChildAge, 10);
-      if (Number.isNaN(childAge) || childAge < 0 || childAge > 18) {
-        toast({
-          title: "Âge invalide",
-          description: "Veuillez indiquer un âge entre 0 et 18 ans",
-          variant: "destructive"
-        });
+      const ageResult = validateChildAge(manualChildAge);
+      if (!ageResult.valid) {
+        toast({ title: ageResult.title!, description: ageResult.description!, variant: "destructive" });
         return;
       }
+      childAge = Number.parseInt(manualChildAge, 10);
     }
 
-    // VALIDATION: Vérifier que l'âge de l'enfant correspond à la tranche d'âge de l'activité
-    if (activityAgeMin !== undefined && activityAgeMax !== undefined) {
-      if (childAge < activityAgeMin || childAge > activityAgeMax) {
-        toast({
-          title: "Âge incompatible",
-          description: `Cette activité est réservée aux enfants de ${activityAgeMin} à ${activityAgeMax} ans. Votre enfant a ${childAge} ans.`,
-          variant: "destructive"
-        });
-        return;
-      }
+    // Validate age eligibility for activity
+    const eligibilityResult = validateAgeEligibility(childAge, activityAgeMin, activityAgeMax);
+    if (!eligibilityResult.valid) {
+      toast({ title: eligibilityResult.title!, description: eligibilityResult.description!, variant: "destructive" });
+      return;
     }
 
     // Pour les activités de vacances, QF est requis

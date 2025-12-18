@@ -30,6 +30,42 @@ import { BookingSkeleton } from "@/components/Booking/BookingSkeleton";
 import { BookingRecap } from "@/components/Booking/BookingRecap";
 import { InlineChildForm } from "@/components/Booking/InlineChildForm";
 
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS - Extracted to reduce cognitive complexity
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Calculate age at a specific reference date
+ */
+const calculateAgeAtDate = (birthDate: Date, referenceDate: Date): number => {
+  let age = referenceDate.getFullYear() - birthDate.getFullYear();
+  const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+/**
+ * Get button state configuration based on loading/selection states
+ */
+const getButtonState = (
+  isSubmitting: boolean,
+  selectedChildId: string,
+  selectedChildEligible: boolean
+): { disabled: boolean; text: string } => {
+  if (isSubmitting) {
+    return { disabled: true, text: "Envoi en cours..." };
+  }
+  if (!selectedChildId) {
+    return { disabled: true, text: "Sélectionnez un enfant" };
+  }
+  if (!selectedChildEligible) {
+    return { disabled: true, text: "Enfant non éligible" };
+  }
+  return { disabled: false, text: "Envoyer ma demande" };
+};
+
 const Booking = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -203,27 +239,19 @@ const Booking = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   const getChildEligibility = (child: { dob: string }) => {
     if (!activity) return { age: 0, isEligible: true, reason: null };
-    
+
     const birthDate = new Date(child.dob);
     const referenceDate = slot ? new Date(slot.start) : new Date();
-    let age = referenceDate.getFullYear() - birthDate.getFullYear();
-    const monthDiff = referenceDate.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
+    const age = calculateAgeAtDate(birthDate, referenceDate);
+
     const minAge = session?.age_min ?? activity.age_min ?? 0;
     const maxAge = session?.age_max ?? activity.age_max ?? 999;
     const isEligible = age >= minAge && age <= maxAge;
-    
-    let reason: string | null = null;
-    if (!isEligible) {
-      const ageRange = maxAge < 999 ? `${minAge}–${maxAge} ans` : `à partir de ${minAge} ans`;
-      reason = `Activité réservée aux enfants de ${ageRange}`;
-    }
-    
-    return { age, isEligible, reason };
+
+    if (isEligible) return { age, isEligible, reason: null };
+
+    const ageRange = maxAge < 999 ? `${minAge}–${maxAge} ans` : `à partir de ${minAge} ans`;
+    return { age, isEligible, reason: `Activité réservée aux enfants de ${ageRange}` };
   };
 
   // Trier les enfants: compatibles en premier
