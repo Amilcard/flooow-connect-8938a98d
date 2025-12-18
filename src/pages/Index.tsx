@@ -1,6 +1,5 @@
-// Flooow v1.1 - 2025-12-03
-// Flooow v1.1 - 2025-12-03
-import { useState, useEffect } from "react";
+// Flooow v1.2 - 2025-12-18 - CLS optimization
+import { useState, useEffect, lazy, Suspense } from "react";
 import { logEvent } from "@/hooks/useEventLogger";
 import { SearchBar } from "@/components/SearchBar";
 import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
@@ -11,16 +10,17 @@ import { ActivityThematicSection } from "@/components/home/ActivityThematicSecti
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
 import { useTerritory } from "@/hooks/useTerritory";
-import { ErrorState } from "@/components/ErrorState";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
-import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
-import { useSearchFilters } from "@/hooks/useSearchFilters";
 import Footer from "@/components/Footer";
 import HelpFloatingButton from "@/components/HelpFloatingButton";
+import { useSearchFilters } from "@/hooks/useSearchFilters";
+
+// Lazy load AdvancedFiltersModal - only needed on filter button click (saves ~19KB)
+const AdvancedFiltersModal = lazy(() => import("@/components/Search/AdvancedFiltersModal").then(m => ({ default: m.AdvancedFiltersModal })));
 
 const Index = () => {
   const navigate = useNavigate();
@@ -250,16 +250,20 @@ const Index = () => {
         onSearch={handleSearch}
       />
       
-      <AdvancedFiltersModal
-        isOpen={isFiltersOpen}
-        onClose={() => setIsFiltersOpen(false)}
-        filters={filterState.advancedFilters}
-        onFiltersChange={updateAdvancedFilters}
-        resultsCount={0} // On Home we don't know count yet, or we could fetch it
-        isCountLoading={false}
-        onApply={handleApplyFilters}
-        onClear={clearAllFilters}
-      />
+      {isFiltersOpen && (
+        <Suspense fallback={null}>
+          <AdvancedFiltersModal
+            isOpen={isFiltersOpen}
+            onClose={() => setIsFiltersOpen(false)}
+            filters={filterState.advancedFilters}
+            onFiltersChange={updateAdvancedFilters}
+            resultsCount={0}
+            isCountLoading={false}
+            onApply={handleApplyFilters}
+            onClear={clearAllFilters}
+          />
+        </Suspense>
+      )}
       
       <main className="max-w-5xl mx-auto px-4 pb-24">
         {/* Territory Check for logged-in users */}
@@ -306,8 +310,8 @@ const Index = () => {
                     <p className="text-sm font-medium text-red-800">Impossible de charger les suggestions</p>
                     <p className="text-xs text-red-600 mt-0.5">Vérifiez votre connexion ou réessayez plus tard.</p>
                   </div>
-                  <button 
-                    onClick={() => window.location.reload()} 
+                  <button
+                    onClick={() => window.location.reload()}
                     className="text-xs font-semibold text-red-700 hover:text-red-800 px-3 py-1.5 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
                   >
                     Réessayer
@@ -315,46 +319,43 @@ const Index = () => {
                 </div>
               </section>
             ) : (
-              !loadingRecommended && recommendedActivities.length > 0 && (
-                <section className="py-6" data-tour-id="home-reco-section">
-                  <ActivityThematicSection
-                    title="Activités recommandées"
-                    subtitle="Une sélection d'activités adaptées au profil de votre famille."
-                    activities={recommendedActivities}
-                    showSeeAll
-                    onActivityClick={handleActivityClick}
-                    onSeeAllClick={() => navigate('/activities')}
-                    isFirstSection
-                  />
-                </section>
-              )
+              <section className="py-6" data-tour-id="home-reco-section">
+                <ActivityThematicSection
+                  title="Activités recommandées"
+                  subtitle="Une sélection d'activités adaptées au profil de votre famille."
+                  activities={recommendedActivities}
+                  showSeeAll
+                  onActivityClick={handleActivityClick}
+                  onSeeAllClick={() => navigate('/activities')}
+                  isFirstSection
+                  isLoading={loadingRecommended}
+                />
+              </section>
             )}
 
             {/* ========== SECTION 3: PETITS BUDGETS ========== */}
-            {!loadingBudget && budgetActivities.length > 0 && (
-              <section className="py-6">
-                <ActivityThematicSection
-                  title="Petits budgets"
-                  subtitle="Des idées d'activités à coût maîtrisé."
-                  activities={budgetActivities}
-                  badge="Budget maîtrisé"
-                  onActivityClick={handleActivityClick}
-                />
-              </section>
-            )}
+            <section className="py-6">
+              <ActivityThematicSection
+                title="Petits budgets"
+                subtitle="Des idées d'activités à coût maîtrisé."
+                activities={budgetActivities}
+                badge="Budget maîtrisé"
+                onActivityClick={handleActivityClick}
+                isLoading={loadingBudget}
+              />
+            </section>
 
             {/* ========== SECTION 4: SPORT & BIEN-ÊTRE ========== */}
-            {!loadingSport && sportActivities.length > 0 && (
-              <section className="py-6">
-                <ActivityThematicSection
-                  title="Sport & bien-être"
-                  subtitle="Bouger, se défouler, se sentir bien."
-                  activities={sportActivities}
-                  badge="Sport"
-                  onActivityClick={handleActivityClick}
-                />
-              </section>
-            )}
+            <section className="py-6">
+              <ActivityThematicSection
+                title="Sport & bien-être"
+                subtitle="Bouger, se défouler, se sentir bien."
+                activities={sportActivities}
+                badge="Sport"
+                onActivityClick={handleActivityClick}
+                isLoading={loadingSport}
+              />
+            </section>
           </>
         )}
       </main>

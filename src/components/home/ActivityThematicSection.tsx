@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Activity {
   id: string;
@@ -34,7 +35,22 @@ interface ActivityThematicSectionProps {
   onSeeAllClick?: () => void;
   /** LCP optimization: mark first section for priority loading */
   isFirstSection?: boolean;
+  /** Show skeleton loader while loading to prevent CLS */
+  isLoading?: boolean;
 }
+
+/** Skeleton loader for activity carousel - prevents CLS */
+const ActivityCarouselSkeleton = () => (
+  <div className="flex gap-4 overflow-hidden">
+    {[...Array(4)].map((_, i) => (
+      <div key={i} className="flex-shrink-0 w-[200px] md:w-[240px]">
+        <Skeleton className="aspect-[4/5] rounded-xl" />
+        <Skeleton className="h-4 w-3/4 mt-3" />
+        <Skeleton className="h-3 w-1/2 mt-2" />
+      </div>
+    ))}
+  </div>
+);
 
 export const ActivityThematicSection = ({
   title,
@@ -44,11 +60,14 @@ export const ActivityThematicSection = ({
   badge,
   onActivityClick,
   onSeeAllClick,
-  isFirstSection = false
+  isFirstSection = false,
+  isLoading = false
 }: ActivityThematicSectionProps) => {
   const navigate = useNavigate();
 
-  if (!activities || activities.length === 0) {
+  // Don't hide section during loading - show skeleton instead to prevent CLS
+  // Only hide if explicitly not loading AND no activities
+  if (!isLoading && (!activities || activities.length === 0)) {
     return null;
   }
 
@@ -83,12 +102,16 @@ export const ActivityThematicSection = ({
           </Button>
         )}
       </div>
-      
-      <ActivityCarousel
-        activities={activities}
-        onActivityClick={onActivityClick || ((id) => navigate(`/activity/${id}`))}
-        isFirstSection={isFirstSection}
-      />
+
+      {isLoading ? (
+        <ActivityCarouselSkeleton />
+      ) : (
+        <ActivityCarousel
+          activities={activities}
+          onActivityClick={onActivityClick || ((id) => navigate(`/activity/${id}`))}
+          isFirstSection={isFirstSection}
+        />
+      )}
     </section>
   );
 };
