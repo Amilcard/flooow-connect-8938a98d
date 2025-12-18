@@ -1,6 +1,33 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+
+/**
+ * S1: LCP Image Preload Plugin
+ * Injects preload link for the LCP image (aides-financieres.webp)
+ * This helps the browser discover the image before React renders
+ */
+function lcpPreloadPlugin(): Plugin {
+  return {
+    name: 'lcp-preload',
+    enforce: 'post',
+    transformIndexHtml(html, ctx) {
+      // Only in build mode
+      if (!ctx.bundle) return html;
+
+      // Find the hashed LCP image in the bundle
+      const lcpAsset = Object.keys(ctx.bundle).find(
+        key => key.includes('aides-financieres') && key.endsWith('.webp')
+      );
+
+      if (!lcpAsset) return html;
+
+      // Inject preload link after opening <head>
+      const preloadLink = `<link rel="preload" as="image" href="/${lcpAsset}" fetchpriority="high">`;
+      return html.replace('<head>', `<head>\n    ${preloadLink}`);
+    }
+  };
+}
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -12,6 +39,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    lcpPreloadPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
