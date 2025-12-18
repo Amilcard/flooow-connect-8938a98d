@@ -30,6 +30,11 @@ jobs:
       - name: Run TypeScript compilation check
         run: npx tsc --noEmit --skipLibCheck || true
 
+      - name: Run tests with coverage
+        run: npm run test:coverage || true
+        # Generate lcov.info for Sonar coverage analysis
+        # Allow failure if no tests exist yet
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
