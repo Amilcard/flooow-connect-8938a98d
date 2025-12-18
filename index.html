@@ -7,20 +7,20 @@
     <meta name="description" content="Plateforme gratuite pour faciliter l'accès aux activités sportives, culturelles et de loisirs pour les enfants de 3 à 17 ans. Découvrez les aides financières disponibles.">
     <meta name="author" content="InKlusif Flooow" />
 
-    <!-- Preconnect: Critical third-party origins (FCP/LCP optimization) -->
+    <!-- Preconnect: Critical third-party origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://kbrgwezkjaakoecispom.supabase.co" crossorigin>
+    <!-- Supabase storage for activity images (LCP optimization) -->
+    <link rel="preconnect" href="https://kbrgwezkjaakoecispom.supabase.co/storage" crossorigin>
     <link rel="dns-prefetch" href="https://images.unsplash.com">
-    <!-- Supabase storage for activity images -->
-    <link rel="dns-prefetch" href="https://supabase.co">
 
-    <!-- Preload: Critical font files (FCP optimization) -->
-    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecg.woff2" crossorigin>
-    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2" crossorigin>
-
-    <!-- Fonts: swap display to prevent FOIT (FCP optimization) -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts: Non-blocking load with swap (prevents 1500ms render block) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    </noscript>
 
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/s8eJ6CpZfvXRMnEPbbcgoRbaoLx2/social-images/social-1763191939306-14_SLOGAN_ACTIVITES.png">
