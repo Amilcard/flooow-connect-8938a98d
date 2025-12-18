@@ -114,9 +114,13 @@ const Agenda = () => {
                   <Card key={event.id} className="hover:shadow-lg transition-shadow">
                     {event.image_url && (
                       <div className="h-48 overflow-hidden rounded-t-lg">
-                        <img 
-                          src={event.image_url} 
+                        <img
+                          src={event.image_url}
                           alt={event.title}
+                          loading="lazy"
+                          decoding="async"
+                          width={400}
+                          height={200}
                           className="w-full h-full object-cover"
                         />
                       </div>

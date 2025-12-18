@@ -105,6 +105,10 @@ export const ActivityDetailHero = ({
             <img
               src={displayImage}
               alt={title}
+              fetchPriority="high"
+              decoding="async"
+              width={400}
+              height={300}
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.currentTarget.src = getActivityImage(title, category, ageMin || 6, ageMax || 17);

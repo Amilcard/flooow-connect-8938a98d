@@ -134,9 +134,13 @@ const EventDetail = () => {
         {/* Image principale */}
         {event.image_url && (
           <div className="relative h-64 md:h-96 w-full overflow-hidden rounded-lg">
-            <img 
-              src={event.image_url} 
+            <img
+              src={event.image_url}
               alt={event.title}
+              fetchPriority="high"
+              decoding="async"
+              width={800}
+              height={400}
               className="w-full h-full object-cover"
             />
             <Badge 

@@ -126,9 +126,12 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
                 />
               </Suspense>
             ) : illustration?.type === 'image' || fallback ? (
-              <img 
-                src={illustration?.type === 'image' ? (illustration.file as string) : fallback?.ifAnimationError.useImage} 
+              <img
+                src={illustration?.type === 'image' ? (illustration.file as string) : fallback?.ifAnimationError.useImage}
                 alt="Illustration"
+                decoding="async"
+                width={220}
+                height={220}
                 className={cn(
                   "max-w-[180px] md:max-w-[220px] object-contain",
                   illustration?.className,
