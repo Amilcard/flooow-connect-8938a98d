@@ -30,6 +30,7 @@ jobs:
       - name: Run TypeScript compilation check
         run: npx tsc --noEmit --skipLibCheck || true
 
+
       - name: Run tests with coverage
         run: npm run test:coverage
 
