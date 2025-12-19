@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Activity } from "@/types/domain";
 import { Users, MapPin } from "lucide-react";
+import { optimizeSupabaseImage } from "@/lib/imageMapping";
 
 interface ActivityCardMobileProps {
   activity: Activity;
@@ -18,7 +19,8 @@ export const ActivityCardMobile = ({ activity }: ActivityCardMobileProps) => {
   };
 
   const fallbackBg = "hsl(var(--primary-soft))";
-  const imageUrl = activity.image || "";
+  // PERF: Optimize Supabase images with transformations
+  const imageUrl = optimizeSupabaseImage(activity.image, { width: 320, height: 570 }) || "";
 
   return (
     <div

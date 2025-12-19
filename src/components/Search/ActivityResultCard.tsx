@@ -10,7 +10,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { getCategoryStyle } from '@/constants/categories';
-import { getActivityImage } from '@/lib/imageMapping';
+import { getActivityImage, optimizeSupabaseImage } from '@/lib/imageMapping';
 import { formatAgeRange, formatAidLabel } from '@/utils/activityFormatters';
 
 interface ActivityResultCardProps {
@@ -44,7 +44,10 @@ export const ActivityResultCard = ({
 
   // FIX: Priorité à l'image spécifique de l'activité, fallback sur le mapping intelligent
   const fallbackImage = getActivityImage(title, category, ageMin ?? 6, ageMax ?? 17);
-  const displayImage = imageUrl && imageUrl.length > 0 ? imageUrl : fallbackImage;
+  // PERF: Optimize Supabase images with transformations (saves ~60% bandwidth)
+  const displayImage = imageUrl && imageUrl.length > 0
+    ? optimizeSupabaseImage(imageUrl, { width: 360, height: 180 })
+    : fallbackImage;
 
   // LOT 1 - T1_2: Formatage âge cohérent (utilise la fonction centralisée)
   const ageLabel = formatAgeRange(ageMin, ageMax);

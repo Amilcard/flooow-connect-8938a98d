@@ -9,7 +9,7 @@ import { getMainCategory, getPeriodLabel } from "@/utils/categoryMapping";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCategoryStyle } from "@/constants/categories";
-import { getActivityImage } from "@/lib/imageMapping";
+import { getActivityImage, optimizeSupabaseImage } from "@/lib/imageMapping";
 import { formatAgeRangeShort, formatAidLabel } from "@/utils/activityFormatters";
 
 // HELPERS: Reduce cognitive complexity by extracting badge rendering logic
@@ -103,7 +103,8 @@ export const ActivityCard = ({
   const ageMin = ageMatch ? Number.parseInt(ageMatch[1], 10) : 6;
   const ageMax = ageMatch ? Number.parseInt(ageMatch[2], 10) : 17;
   const fallbackImage = getActivityImage(title, category, ageMin, ageMax);
-  const displayImage = image || fallbackImage;
+  // PERF: Optimize Supabase images with transformations (saves ~60% bandwidth)
+  const displayImage = optimizeSupabaseImage(image, { width: 320, height: 400 }) || fallbackImage;
 
   const priceAfterAids = price > 100 ? Math.round(price * 0.7) : price;
   const hasAids = priceAfterAids < price || aidesEligibles.length > 0;

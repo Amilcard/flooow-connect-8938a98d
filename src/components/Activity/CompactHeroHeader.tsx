@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BackButton } from "@/components/BackButton";
+import { optimizeSupabaseImage } from "@/lib/imageMapping";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -84,7 +85,9 @@ export function CompactHeroHeader({
 
   // Utiliser l'image fournie ou l'image de catégorie comme fallback
   const fallbackImage = getCategoryImage(displayCategory);
-  const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
+  // PERF: Optimize Supabase images with transformations
+  const optimizedUrl = optimizeSupabaseImage(imageUrl, { width: 800, height: 220 });
+  const finalImageUrl = (optimizedUrl && !imgError) ? optimizedUrl : fallbackImage;
 
   return (
     <div className="compact-hero-header relative w-full overflow-hidden">
