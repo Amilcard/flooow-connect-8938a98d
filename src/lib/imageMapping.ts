@@ -45,7 +45,7 @@ export function optimizeSupabaseImage(
     width: width.toString(),
     height: height.toString(),
     quality: quality.toString(),
-    resize: resize
+    resize
   });
 
   // Append or replace query params
