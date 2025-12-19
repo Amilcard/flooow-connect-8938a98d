@@ -1,28 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 // Rate limit: 1 requête par seconde par IP
-const lastCall: Record<string, number> = {};
+const lastCall = new Map<string, number>();
 
 // Fonction pour transformer les aides au format demandé
 function transformAides(aides: string[]): string[] {
-  const mapping: Record<string, string> = {
-    'caf-sport': 'CAF/VACAF',
-    'caf-loisirs': 'CAF/VACAF',
-    'pass-sport': "Pass'Sport",
-    'pass-culture': "Pass'Culture",
-    'pass-culture-sport': "Pass'Culture+Sport",
-    'bourse-collectivite': 'Bourse Collectivité',
-    'coupon-sport': 'Coupon Sport',
-    'aide-jeune-actif': 'ANCV',
-    'ancv': 'ANCV'
-  };
-  
+  const mapping = new Map<string, string>([
+    ['caf-sport', 'CAF/VACAF'],
+    ['caf-loisirs', 'CAF/VACAF'],
+    ['pass-sport', "Pass'Sport"],
+    ['pass-culture', "Pass'Culture"],
+    ['pass-culture-sport', "Pass'Culture+Sport"],
+    ['bourse-collectivite', 'Bourse Collectivité'],
+    ['coupon-sport', 'Coupon Sport'],
+    ['aide-jeune-actif', 'ANCV'],
+    ['ancv', 'ANCV']
+  ]);
+
   const transformed = new Set<string>();
   aides.forEach(aide => {
-    const mapped = mapping[aide] || aide;
+    const mapped = mapping.get(aide) ?? aide;
     transformed.add(mapped);
   });
-  
+
   return Array.from(transformed);
 }
 

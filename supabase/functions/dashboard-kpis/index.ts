@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 // Rate limit: 1 requête par seconde par IP
-const lastCall: Record<string, number> = {};
+const lastCall = new Map<string, number>();
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -17,15 +17,16 @@ serve(async (req) => {
   // Rate limiting
   const ip = req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for") ?? "unknown";
   const now = Date.now();
-  
-  if (lastCall[ip] && now - lastCall[ip] < 1000) {
-    return new Response("Trop rapide 🙂 Attendez une seconde.", { 
+
+  const lastCallTime = lastCall.get(ip);
+  if (lastCallTime && now - lastCallTime < 1000) {
+    return new Response("Trop rapide 🙂 Attendez une seconde.", {
       status: 429,
-      headers: corsHeaders 
+      headers: corsHeaders
     });
   }
-  
-  lastCall[ip] = now;
+
+  lastCall.set(ip, now);
 
   try {
     const supabaseClient = createClient(
@@ -87,14 +88,14 @@ serve(async (req) => {
       .not('transport_mode', 'is', null)
       .not('transport_mode', 'eq', 'non_renseigne');
 
-    const mobilityStats = mobilityData?.reduce((acc, booking) => {
+    const mobilityStatsMap = new Map<string, number>();
+    mobilityData?.forEach(booking => {
       const mode = booking.transport_mode || 'non_renseigne';
-      acc[mode] = (acc[mode] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>) || {};
+      mobilityStatsMap.set(mode, (mobilityStatsMap.get(mode) || 0) + 1);
+    });
 
-    const totalMobility = (Object.values(mobilityStats) as number[]).reduce((sum, count) => sum + count, 0);
-    const mobilityDistribution = Object.entries(mobilityStats).map(([mode, count]) => ({
+    const totalMobility = Array.from(mobilityStatsMap.values()).reduce((sum, count) => sum + count, 0);
+    const mobilityDistribution = Array.from(mobilityStatsMap.entries()).map(([mode, count]) => ({
       mode,
       count,
       percentage: totalMobility > 0 ? (((count as number) / totalMobility) * 100).toFixed(1) : '0'
@@ -139,13 +140,13 @@ serve(async (req) => {
       .from('activity_views')
       .select('activity_id');
     
-    const viewCounts = activityViewsAgg?.reduce((acc: Record<string, number>, view) => {
-      acc[view.activity_id] = (acc[view.activity_id] || 0) + 1;
-      return acc;
-    }, {}) || {};
+    const viewCountsMap = new Map<string, number>();
+    activityViewsAgg?.forEach(view => {
+      viewCountsMap.set(view.activity_id, (viewCountsMap.get(view.activity_id) || 0) + 1);
+    });
 
-    const topActivitiesIds = Object.entries(viewCounts)
-      .sort(([, a], [, b]) => (b as number) - (a as number))
+    const topActivitiesIds = Array.from(viewCountsMap.entries())
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([id]) => id);
 
@@ -158,7 +159,7 @@ serve(async (req) => {
 
     const topActivitiesWithViews = topActivities?.map(act => ({
       ...act,
-      views: viewCounts[act.id] || 0
+      views: viewCountsMap.get(act.id) || 0
     })).sort((a, b) => b.views - a.views) || [];
 
     // 8. Taux conversion (vues → réservations)
@@ -204,24 +205,26 @@ serve(async (req) => {
       bookings_count: number;
     }
 
-    const territoryStats = (territoryBookings as TerritoryBooking[] | null)?.reduce((acc: Record<string, TerritoryStat>, booking) => {
+    const territoryStatsMap = new Map<string, TerritoryStat>();
+    (territoryBookings as TerritoryBooking[] | null)?.forEach(booking => {
       const territoryId = booking.activities?.structures?.territory_id;
       const territoryName = booking.activities?.structures?.territories?.name;
 
       if (territoryId && territoryName) {
-        if (!acc[territoryId]) {
-          acc[territoryId] = {
+        const existing = territoryStatsMap.get(territoryId);
+        if (!existing) {
+          territoryStatsMap.set(territoryId, {
             territory_id: territoryId,
             territory_name: territoryName,
-            bookings_count: 0
-          };
+            bookings_count: 1
+          });
+        } else {
+          existing.bookings_count++;
         }
-        acc[territoryId].bookings_count++;
       }
-      return acc;
-    }, {}) || {};
+    });
 
-    const territoryImpact = Object.values(territoryStats)
+    const territoryImpact = Array.from(territoryStatsMap.values())
       .sort((a, b) => b.bookings_count - a.bookings_count)
       .slice(0, 10); // Top 10 territoires
 
