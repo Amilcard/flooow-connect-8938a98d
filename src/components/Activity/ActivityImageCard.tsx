@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getCategoryStyle } from "@/constants/categories";
+import { optimizeSupabaseImage } from "@/lib/imageMapping";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
@@ -70,7 +71,9 @@ export function ActivityImageCard({
 
   // Utiliser l'image fournie ou l'image de catégorie comme fallback
   const fallbackImage = getCategoryImage(displayCategory);
-  const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
+  // PERF: Optimize Supabase images with transformations
+  const optimizedUrl = optimizeSupabaseImage(imageUrl, { width: 400, height: 200 });
+  const finalImageUrl = (optimizedUrl && !imgError) ? optimizedUrl : fallbackImage;
 
   return (
     <div className="px-4 pt-4">
