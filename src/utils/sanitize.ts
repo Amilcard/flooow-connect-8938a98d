@@ -89,8 +89,8 @@ export function redactSensitiveData(data: unknown, maxDepth = 5): unknown {
     return data.map(item => redactSensitiveData(item, maxDepth - 1));
   }
 
-  // Handle objects
-  const result: Record<string, unknown> = {};
+  // Handle objects using Map to avoid dynamic key injection
+  const resultMap = new Map<string, unknown>();
   const record = data as Record<string, unknown>;
 
   for (const key of Object.keys(record)) {
@@ -98,13 +98,13 @@ export function redactSensitiveData(data: unknown, maxDepth = 5): unknown {
     const isSensitive = SENSITIVE_FIELDS.some(field => lowerKey.includes(field));
 
     if (isSensitive) {
-      result[key] = '[REDACTED]';
+      resultMap.set(key, '[REDACTED]');
     } else {
-      result[key] = redactSensitiveData(record[key], maxDepth - 1);
+      resultMap.set(key, redactSensitiveData(record[key], maxDepth - 1));
     }
   }
 
-  return result;
+  return Object.fromEntries(resultMap);
 }
 
 /**

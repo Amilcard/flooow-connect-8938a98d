@@ -60,21 +60,21 @@ interface NotificationItem {
 // LOOKUP TABLES - Reduce cognitive complexity by avoiding switch statements
 // ============================================================================
 
-const NOTIFICATION_ICONS: Record<string, ReactNode> = {
-  event: <Calendar className="w-5 h-5 text-green-600" />,
-  event_reminder: <Clock className="w-5 h-5 text-orange-600" />,
-  favorite: <Heart className="w-5 h-5 text-pink-600" />,
-  booking: <CheckCircle className="w-5 h-5 text-blue-600" />,
-  system: <Info className="w-5 h-5 text-muted-foreground" />,
-};
+const NOTIFICATION_ICONS = new Map<string, ReactNode>([
+  ['event', <Calendar className="w-5 h-5 text-green-600" />],
+  ['event_reminder', <Clock className="w-5 h-5 text-orange-600" />],
+  ['favorite', <Heart className="w-5 h-5 text-pink-600" />],
+  ['booking', <CheckCircle className="w-5 h-5 text-blue-600" />],
+  ['system', <Info className="w-5 h-5 text-muted-foreground" />],
+]);
 
-const NOTIFICATION_LABELS: Record<string, string> = {
-  event: 'Événement du territoire',
-  event_reminder: "Rappel d'événement",
-  favorite: "Centre d'intérêt",
-  booking: 'Réservation',
-  system: 'Système',
-};
+const NOTIFICATION_LABELS = new Map<string, string>([
+  ['event', 'Événement du territoire'],
+  ['event_reminder', "Rappel d'événement"],
+  ['favorite', "Centre d'intérêt"],
+  ['booking', 'Réservation'],
+  ['system', 'Système'],
+]);
 
 const DEFAULT_ICON = <Bell className="w-5 h-5 text-muted-foreground" />;
 const DEFAULT_LABEL = 'Notification';
@@ -84,11 +84,11 @@ const DEFAULT_LABEL = 'Notification';
 // ============================================================================
 
 function getNotificationIcon(type: string): ReactNode {
-  return NOTIFICATION_ICONS[type] ?? DEFAULT_ICON;
+  return NOTIFICATION_ICONS.get(type) ?? DEFAULT_ICON;
 }
 
 function getNotificationTypeLabel(type: string): string {
-  return NOTIFICATION_LABELS[type] ?? DEFAULT_LABEL;
+  return NOTIFICATION_LABELS.get(type) ?? DEFAULT_LABEL;
 }
 
 function formatNotificationDate(dateString: string): string {
