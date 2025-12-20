@@ -1,5 +1,6 @@
 # Codacy Configuration
 # Exclude paths that generate false positives or noise
+# Last updated: 2025-12-20 - Trigger rescan after config review
 
 ---
 exclude_paths:
@@ -21,3 +22,4 @@ exclude_paths:
   - "*.sql"
   - "fix_*.sql"
   - "audit_*.sql"
+
