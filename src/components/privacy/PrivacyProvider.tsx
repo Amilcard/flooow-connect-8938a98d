@@ -94,6 +94,10 @@ export function PrivacyProvider({ children, userId }: PrivacyProviderProps) {
     return null;
   }
 
+  // Compute display conditions
+  const shouldShowConsentBanner = !showGate && isAdult && showBanner;
+  const shouldShowTour = !showGate && !showBanner && isAdult && hasConsent && tour.isVisible && tour.currentStep;
+
   const contextValue: PrivacyContextValue = {
     userType,
     isAdult,
@@ -113,17 +117,9 @@ export function PrivacyProvider({ children, userId }: PrivacyProviderProps) {
   return (
     <PrivacyContext.Provider value={contextValue}>
       {children}
-
-      {/* Parent Gate Modal - First priority */}
       {showGate && <ParentGateModal onSelect={setUserType} />}
-
-      {/* Consent Banner - Show after parent gate, only for adults */}
-      {!showGate && isAdult && showBanner && (
-        <ConsentBanner onAccept={acceptConsent} onDeny={denyConsent} />
-      )}
-
-      {/* Guided Tour - Show after consent, only for adults with consent */}
-      {!showGate && !showBanner && isAdult && hasConsent && tour.isVisible && tour.currentStep && (
+      {shouldShowConsentBanner && <ConsentBanner onAccept={acceptConsent} onDeny={denyConsent} />}
+      {shouldShowTour && tour.currentStep && (
         <GuidedTourBubble
           step={tour.currentStep}
           currentIndex={tour.currentStepIndex}

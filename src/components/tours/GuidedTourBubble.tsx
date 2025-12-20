@@ -141,11 +141,11 @@ export function GuidedTourBubble({
 
         {/* Progress dots */}
         <div className="flex justify-center gap-1.5 mb-4" aria-label={`Etape ${currentIndex + 1} sur ${totalSteps}`}>
-          {Array.from({ length: totalSteps }).map((_, i) => (
+          {Array.from({ length: totalSteps }, (_, idx) => `${step.id}-dot-${idx}`).map((dotId, idx) => (
             <div
-              key={`dot-${step.id}-${i}`}
+              key={dotId}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === currentIndex ? 'bg-primary' : 'bg-gray-200'
+                idx === currentIndex ? 'bg-primary' : 'bg-gray-200'
               }`}
               aria-hidden="true"
             />

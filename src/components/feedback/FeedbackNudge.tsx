@@ -88,7 +88,7 @@ export function FeedbackNudge({ onSubmit, onDismiss }: FeedbackNudgeProps) {
           {step === 'questions' && (
             <>
               <h3 className="font-semibold text-gray-900 mb-2 pr-6">
-                {rating === 1 ? 'Super ! Qu avez-vous apprecie ?' : 'Que pouvons-nous ameliorer ?'}
+                {rating === 1 ? "Super ! Qu'avez-vous apprecie ?" : "Que pouvons-nous ameliorer ?"}
               </h3>
               <textarea
                 value={q1Answer}
@@ -120,7 +120,7 @@ export function FeedbackNudge({ onSubmit, onDismiss }: FeedbackNudgeProps) {
 
           {step === 'thanks' && (
             <div className="text-center py-2">
-              <div className="text-2xl mb-1">🙏</div>
+              <div className="text-2xl mb-1" role="img" aria-label="merci">&#128591;</div>
               <p className="font-medium text-gray-900">Merci pour votre retour !</p>
               <p className="text-sm text-gray-500">Votre avis nous aide a ameliorer Flooow.</p>
             </div>

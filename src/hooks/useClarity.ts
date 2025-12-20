@@ -29,7 +29,9 @@ function initializeClarity(projectId: string): void {
   if (!win.clarity) {
     const clarityFn = function(...args: unknown[]) {
       const clarity = win.clarity as { q?: unknown[] };
-      clarity.q = clarity.q || [];
+      if (!clarity.q) {
+        clarity.q = [];
+      }
       clarity.q.push(args);
     };
     win.clarity = clarityFn as typeof win.clarity;
@@ -122,14 +124,14 @@ export function useClarity(options?: UseClarityOptions): void {
     const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID;
 
     if (!projectId) {
-      return undefined;
+      return;
     }
 
     if (!isAdult || !hasConsent) {
       if (document.getElementById(CLARITY_SCRIPT_ID)) {
         removeClarity();
       }
-      return undefined;
+      return;
     }
 
     if (document.getElementById(CLARITY_SCRIPT_ID)) {
@@ -137,7 +139,7 @@ export function useClarity(options?: UseClarityOptions): void {
       if (userId) {
         identifyClarity(userId);
       }
-      return undefined;
+      return;
     }
 
     const timeoutId = setTimeout(() => {
@@ -154,7 +156,6 @@ export function useClarity(options?: UseClarityOptions): void {
 
     return () => {
       clearTimeout(timeoutId);
-      return undefined;
     };
   }, [isAdult, hasConsent, userId]);
 }

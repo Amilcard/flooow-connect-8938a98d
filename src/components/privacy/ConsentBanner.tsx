@@ -28,7 +28,7 @@ export function ConsentBanner({ onAccept, onDeny }: ConsentBannerProps) {
           <p className="text-sm text-gray-600 mb-4">
             Nous utilisons des cookies analytiques pour comprendre comment vous
             utilisez Flooow et ameliorer votre experience. Aucune donnee personnelle
-            n'est partagee avec des tiers publicitaires.
+            {"n'est partagee avec des tiers publicitaires."}
           </p>
 
           {/* Links */}

@@ -55,7 +55,7 @@ export function ParentGateModal({ onSelect }: ParentGateModalProps) {
                 Je suis parent ou responsable legal
               </div>
               <div className="text-sm text-gray-500">
-                J ai 18 ans ou plus
+                {"J'ai 18 ans ou plus"}
               </div>
             </div>
           </button>
@@ -74,7 +74,7 @@ export function ParentGateModal({ onSelect }: ParentGateModalProps) {
                 Je suis un enfant ou adolescent
               </div>
               <div className="text-sm text-gray-500">
-                J ai moins de 18 ans
+                {"J'ai moins de 18 ans"}
               </div>
             </div>
           </button>
