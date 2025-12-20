@@ -12,3 +12,5 @@ name = "javascript"
   [analyzers.meta]
   plugins = ["react"]
   environment = ["nodejs"]
+  # Skip minor style rules that should not block merges
+  skip_issues = ["JS-0045", "JS-0415"]
