@@ -55,11 +55,16 @@ function removeClarity(): void {
     script.remove();
   }
 
+  const expireDate = 'Thu, 01 Jan 1970 00:00:00 GMT';
+  const hostname = window.location.hostname;
   document.cookie.split(';').forEach((cookie) => {
     const name = cookie.split('=')[0].trim();
     if (name.startsWith('_clck') || name.startsWith('_clsk') || name.startsWith('CLID')) {
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
+      const cookiePaths = [
+        `${name}=;expires=${expireDate};path=/`,
+        `${name}=;expires=${expireDate};path=/;domain=${hostname}`,
+      ];
+      cookiePaths.forEach((cookieStr) => { document.cookie = cookieStr; });
     }
   });
 
@@ -154,7 +159,7 @@ export function useClarity(options?: UseClarityOptions): void {
       }, 500);
     }, LOAD_DELAY_MS);
 
-    return () => {
+    return function cleanup() {
       clearTimeout(timeoutId);
     };
   }, [isAdult, hasConsent, userId]);
