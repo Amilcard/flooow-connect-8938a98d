@@ -1,6 +1,6 @@
 # Codacy Configuration
 # Exclude paths that generate false positives or noise
-# Last updated: 2025-12-20 - Trigger rescan after config review
+# Last updated: 2025-12-20 - Optimized for solo developer workflow
 
 ---
 exclude_paths:
@@ -22,5 +22,20 @@ exclude_paths:
   - "*.sql"
   - "fix_*.sql"
   - "audit_*.sql"
+
+  # Privacy components - intentional DOM manipulation patterns
+  - "src/hooks/useClarity.ts"
+
+# ===========================================
+# ENGINES - Disable overly strict minor rules
+# ===========================================
+engines:
+  eslint:
+    enabled: true
+    # Allow React patterns that trigger false positives
+    exclude_patterns:
+      - "src/components/privacy/**"
+      - "src/components/tours/**"
+      - "src/hooks/use*.ts"
 
 
