@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
-import { useUsetiful } from "@/hooks/useUsetiful";
+import { useClarity } from "@/hooks/useClarity";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
@@ -142,10 +142,10 @@ const PageLoader = () => (
 );
 
 // ============================================
-// USETIFUL LOADER - Loads script from env var
+// CLARITY LOADER - Microsoft Clarity analytics
 // ============================================
-const UsetifulLoader = ({ children }: { children: React.ReactNode }) => {
-  useUsetiful();
+const ClarityLoader = ({ children }: { children: React.ReactNode }) => {
+  useClarity();
   return <>{children}</>;
 };
 
@@ -158,7 +158,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <UsetifulLoader>
+          <ClarityLoader>
           <SkipToContent />
           <Suspense fallback={<PageLoader />}>
             <main id="main-content">
@@ -319,7 +319,7 @@ const App = () => (
             </Routes>
             </main>
           </Suspense>
-          </UsetifulLoader>
+          </ClarityLoader>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
