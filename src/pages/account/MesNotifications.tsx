@@ -61,11 +61,11 @@ interface NotificationItem {
 // ============================================================================
 
 const NOTIFICATION_ICONS = new Map<string, ReactNode>([
-  ['event', <Calendar className="w-5 h-5 text-green-600" />],
-  ['event_reminder', <Clock className="w-5 h-5 text-orange-600" />],
-  ['favorite', <Heart className="w-5 h-5 text-pink-600" />],
-  ['booking', <CheckCircle className="w-5 h-5 text-blue-600" />],
-  ['system', <Info className="w-5 h-5 text-muted-foreground" />],
+  ['event', <Calendar key="event" className="w-5 h-5 text-green-600" />],
+  ['event_reminder', <Clock key="event_reminder" className="w-5 h-5 text-orange-600" />],
+  ['favorite', <Heart key="favorite" className="w-5 h-5 text-pink-600" />],
+  ['booking', <CheckCircle key="booking" className="w-5 h-5 text-blue-600" />],
+  ['system', <Info key="system" className="w-5 h-5 text-muted-foreground" />],
 ]);
 
 const NOTIFICATION_LABELS = new Map<string, string>([
@@ -76,7 +76,7 @@ const NOTIFICATION_LABELS = new Map<string, string>([
   ['system', 'Système'],
 ]);
 
-const DEFAULT_ICON = <Bell className="w-5 h-5 text-muted-foreground" />;
+const DEFAULT_ICON = <Bell key="default" className="w-5 h-5 text-muted-foreground" />;
 const DEFAULT_LABEL = 'Notification';
 
 // ============================================================================
