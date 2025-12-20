@@ -1,0 +1,23 @@
+# Codacy Configuration
+# Exclude paths that generate false positives or noise
+
+---
+exclude_paths:
+  # Documentation files (no code quality impact)
+  - "**/*.md"
+  - "docs/**"
+  - "outputs/**"
+
+  # SQL Migrations - Supabase uses Postgres, not SQL Server (T-SQL)
+  # Rules like SET NOCOUNT ON, SET ANSI_NULLS are T-SQL specific
+  - "supabase/migrations/**"
+
+  # Test artifacts and scripts
+  - "test-artifacts/**"
+  - "scripts/audit_phase2/**"
+  - "scripts/smoke-tests_archive/**"
+
+  # SQL fix scripts (one-time use)
+  - "*.sql"
+  - "fix_*.sql"
+  - "audit_*.sql"
