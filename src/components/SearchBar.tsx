@@ -34,12 +34,12 @@ export const SearchBar = ({
 
 
   return (
-    <header className="w-full bg-white flex justify-center">
+    <header className="w-full bg-white flex justify-center" data-tour="search-bar">
       <div className="w-full max-w-5xl mx-auto px-4 py-3 md:py-4">
         <form onSubmit={handleSearch} className="flex items-center gap-3">
           <div className="relative flex-1 h-12 md:h-[52px]">
-            <Search 
-              className="absolute left-4 top-1/2 -translate-y-1/2" 
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2"
               size={20}
               color="#9CA3AF"
               aria-hidden="true"
@@ -52,7 +52,6 @@ export const SearchBar = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  // Use the form's submit handler - KeyboardEvent satisfies FormEvent interface for preventDefault
                   handleSearch(e as unknown as React.FormEvent);
                 }
               }}
@@ -72,6 +71,7 @@ export const SearchBar = ({
             }}
             aria-label="Filtrer les résultats"
             className="flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg hover:bg-muted transition-colors"
+            data-tour="filters-button"
           >
             <SlidersHorizontal size={20} className="text-muted-foreground" />
           </button>
