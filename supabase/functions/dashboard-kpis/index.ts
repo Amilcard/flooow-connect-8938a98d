@@ -91,7 +91,7 @@ serve(async (req) => {
     const mobilityStatsMap = new Map<string, number>();
     mobilityData?.forEach(booking => {
       const mode = booking.transport_mode || 'non_renseigne';
-      mobilityStatsMap.set(mode, (mobilityStatsMap.get(mode) || 0) + 1);
+      mobilityStatsMap.set(mode, (mobilityStatsMap.get(mode) ?? 0) + 1);
     });
 
     const totalMobility = Array.from(mobilityStatsMap.values()).reduce((sum, count) => sum + count, 0);
@@ -142,7 +142,7 @@ serve(async (req) => {
     
     const viewCountsMap = new Map<string, number>();
     activityViewsAgg?.forEach(view => {
-      viewCountsMap.set(view.activity_id, (viewCountsMap.get(view.activity_id) || 0) + 1);
+      viewCountsMap.set(view.activity_id, (viewCountsMap.get(view.activity_id) ?? 0) + 1);
     });
 
     const topActivitiesIds = Array.from(viewCountsMap.entries())
@@ -159,7 +159,7 @@ serve(async (req) => {
 
     const topActivitiesWithViews = topActivities?.map(act => ({
       ...act,
-      views: viewCountsMap.get(act.id) || 0
+      views: viewCountsMap.get(act.id) ?? 0
     })).sort((a, b) => b.views - a.views) || [];
 
     // 8. Taux conversion (vues → réservations)
