@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
 import { useUsetiful } from "@/hooks/useUsetiful";
+import { useClarity } from "@/hooks/useClarity";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
@@ -149,6 +150,14 @@ const UsetifulLoader = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// ============================================
+// CLARITY LOADER - Microsoft Clarity analytics
+// ============================================
+const ClarityLoader = ({ children }: { children: React.ReactNode }) => {
+  useClarity();
+  return <>{children}</>;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -159,6 +168,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <UsetifulLoader>
+          <ClarityLoader>
           <SkipToContent />
           <Suspense fallback={<PageLoader />}>
             <main id="main-content">
@@ -319,6 +329,7 @@ const App = () => (
             </Routes>
             </main>
           </Suspense>
+          </ClarityLoader>
           </UsetifulLoader>
         </BrowserRouter>
       </TooltipProvider>
