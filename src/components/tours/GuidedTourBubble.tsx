@@ -95,9 +95,10 @@ export function GuidedTourBubble({
     // Highlight target element
     targetElement.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'z-40', 'relative');
 
-    return function cleanup() {
+    const cleanup = (): void => {
       targetElement.classList.remove('ring-2', 'ring-primary', 'ring-offset-2', 'z-40', 'relative');
     };
+    return cleanup;
   }, [step]);
 
   return (

@@ -159,9 +159,10 @@ export function useClarity(options?: UseClarityOptions): void {
       }, 500);
     }, LOAD_DELAY_MS);
 
-    return function cleanup() {
+    const cleanup = (): void => {
       clearTimeout(timeoutId);
     };
+    return cleanup;
   }, [isAdult, hasConsent, userId]);
 }
 
