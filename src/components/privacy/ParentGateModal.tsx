@@ -3,6 +3,7 @@
  * Bloque le tracking Clarity pour les mineurs (COPPA/RGPD compliance)
  */
 
+import { useCallback } from 'react';
 import { Shield, User, Users } from 'lucide-react';
 import { UserType } from '@/hooks/useParentGate';
 
@@ -11,6 +12,14 @@ interface ParentGateModalProps {
 }
 
 export function ParentGateModal({ onSelect }: ParentGateModalProps) {
+  const handleSelectAdult = useCallback(() => {
+    onSelect('adult');
+  }, [onSelect]);
+
+  const handleSelectMinor = useCallback(() => {
+    onSelect('minor');
+  }, [onSelect]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
@@ -34,7 +43,8 @@ export function ParentGateModal({ onSelect }: ParentGateModalProps) {
         <div className="space-y-3">
           {/* Parent/Adult option */}
           <button
-            onClick={() => onSelect('adult')}
+            type="button"
+            onClick={handleSelectAdult}
             className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 hover:border-primary hover:bg-primary/5 transition-all group"
           >
             <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
@@ -45,14 +55,15 @@ export function ParentGateModal({ onSelect }: ParentGateModalProps) {
                 Je suis parent ou responsable legal
               </div>
               <div className="text-sm text-gray-500">
-                J'ai 18 ans ou plus
+                J ai 18 ans ou plus
               </div>
             </div>
           </button>
 
           {/* Minor option */}
           <button
-            onClick={() => onSelect('minor')}
+            type="button"
+            onClick={handleSelectMinor}
             className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 hover:border-orange-400 hover:bg-orange-50 transition-all group"
           >
             <div className="bg-orange-100 p-2 rounded-lg group-hover:bg-orange-200 transition-colors">
@@ -63,7 +74,7 @@ export function ParentGateModal({ onSelect }: ParentGateModalProps) {
                 Je suis un enfant ou adolescent
               </div>
               <div className="text-sm text-gray-500">
-                J'ai moins de 18 ans
+                J ai moins de 18 ans
               </div>
             </div>
           </button>

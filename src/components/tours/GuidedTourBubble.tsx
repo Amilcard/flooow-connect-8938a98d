@@ -1,9 +1,9 @@
 /**
  * Bulle de guidage pour les tours in-app
- * S'ancre à un élément via data-tour attribute
+ * S ancre a un element via data-tour attribute
  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, KeyboardEvent } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TourStep } from '@/hooks/useGuidedTour';
 
@@ -31,6 +31,14 @@ export function GuidedTourBubble({
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
   const bubbleRef = useRef<HTMLDivElement>(null);
+
+  // Handle keyboard events for accessibility
+  const handleOverlayKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+      e.preventDefault();
+      onSkip();
+    }
+  }, [onSkip]);
 
   useEffect(() => {
     const targetElement = document.querySelector(`[data-tour="${step.target}"]`);
@@ -71,6 +79,9 @@ export function GuidedTourBubble({
         top = targetRect.top + (targetRect.height - bubbleRect.height) / 2;
         left = targetRect.right + padding + arrowSize;
         break;
+      default:
+        top = targetRect.bottom + padding + arrowSize;
+        left = targetRect.left + (targetRect.width - bubbleRect.width) / 2;
     }
 
     // Keep bubble within viewport
@@ -91,12 +102,22 @@ export function GuidedTourBubble({
 
   return (
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black/40 z-40" onClick={onSkip} />
+      {/* Overlay - accessible with keyboard */}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Fermer le guide"
+        className="fixed inset-0 bg-black/40 z-40 cursor-pointer"
+        onClick={onSkip}
+        onKeyDown={handleOverlayKeyDown}
+      />
 
       {/* Bubble */}
       <div
         ref={bubbleRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tour-title"
         className={`fixed z-50 bg-white rounded-2xl shadow-2xl max-w-xs w-full p-4 transition-opacity duration-300 ${
           isPositioned ? 'opacity-100' : 'opacity-0'
         }`}
@@ -104,6 +125,7 @@ export function GuidedTourBubble({
       >
         {/* Close button */}
         <button
+          type="button"
           onClick={onSkip}
           className="absolute -top-2 -right-2 bg-gray-100 hover:bg-gray-200 rounded-full p-1 transition-colors"
           aria-label="Fermer le guide"
@@ -113,18 +135,19 @@ export function GuidedTourBubble({
 
         {/* Content */}
         <div className="mb-4">
-          <h3 className="font-semibold text-gray-900 mb-1">{step.title}</h3>
+          <h3 id="tour-title" className="font-semibold text-gray-900 mb-1">{step.title}</h3>
           <p className="text-sm text-gray-600">{step.content}</p>
         </div>
 
         {/* Progress dots */}
-        <div className="flex justify-center gap-1.5 mb-4">
+        <div className="flex justify-center gap-1.5 mb-4" aria-label={`Etape ${currentIndex + 1} sur ${totalSteps}`}>
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div
-              key={i}
+              key={`dot-${step.id}-${i}`}
               className={`w-2 h-2 rounded-full transition-colors ${
                 i === currentIndex ? 'bg-primary' : 'bg-gray-200'
               }`}
+              aria-hidden="true"
             />
           ))}
         </div>
@@ -133,24 +156,27 @@ export function GuidedTourBubble({
         <div className="flex gap-2">
           {!isFirstStep && (
             <button
+              type="button"
               onClick={onPrevious}
               className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
             >
-              <ChevronLeft className="w-4 h-4" />
-              Précédent
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+              Precedent
             </button>
           )}
           <button
+            type="button"
             onClick={onNext}
             className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors text-sm"
           >
             {isLastStep ? 'Terminer' : 'Suivant'}
-            {!isLastStep && <ChevronRight className="w-4 h-4" />}
+            {!isLastStep && <ChevronRight className="w-4 h-4" aria-hidden="true" />}
           </button>
         </div>
 
         {/* Skip link */}
         <button
+          type="button"
           onClick={onSkip}
           className="w-full text-center text-xs text-gray-400 hover:text-gray-600 mt-3 transition-colors"
         >
