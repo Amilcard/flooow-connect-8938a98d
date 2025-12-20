@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 // Rate limit: 1 requête par seconde par IP
-const lastCall: Record<string, number> = {};
+const lastCall = new Map<string, number>();
 
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
@@ -18,14 +18,15 @@ Deno.serve(async (req) => {
   const ip = req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for") ?? "unknown";
   const now = Date.now();
   
-  if (lastCall[ip] && now - lastCall[ip] < 1000) {
-    return new Response("Trop rapide 🙂 Attendez une seconde.", { 
+  const lastCallTime = lastCall.get(ip);
+  if (lastCallTime && now - lastCallTime < 1000) {
+    return new Response("Trop rapide 🙂 Attendez une seconde.", {
       status: 429,
-      headers: corsHeaders 
+      headers: corsHeaders
     });
   }
-  
-  lastCall[ip] = now;
+
+  lastCall.set(ip, now);
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
