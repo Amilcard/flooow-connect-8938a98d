@@ -35,7 +35,7 @@ export const WhereFilter = ({
         
         <Select value={location || "all"} onValueChange={(value) => onChange({ location: value === "all" ? undefined : value })}>
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionner une commune" />
+            <SelectValue placeholder="Ex : Saint-Rémy-lès-Chevreuse" />
           </SelectTrigger>
           <SelectContent>
             {LOCATIONS.map((loc) => (
@@ -45,6 +45,7 @@ export const WhereFilter = ({
             ))}
           </SelectContent>
         </Select>
+        <p className="text-xs text-muted-foreground mt-1">Ville ou code postal.</p>
       </div>
 
       <div>
