@@ -455,12 +455,12 @@ export const GeneralSimulateAidModal = ({
                 <MapPin className="h-4 w-4" />
                 Ville de résidence (optionnel)
               </Label>
-              <Select 
-                value={form.cityCode} 
+              <Select
+                value={form.cityCode}
                 onValueChange={(value) => updateForm('cityCode', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez votre ville" />
+                  <SelectValue placeholder="Ex : Saint-Rémy-lès-Chevreuse" />
                 </SelectTrigger>
                 <SelectContent>
                   {SAMPLE_CITIES.map((city) => (
@@ -470,6 +470,7 @@ export const GeneralSimulateAidModal = ({
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">Ville ou code postal.</p>
             </div>
 
             {/* Catégorie d'activité */}

@@ -1,0 +1,22 @@
+version = 1
+
+[[analyzers]]
+name = "sql"
+
+[[analyzers]]
+name = "secrets"
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  plugins = ["react"]
+  environment = ["nodejs", "browser"]
+
+# Exclude files that trigger minor style issues (JS-0045, JS-0415)
+# These are intentional React patterns, not bugs
+exclude_patterns = [
+  "src/hooks/useClarity.ts",
+  "src/components/tours/GuidedTourBubble.tsx",
+  "src/components/privacy/**"
+]

@@ -130,8 +130,8 @@ const MesInformations = () => {
           </CardContent>
         </Card>
 
-        {/* Informations personnelles */}
-        <Card>
+        {/* Informations personnelles - Masque Clarity pour RGPD */}
+        <Card data-clarity-mask="true">
           <CardHeader>
             <CardTitle>Informations personnelles</CardTitle>
           </CardHeader>
@@ -185,10 +185,10 @@ const MesInformations = () => {
           </CardContent>
         </Card>
 
-        {/* Coordonnées */}
-        <Card>
+        {/* Coordonnees - Masque Clarity pour RGPD */}
+        <Card data-clarity-mask="true">
           <CardHeader>
-            <CardTitle>Coordonnées</CardTitle>
+            <CardTitle>Coordonnees</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-3">

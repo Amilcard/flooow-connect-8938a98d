@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
-import { useClarity } from "@/hooks/useClarity";
+import { PrivacyProvider } from "./components/privacy/PrivacyProvider";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
@@ -141,14 +141,6 @@ const PageLoader = () => (
   </div>
 );
 
-// ============================================
-// CLARITY LOADER - Microsoft Clarity analytics
-// ============================================
-const ClarityLoader = ({ children }: { children: React.ReactNode }) => {
-  useClarity();
-  return <>{children}</>;
-};
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -158,7 +150,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <ClarityLoader>
+          <PrivacyProvider>
           <SkipToContent />
           <Suspense fallback={<PageLoader />}>
             <main id="main-content">
@@ -319,7 +311,7 @@ const App = () => (
             </Routes>
             </main>
           </Suspense>
-          </ClarityLoader>
+          </PrivacyProvider>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

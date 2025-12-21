@@ -429,7 +429,7 @@ export const SimulateAidModal = ({
                 </Label>
                 <Select value={form.cityCode} onValueChange={(value) => setForm(prev => ({ ...prev, cityCode: value }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez votre ville" />
+                    <SelectValue placeholder="Ex : Saint-Rémy-lès-Chevreuse" />
                   </SelectTrigger>
                   <SelectContent>
                     {SAMPLE_CITIES.map(city => (
