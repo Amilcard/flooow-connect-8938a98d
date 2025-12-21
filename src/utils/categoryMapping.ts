@@ -54,28 +54,24 @@ const getMatchingSegments = (ageMin: number, ageMax: number): typeof AGE_SEGMENT
 
 /**
  * Formate la tranche d'âge pour les CARTES (pilule compacte)
- * Retourne une seule tranche simplifiée (ex: "12-17 ans")
+ * Retourne les segments éclatés par 2 ans max (ex: "3-5 / 6-8")
  */
 export const formatAgeRangeForCard = (ageMin?: number, ageMax?: number): string => {
   if (!ageMin || !ageMax) return '';
-  
-  // Si la tranche est déjà dans un segment unique
+
   const segments = getMatchingSegments(ageMin, ageMax);
-  
+
   if (segments.length === 0) {
     return `${ageMin}-${ageMax} ans`;
   }
-  
+
   if (segments.length === 1) {
     const seg = segments[0];
-    return seg ? seg.label : `${ageMin}-${ageMax} ans`;
+    return seg ? `${seg.min}-${seg.max}` : `${ageMin}-${ageMax}`;
   }
 
-  // Plusieurs segments: afficher la tranche globale simplifiée
-  const firstSeg = segments[0];
-  const lastSeg = segments[segments.length - 1];
-  if (!firstSeg || !lastSeg) return `${ageMin}-${ageMax} ans`;
-  return `${firstSeg.min}-${lastSeg.max} ans`;
+  // Plusieurs segments: afficher chacun séparé par " / " (sans "ans" pour compacité)
+  return segments.map(s => `${s.min}-${s.max}`).join(' / ');
 };
 
 /**
@@ -102,23 +98,22 @@ export const formatAgeRangeForDetail = (ageMin?: number, ageMax?: number): strin
 
 /**
  * Formate une tranche d'âge simple (sans "ans" pour économiser l'espace sur les cartes)
+ * Retourne les segments éclatés par 2 ans max (ex: "3-5 / 6-8")
  */
 export const formatAgeRangeShort = (ageMin?: number, ageMax?: number): string => {
   if (!ageMin || !ageMax) return '';
-  
+
   const segments = getMatchingSegments(ageMin, ageMax);
-  
+
   if (segments.length === 0) {
     return `${ageMin}-${ageMax}`;
   }
-  
+
   if (segments.length === 1) {
     const seg = segments[0];
     return seg ? `${seg.min}-${seg.max}` : `${ageMin}-${ageMax}`;
   }
 
-  const firstSeg = segments[0];
-  const lastSeg = segments[segments.length - 1];
-  if (!firstSeg || !lastSeg) return `${ageMin}-${ageMax}`;
-  return `${firstSeg.min}-${lastSeg.max}`;
+  // Plusieurs segments: afficher chacun séparé par " / "
+  return segments.map(s => `${s.min}-${s.max}`).join(' / ');
 };
