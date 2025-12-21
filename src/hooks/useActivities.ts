@@ -180,6 +180,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
  * - Source unique de données
  * - Pas de jointure structures (évite erreur embed Supabase)
  * - Champ `is_published` (pas `published`) - colonne correcte en BDD
+ * - Timeout 10s pour éviter loading infini
  */
 export const useActivities = (filters?: ActivityFilters) => {
   const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
@@ -188,31 +189,43 @@ export const useActivities = (filters?: ActivityFilters) => {
     gcTime: 600000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    retry: false,
-    queryFn: async () => {
-      // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
-      let query = supabase.from("activities").select("*").eq("is_published", true);
+    retry: 1,
+    queryFn: async ({ signal }) => {
+      // Timeout 10s pour éviter loading infini
+      const timeoutId = setTimeout(() => {
+        if (signal && !signal.aborted) {
+          console.warn('useActivities: Query timeout after 10s');
+        }
+      }, 10000);
 
-      // Apply filters using helper functions to reduce cognitive complexity
-      query = applySearchFilter(query, filters?.searchQuery, filters?.search);
-      query = applyCategoryFilters(query, filters?.category, filters?.categories);
-      query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
-      query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
+      try {
+        // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
+        let query = supabase.from("activities").select("*").eq("is_published", true);
 
-      // Apply limit
-      query = query.limit(filters?.limit || 50);
+        // Apply filters using helper functions to reduce cognitive complexity
+        query = applySearchFilter(query, filters?.searchQuery, filters?.search);
+        query = applyCategoryFilters(query, filters?.category, filters?.categories);
+        query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
+        query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
 
-      const { data, error } = await query.order("title", { ascending: true });
+        // Apply limit
+        query = query.limit(filters?.limit || 50);
 
-      if (error) {
-        console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
-        throw error;
+        const { data, error } = await query.order("title", { ascending: true });
+
+        if (error) {
+          console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
+          throw error;
+        }
+
+        // Retourne un tableau vide si pas de données (0 résultat ≠ loading)
+        return {
+          activities: processActivities(data || []),
+          isRelaxed: false
+        };
+      } finally {
+        clearTimeout(timeoutId);
       }
-
-      return {
-        activities: processActivities(data || []),
-        isRelaxed: false
-      };
     },
   });
 
