@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CITY_PLACEHOLDER } from "@/config/territories";
+import { CITY_EXAMPLE_PLACEHOLDER } from "@/config/territories";
 
 interface WhereFilterData {
   location?: string;
@@ -34,7 +34,7 @@ export const WhereFilter = ({
 
         <Select value={location || "all"} onValueChange={(value) => onChange({ location: value === "all" ? undefined : value })}>
           <SelectTrigger>
-            <SelectValue placeholder={CITY_PLACEHOLDER} />
+            <SelectValue placeholder={CITY_EXAMPLE_PLACEHOLDER} />
           </SelectTrigger>
           <SelectContent>
             {DEMO_LOCATIONS.map((loc) => (

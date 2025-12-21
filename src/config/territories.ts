@@ -23,4 +23,5 @@ export const CITY_NOT_FOUND_TEXT = "Ville introuvable, essayez un code postal.";
 
 // Placeholder pour les champs ville
 export const CITY_PLACEHOLDER = "Ma ville";
+export const CITY_EXAMPLE_PLACEHOLDER = "Ex : Saint-Rémy-lès-Chevreuse";
 export const POSTAL_PLACEHOLDER = "Code postal";
