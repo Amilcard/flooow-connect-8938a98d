@@ -133,7 +133,7 @@ export const ActivityResultCard = ({
 
         {/* Location */}
         {location && (
-          <p className="text-sm text-muted-foreground line-clamp-1 font-poppins">
+          <p className="text-sm text-muted-foreground line-clamp-2 font-poppins">
             {location}
           </p>
         )}

@@ -238,6 +238,27 @@ const Index = () => {
     return mixed;
   })();
 
+  // Deduplication: éviter les doublons entre sections
+  // On garde trace des IDs déjà affichés et on filtre les sections suivantes
+  const displayedIds = new Set<string>();
+
+  // Les activités recommandées sont affichées en premier
+  recommendedActivities.forEach(a => displayedIds.add(a.id));
+
+  // Filtrer les petits budgets pour exclure les doublons
+  const uniqueBudgetActivities = budgetActivities.filter(a => {
+    if (displayedIds.has(a.id)) return false;
+    displayedIds.add(a.id);
+    return true;
+  });
+
+  // Filtrer sport & bien-être pour exclure les doublons
+  const uniqueSportActivities = sportActivities.filter(a => {
+    if (displayedIds.has(a.id)) return false;
+    displayedIds.add(a.id);
+    return true;
+  });
+
 
 
   const handleActivityClick = (id: string) => {
@@ -338,7 +359,7 @@ const Index = () => {
               <ActivityThematicSection
                 title="Petits budgets"
                 subtitle="Des idées d'activités à coût maîtrisé."
-                activities={budgetActivities}
+                activities={uniqueBudgetActivities}
                 badge="Budget maîtrisé"
                 onActivityClick={handleActivityClick}
                 isLoading={loadingBudget}
@@ -350,7 +371,7 @@ const Index = () => {
               <ActivityThematicSection
                 title="Sport & bien-être"
                 subtitle="Bouger, se défouler, se sentir bien."
-                activities={sportActivities}
+                activities={uniqueSportActivities}
                 badge="Sport"
                 onActivityClick={handleActivityClick}
                 isLoading={loadingSport}
