@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
 import { PrivacyProvider } from "./components/privacy/PrivacyProvider";
+import { TerritoryProvider } from "./contexts/TerritoryContext";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
@@ -122,6 +123,10 @@ const EnAttenteValidation = lazy(() => import("./pages/inscription/EnAttenteVali
 const Covoiturage = lazy(() => import("./pages/Covoiturage"));
 const Itineraire = lazy(() => import("./pages/Itineraire"));
 
+// Territory
+const MaVille = lazy(() => import("./pages/MaVille"));
+const TerritoireNonCouvert = lazy(() => import("./pages/TerritoireNonCouvert"));
+
 // Admin
 const AdminSessions = lazy(() => import("./pages/AdminSessions"));
 
@@ -146,6 +151,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <TerritoryProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -296,6 +302,10 @@ const App = () => (
               <Route path="/covoiturage" element={<Covoiturage />} />
               <Route path="/itineraire" element={<Itineraire />} />
 
+              {/* Territory */}
+              <Route path="/ma-ville" element={<MaVille />} />
+              <Route path="/territoire-non-couvert" element={<TerritoireNonCouvert />} />
+
               {/* Admin */}
               <Route path="/admin/sessions" element={<AdminSessions />} />
 
@@ -314,6 +324,7 @@ const App = () => (
           </PrivacyProvider>
         </BrowserRouter>
       </TooltipProvider>
+      </TerritoryProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
