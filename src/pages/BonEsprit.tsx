@@ -180,7 +180,7 @@ const BonEsprit = () => {
                     id="city_or_structure"
                     value={formData.city_or_structure}
                     onChange={(e) => handleInputChange("city_or_structure", e.target.value)}
-                    placeholder="Ex: École Jean Moulin, Lyon"
+                    placeholder="Ex: École Jean Moulin, Saint-Étienne"
                     required
                   />
                 </div>

@@ -66,7 +66,7 @@ const MesSessions = () => {
       deviceName: 'iPhone 15',
       browser: 'Safari 17.0',
       location: {
-        city: 'Lyon',
+        city: 'Saint-Étienne',
         country: 'France',
         ip: '192.168.1.45'
       },
@@ -81,7 +81,7 @@ const MesSessions = () => {
       deviceName: 'iPad Air',
       browser: 'Safari 17.0',
       location: {
-        city: 'Marseille',
+        city: 'Firminy',
         country: 'France',
         ip: '192.168.1.78'
       },
