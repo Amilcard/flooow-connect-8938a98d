@@ -182,6 +182,16 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
  * - Champ `is_published` (pas `published`) - colonne correcte en BDD
  * - Timeout 10s pour éviter loading infini
  */
+// Timeout qui rejette après N ms
+const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(message)), ms)
+    )
+  ]);
+};
+
 export const useActivities = (filters?: ActivityFilters) => {
   const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
     queryKey: ["activities", filters],
@@ -190,42 +200,36 @@ export const useActivities = (filters?: ActivityFilters) => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     retry: 1,
-    queryFn: async ({ signal }) => {
-      // Timeout 10s pour éviter loading infini
-      const timeoutId = setTimeout(() => {
-        if (signal && !signal.aborted) {
-          console.warn('useActivities: Query timeout after 10s');
-        }
-      }, 10000);
+    queryFn: async () => {
+      // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
+      let query = supabase.from("activities").select("*").eq("is_published", true);
 
-      try {
-        // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
-        let query = supabase.from("activities").select("*").eq("is_published", true);
+      // Apply filters using helper functions to reduce cognitive complexity
+      query = applySearchFilter(query, filters?.searchQuery, filters?.search);
+      query = applyCategoryFilters(query, filters?.category, filters?.categories);
+      query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
+      query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
 
-        // Apply filters using helper functions to reduce cognitive complexity
-        query = applySearchFilter(query, filters?.searchQuery, filters?.search);
-        query = applyCategoryFilters(query, filters?.category, filters?.categories);
-        query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
-        query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
+      // Apply limit
+      query = query.limit(filters?.limit || 50);
 
-        // Apply limit
-        query = query.limit(filters?.limit || 50);
+      // Timeout réel 10s - rejette si Supabase ne répond pas
+      const { data, error } = await withTimeout(
+        query.order("title", { ascending: true }),
+        10000,
+        'Délai de chargement dépassé. Veuillez réessayer.'
+      );
 
-        const { data, error } = await query.order("title", { ascending: true });
-
-        if (error) {
-          console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
-          throw error;
-        }
-
-        // Retourne un tableau vide si pas de données (0 résultat ≠ loading)
-        return {
-          activities: processActivities(data || []),
-          isRelaxed: false
-        };
-      } finally {
-        clearTimeout(timeoutId);
+      if (error) {
+        console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
+        throw error;
       }
+
+      // Retourne un tableau vide si pas de données (0 résultat ≠ loading)
+      return {
+        activities: processActivities(data || []),
+        isRelaxed: false
+      };
     },
   });
 
