@@ -47,14 +47,14 @@ function BannerActions({ onAccept, onDeny }: BannerActionsProps) {
         className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
       >
         <X className="w-4 h-4" />
-        Refuser
+        Tout refuser
       </button>
       <button
         type="button"
         onClick={onAccept}
         className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition-colors"
       >
-        Accepter
+        Tout accepter
       </button>
     </div>
   );
@@ -76,7 +76,12 @@ function BannerContent({ onAccept, onDeny }: ConsentBannerProps) {
 
 export function ConsentBanner({ onAccept, onDeny }: ConsentBannerProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 p-4 animate-in slide-in-from-bottom duration-500">
+    <div
+      className="fixed left-0 right-0 z-40 p-4 animate-in slide-in-from-bottom duration-500"
+      style={{
+        bottom: 'calc(var(--nav-bottom-height, 80px) + var(--safe-area-bottom, 0px) + 8px)'
+      }}
+    >
       <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <BannerHeader />
         <BannerContent onAccept={onAccept} onDeny={onDeny} />
