@@ -287,7 +287,7 @@ export const EcoMobilitySection = ({
                     {/* Calories/pas en second niveau */}
                     <div className="flex items-center gap-2 text-xs text-purple-600">
                       <Footprints size={12} />
-                      <span>≈ {Math.round(durations.bike * CALORIES_BIKE_PER_MIN)} kcal brûlées</span>
+                      <span>≈ {Math.round(durations.bike * CALORIES_BIKE_PER_MIN / 10) * 10} kcal brûlées</span>
                     </div>
                   </div>
                 )}
@@ -356,7 +356,7 @@ export const EcoMobilitySection = ({
                 {/* Calories/pas en second niveau */}
                 <div className="flex items-center gap-2 text-xs text-purple-600">
                   <Footprints size={12} />
-                  <span>≈ {Math.round(durations.walk * CALORIES_WALK_PER_MIN)} kcal • {Math.round(estimateDistance(durations.walk, 'walk') * STEPS_PER_KM)} pas</span>
+                  <span>≈ {Math.round(durations.walk * CALORIES_WALK_PER_MIN / 10) * 10} kcal • {Math.round(estimateDistance(durations.walk, 'walk') * STEPS_PER_KM / 100) * 100} pas</span>
                 </div>
                 <div className="flex gap-2">
                   <Button

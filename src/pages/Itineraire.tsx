@@ -670,11 +670,11 @@ const Itineraire = () => {
                   <p className="text-xs font-medium text-purple-700 dark:text-purple-400 mb-2">💪 Bénéfices santé</p>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <span className="text-purple-600 dark:text-purple-400">
-                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN))} kcal
+                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN) / 10) * 10} kcal
                     </span>
                     {transportType === 'walk' && (
                       <span className="text-purple-600 dark:text-purple-400">
-                        ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM)} pas
+                        ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM / 100) * 100} pas
                       </span>
                     )}
                   </div>
