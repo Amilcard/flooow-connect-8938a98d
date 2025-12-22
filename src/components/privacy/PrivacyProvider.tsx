@@ -3,13 +3,15 @@
  * Encapsule toute la logique de consentement
  */
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useParentGate, UserType } from '@/hooks/useParentGate';
 import { useAnalyticsConsent, ConsentStatus } from '@/hooks/useAnalyticsConsent';
 import { useGuidedTour, DISCOVERY_TOUR, TourState } from '@/hooks/useGuidedTour';
 import { ParentGateModal } from './ParentGateModal';
 import { ConsentBanner } from './ConsentBanner';
 import { GuidedTourBubble } from '../tours/GuidedTourBubble';
+import { setLOConsent } from '@/utils/luckyOrange';
 
 interface PrivacyContextValue {
   // Parent Gate
@@ -47,6 +49,8 @@ interface PrivacyProviderProps {
 }
 
 export function PrivacyProvider({ children }: PrivacyProviderProps) {
+  const location = useLocation();
+
   // Parent Gate state
   const {
     userType,
@@ -71,6 +75,13 @@ export function PrivacyProvider({ children }: PrivacyProviderProps) {
 
   // Guided tour
   const tour = useGuidedTour(DISCOVERY_TOUR, isAdult && hasConsent);
+
+  // Sync Lucky Orange consent on consent change or route change
+  useEffect(() => {
+    if (isLoadingGate || isLoadingConsent) return;
+    // Block tracking for minors, denied consent, or excluded routes
+    setLOConsent(hasConsent, isMinor, location.pathname);
+  }, [hasConsent, isMinor, location.pathname, isLoadingGate, isLoadingConsent]);
 
   // Don't render anything until we've loaded the stored state
   if (isLoadingGate || isLoadingConsent) {

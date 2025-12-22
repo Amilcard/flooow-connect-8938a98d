@@ -23,6 +23,7 @@ import { useSmartBack } from "@/hooks/useSmartBack";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { ParentalValidationModal } from "@/components/ParentalValidationModal";
 import { safeErrorMessage } from "@/utils/sanitize";
+import { logBookingConfirmed } from "@/lib/tracking";
 
 // Composants spécifiques Booking
 import { ChildCard } from "@/components/Booking/ChildCard";
@@ -397,6 +398,10 @@ const Booking = () => {
       }
 
       clearDraft();
+
+      // Track booking confirmation (Lucky Orange)
+      logBookingConfirmed(id);
+
       toast({
         title: "Demande envoyée",
         description: "Ta demande d'inscription a bien été transmise au club",
