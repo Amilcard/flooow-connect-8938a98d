@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Train, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ecoMobiliteImg from "@/assets/eco-mobilite.webp";
@@ -31,6 +32,11 @@ export const MobiliteCard = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       </div>
 
+      {/* Badge */}
+      <Badge className="absolute top-4 right-4 bg-green-500 hover:bg-green-600 text-white text-xs font-bold px-3 py-1.5 shadow-lg">
+        Éco-mobilité
+      </Badge>
+
       {/* Contenu centré */}
       <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
         {/* Icône */}
@@ -45,14 +51,14 @@ export const MobiliteCard = () => {
 
         {/* Sous-titre */}
         <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
-          On pense planète et santé.
+          Vélo, bus ou covoiturage : à vous de choisir
         </p>
 
-        {/* CTA discret */}
+        {/* CTA */}
         <Button
           className="bg-white/95 hover:bg-white text-accent-blue font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
         >
-          Voir les solutions
+          Trouver mon trajet
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

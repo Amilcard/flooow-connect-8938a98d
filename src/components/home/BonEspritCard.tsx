@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Award, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import actualitePrixImg from "@/assets/actualite-prix.webp";
@@ -32,6 +33,11 @@ export const BonEspritCard = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       </div>
 
+      {/* Badge */}
+      <Badge className="absolute top-4 right-4 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 py-1.5 shadow-lg">
+        Coup de cœur
+      </Badge>
+
       {/* Contenu centré */}
       <div className="absolute inset-0 flex flex-col items-center justify-end p-6 md:p-8 text-center">
         {/* Icône */}
@@ -44,12 +50,12 @@ export const BonEspritCard = () => {
           Clubs solidaires
         </h2>
 
-        {/* LOT 5 - T5_1: Sous-titre plus explicite */}
+        {/* Sous-titre */}
         <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
-          Mettez en lumière un coach, un bénévole ou un parent qui fait du bien autour de lui.
+          Un coach ou bénévole vous a marqué ? Dites-le
         </p>
 
-        {/* CTA discret */}
+        {/* CTA */}
         <Button
           className="bg-white/95 hover:bg-white text-accent-blue font-semibold px-6 py-5 h-auto rounded-full shadow-lg hover:shadow-xl transition-all group-hover:scale-105"
         >
