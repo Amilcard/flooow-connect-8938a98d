@@ -1,6 +1,6 @@
 /**
  * Modal ParentGate - Demande si l'utilisateur est un parent (18+) ou un mineur
- * Bloque le tracking Clarity pour les mineurs (COPPA/RGPD compliance)
+ * COPPA/RGPD compliance
  */
 
 import { useCallback } from 'react';

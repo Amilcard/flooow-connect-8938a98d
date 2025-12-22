@@ -1,11 +1,9 @@
 /**
  * Hook pour gérer le feedback utilisateur
  * Stocke les feedbacks dans localStorage
- * Émet des events Clarity
  */
 
 import { useState, useCallback } from 'react';
-import { trackClarityEvent, setClarityTag } from './useClarity';
 
 export interface FeedbackResponse {
   timestamp: string;
@@ -38,15 +36,10 @@ export function useFeedback(trigger: string) {
 
     setIsVisible(true);
     localStorage.setItem(LAST_SHOWN_KEY, new Date().toISOString());
-
-    // Track Clarity event
-    trackClarityEvent('feedback_open');
-    setClarityTag('feedback_trigger', trigger);
-  }, [canShowFeedback, trigger]);
+  }, [canShowFeedback]);
 
   const hideFeedback = useCallback(() => {
     setIsVisible(false);
-    trackClarityEvent('feedback_dismiss');
   }, []);
 
   const submitFeedback = useCallback((response: Omit<FeedbackResponse, 'timestamp' | 'trigger'>) => {
@@ -64,18 +57,6 @@ export function useFeedback(trigger: string) {
 
     setHasSubmitted(true);
     setIsVisible(false);
-
-    // Track Clarity events
-    trackClarityEvent('feedback_submit');
-    if (response.rating !== undefined) {
-      setClarityTag('feedback_rating', String(response.rating));
-    }
-    if (response.question1) {
-      setClarityTag('feedback_q1', response.question1);
-    }
-    if (response.question2) {
-      setClarityTag('feedback_q2', response.question2);
-    }
   }, [trigger]);
 
   const getAllFeedback = useCallback((): FeedbackResponse[] => {

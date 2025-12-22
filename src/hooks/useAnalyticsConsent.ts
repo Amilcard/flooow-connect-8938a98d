@@ -1,7 +1,6 @@
 /**
  * Hook pour gérer le consentement analytics (RGPD)
  * Stocke le consentement dans localStorage
- * Ne charge Clarity que si consent = granted
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -49,13 +48,6 @@ export function useAnalyticsConsent() {
   }, [setConsent]);
 
   const withdrawConsent = useCallback(() => {
-    // Remove Clarity cookies when withdrawing consent
-    document.cookie.split(';').forEach((cookie) => {
-      const name = cookie.split('=')[0].trim();
-      if (name.startsWith('_clck') || name.startsWith('_clsk')) {
-        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-      }
-    });
     setConsent('denied');
   }, [setConsent]);
 

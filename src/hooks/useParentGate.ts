@@ -1,7 +1,6 @@
 /**
  * Hook pour gérer la barrière parent/mineur
  * Stocke le type d'utilisateur dans localStorage
- * Empêche le tracking Clarity pour les mineurs
  */
 
 import { useState, useEffect, useCallback } from 'react';
