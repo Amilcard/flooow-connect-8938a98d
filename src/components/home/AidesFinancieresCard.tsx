@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, ArrowRight, Clock, Loader2 } from "lucide-react";
+import { Calculator, ArrowRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import aidesFinancieresImg from "@/assets/aides-financieres.webp";
 import { useEffect, useState, lazy, Suspense } from "react";
@@ -111,14 +111,9 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
             Mes aides
           </h2>
 
-          {/* Sous-titre */}
-          <p className={`text-sm md:text-base text-white/90 mb-2 max-w-sm leading-relaxed ${hasAids ? 'font-semibold text-yellow-300' : ''}`}>
+          {/* Sous-titre dynamique */}
+          <p className={`text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed ${hasAids ? 'font-semibold text-yellow-300' : ''}`}>
             {estimationText}
-          </p>
-
-          {/* Microcopy explicatif */}
-          <p className="text-xs text-white/70 mb-4">
-            6 questions · Sans inscription · Estimation immédiate
           </p>
 
           {/* CTA avec halo breathing (3 cycles max) + hover desktop */}
@@ -149,17 +144,11 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
                 </>
               ) : (
                 <>
-                  Découvrir mes aides
+                  Estimer mes aides
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}
             </Button>
-          </div>
-
-          {/* Chip durée */}
-          <div className="flex items-center gap-1.5 mt-3 text-white/80">
-            <Clock className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">2 min</span>
           </div>
         </div>
       </Card>
