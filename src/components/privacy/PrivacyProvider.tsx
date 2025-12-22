@@ -1,13 +1,11 @@
 /**
- * Provider qui gère la privacy: ParentGate, Consent, et Clarity
- * Encapsule toute la logique de tracking conditionnel
+ * Provider qui gère la privacy: ParentGate et Consent
+ * Encapsule toute la logique de consentement
  */
 
 import { createContext, useContext, ReactNode } from 'react';
 import { useParentGate, UserType } from '@/hooks/useParentGate';
 import { useAnalyticsConsent, ConsentStatus } from '@/hooks/useAnalyticsConsent';
-import { useClarity } from '@/hooks/useClarity';
-import { useClarityRoutingTags } from '@/hooks/useClarityRoutingTags';
 import { useGuidedTour, DISCOVERY_TOUR, TourState } from '@/hooks/useGuidedTour';
 import { ParentGateModal } from './ParentGateModal';
 import { ConsentBanner } from './ConsentBanner';
@@ -46,10 +44,9 @@ export function usePrivacy() {
 
 interface PrivacyProviderProps {
   children: ReactNode;
-  userId?: string;
 }
 
-export function PrivacyProvider({ children, userId }: PrivacyProviderProps) {
+export function PrivacyProvider({ children }: PrivacyProviderProps) {
   // Parent Gate state
   const {
     userType,
@@ -74,20 +71,6 @@ export function PrivacyProvider({ children, userId }: PrivacyProviderProps) {
 
   // Guided tour
   const tour = useGuidedTour(DISCOVERY_TOUR, isAdult && hasConsent);
-
-  // Load Clarity conditionally
-  useClarity({
-    isAdult,
-    hasConsent,
-    userId,
-  });
-
-  // Tag routes in Clarity
-  useClarityRoutingTags({
-    isAdult,
-    hasConsent,
-    tourState: tour.tourState,
-  });
 
   // Don't render anything until we've loaded the stored state
   if (isLoadingGate || isLoadingConsent) {

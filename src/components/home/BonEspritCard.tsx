@@ -45,8 +45,8 @@ export const BonEspritCard = () => {
         </h2>
 
         {/* LOT 5 - T5_1: Sous-titre plus explicite */}
-        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed line-clamp-2">
-          Mettez en lumière un coach, un bénévole, un parent ou un copain qui fait du bien autour de lui.
+        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
+          Mettez en lumière un coach, un bénévole ou un parent qui fait du bien autour de lui.
         </p>
 
         {/* CTA discret */}
