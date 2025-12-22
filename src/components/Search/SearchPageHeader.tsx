@@ -2,7 +2,6 @@
  * LOT 6 - SearchPageHeader Component
  * Sticky header with BackButton, SearchBar, and Filters button
  * NO decorative icons (only Search, X, and back arrow allowed)
- * Updated: 2025-11-21 - Sync fix for Lovable
  */
 
 import { useState } from 'react';
