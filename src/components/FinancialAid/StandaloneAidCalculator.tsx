@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { QF_BRACKETS } from "@/lib/qfBrackets";
 import { calculateAidFromQF } from "@/utils/aidesCalculator";
 import { safeErrorMessage } from '@/utils/sanitize';
+import { logAidsEstimationCompleted } from '@/lib/tracking';
 
 interface FinancialAid {
   aid_name: string;
@@ -111,6 +112,9 @@ export const StandaloneAidCalculator = () => {
 
       setAids(calculatedAids);
       setCalculated(true);
+
+      // Track aids estimation completion (Lucky Orange)
+      logAidsEstimationCompleted(result.economiePourcent);
 
       // Message adapté selon le résultat
       if (result.aide > 0) {

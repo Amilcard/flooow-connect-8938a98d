@@ -1,6 +1,7 @@
 import { useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { safeErrorMessage } from '@/utils/sanitize';
+import { trackFirstSearch, trackAidsEstimationCompleted, trackBookingConfirmed } from '@/utils/luckyOrange';
 
 /**
  * Helper pour le tracking des actions utilisateur
@@ -20,12 +21,21 @@ const getSessionId = (): string => {
 /**
  * Logger une recherche utilisateur
  */
+// Track if user has already performed a first search this session
+const FIRST_SEARCH_KEY = 'flooow_first_search_tracked';
+
 export const logSearch = async (params: {
   searchQuery?: string;
   filtersApplied: Record<string, unknown>;
   resultsCount: number;
 }) => {
   try {
+    // Track first search for Lucky Orange (once per session)
+    if (!sessionStorage.getItem(FIRST_SEARCH_KEY)) {
+      sessionStorage.setItem(FIRST_SEARCH_KEY, 'true');
+      trackFirstSearch();
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
 
     // Tables analytics non typées dans Supabase types générés
@@ -90,4 +100,18 @@ export const useActivityViewTracking = (
       });
     }
   }, [activityId, source]);
+};
+
+/**
+ * Log aids estimation completion (Lucky Orange event)
+ */
+export const logAidsEstimationCompleted = (savingsPercent?: number): void => {
+  trackAidsEstimationCompleted(savingsPercent);
+};
+
+/**
+ * Log booking confirmation (Lucky Orange event)
+ */
+export const logBookingConfirmed = (activityId?: string): void => {
+  trackBookingConfirmed(activityId);
 };
