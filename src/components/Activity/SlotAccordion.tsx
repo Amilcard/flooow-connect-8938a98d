@@ -164,7 +164,7 @@ export const SlotAccordion = ({
                 {periodLabel}
               </span>
               <span className="text-xs text-muted-foreground">
-                {availableCount}/{totalCount} créneaux disponibles
+                {availableCount}/{totalCount} créneau{totalCount > 1 ? 'x' : ''} disponible{availableCount > 1 ? 's' : ''}
               </span>
             </div>
           </div>

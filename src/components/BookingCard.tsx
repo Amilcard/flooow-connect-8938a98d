@@ -150,7 +150,7 @@ export const BookingCard = ({
                 />
                 {slots.length > 6 && (
                   <p className="text-xs text-center text-muted-foreground">
-                    +{slots.length - 6} autres créneaux disponibles
+                    +{slots.length - 6} autre{slots.length - 6 > 1 ? 's' : ''} créneau{slots.length - 6 > 1 ? 'x' : ''} disponible{slots.length - 6 > 1 ? 's' : ''}
                   </p>
                 )}
               </>
