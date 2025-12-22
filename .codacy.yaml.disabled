@@ -23,9 +23,6 @@ exclude_paths:
   - "fix_*.sql"
   - "audit_*.sql"
 
-  # Privacy components - intentional DOM manipulation patterns
-  - "src/hooks/useClarity.ts"
-
 # ===========================================
 # ENGINES - Disable overly strict minor rules
 # ===========================================

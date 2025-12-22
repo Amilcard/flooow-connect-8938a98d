@@ -36,7 +36,7 @@ interface ProfilLayoutProps {
   isLoading?: boolean;
 
   /**
-   * ID pour Usetiful tour
+   * ID pour le guided tour
    */
   tourId?: string;
 }

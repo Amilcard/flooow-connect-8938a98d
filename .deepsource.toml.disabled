@@ -16,7 +16,6 @@ name = "javascript"
 # Exclude files that trigger minor style issues (JS-0045, JS-0415)
 # These are intentional React patterns, not bugs
 exclude_patterns = [
-  "src/hooks/useClarity.ts",
   "src/components/tours/GuidedTourBubble.tsx",
   "src/components/privacy/**"
 ]
