@@ -7,7 +7,7 @@ interface PageHeaderProps {
   showBackButton?: boolean;
   backFallback?: string;
   rightContent?: ReactNode;
-  /** ID pour Usetiful tour */
+  /** ID pour le guided tour */
   tourId?: string;
 }
 

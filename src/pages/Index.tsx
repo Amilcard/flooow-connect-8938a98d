@@ -82,43 +82,6 @@ const Index = () => {
     };
   }, []);
 
-  // Auto-trigger Usetiful tours for first 8 visits
-  useEffect(() => {
-    const triggerUsetifulTour = () => {
-      // Get visit count from localStorage
-      const visitCount = Number.parseInt(localStorage.getItem('flooow_usetiful_visits', 10) || '0', 10);
-
-      // Only trigger for first 8 visits
-      if (visitCount < 8) {
-        // Increment visit count
-        localStorage.setItem('flooow_usetiful_visits', String(visitCount + 1));
-
-        // Wait for Usetiful to load, then trigger tours
-        const checkUsetiful = setInterval(() => {
-          if (typeof window !== 'undefined' && window.usetiful) {
-            clearInterval(checkUsetiful);
-
-            // Trigger the main tour (replace 'flooow-main-tour' with your actual tour ID from Usetiful dashboard)
-            try {
-              window.usetiful.start();
-            } catch {
-              // Usetiful tour failed silently
-            }
-          }
-        }, 500); // Check every 500ms
-
-        // Cleanup after 10 seconds
-        setTimeout(() => clearInterval(checkUsetiful), 10000);
-      }
-    };
-
-    // Trigger after component mount (delay to ensure page is ready)
-    const timeoutId = setTimeout(triggerUsetifulTour, 2000);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
-
-
   // Fetch user profile to check postal code
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile-index"],
