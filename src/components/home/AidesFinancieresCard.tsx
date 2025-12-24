@@ -107,7 +107,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
           </div>
 
           {/* Titre */}
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
             Mes aides
           </h2>
 
