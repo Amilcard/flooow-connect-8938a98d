@@ -34,7 +34,11 @@ declare global {
  * Check if Lucky Orange is loaded
  */
 function isLOAvailable(): boolean {
-  return typeof window !== 'undefined' && !!window.LO?.privacy;
+  const available = typeof window !== 'undefined' && !!window.LO?.privacy;
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    console.debug('[LO Debug] Lucky Orange available:', available);
+  }
+  return available;
 }
 
 /**
@@ -60,10 +64,16 @@ export function setLOConsent(
 
   // Always deny for minors or excluded routes
   if (isMinor || isExcludedRoute(pathname)) {
+    if (import.meta.env.DEV) {
+      console.debug('[LO Debug] Consent blocked:', { isMinor, pathname, excluded: isExcludedRoute(pathname) });
+    }
     window.LO!.privacy!.setConsentStatus(false);
     return;
   }
 
+  if (import.meta.env.DEV) {
+    console.debug('[LO Debug] Consent set:', hasConsent);
+  }
   window.LO!.privacy!.setConsentStatus(hasConsent);
 }
 
