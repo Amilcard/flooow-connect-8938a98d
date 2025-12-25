@@ -76,7 +76,7 @@ export const OnboardingCarousel = () => {
       className: "animate-in fade-in zoom-in duration-1000"
     },
     title: "Bienvenue parmi les Flooow-testeurs",
-    body: "Vous êtes officiellement nos cobayes préférés. Vous testez une version en cours de construction : il peut rester des bugs, mais vos retours nous aident à améliorer l'appli pour toutes les familles. Merci de jouer le jeu (et de nous le dire quand ça coince).",
+    body: "Vous testez une version en cours de construction : il peut rester des bugs, mais vos retours nous aident à améliorer l'appli pour toutes les familles. Merci de jouer le jeu (et de nous le dire quand ça coince).",
     cta: {
       label: "Continuer",
       action: "next_onboarding"
@@ -137,7 +137,7 @@ export const OnboardingCarousel = () => {
       loop: true,
       autoplay: true
     },
-    title: "Comprendre enfin vos aides",
+    title: "Comprendre vos aides",
     body: "Pass'Sport, CAF, aides locales... Flooow estime ce à quoi vous pourriez prétendre selon votre situation. Vous ne savez pas si vous avez des aides ? Flooow est là pour ça. Plus besoin de jongler entre les guichets.",
     cta: {
       label: "Suivant",
@@ -180,7 +180,7 @@ export const OnboardingCarousel = () => {
       autoplay: false,
       className: "animate-in slide-in-from-bottom duration-1000 max-w-[300px]"
     },
-    title: "Vous testez, nous corrigeons (promis, on essaie vite)",
+    title: "Vous testez, nous améliorons (promis, on essaie vite)",
     body: (
       <span>
         Vous naviguez, vous cherchez, vous cliquez… et si quelque chose vous semble bizarre, manquant ou incomplet, c'est normal : vous êtes en terrain d'expérimentation. Grâce à vos retours, nous ajustons les infos, les écrans et les parcours pour que les familles suivantes aient un trajet beaucoup plus fluide.

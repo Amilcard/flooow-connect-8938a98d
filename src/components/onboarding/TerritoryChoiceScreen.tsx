@@ -174,7 +174,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
 
         <div className="bg-muted/50 p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">
-            📍 Cette information permet d'adapter les activités et les aides à votre territoire. Vous pourrez la modifier plus tard.
+            Cette information permet d'adapter les activités et les aides à votre territoire. Vous pourrez la modifier plus tard.
           </p>
         </div>
 
@@ -226,7 +226,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
           {postalCode.length >= 2 && availableTerritories.length === 0 && (
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                📍 Ce code postal ne correspond pas encore à un territoire de test. Vous pouvez choisir un territoire manuellement ci-dessous.
+                Ce code postal ne correspond pas encore à un territoire de test. Vous pouvez choisir un territoire manuellement ci-dessous.
               </p>
             </div>
           )}
