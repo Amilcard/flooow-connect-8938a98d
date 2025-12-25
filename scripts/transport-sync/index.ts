@@ -6,11 +6,16 @@
 
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { getConfig } from './config';
 import { normalizeOffer } from './lib/normalize';
 import { createSyncClient, upsertOffers } from './lib/supabase';
 import { runReconciliation } from './lib/reconcile';
 import { RawTransportOffer, SyncResult } from './lib/types';
+
+// Static mock file path - hardcoded for security (no dynamic path traversal)
+const MOCK_FILE_NAME = 'offers_example.json' as const;
+const MOCKS_DIR_NAME = 'mocks' as const;
 
 /**
  * Synchronisation complète (upsert + réconciliation)
@@ -40,12 +45,21 @@ export const runSync = async (): Promise<SyncResult> => {
 
     if (isMockMode) {
       // Mode mock: lire mocks/offers_example.json
-      const mockPath = path.join(__dirname, 'mocks', 'offers_example.json');
-      if (!fs.existsSync(mockPath)) {
-        throw new Error(`Mock file not found: ${mockPath}`);
+      // Build path from constants (no dynamic user input)
+      const mockPath = path.join(__dirname, MOCKS_DIR_NAME, MOCK_FILE_NAME);
+
+      // Security: verify resolved path stays within expected directory
+      const resolvedPath = path.resolve(mockPath);
+      const expectedDir = path.resolve(__dirname, MOCKS_DIR_NAME);
+      if (!resolvedPath.startsWith(expectedDir + path.sep)) {
+        throw new Error(`Security: mock path outside expected directory`);
       }
-      rawOffers = JSON.parse(fs.readFileSync(mockPath, 'utf-8'));
-      console.log(`[Mock] Chargé ${rawOffers.length} offres depuis ${mockPath}`);
+
+      if (!fs.existsSync(resolvedPath)) {
+        throw new Error(`Mock file not found: ${resolvedPath}`);
+      }
+      rawOffers = JSON.parse(fs.readFileSync(resolvedPath, 'utf-8'));
+      console.log(`[Mock] Chargé ${rawOffers.length} offres depuis ${resolvedPath}`);
     } else {
       // Mode auto: TODO - appeler API externe (BlaBlaCar, SNCF, etc.)
       // Pour l'instant, on lève une erreur explicite
