@@ -96,7 +96,7 @@ export const EasyAccessScreen = ({ onNext, onSkip }: EasyAccessScreenProps) => {
           className="w-full h-14 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90"
           size="lg"
         >
-          C'est parti ! 🚀
+          C'est parti !
         </Button>
         
         <Button

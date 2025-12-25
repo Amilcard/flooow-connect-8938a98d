@@ -23,7 +23,7 @@ export const TerritoryCoveredScreen = ({ onNext }: TerritoryCoveredScreenProps) 
         {/* Titre */}
         <div className="text-center space-y-2">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            C'est parti ! 🎉
+            C'est parti !
           </h2>
           <p className="text-base text-muted-foreground max-w-sm mx-auto">
             Votre territoire est en zone de test, vous pouvez explorer toutes les fonctionnalités
