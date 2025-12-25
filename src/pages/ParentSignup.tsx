@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Check, X, Eye, EyeOff } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useSmartBack } from "@/hooks/useSmartBack";
-import { safeErrorMessage } from "@/utils/sanitize";
 
 const ParentSignup = () => {
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ const ParentSignup = () => {
       try {
         setFormData(JSON.parse(savedData));
       } catch (e) {
-        console.error(safeErrorMessage(e, 'Load signup draft'));
+        console.error("Failed to load draft", e);
       }
     }
 

@@ -1,3 +1,5 @@
+import { formatAgeRangeForCard } from './categoryMapping';
+
 /**
  * Utilitaires de formatage pour les activités
  * Source unique de vérité pour le formatage des données d'activités
@@ -19,18 +21,13 @@ export function formatAgeRange(
   ageMin?: number | null,
   ageMax?: number | null
 ): string | null {
-  // Validation des entrées
   if (ageMin === undefined || ageMin === null) return null;
   if (ageMax === undefined || ageMax === null) return null;
   if (ageMin < 0 || ageMax < 0) return null;
   if (ageMin > ageMax) return null;
-
-  // Formatage
-  if (ageMin === ageMax) {
-    return `${ageMin} ans`;
-  }
-
-  return `${ageMin}-${ageMax} ans`;
+  
+  // Utiliser le formateur avec découpage tranches 2 ans
+  return formatAgeRangeForCard(ageMin, ageMax);
 }
 
 /**

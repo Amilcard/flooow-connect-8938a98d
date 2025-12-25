@@ -1121,13 +1121,13 @@ const ActivityDetail = () => {
       </div>
 
 
-      {activity.organism_name && (activity.organism_email || activity.organism_phone) && (
+      {activity.organism_name && typeof activity.organism_phone === 'object' && activity.organism_phone !== null && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
           organizerName={activity.organism_name}
-          organizerEmail={activity.organism_email || ''}
-          organizerPhone={activity.organism_phone || undefined}
+          organizerEmail={'email' in activity.organism_phone ? String(activity.organism_phone.email) : ''}
+          organizerPhone={'phone' in activity.organism_phone ? String(activity.organism_phone.phone) : undefined}
           activityTitle={activity.title}
         />
       )}

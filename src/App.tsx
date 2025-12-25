@@ -7,22 +7,17 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
-import { useUsetiful } from "@/hooks/useUsetiful";
 
 // ============================================
 // IMPORTS STATIQUES - Pages critiques (chargement initial)
 // ============================================
 import Index from "./pages/Index";
 import Splash from "./pages/Splash";
+import Search from "./pages/Search";
+import ActivityDetail from "./pages/ActivityDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
-
-// ============================================
-// IMPORTS LAZY - Pages navigation depuis Home (code-splitting)
-// ============================================
-const Search = lazy(() => import("./pages/Search"));
-const ActivityDetail = lazy(() => import("./pages/ActivityDetail"));
 
 // ============================================
 // IMPORTS LAZY - Pages secondaires (code-splitting)
@@ -141,14 +136,6 @@ const PageLoader = () => (
   </div>
 );
 
-// ============================================
-// USETIFUL LOADER - Loads script from env var
-// ============================================
-const UsetifulLoader = ({ children }: { children: React.ReactNode }) => {
-  useUsetiful();
-  return <>{children}</>;
-};
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -158,7 +145,6 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <UsetifulLoader>
           <SkipToContent />
           <Suspense fallback={<PageLoader />}>
             <main id="main-content">
@@ -166,11 +152,9 @@ const App = () => (
               {/* Pages critiques (static imports) */}
               <Route path="/" element={<Splash />} />
               <Route path="/home" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-
-              {/* Pages navigation depuis Home (lazy loaded) */}
               <Route path="/search" element={<Search />} />
               <Route path="/activity/:id" element={<ActivityDetail />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
 
               {/* Auth & Onboarding (lazy) */}
@@ -319,7 +303,6 @@ const App = () => (
             </Routes>
             </main>
           </Suspense>
-          </UsetifulLoader>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

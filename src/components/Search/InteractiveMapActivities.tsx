@@ -2,7 +2,7 @@ import { useMemo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Activity } from "@/types/domain";
 import { MapPin, Loader2 } from "lucide-react";
-import { validateCoordinates, safeErrorMessage } from "@/utils/sanitize";
+import { validateCoordinates } from "@/utils/sanitize";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -122,7 +122,7 @@ export function InteractiveMapActivities({
           throw new Error("Token Google Maps non disponible");
         }
       } catch (err) {
-        console.error(safeErrorMessage(err, 'Load Google Maps'));
+        console.error('Error loading Google Maps:', err);
         setError("Erreur de configuration de la carte");
         setIsLoading(false);
       }

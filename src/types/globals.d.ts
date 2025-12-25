@@ -1,6 +1,6 @@
 /**
  * Global type declarations for third-party libraries
- * loaded via script tags (Google Maps, Usetiful, etc.)
+ * loaded via script tags (Google Maps, etc.)
  */
 
 // Google Maps types (subset used in the app)
@@ -87,17 +87,11 @@ interface GoogleMapsNamespace {
 }
 
 // Usetiful types
-interface UsetifulInstance {
-  start(): void;
-  reset(): void;
-  identify?(userId: string, traits?: Record<string, unknown>): void;
-}
 
 // Extend Window interface
 declare global {
   interface Window {
     google?: GoogleMapsNamespace;
-    usetiful?: UsetifulInstance;
   }
 }
 

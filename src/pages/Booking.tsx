@@ -399,7 +399,7 @@ const Booking = () => {
       clearDraft();
       toast({
         title: "Demande envoyée",
-        description: "Ta demande d'inscription a bien été transmise au club",
+        description: "Votre demande a bien été transmise à la structure",
       });
 
       navigate(`/booking-status/${id}?status=pending&bookingId=${data.booking?.id}`);
@@ -543,7 +543,7 @@ const Booking = () => {
               <Alert className="bg-green-50 border-green-200">
                 <Info className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
-                  <strong>Tes aides ont été prises en compte :</strong> {bookingState.totalAids.toFixed(2)}€ d'aides seront appliquées.
+                  <strong>Vos aides ont été prises en compte :</strong> {bookingState.totalAids.toFixed(2)}€ d'aides seront appliquées.
                 </AlertDescription>
               </Alert>
             )}

@@ -44,7 +44,7 @@ export const MobiliteCard = () => {
         </h2>
 
         {/* Sous-titre */}
-        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed">
+        <p className="text-sm md:text-base text-white/90 mb-6 max-w-sm leading-relaxed line-clamp-2 min-h-[2.5rem]">
           On pense planète et santé.
         </p>
 
