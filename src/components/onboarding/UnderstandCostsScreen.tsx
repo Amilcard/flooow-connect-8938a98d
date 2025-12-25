@@ -28,10 +28,10 @@ export const UnderstandCostsScreen = ({ onNext, onSkip }: UnderstandCostsScreenP
         {/* Titre */}
         <div className="text-center space-y-3">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Comprends ce que <br/>tu vas payer
+            Comprenez ce que <br/>vous allez payer
           </h2>
           <p className="text-base text-muted-foreground max-w-sm mx-auto">
-            Estime automatiquement tes aides financières
+            Estimez automatiquement vos aides financières
           </p>
         </div>
 

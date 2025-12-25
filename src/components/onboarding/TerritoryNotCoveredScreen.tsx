@@ -45,7 +45,7 @@ export const TerritoryNotCoveredScreen = ({ onDiscoverDemo, onNotifyMe }: Territ
               </div>
               <div>
                 <p className="font-semibold text-foreground">Explorer en mode démo</p>
-                <p className="text-xs text-muted-foreground">Découvre toutes les fonctionnalités</p>
+                <p className="text-xs text-muted-foreground">Découvrez toutes les fonctionnalités</p>
               </div>
             </div>
           </Card>

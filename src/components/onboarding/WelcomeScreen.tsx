@@ -22,7 +22,7 @@ export const WelcomeScreen = ({ onNext }: WelcomeScreenProps) => {
             Bienvenue sur Flooow
           </h1>
           <p className="text-lg md:text-xl text-primary font-medium max-w-md">
-            Des activités pour tous les jeunes, près de chez toi
+            Des activités pour tous les jeunes, près de chez vous
           </p>
         </div>
 

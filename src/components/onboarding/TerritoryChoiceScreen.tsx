@@ -165,16 +165,16 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         <div className="text-center space-y-3">
           <h2 className="text-2xl font-bold text-foreground">
-            Où habites-tu ou où tu souhaites tester Flooow ?
+            Où habitez-vous ou souhaitez-vous tester Flooow ?
           </h2>
           <p className="text-sm text-muted-foreground">
-            Saisis ton code postal pour découvrir ton territoire
+            Saisissez votre code postal pour découvrir votre territoire
           </p>
         </div>
 
         <div className="bg-muted/50 p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">
-            📍 Cette information permet d'adapter les activités et les aides à ton territoire. Tu pourras la modifier plus tard.
+            📍 Cette information permet d'adapter les activités et les aides à votre territoire. Vous pourrez la modifier plus tard.
           </p>
         </div>
 
@@ -235,7 +235,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
             <>
               <div className="relative flex items-center gap-3">
                 <div className="flex-1 h-px bg-border" />
-                <span className="text-sm text-muted-foreground">ou choisis directement</span>
+                <span className="text-sm text-muted-foreground">ou choisissez directement</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 
