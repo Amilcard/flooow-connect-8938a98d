@@ -155,72 +155,93 @@ const Index = () => {
   // Récupérer le territoire de l'utilisateur pour filtrer les activités
   const { territoryId } = useTerritory();
 
-  // Charger les activités : avec territoire si connecté, sinon toutes les activités
-  const { activities: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({
-    limit: 6,
-    territoryId: territoryId || undefined // undefined permet de charger toutes les activités si pas de territoire
+  // Charger un vivier large d'activités pour le split intelligent
+  const { activities: allHomeActivities = [], isLoading: loadingActivities, error: errorActivities } = useActivities({
+    limit: 30,
+    territoryId: territoryId || undefined
   });
 
-  // Petits budgets (max 400€)
-  const { activities: budgetActivities = [], isLoading: loadingBudget } = useActivities({
-    limit: 6,
-    territoryId: territoryId,
-    maxPrice: 400
-  });
-
-  // Sport & bien-être
-  const { activities: sportActivities = [], isLoading: loadingSport } = useActivities({
-    limit: 6,
-    territoryId: territoryId,
-    category: 'sport'
-  });
-
-  // Activités scolaires (pour le mix)
-  const { activities: scolaireActivities = [], isLoading: loadingScolaire } = useActivities({
-    limit: 4,
-    territoryId: territoryId,
-    periodType: 'scolaire'
-  });
-
-  // Activités vacances (pour le mix)
-  const { activities: vacancesActivities = [], isLoading: loadingVacances, error: errorRecommended } = useActivities({
-    limit: 4,
-    territoryId: territoryId,
-    periodType: 'vacances'
-  });
-
-  // Mix équilibré: alterner scolaire et vacances pour les recommandées
-  const loadingRecommended = loadingScolaire || loadingVacances;
-  const recommendedActivities = (() => {
-    const mixed = [];
-    const maxLen = Math.max(scolaireActivities.length, vacancesActivities.length);
-    for (let i = 0; i < maxLen && mixed.length < 6; i++) {
-      if (scolaireActivities[i]) mixed.push(scolaireActivities[i]);
-      if (vacancesActivities[i] && mixed.length < 6) mixed.push(vacancesActivities[i]);
+  // Split intelligent: 6 pour "À proximité" + 6 pour "Petits budgets" avec diversité
+  const { proximityActivities, budgetActivities } = (() => {
+    if (allHomeActivities.length === 0) {
+      return { proximityActivities: [], budgetActivities: [] };
     }
-    return mixed;
+
+    // Helper: extraire la catégorie principale
+    const getMainCategory = (a: typeof allHomeActivities[0]) =>
+      Array.isArray(a.categories) && a.categories.length > 0 ? a.categories[0] : 'other';
+
+    // Helper: extraire la tranche d'âge
+    const getAgeGroup = (a: typeof allHomeActivities[0]) => {
+      const min = a.age_min ?? 0;
+      if (min <= 5) return '0-5';
+      if (min <= 10) return '6-10';
+      if (min <= 14) return '11-14';
+      return '15+';
+    };
+
+    // Helper: sélection diversifiée (greedy)
+    const selectDiverse = (
+      candidates: typeof allHomeActivities,
+      count: number,
+      excludeIds: Set<string>
+    ) => {
+      const selected: typeof allHomeActivities = [];
+      const usedCategories = new Map<string, number>();
+      const usedAgeGroups = new Map<string, number>();
+      const usedPeriods = new Map<string, number>();
+
+      // Filtrer les exclus
+      const pool = candidates.filter(a => !excludeIds.has(a.id));
+
+      // Greedy: prioriser la diversité
+      for (const activity of pool) {
+        if (selected.length >= count) break;
+
+        const cat = getMainCategory(activity);
+        const age = getAgeGroup(activity);
+        const period = activity.period_type || 'unknown';
+
+        // Limiter à 2 max par catégorie, 2 par tranche d'âge, 3 par période
+        const catCount = usedCategories.get(cat) || 0;
+        const ageCount = usedAgeGroups.get(age) || 0;
+        const periodCount = usedPeriods.get(period) || 0;
+
+        if (catCount < 2 && ageCount < 2 && periodCount < 3) {
+          selected.push(activity);
+          usedCategories.set(cat, catCount + 1);
+          usedAgeGroups.set(age, ageCount + 1);
+          usedPeriods.set(period, periodCount + 1);
+        }
+      }
+
+      // Fallback: si pas assez, remplir sans contrainte
+      if (selected.length < count) {
+        for (const activity of pool) {
+          if (selected.length >= count) break;
+          if (!selected.find(s => s.id === activity.id)) {
+            selected.push(activity);
+          }
+        }
+      }
+
+      return selected;
+    };
+
+    // Carrousel 1: "À proximité" - diversité maximale
+    const proximity = selectDiverse(allHomeActivities, 6, new Set());
+    const proximityIds = new Set(proximity.map(a => a.id));
+
+    // Carrousel 2: "Petits budgets" - trier par prix, puis diversifier
+    const sortedByPrice = [...allHomeActivities].sort((a, b) => {
+      const priceA = a.price ?? 9999;
+      const priceB = b.price ?? 9999;
+      return priceA - priceB;
+    });
+    const budget = selectDiverse(sortedByPrice, 6, proximityIds);
+
+    return { proximityActivities: proximity, budgetActivities: budget };
   })();
-
-  // Deduplication: éviter les doublons entre sections
-  // On garde trace des IDs déjà affichés et on filtre les sections suivantes
-  const displayedIds = new Set<string>();
-
-  // Les activités recommandées sont affichées en premier
-  recommendedActivities.forEach(a => displayedIds.add(a.id));
-
-  // Filtrer les petits budgets pour exclure les doublons
-  const uniqueBudgetActivities = budgetActivities.filter(a => {
-    if (displayedIds.has(a.id)) return false;
-    displayedIds.add(a.id);
-    return true;
-  });
-
-  // Filtrer sport & bien-être pour exclure les doublons
-  const uniqueSportActivities = sportActivities.filter(a => {
-    if (displayedIds.has(a.id)) return false;
-    displayedIds.add(a.id);
-    return true;
-  });
 
 
 
@@ -283,15 +304,15 @@ const Index = () => {
 
 
 
-            {/* ========== SECTION 2: ACTIVITÉS RECOMMANDÉES ========== */}
-            {errorRecommended ? (
+            {/* ========== SECTION 2: ACTIVITÉS À PROXIMITÉ ========== */}
+            {errorActivities ? (
               <section className="py-6 px-4">
                 <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-center gap-3">
                   <div className="p-2 bg-red-100 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800">Impossible de charger les suggestions</p>
+                    <p className="text-sm font-medium text-red-800">Impossible de charger les activités</p>
                     <p className="text-xs text-red-600 mt-0.5">Vérifiez votre connexion ou réessayez plus tard.</p>
                   </div>
                   <button
@@ -305,39 +326,27 @@ const Index = () => {
             ) : (
               <section className="py-6" data-tour-id="home-reco-section">
                 <ActivityThematicSection
-                  title="Activités recommandées"
+                  title="Activités à proximité"
                   subtitle="Une sélection d'activités adaptées au profil de votre famille."
-                  activities={recommendedActivities}
+                  activities={proximityActivities}
                   showSeeAll
                   onActivityClick={handleActivityClick}
                   onSeeAllClick={() => navigate('/activities')}
                   isFirstSection
-                  isLoading={loadingRecommended}
+                  isLoading={loadingActivities}
                 />
               </section>
             )}
 
-            {/* ========== SECTION 3: PETITS BUDGETS ========== */}
+            {/* ========== SECTION 3: ACTIVITÉS PETITS BUDGETS ========== */}
             <section className="py-6">
               <ActivityThematicSection
-                title="Petits budgets"
+                title="Activités petits budgets"
                 subtitle="Des idées d'activités à coût maîtrisé."
-                activities={uniqueBudgetActivities}
+                activities={budgetActivities}
                 badge="Budget maîtrisé"
                 onActivityClick={handleActivityClick}
-                isLoading={loadingBudget}
-              />
-            </section>
-
-            {/* ========== SECTION 4: SPORT & BIEN-ÊTRE ========== */}
-            <section className="py-6">
-              <ActivityThematicSection
-                title="Sport & bien-être"
-                subtitle="Bouger, se défouler, se sentir bien."
-                activities={uniqueSportActivities}
-                badge="Sport"
-                onActivityClick={handleActivityClick}
-                isLoading={loadingSport}
+                isLoading={loadingActivities}
               />
             </section>
           </>
