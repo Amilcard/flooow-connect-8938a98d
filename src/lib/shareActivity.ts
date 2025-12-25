@@ -3,6 +3,7 @@
  */
 
 import { safeErrorMessage } from '@/utils/sanitize';
+import { safeOpenMailto } from '@/lib/safeNavigation';
 
 export interface ActivityShareData {
   id: string;
@@ -85,9 +86,8 @@ export const shareByEmail = (activity: ActivityShareData): void => {
   const url = getActivityUrl(activity.id);
   const subject = `Activité : ${activity.title}`;
   const body = getShareText(activity) + `\n\nPour plus d'informations : ${url}`;
-  
-  const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailtoUrl;
+
+  safeOpenMailto({ subject, body });
 };
 
 /**
