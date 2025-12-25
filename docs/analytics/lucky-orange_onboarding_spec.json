@@ -1,0 +1,142 @@
+{
+  "spec_date": "2025-12-25",
+  "status": "READY_FOR_DASHBOARD_CONFIG",
+  "announcements": [
+    {
+      "id": "LO_ANN_001",
+      "name": "Consentement analytics (phase de test)",
+      "type": "banner_or_modal",
+      "note": "ALREADY IMPLEMENTED via ConsentBanner.tsx - no Lucky Orange config needed",
+      "target_screens": ["ALL"],
+      "display_condition": {
+        "when": "consent == null",
+        "exclude_if": "userType == minor"
+      },
+      "trigger": { "kind": "on_page_load", "delay_ms": 800 },
+      "copy": {
+        "title": "Flooow est en phase de test",
+        "body": "Pour repérer ce qui bloque et améliorer l'application, on peut enregistrer des données de navigation (anonymisées autant que possible). Acceptes-tu de nous aider ?",
+        "primary_cta": "Oui, j'accepte",
+        "secondary_cta": "Non, merci"
+      },
+      "tracking_events": {
+        "on_show": "consent_banner_shown",
+        "on_accept": "consent_granted",
+        "on_decline": "consent_denied"
+      },
+      "frequency": "once_until_choice"
+    },
+    {
+      "id": "LO_ANN_002",
+      "name": "Mini-onboarding (3 points)",
+      "type": "modal",
+      "note": "TO CONFIGURE in Lucky Orange dashboard",
+      "target_screens": ["/home"],
+      "display_condition": {
+        "when": "consent == granted AND first_visit == true",
+        "exclude_if": "userType == minor"
+      },
+      "trigger": { "kind": "time_on_page", "seconds": 3 },
+      "copy": {
+        "title": "En 30 secondes, tu as l'essentiel",
+        "body": "1) Parcours les activités à proximité.\n2) Utilise la loupe pour filtrer.\n3) Ouvre une activité pour voir dates, aides et trajets.",
+        "primary_cta": "Compris",
+        "secondary_cta": "Plus tard"
+      },
+      "tracking_events": {
+        "on_show": "onboarding_quickstart_shown",
+        "on_close": "onboarding_quickstart_closed"
+      },
+      "frequency": "once_per_user_30d"
+    }
+  ],
+  "surveys": [
+    {
+      "id": "LO_SURV_001",
+      "name": "Question 1 clic - écran accueil",
+      "note": "TO CONFIGURE in Lucky Orange dashboard",
+      "target_screens": ["/home"],
+      "trigger": { "kind": "scroll_depth", "percent": 35 },
+      "question": "As-tu trouvé une activité qui te parle ?",
+      "type": "single_choice",
+      "answers": ["Oui", "Pas encore", "Je suis perdu"],
+      "tracking_events": { "on_answer": "survey_home_answered" },
+      "frequency": "max_once_per_user_14d"
+    },
+    {
+      "id": "LO_SURV_002",
+      "name": "Question friction - écran détail activité",
+      "note": "TO CONFIGURE in Lucky Orange dashboard",
+      "target_screens": ["/activity/*"],
+      "trigger": { "kind": "time_on_page", "seconds": 20 },
+      "question": "Qu'est-ce qui manque pour te décider ?",
+      "type": "free_text",
+      "tracking_events": { "on_answer": "survey_activity_detail_answered" },
+      "frequency": "max_once_per_user_30d"
+    }
+  ],
+  "events_to_track": [
+    { "event": "nav_view", "payload": ["route", "deviceType"], "implemented": false },
+    { "event": "home_carousel_seen", "payload": ["section"], "implemented": false },
+    { "event": "search_opened", "payload": [], "implemented": false },
+    { "event": "filters_opened", "payload": [], "implemented": false },
+    { "event": "filters_applied", "payload": ["count", "hasBudgetFilter"], "implemented": false },
+    { "event": "activity_opened", "payload": ["activityId"], "implemented": false },
+    { "event": "booking_cta_clicked", "payload": ["activityId"], "implemented": false },
+    { "event": "contact_opened", "payload": [], "implemented": false },
+    { "event": "search_completed_first", "payload": [], "implemented": true, "file": "src/utils/luckyOrange.ts" },
+    { "event": "aids_estimation_completed", "payload": ["savingsPercent"], "implemented": true, "file": "src/utils/luckyOrange.ts" },
+    { "event": "booking_confirmed", "payload": ["activityId"], "implemented": true, "file": "src/utils/luckyOrange.ts" }
+  ],
+  "screen_hints": [
+    {
+      "screen": "Accueil",
+      "route": "/home",
+      "hints": [
+        {
+          "hint_id": "H_HOME_01",
+          "anchor": "[data-tour-id='home-reco-section']",
+          "copy": "Ici, tu vois les activités proches de chez toi. Ouvre-en une pour voir les dates et les infos utiles."
+        },
+        {
+          "hint_id": "H_HOME_02",
+          "anchor": "second_carousel",
+          "copy": "Ces activités sont orientées petits budgets. Utile si tu veux limiter le coût."
+        }
+      ]
+    },
+    {
+      "screen": "Recherche",
+      "route": "/search",
+      "hints": [
+        {
+          "hint_id": "H_SEARCH_01",
+          "anchor": "filters_button",
+          "copy": "Utilise les filtres pour affiner. Le budget et l'âge donnent les meilleurs résultats."
+        }
+      ]
+    },
+    {
+      "screen": "Détail activité",
+      "route": "/activity/:id",
+      "hints": [
+        {
+          "hint_id": "H_DETAIL_01",
+          "anchor": "sessions_block",
+          "copy": "Choisis une session/dates, puis vérifie les infos (prix, aides, trajets)."
+        },
+        {
+          "hint_id": "H_DETAIL_02",
+          "anchor": "booking_cta",
+          "copy": "Quand tu es prêt, clique ici pour démarrer l'inscription."
+        }
+      ]
+    }
+  ],
+  "implementation_notes": {
+    "consent_banner": "Already implemented in React (ConsentBanner.tsx). No need for LO Announcement.",
+    "guided_tour": "Partially implemented via useGuidedTour hook + GuidedTourBubble component.",
+    "lo_announcements": "To be configured in Lucky Orange dashboard for additional onboarding.",
+    "lo_surveys": "To be configured in Lucky Orange dashboard for user feedback."
+  }
+}
