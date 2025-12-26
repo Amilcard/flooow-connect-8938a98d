@@ -101,19 +101,25 @@ const loadStateFromStorage = (): Partial<DemoCityState> => {
 const saveStateToStorage = (state: Partial<DemoCityState>): void => {
   try {
     if (state.realCity !== undefined) {
-      state.realCity 
-        ? localStorage.setItem(STORAGE_KEYS.REAL_CITY, state.realCity)
-        : localStorage.removeItem(STORAGE_KEYS.REAL_CITY);
+      if (state.realCity) {
+        localStorage.setItem(STORAGE_KEYS.REAL_CITY, state.realCity);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.REAL_CITY);
+      }
     }
     if (state.realPostalCode !== undefined) {
-      state.realPostalCode
-        ? localStorage.setItem(STORAGE_KEYS.REAL_POSTAL_CODE, state.realPostalCode)
-        : localStorage.removeItem(STORAGE_KEYS.REAL_POSTAL_CODE);
+      if (state.realPostalCode) {
+        localStorage.setItem(STORAGE_KEYS.REAL_POSTAL_CODE, state.realPostalCode);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.REAL_POSTAL_CODE);
+      }
     }
     if (state.demoCityKey !== undefined) {
-      state.demoCityKey
-        ? localStorage.setItem(STORAGE_KEYS.DEMO_CITY_KEY, state.demoCityKey)
-        : localStorage.removeItem(STORAGE_KEYS.DEMO_CITY_KEY);
+      if (state.demoCityKey) {
+        localStorage.setItem(STORAGE_KEYS.DEMO_CITY_KEY, state.demoCityKey);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.DEMO_CITY_KEY);
+      }
     }
     if (state.isDemoFlow !== undefined) {
       localStorage.setItem(STORAGE_KEYS.IS_DEMO_FLOW, String(state.isDemoFlow));
@@ -215,7 +221,11 @@ export const useDemoCity = (): DemoCityState & DemoCityActions & DemoCityHelpers
   const reset = useCallback(() => {
     setState(DEFAULT_STATE);
     Object.values(STORAGE_KEYS).forEach(key => {
-      try { localStorage.removeItem(key); } catch {}
+      try { 
+        localStorage.removeItem(key); 
+      } catch (error) {
+        // Silent fail intentionnel
+      }
     });
   }, []);
 
