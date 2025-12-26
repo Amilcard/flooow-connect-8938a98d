@@ -3,6 +3,7 @@
  */
 
 import { safeErrorMessage } from '@/utils/sanitize';
+import { safeOpenMailto } from '@/lib/safeNavigation';
 
 export interface EventShareData {
   id: string;
@@ -88,9 +89,8 @@ export const shareByEmail = (event: EventShareData): void => {
   const url = getEventUrl(event.id);
   const subject = `Événement : ${event.title}`;
   const body = getShareText(event) + `\n\nPour plus d'informations : ${url}`;
-  
-  const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailtoUrl;
+
+  safeOpenMailto({ subject, body });
 };
 
 /**

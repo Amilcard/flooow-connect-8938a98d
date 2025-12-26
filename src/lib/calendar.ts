@@ -36,13 +36,13 @@ export const exportToICal = (event: EventData): void => {
   
   const icalContent = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Lovable//Events//FR
+PRODID:-//Flooow//Events//FR
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Événement Territoire
 X-WR-TIMEZONE:Europe/Paris
 BEGIN:VEVENT
-UID:${event.id}@lovable.app
+UID:${event.id}@flooow.app
 DTSTAMP:${formatICalDate(new Date().toISOString())}
 DTSTART:${startDate}
 DTEND:${endDate}

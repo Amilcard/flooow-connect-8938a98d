@@ -8,6 +8,7 @@
 import { Phone, Mail, ExternalLink, Globe, Clock, Info } from 'lucide-react';
 import { FinancialAid } from '@/types/FinancialAid';
 import { Badge } from '@/components/ui/badge';
+import { safeOpenTel } from '@/lib/safeNavigation';
 
 interface AidCardProps {
   aid: FinancialAid;
@@ -21,7 +22,7 @@ export function AidCard({ aid }: AidCardProps) {
 
   const handlePhoneClick = (telHref: string | null) => {
     if (telHref) {
-      window.location.href = telHref;
+      safeOpenTel(telHref);
     }
   };
 

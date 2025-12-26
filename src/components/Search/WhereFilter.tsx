@@ -1,5 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CITY_EXAMPLE_PLACEHOLDER } from "@/config/territories";
 
 interface WhereFilterData {
   location?: string;
@@ -10,17 +11,15 @@ interface WhereFilterProps extends WhereFilterData {
   onChange: (updates: Partial<WhereFilterData>) => void;
 }
 
-const LOCATIONS = [
-  "Toutes communes",
-  "Saint-Étienne",
+// TODO: Remplacer par données dynamiques depuis Supabase/API
+// Ces villes sont des données de démo pour le pilote
+const DEMO_LOCATIONS = [
+  "Toutes les villes",
+  // Villes pilotes (démo)
   "La Ricamarie",
   "Firminy",
   "Saint-Chamond",
   "Rive-de-Gier",
-  "Beaubrun-Tarentaise",
-  "Côte-Chaude",
-  "Crêt de Roch",
-  "Montreynaud"
 ];
 
 export const WhereFilter = ({
@@ -32,24 +31,25 @@ export const WhereFilter = ({
     <div className="space-y-4">
       <div>
         <Label className="text-base font-semibold mb-3 block">Où ?</Label>
-        
+
         <Select value={location || "all"} onValueChange={(value) => onChange({ location: value === "all" ? undefined : value })}>
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionner une commune" />
+            <SelectValue placeholder={CITY_EXAMPLE_PLACEHOLDER} />
           </SelectTrigger>
           <SelectContent>
-            {LOCATIONS.map((loc) => (
-              <SelectItem key={loc} value={loc === "Toutes communes" ? "all" : loc}>
+            {DEMO_LOCATIONS.map((loc) => (
+              <SelectItem key={loc} value={loc === "Toutes les villes" ? "all" : loc}>
                 {loc}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <p className="text-xs text-muted-foreground mt-1">Ville ou code postal.</p>
       </div>
 
       <div>
         <Label className="text-sm font-medium mb-2 block">Temps de trajet maximum</Label>
-        
+
         <Select value={maxTravelTime || "any"} onValueChange={(value) => onChange({ maxTravelTime: value === "any" ? undefined : value })}>
           <SelectTrigger>
             <SelectValue placeholder="Peu importe" />

@@ -237,7 +237,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         'userTerritoryMode',
         'anonymous_children',
         'parent-signup-draft',
-        // Note: On garde 'onboardingViewCount' et 'flooow_usetiful_visits' pour ne pas relancer l'onboarding
+        // Note: On garde 'onboardingViewCount' pour ne pas relancer l'onboarding
       ];
 
       // Supprimer les clés explicites

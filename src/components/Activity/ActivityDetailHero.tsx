@@ -290,19 +290,6 @@ export const ActivityDetailHero = ({
             </Card>
           )}
 
-          {/* Infos pratiques rapides */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            {periodType && (
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Calendar size={14} className="text-primary" />
-                <span>
-                  {periodType === 'scolaire' ? 'Période scolaire' : 
-                   periodType === 'vacances' ? 'Vacances' : 
-                   periodType === 'annuel' ? 'Toute l\'année' : periodType}
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

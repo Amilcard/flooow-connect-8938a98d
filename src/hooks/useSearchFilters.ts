@@ -35,13 +35,19 @@ const PERIOD_LABELS: Record<string, string> = {
  * Parse quick filters from URL search params
  */
 const parseQuickFiltersFromURL = (searchParams: URLSearchParams): QuickFilters => {
-  const filters = { ...DEFAULT_QUICK_FILTERS };
-  QUICK_FILTER_KEYS.forEach(key => {
-    if (searchParams.get(key) === '1') {
-      filters[key] = true;
-    }
-  });
-  return filters;
+  const activeFilters = new Set(
+    QUICK_FILTER_KEYS.filter(key => searchParams.get(key) === '1')
+  );
+  return {
+    gratuit: activeFilters.has('gratuit'),
+    vacances_ete: activeFilters.has('vacances_ete'),
+    age_6_12: activeFilters.has('age_6_12'),
+    avec_aides: activeFilters.has('avec_aides'),
+    proche: activeFilters.has('proche'),
+    mercredi: activeFilters.has('mercredi'),
+    sport: activeFilters.has('sport'),
+    culture: activeFilters.has('culture'),
+  };
 };
 
 /**

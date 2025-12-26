@@ -1,10 +1,11 @@
 import { useMemo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Activity } from "@/types/domain";
-import { MapPin, Loader2 } from "lucide-react";
-import { validateCoordinates } from "@/utils/sanitize";
+import { MapPin, Loader2, Info } from "lucide-react";
+import { validateCoordinates, safeErrorMessage } from "@/utils/sanitize";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { DEFAULT_FRANCE_VIEW, CITY_PROMPT_TEXT } from "@/config/territories";
 
 // Couleurs par catégorie
 const CATEGORY_COLORS: Record<string, string> = {
@@ -47,8 +48,8 @@ interface InteractiveMapActivitiesProps {
  */
 export function InteractiveMapActivities({
   activities,
-  centerCoordinates = [45.4397, 4.3872], // Saint-Étienne par défaut
-  zoom = 13,
+  centerCoordinates = [DEFAULT_FRANCE_VIEW.center.lat, DEFAULT_FRANCE_VIEW.center.lng],
+  zoom = DEFAULT_FRANCE_VIEW.zoom,
   height = "400px",
 }: InteractiveMapActivitiesProps) {
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ export function InteractiveMapActivities({
           throw new Error("Token Google Maps non disponible");
         }
       } catch (err) {
-        console.error('Error loading Google Maps:', err);
+        console.error(safeErrorMessage(err, 'Load Google Maps'));
         setError("Erreur de configuration de la carte");
         setIsLoading(false);
       }
@@ -293,14 +294,12 @@ export function InteractiveMapActivities({
         className="flex flex-col items-center justify-center bg-muted/20 rounded-xl border-2 border-dashed border-muted"
         style={{ height }}
       >
-        <MapPin className="w-16 h-16 text-muted-foreground/40 mb-4" />
+        <Info className="w-16 h-16 text-muted-foreground/40 mb-4" />
         <h3 className="text-lg font-semibold text-foreground mb-2">
-          Aucune localisation disponible
+          {CITY_PROMPT_TEXT}
         </h3>
         <p className="text-sm text-muted-foreground text-center max-w-md">
-          Les activités trouvées n'ont pas d'informations géographiques.
-          <br />
-          Consultez la vue liste pour voir tous les résultats.
+          Sélectionnez une ville dans les filtres pour afficher les activités sur la carte.
         </p>
       </div>
     );

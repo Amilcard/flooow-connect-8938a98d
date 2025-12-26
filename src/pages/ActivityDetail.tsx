@@ -65,14 +65,14 @@ import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
 const getCategoryImage = (category: string): string => {
-  const categoryMap: Record<string, string> = {
-    Sport: activitySportImg,
-    Loisirs: activityLoisirsImg,
-    Vacances: activityVacancesImg,
-    Scolarité: activityCultureImg,
-    Culture: activityCultureImg,
-  };
-  return categoryMap[category] || activityLoisirsImg;
+  const categoryMap = new Map<string, string>([
+    ['Sport', activitySportImg],
+    ['Loisirs', activityLoisirsImg],
+    ['Vacances', activityVacancesImg],
+    ['Scolarité', activityCultureImg],
+    ['Culture', activityCultureImg],
+  ]);
+  return categoryMap.get(category) ?? activityLoisirsImg;
 };
 
 // ============================================================================
@@ -1121,13 +1121,13 @@ const ActivityDetail = () => {
       </div>
 
 
-      {activity.organism_name && (activity.organism_email || activity.organism_phone) && (
+      {activity.organism_name && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
           organizerName={activity.organism_name}
           organizerEmail={activity.organism_email || ''}
-          organizerPhone={activity.organism_phone || undefined}
+          organizerPhone={typeof activity.organism_phone === 'string' ? activity.organism_phone : undefined}
           activityTitle={activity.title}
         />
       )}

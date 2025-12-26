@@ -7,6 +7,7 @@
 
 import { MobilitySolution, TransportMode } from '@/types/Mobility';
 import { Globe, Phone, Mail, ExternalLink, Bus, Bike, Users, Car, Train, Smartphone, Info, Clock, LucideIcon } from 'lucide-react';
+import { safeOpenTel, safeOpenExternalUrl, safeOpenEmail } from '@/lib/safeNavigation';
 
 interface MobilitySolutionCardProps {
   solution: MobilitySolution;
@@ -60,18 +61,18 @@ export const MobilitySolutionCard = ({ solution }: MobilitySolutionCardProps) =>
       window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       // in_app_webview: ouvre dans la même fenêtre pour simuler une webview
-      window.location.href = url;
+      safeOpenExternalUrl(url);
     }
   };
 
   const handlePhoneClick = (telHref: string | null) => {
     if (telHref) {
-      window.location.href = telHref;
+      safeOpenTel(telHref);
     }
   };
 
   const handleEmailClick = (email: string) => {
-    window.location.href = `mailto:${email}`;
+    safeOpenEmail(email);
   };
 
   // Determine if we're in plain text mode (new structure) or legacy mode

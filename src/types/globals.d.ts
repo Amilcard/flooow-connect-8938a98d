@@ -86,8 +86,6 @@ interface GoogleMapsNamespace {
   };
 }
 
-// Usetiful types
-
 // Extend Window interface
 declare global {
   interface Window {

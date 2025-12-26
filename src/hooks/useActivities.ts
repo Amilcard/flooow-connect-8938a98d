@@ -180,7 +180,18 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
  * - Source unique de données
  * - Pas de jointure structures (évite erreur embed Supabase)
  * - Champ `is_published` (pas `published`) - colonne correcte en BDD
+ * - Timeout 10s pour éviter loading infini
  */
+// Timeout qui rejette après N ms
+const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(message)), ms)
+    )
+  ]);
+};
+
 export const useActivities = (filters?: ActivityFilters) => {
   const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
     queryKey: ["activities", filters],
@@ -188,7 +199,7 @@ export const useActivities = (filters?: ActivityFilters) => {
     gcTime: 600000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    retry: false,
+    retry: 1,
     queryFn: async () => {
       // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
       let query = supabase.from("activities").select("*").eq("is_published", true);
@@ -202,13 +213,19 @@ export const useActivities = (filters?: ActivityFilters) => {
       // Apply limit
       query = query.limit(filters?.limit || 50);
 
-      const { data, error } = await query.order("title", { ascending: true });
+      // Timeout réel 10s - rejette si Supabase ne répond pas
+      const { data, error } = await withTimeout(
+        query.order("title", { ascending: true }),
+        10000,
+        'Délai de chargement dépassé. Veuillez réessayer.'
+      );
 
       if (error) {
         console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
         throw error;
       }
 
+      // Retourne un tableau vide si pas de données (0 résultat ≠ loading)
       return {
         activities: processActivities(data || []),
         isRelaxed: false

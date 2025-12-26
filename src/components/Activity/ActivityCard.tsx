@@ -238,7 +238,7 @@ export const ActivityCard = ({
           {structureName && (
             <div className="flex items-start gap-1">
               <MapPin className="w-3 h-3 shrink-0 mt-0.5" aria-hidden="true" />
-              <span className="line-clamp-1 text-xs">
+              <span className="line-clamp-2 text-xs">
                 {structureName}
                 {structureAddress && " • " + getCity(structureAddress)}
               </span>

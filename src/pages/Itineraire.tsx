@@ -12,6 +12,7 @@ import PageLayout from "@/components/PageLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { safeErrorMessage } from "@/utils/sanitize";
+import { DEFAULT_FRANCE_VIEW, DEFAULT_CITY_ZOOM, CITY_PLACEHOLDER } from "@/config/territories";
 import {
   EcoMobilityBadges,
   logLocalTrip,
@@ -163,10 +164,9 @@ const Itineraire = () => {
 
   // Pre-fill departure from user profile or try geolocation
   useEffect(() => {
-    // Priority 1: User profile with postal code
-    if (userProfile?.postal_code && !departure) {
-      const city = userProfile.city || "Saint-Étienne";
-      setDeparture(`${userProfile.postal_code} ${city}`);
+    // Priority 1: User profile with postal code and city
+    if (userProfile?.postal_code && userProfile?.city && !departure) {
+      setDeparture(`${userProfile.postal_code} ${userProfile.city}`);
       return;
     }
 
@@ -266,8 +266,8 @@ const Itineraire = () => {
 
     const google = window.google;
     mapRef.current = new google.maps.Map(mapContainer.current, {
-      center: { lat: 45.4397, lng: 4.3872 }, // Saint-Étienne
-      zoom: 12,
+      center: DEFAULT_FRANCE_VIEW.center,
+      zoom: DEFAULT_CITY_ZOOM,
     });
 
     directionsRenderer.current = new google.maps.DirectionsRenderer({
@@ -400,15 +400,17 @@ const Itineraire = () => {
       const google = window.google;
       const directionsService = new google.maps.DirectionsService();
 
-      // Build smart origin/destination (don't append city if already contains it)
-      const normalizedDeparture = departure.toLowerCase();
-      const normalizedArrival = arrival.toLowerCase();
-      const origin = normalizedDeparture.includes('saint-étienne') || normalizedDeparture.includes('saint-etienne') || /\d{5}/.test(departure)
+      // Build smart origin/destination (append user's city if no postal code in address)
+      const userCity = userProfile?.city;
+      const hasPostalCode = (addr: string) => /\d{5}/.test(addr);
+      const hasCity = (addr: string, city?: string) => city && addr.toLowerCase().includes(city.toLowerCase());
+
+      const origin = hasPostalCode(departure) || hasCity(departure, userCity)
         ? departure
-        : `${departure}, Saint-Étienne`;
-      const destinationAddr = normalizedArrival.includes('saint-étienne') || normalizedArrival.includes('saint-etienne') || /\d{5}/.test(arrival)
+        : userCity ? `${departure}, ${userCity}` : departure;
+      const destinationAddr = hasPostalCode(arrival) || hasCity(arrival, userCity)
         ? arrival
-        : `${arrival}, Saint-Étienne`;
+        : userCity ? `${arrival}, ${userCity}` : arrival;
 
       const request = {
         origin,
@@ -545,7 +547,7 @@ const Itineraire = () => {
                 )}
                 <Input
                   id="departure"
-                  placeholder={geolocating ? "Localisation en cours..." : "Ex: 10 rue de la République, Saint-Étienne"}
+                  placeholder={geolocating ? "Localisation en cours..." : `Ex: 10 rue de la République, ${CITY_PLACEHOLDER}`}
                   value={departure}
                   onChange={(e) => {
                     setDeparture(e.target.value);
@@ -575,7 +577,7 @@ const Itineraire = () => {
                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-green-600" />
                 <Input
                   id="arrival"
-                  placeholder="Ex: Gymnase Jean Moulin, Saint-Étienne"
+                  placeholder={`Ex: Gymnase Jean Moulin, ${CITY_PLACEHOLDER}`}
                   value={arrival}
                   onChange={(e) => {
                     setArrival(e.target.value);
@@ -668,11 +670,11 @@ const Itineraire = () => {
                   <p className="text-xs font-medium text-purple-700 dark:text-purple-400 mb-2">💪 Bénéfices santé</p>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <span className="text-purple-600 dark:text-purple-400">
-                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN))} kcal
+                      ≈ {Math.round((routeData.duration?.value || 0) / 60 * (transportType === 'walk' ? CALORIES_WALK_PER_MIN : CALORIES_BIKE_PER_MIN) / 10) * 10} kcal
                     </span>
                     {transportType === 'walk' && (
                       <span className="text-purple-600 dark:text-purple-400">
-                        ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM)} pas
+                        ≈ {Math.round((routeData.distance?.value || 0) / 1000 * STEPS_PER_KM / 100) * 100} pas
                       </span>
                     )}
                   </div>

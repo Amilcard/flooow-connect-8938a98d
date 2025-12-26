@@ -1,125 +1,51 @@
-import { FlaskConical, RefreshCw, X } from 'lucide-react';
-
-interface DemoBannerProps {
-  /** Ville réelle de l'utilisateur */
-  realCity: string;
-  /** Ville de démo choisie */
-  demoCity: string;
-  /** Callback pour changer la ville de démo */
-  onChangeDemo: () => void;
-  /** Callback pour quitter le mode démo */
-  onExitDemo: () => void;
-  /** Variante compacte (pour mobile) */
-  compact?: boolean;
-}
-
 /**
- * Bandeau affiché en haut de l'écran quand l'utilisateur est en mode démo
- * Indique clairement le contexte pour éviter toute confusion
+ * DemoBanner - Bannière honnête pour le mode test
+ *
+ * Affichée en haut de l'écran quand isDemoFlow=true.
+ * Message clair: "Mode test - Catalogue d'exemple (territoire pilote)"
  */
-export const DemoBanner = ({ 
-  realCity, 
-  demoCity, 
-  onChangeDemo, 
-  onExitDemo,
-  compact = false
-}: DemoBannerProps) => {
-  if (compact) {
-    return (
-      <div className="bg-amber-50 border-b border-amber-200 px-3 py-1.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-amber-800">
-            <FlaskConical className="h-3.5 w-3.5" />
-            <span className="font-medium">Test</span>
-            <span className="hidden xs:inline">– Démo {demoCity}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button 
-              onClick={onChangeDemo}
-              className="p-1 text-amber-700 hover:bg-amber-100 rounded"
-              title="Changer de ville"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-            </button>
-            <button 
-              onClick={onExitDemo}
-              className="p-1 text-amber-700 hover:bg-amber-100 rounded"
-              title="Quitter la démo"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="bg-amber-50 border-b border-amber-200 px-4 py-2">
-      <div className="flex items-center justify-between max-w-5xl mx-auto">
-        {/* Info */}
-        <div className="flex items-center gap-2 text-sm text-amber-800">
-          <FlaskConical className="h-4 w-4 flex-shrink-0" />
-          <span className="font-medium">Mode test</span>
-          <span className="hidden sm:inline text-amber-700">
-            – Vous êtes à <strong>{realCity}</strong>, 
-            vous testez à <strong>{demoCity}</strong>
-          </span>
-          <span className="sm:hidden text-amber-700">
-            – Démo {demoCity}
-          </span>
-        </div>
-        
-        {/* Actions */}
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={onChangeDemo}
-            className="text-xs text-amber-700 hover:text-amber-900 hover:underline transition-colors"
-          >
-            Changer
-          </button>
-          <span className="text-amber-300">|</span>
-          <button 
-            onClick={onExitDemo}
-            className="text-xs text-amber-700 hover:text-amber-900 hover:underline transition-colors"
-          >
-            Quitter
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useNavigate } from 'react-router-dom';
+import { X, FlaskConical } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useTerritoryContext } from '@/contexts/TerritoryContext';
 
-/**
- * Version inline du banner pour les pages spécifiques
- * (aides, éco-mobilité, etc.)
- */
-interface DemoDisclaimerProps {
-  /** Type de contenu */
-  type: 'aids' | 'mobility' | 'activities';
-  /** Ville de démo */
-  demoCity?: string;
-}
+const DEMO_BANNER_TITLE = 'Mode test';
+const DEMO_BANNER_SUBTITLE = "Catalogue d'exemple (territoire pilote)";
 
-export const DemoDisclaimer = ({ type, demoCity }: DemoDisclaimerProps) => {
-  const messages = {
-    aids: 'Estimation de test – montants indicatifs selon votre situation et territoire.',
-    mobility: 'Suggestions indicatives – selon la ville de démo sélectionnée.',
-    activities: 'Catalogue d\'exemples – les activités affichées sont des démonstrations.',
+export function DemoBanner() {
+  const navigate = useNavigate();
+  const { exitDemoMode } = useTerritoryContext();
+
+  const handleExit = () => {
+    exitDemoMode();
+    navigate('/ma-ville', { replace: true });
   };
 
   return (
-    <div className="bg-amber-50/50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-      <p className="text-xs text-amber-700 flex items-center gap-1.5">
-        <FlaskConical className="h-3.5 w-3.5 flex-shrink-0" />
-        <span>
-          {messages[type]}
-          {demoCity && ` (${demoCity})`}
-        </span>
-      </p>
+    <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 shadow-md">
+      <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <FlaskConical className="w-5 h-5 flex-shrink-0" />
+          <div className="text-sm">
+            <span className="font-semibold">{DEMO_BANNER_TITLE}</span>
+            <span className="hidden sm:inline"> - {DEMO_BANNER_SUBTITLE}</span>
+            <span className="sm:hidden text-white/80"> - Exemple</span>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleExit}
+          className="text-white hover:bg-white/20 hover:text-white gap-1.5 px-2 sm:px-3"
+        >
+          <X className="w-4 h-4" />
+          <span className="hidden sm:inline">Quitter le mode test</span>
+          <span className="sm:hidden">Quitter</span>
+        </Button>
+      </div>
     </div>
   );
-};
+}
 
 export default DemoBanner;
