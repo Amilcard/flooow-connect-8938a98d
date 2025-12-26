@@ -162,8 +162,9 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <PrivacyProvider>
-                <AnalyticsLoader />
                 <UserTypeGate />
+                <ConsentBanner />
+                <AnalyticsLoader />
                 <SkipToContent />
                 <Suspense fallback={<PageLoader />}>
                   <main id="main-content">
@@ -327,7 +328,6 @@ const App = () => (
                   </main>
                 </Suspense>
               </PrivacyProvider>
-              <ConsentBanner />
             </BrowserRouter>
           </TooltipProvider>
         </TerritoryProvider>
