@@ -21,7 +21,7 @@ export const TerritoryNotCoveredScreen = ({ onDiscoverDemo, onNotifyMe }: Territ
         {/* Titre positif */}
         <div className="text-center space-y-2">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Bientôt disponible ! 🚀
+            Bientôt disponible !
           </h2>
           <p className="text-base text-muted-foreground max-w-sm mx-auto">
             Votre territoire n'est pas encore connecté, mais vous pouvez déjà participer
@@ -45,7 +45,7 @@ export const TerritoryNotCoveredScreen = ({ onDiscoverDemo, onNotifyMe }: Territ
               </div>
               <div>
                 <p className="font-semibold text-foreground">Explorer en mode démo</p>
-                <p className="text-xs text-muted-foreground">Découvre toutes les fonctionnalités</p>
+                <p className="text-xs text-muted-foreground">Découvrez toutes les fonctionnalités</p>
               </div>
             </div>
           </Card>

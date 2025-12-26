@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Check, X, Eye, EyeOff } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { Progress } from "@/components/ui/progress";
-import { safeErrorMessage } from "@/utils/sanitize";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ const Auth = () => {
           navigate("/", { replace: true });
         }
       } catch (error) {
-        console.error(safeErrorMessage(error, 'Auth check'));
+        console.error("Auth check error:", error);
       }
     };
     

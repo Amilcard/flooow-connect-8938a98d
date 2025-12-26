@@ -33,7 +33,7 @@ export const BetaWelcomeScreen = ({ onNext, onSkip }: BetaWelcomeScreenProps) =>
               Merci de faire partie des
             </p>
             <p className="text-2xl md:text-3xl font-bold text-primary">
-              Flooow testeurs ! 🎉
+              Flooow testeurs
             </p>
           </div>
         </div>

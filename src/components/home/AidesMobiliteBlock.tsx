@@ -37,7 +37,7 @@ export const AidesMobiliteBlock = () => {
       {!hasTerritory && (
         <Alert>
           <AlertDescription>
-            📍 Choisis ton territoire pour découvrir les aides et options de mobilité disponibles près de chez toi.
+            📍 Choisissez votre territoire pour découvrir les aides et options de mobilité près de chez vous.
           </AlertDescription>
         </Alert>
       )}

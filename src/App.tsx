@@ -7,6 +7,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
 import { SkipToContent } from "./components/a11y/SkipToContent";
+
+// Analytics (Lucky Orange)
+import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
+import { ConsentBanner } from "@/components/analytics/ConsentBanner";
+import { AnalyticsLoader } from "@/components/analytics/AnalyticsLoader";
+import { UserTypeGate } from "@/components/analytics/UserTypeGate";
+
+// Privacy & Territory
 import { PrivacyProvider } from "./components/privacy/PrivacyProvider";
 import { TerritoryProvider } from "./contexts/TerritoryContext";
 
@@ -15,15 +23,11 @@ import { TerritoryProvider } from "./contexts/TerritoryContext";
 // ============================================
 import Index from "./pages/Index";
 import Splash from "./pages/Splash";
+import Search from "./pages/Search";
+import ActivityDetail from "./pages/ActivityDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
-
-// ============================================
-// IMPORTS LAZY - Pages navigation depuis Home (code-splitting)
-// ============================================
-const Search = lazy(() => import("./pages/Search"));
-const ActivityDetail = lazy(() => import("./pages/ActivityDetail"));
 
 // ============================================
 // IMPORTS LAZY - Pages secondaires (code-splitting)
@@ -150,182 +154,185 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TerritoryProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <PrivacyProvider>
-          <SkipToContent />
-          <Suspense fallback={<PageLoader />}>
-            <main id="main-content">
-            <Routes>
-              {/* Pages critiques (static imports) */}
-              <Route path="/" element={<Splash />} />
-              <Route path="/home" element={<Index />} />
-              <Route path="/login" element={<Login />} />
+    <AnalyticsProvider>
+      <AuthProvider>
+        <TerritoryProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <PrivacyProvider>
+                <UserTypeGate />
+                <ConsentBanner />
+                <AnalyticsLoader />
+                <SkipToContent />
+                <Suspense fallback={<PageLoader />}>
+                  <main id="main-content">
+                    <Routes>
+                      {/* Pages critiques (static imports) */}
+                      <Route path="/" element={<Splash />} />
+                      <Route path="/home" element={<Index />} />
+                      <Route path="/search" element={<Search />} />
+                      <Route path="/activity/:id" element={<ActivityDetail />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<SignUp />} />
 
-              {/* Pages navigation depuis Home (lazy loaded) */}
-              <Route path="/search" element={<Search />} />
-              <Route path="/activity/:id" element={<ActivityDetail />} />
-              <Route path="/signup" element={<SignUp />} />
+                      {/* Auth & Onboarding (lazy) */}
+                      <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/auth" element={<Navigate to="/login" replace />} />
+                      <Route path="/profile-completion" element={<ProfileCompletion />} />
+                      <Route path="/profile-edit" element={<ProfileEdit />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
+                      <Route path="/inscription/parent" element={<ParentSignup />} />
+                      <Route path="/structure-auth" element={<StructureAuth />} />
 
-              {/* Auth & Onboarding (lazy) */}
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/auth" element={<Navigate to="/login" replace />} />
-              <Route path="/profile-completion" element={<ProfileCompletion />} />
-              <Route path="/profile-edit" element={<ProfileEdit />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/inscription/parent" element={<ParentSignup />} />
-              <Route path="/structure-auth" element={<StructureAuth />} />
+                      {/* Dashboard auto-redirect based on role */}
+                      <Route path="/dashboards" element={<DashboardRedirect />} />
+                      <Route path="/dashboard" element={<DashboardRedirect />} />
 
-              {/* Dashboard auto-redirect based on role */}
-              <Route path="/dashboards" element={<DashboardRedirect />} />
-              <Route path="/dashboard" element={<DashboardRedirect />} />
+                      {/* Superadmin Dashboard - Protected */}
+                      <Route path="/dashboard/superadmin" element={
+                        <RoleProtectedRoute allowedRoles={['superadmin']}>
+                          <SuperadminDashboard />
+                        </RoleProtectedRoute>
+                      } />
 
-              {/* Superadmin Dashboard - Protected */}
-              <Route path="/dashboard/superadmin" element={
-                <RoleProtectedRoute allowedRoles={['superadmin']}>
-                  <SuperadminDashboard />
-                </RoleProtectedRoute>
-              } />
+                      {/* Structure Dashboard - Protected */}
+                      <Route path="/dashboard/structure" element={
+                        <RoleProtectedRoute allowedRoles={['structure']}>
+                          <StructureDashboard />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="/structure/activity/new" element={
+                        <RoleProtectedRoute allowedRoles={['structure']}>
+                          <StructureActivityForm />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="/structure/activity/:id" element={
+                        <RoleProtectedRoute allowedRoles={['structure']}>
+                          <StructureActivityForm />
+                        </RoleProtectedRoute>
+                      } />
 
-              {/* Structure Dashboard - Protected */}
-              <Route path="/dashboard/structure" element={
-                <RoleProtectedRoute allowedRoles={['structure']}>
-                  <StructureDashboard />
-                </RoleProtectedRoute>
-              } />
-              <Route path="/structure/activity/new" element={
-                <RoleProtectedRoute allowedRoles={['structure']}>
-                  <StructureActivityForm />
-                </RoleProtectedRoute>
-              } />
-              <Route path="/structure/activity/:id" element={
-                <RoleProtectedRoute allowedRoles={['structure']}>
-                  <StructureActivityForm />
-                </RoleProtectedRoute>
-              } />
+                      {/* Collectivité Dashboard - Protected */}
+                      <Route path="/dashboard/collectivite" element={
+                        <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
+                          <CollectiviteDashboard />
+                        </RoleProtectedRoute>
+                      } />
 
-              {/* Collectivité Dashboard - Protected */}
-              <Route path="/dashboard/collectivite" element={
-                <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
-                  <CollectiviteDashboard />
-                </RoleProtectedRoute>
-              } />
+                      {/* Event Statistics - Protected */}
+                      <Route path="/event-statistics" element={
+                        <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
+                          <EventStatistics />
+                        </RoleProtectedRoute>
+                      } />
 
-              {/* Event Statistics - Protected */}
-              <Route path="/event-statistics" element={
-                <RoleProtectedRoute allowedRoles={['territory_admin', 'superadmin']}>
-                  <EventStatistics />
-                </RoleProtectedRoute>
-              } />
+                      {/* Financeur Dashboard - Protected */}
+                      <Route path="/dashboard/financeur" element={
+                        <RoleProtectedRoute allowedRoles={['partner', 'superadmin']}>
+                          <FinanceurDashboard />
+                        </RoleProtectedRoute>
+                      } />
 
-              {/* Financeur Dashboard - Protected */}
-              <Route path="/dashboard/financeur" element={
-                <RoleProtectedRoute allowedRoles={['partner', 'superadmin']}>
-                  <FinanceurDashboard />
-                </RoleProtectedRoute>
-              } />
+                      {/* Demo Dashboards - No auth required */}
+                      <Route path="/demo-dashboard" element={<DemoDashboard />} />
+                      <Route path="/demo/parent" element={<DemoParent />} />
+                      <Route path="/demo/collectivite" element={<DemoCollectivite />} />
+                      <Route path="/demo/financeur" element={<DemoFinanceur />} />
+                      <Route path="/demo/structure" element={<DemoStructure />} />
+                      <Route path="/demo/lemoine" element={<DemoLemoine />} />
 
-              {/* Demo Dashboards - No auth required */}
-              <Route path="/demo-dashboard" element={<DemoDashboard />} />
-              <Route path="/demo/parent" element={<DemoParent />} />
-              <Route path="/demo/collectivite" element={<DemoCollectivite />} />
-              <Route path="/demo/financeur" element={<DemoFinanceur />} />
-              <Route path="/demo/structure" element={<DemoStructure />} />
-              <Route path="/demo/lemoine" element={<DemoLemoine />} />
+                      {/* Activities & Booking */}
+                      <Route path="/activities" element={<Activities />} />
+                      <Route path="/search/filters" element={<SearchFilters />} />
+                      <Route path="/booking/:id" element={<Booking />} />
+                      <Route path="/booking-recap/:id" element={<BookingRecap />} />
+                      <Route path="/booking-status/:id" element={<BookingStatus />} />
+                      <Route path="/activites/carte" element={<ActivitiesMap />} />
+                      <Route path="/alternatives" element={<Alternatives />} />
 
-              {/* Activities & Booking */}
-              <Route path="/activities" element={<Activities />} />
-              <Route path="/search/filters" element={<SearchFilters />} />
-              <Route path="/booking/:id" element={<Booking />} />
-              <Route path="/booking-recap/:id" element={<BookingRecap />} />
-              <Route path="/booking-status/:id" element={<BookingStatus />} />
-              <Route path="/activites/carte" element={<ActivitiesMap />} />
-              <Route path="/alternatives" element={<Alternatives />} />
+                      {/* Account */}
+                      <Route path="/mon-compte" element={<MonCompte />} />
+                      <Route path="/mon-compte/informations" element={<MesInformations />} />
+                      <Route path="/mon-compte/enfants" element={<MesEnfants />} />
+                      <Route path="/mon-compte/reservations" element={<MesReservations />} />
+                      <Route path="/mon-compte/validations" element={<ValidationsParentales />} />
+                      <Route path="/mon-compte/notifications" element={<MesNotifications />} />
+                      <Route path="/mon-compte/sessions" element={<MesSessionsAccount />} />
+                      <Route path="/mon-compte/paiement" element={<MoyensPaiement />} />
+                      <Route path="/mon-compte/covoiturage" element={<MonCovoiturage />} />
+                      <Route path="/mon-compte/eligibilite" element={<ProfilEligibilite />} />
+                      <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
+                      <Route path="/mon-compte/parametres" element={<Parametres />} />
+                      <Route path="/mon-compte/lier-enfant" element={<LierEnfant />} />
 
-              {/* Account */}
-              <Route path="/mon-compte" element={<MonCompte />} />
-              <Route path="/mon-compte/informations" element={<MesInformations />} />
-              <Route path="/mon-compte/enfants" element={<MesEnfants />} />
-              <Route path="/mon-compte/reservations" element={<MesReservations />} />
-              <Route path="/mon-compte/validations" element={<ValidationsParentales />} />
-              <Route path="/mon-compte/notifications" element={<MesNotifications />} />
-              <Route path="/mon-compte/sessions" element={<MesSessionsAccount />} />
-              <Route path="/mon-compte/paiement" element={<MoyensPaiement />} />
-              <Route path="/mon-compte/covoiturage" element={<MonCovoiturage />} />
-              <Route path="/mon-compte/eligibilite" element={<ProfilEligibilite />} />
-              <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
-              <Route path="/mon-compte/parametres" element={<Parametres />} />
-              <Route path="/mon-compte/lier-enfant" element={<LierEnfant />} />
+                      {/* Aides & Finance */}
+                      <Route path="/aides" element={<Aides />} />
+                      <Route path="/aides/simulateur" element={<Simulateur />} />
+                      <Route path="/aides/simulateur-v2" element={<SimulateurV2 />} />
+                      <Route path="/aides-mobilite" element={<AidesMobilite />} />
 
-              {/* Aides & Finance */}
-              <Route path="/aides" element={<Aides />} />
-              <Route path="/aides/simulateur" element={<Simulateur />} />
-              <Route path="/aides/simulateur-v2" element={<SimulateurV2 />} />
-              <Route path="/aides-mobilite" element={<AidesMobilite />} />
+                      {/* Community & Events */}
+                      <Route path="/ma-ville-mon-actu" element={<MaVilleMonActu />} />
+                      <Route path="/mes-services" element={<MesServices />} />
+                      <Route path="/agenda" element={<Agenda />} />
+                      <Route path="/event/:id" element={<EventDetail />} />
+                      <Route path="/community" element={<Community />} />
+                      <Route path="/agenda-community" element={<AgendaCommunity />} />
+                      <Route path="/mes-evenements-favoris" element={<MesEvenementsFavoris />} />
 
-              {/* Community & Events */}
-              <Route path="/ma-ville-mon-actu" element={<MaVilleMonActu />} />
-              <Route path="/mes-services" element={<MesServices />} />
-              <Route path="/agenda" element={<Agenda />} />
-              <Route path="/event/:id" element={<EventDetail />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/agenda-community" element={<AgendaCommunity />} />
-              <Route path="/mes-evenements-favoris" element={<MesEvenementsFavoris />} />
+                      {/* Features */}
+                      <Route path="/univers" element={<Univers />} />
+                      <Route path="/chat" element={<Chat />} />
+                      <Route path="/eco-mobilite" element={<EcoMobilite />} />
+                      <Route path="/bons-plans-locaux" element={<BonsPlansLocaux />} />
+                      <Route path="/inclusivite" element={<Inclusivite />} />
+                      <Route path="/support" element={<Support />} />
+                      <Route path="/faq" element={<FAQ />} />
+                      <Route path="/bon-esprit" element={<BonEsprit />} />
+                      <Route path="/contact" element={<Contact />} />
 
-              {/* Features */}
-              <Route path="/univers" element={<Univers />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/eco-mobilite" element={<EcoMobilite />} />
-              <Route path="/bons-plans-locaux" element={<BonsPlansLocaux />} />
-              <Route path="/inclusivite" element={<Inclusivite />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/bon-esprit" element={<BonEsprit />} />
-              <Route path="/contact" element={<Contact />} />
+                      {/* Child & Family */}
+                      <Route path="/child-signup" element={<ChildSignup />} />
+                      <Route path="/child-self-signup" element={<ChildSelfSignup />} />
+                      <Route path="/validate-child-signup" element={<ValidateChildSignup />} />
+                      <Route path="/validations/:bookingId" element={<ValidationParentale />} />
+                      <Route path="/dashboard/enfant" element={<ChildDashboard />} />
+                      <Route path="/inscription/saisir-code-parent" element={<SaisirCodeParent />} />
+                      <Route path="/inscription/generer-code-enfant" element={<GenererCodeEnfant />} />
+                      <Route path="/inscription/en-attente" element={<EnAttenteValidation />} />
 
-              {/* Child & Family */}
-              <Route path="/child-signup" element={<ChildSignup />} />
-              <Route path="/child-self-signup" element={<ChildSelfSignup />} />
-              <Route path="/validate-child-signup" element={<ValidateChildSignup />} />
-              <Route path="/validations/:bookingId" element={<ValidationParentale />} />
-              <Route path="/dashboard/enfant" element={<ChildDashboard />} />
-              <Route path="/inscription/saisir-code-parent" element={<SaisirCodeParent />} />
-              <Route path="/inscription/generer-code-enfant" element={<GenererCodeEnfant />} />
-              <Route path="/inscription/en-attente" element={<EnAttenteValidation />} />
+                      {/* Transport */}
+                      <Route path="/covoiturage" element={<Covoiturage />} />
+                      <Route path="/itineraire" element={<Itineraire />} />
 
-              {/* Transport */}
-              <Route path="/covoiturage" element={<Covoiturage />} />
-              <Route path="/itineraire" element={<Itineraire />} />
+                      {/* Territory */}
+                      <Route path="/ma-ville" element={<MaVille />} />
+                      <Route path="/territoire-non-couvert" element={<TerritoireNonCouvert />} />
 
-              {/* Territory */}
-              <Route path="/ma-ville" element={<MaVille />} />
-              <Route path="/territoire-non-couvert" element={<TerritoireNonCouvert />} />
+                      {/* Admin */}
+                      <Route path="/admin/sessions" element={<AdminSessions />} />
 
-              {/* Admin */}
-              <Route path="/admin/sessions" element={<AdminSessions />} />
+                      {/* Legal */}
+                      <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/legal/rgpd" element={<RGPD />} />
+                      <Route path="/legal/cookies" element={<Cookies />} />
+                      <Route path="/legal/mentions" element={<MentionsLegales />} />
+                      <Route path="/legal/cgu" element={<CGU />} />
 
-              {/* Legal */}
-              <Route path="/legal/privacy" element={<PrivacyPolicy />} />
-              <Route path="/legal/rgpd" element={<RGPD />} />
-              <Route path="/legal/cookies" element={<Cookies />} />
-              <Route path="/legal/mentions" element={<MentionsLegales />} />
-              <Route path="/legal/cgu" element={<CGU />} />
-
-              {/* Catch-all */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            </main>
-          </Suspense>
-          </PrivacyProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-      </TerritoryProvider>
-    </AuthProvider>
+                      {/* Catch-all */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                </Suspense>
+              </PrivacyProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </TerritoryProvider>
+      </AuthProvider>
+    </AnalyticsProvider>
   </QueryClientProvider>
 );
 

@@ -12,7 +12,6 @@ import { useToast } from "@/hooks/use-toast";
 import { BackButton } from "@/components/BackButton";
 import { FinancialAidSelector } from "@/components/activities/FinancialAidSelector";
 import { LoadingState } from "@/components/LoadingState";
-import { safeErrorMessage } from "@/utils/sanitize";
 
 const StructureActivityForm = () => {
   const { id } = useParams(); // If editing
@@ -89,7 +88,7 @@ const StructureActivityForm = () => {
           ageMin: data.age_min ? String(data.age_min) : "",
           ageMax: data.age_max ? String(data.age_max) : "",
           address: userStructure.address || "",
-          postalCode: "" // Will be fetched from territory
+          postalCode: userStructure.territory_id ? "" : "" // Will be fetched from territory
         });
 
         // Parse accepts_aid_types (it's jsonb, could be array or string array)
@@ -169,7 +168,7 @@ const StructureActivityForm = () => {
 
       navigate("/dashboard/structure");
     } catch (error: any) {
-      console.error(safeErrorMessage(error, 'Activity save'));
+      console.error("Activity save error:", error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible d'enregistrer l'activité",

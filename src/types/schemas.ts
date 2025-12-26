@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type { Activity, ActivityRaw } from './domain';
 import { getActivityImage } from '@/lib/imageMapping';
 import { safeErrorMessage } from '@/utils/sanitize';
+import { formatAgeRangeForCard } from '@/utils/categoryMapping';
 
 /**
  * Schema Zod pour validation des créneaux horaires (availability_slots)
@@ -165,7 +166,7 @@ export function toActivity(raw: ActivityRaw): Activity {
     id: raw.id,
     title: base.title,
     image: base.image,
-    ageRange: `${base.ageMin}-${base.ageMax} ans`,
+    ageRange: formatAgeRangeForCard(base.ageMin, base.ageMax),
     ageMin: base.ageMin,
     ageMax: base.ageMax,
     category: base.category,

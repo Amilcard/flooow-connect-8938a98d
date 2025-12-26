@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Building2 } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { safeErrorMessage } from "@/utils/sanitize";
 
 const StructureAuth = () => {
   const navigate = useNavigate();
@@ -109,7 +108,7 @@ const StructureAuth = () => {
 
       navigate("/dashboard/structure");
     } catch (error: any) {
-      console.error(safeErrorMessage(error, 'Structure signup'));
+      console.error("Structure signup error:", error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de créer le compte",

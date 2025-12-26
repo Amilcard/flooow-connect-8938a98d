@@ -28,7 +28,7 @@ export const FindActivitiesScreen = ({ onNext, onSkip }: FindActivitiesScreenPro
         {/* Titre */}
         <div className="text-center space-y-3">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Trouve des activités <br/>près de chez toi
+            Trouvez des activités <br/>près de chez vous
           </h2>
           <p className="text-base text-muted-foreground max-w-sm mx-auto">
             Sport, culture, loisirs, vacances... pour enfants et ados
@@ -43,7 +43,7 @@ export const FindActivitiesScreen = ({ onNext, onSkip }: FindActivitiesScreenPro
                 <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <p className="text-sm font-medium text-foreground">
-                Activités à proximité de ton domicile
+                Activités à proximité de votre domicile
               </p>
             </div>
           </Card>
