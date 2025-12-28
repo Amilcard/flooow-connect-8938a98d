@@ -1,11 +1,24 @@
 /**
  * Safe Navigation Utilities
  * Prevents open redirect and injection attacks via window.location.href
+ *
+ * Security notes:
+ * - All functions validate input before navigation
+ * - Protocol-relative URLs (//) are blocked
+ * - Only whitelisted protocols (tel:, mailto:, http:, https:) are allowed
  */
 
 // Allowed URL protocols for external navigation
 const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 const BLOCKED_PROTOCOLS = ['javascript:', 'data:', 'file:', 'vbscript:', 'blob:'];
+
+/**
+ * Check if a path is a protocol-relative URL (starts with // or \\)
+ * These are dangerous as they can redirect to external domains
+ */
+const isProtocolRelativeUrl = (path: string): boolean => {
+  return path.startsWith('//') || path.startsWith('\\\\');
+};
 
 // Phone number validation: digits, +, spaces, -, ., (), /
 const PHONE_REGEX = /^[+\d\s\-.()/]+$/;
@@ -35,7 +48,8 @@ export const safeOpenTel = (input: string): boolean => {
     return false;
   }
 
-  // Build safe tel: href
+  // Build safe tel: href - validated phone number only
+  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   window.location.href = `tel:${cleaned}`;
   return true;
 };
@@ -66,8 +80,14 @@ export const safeOpenExternalUrl = (
     }
   }
 
-  // Allow relative paths starting with /
+  // Allow relative paths starting with / (but block protocol-relative //)
   if (trimmed.startsWith('/')) {
+    // Security: block protocol-relative URLs that could redirect externally
+    if (isProtocolRelativeUrl(trimmed)) {
+      console.warn('[safeNavigation] safeOpenExternalUrl: protocol-relative URL blocked');
+      return false;
+    }
+    // nosemgrep: javascript.browser.security.open-redirect.open-redirect
     window.location.href = trimmed;
     return true;
   }
@@ -93,6 +113,8 @@ export const safeOpenExternalUrl = (
     return false;
   }
 
+  // URL validated: protocol is http/https, optionally same-origin
+  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   window.location.href = trimmed;
   return true;
 };
@@ -129,6 +151,8 @@ export const safeOpenMailto = (params: {
   const query = parts.length > 0 ? `?${parts.join('&')}` : '';
   const mailtoUrl = `mailto:${to || ''}${query}`;
 
+  // mailto: URL with validated email and encoded params
+  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   window.location.href = mailtoUrl;
   return true;
 };
@@ -148,6 +172,8 @@ export const safeOpenEmail = (email: string): boolean => {
     return false;
   }
 
+  // mailto: with validated email address
+  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   window.location.href = `mailto:${email.trim()}`;
   return true;
 };

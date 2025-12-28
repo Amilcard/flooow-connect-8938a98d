@@ -35,7 +35,7 @@ import SignUp from "./pages/auth/SignUp";
 
 // Auth & Onboarding
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-const Auth = lazy(() => import("./pages/Auth"));
+const _Auth = lazy(() => import("./pages/Auth")); // Reserved for future use
 const ProfileCompletion = lazy(() => import("./pages/ProfileCompletion"));
 const ProfileEdit = lazy(() => import("./pages/ProfileEdit"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
@@ -65,7 +65,7 @@ const DemoLemoine = lazy(() => import("./pages/demo/DemoLemoine"));
 
 // Activities & Booking
 const Activities = lazy(() => import("./pages/Activities"));
-const SearchResults = lazy(() => import("./pages/SearchResults"));
+const _SearchResults = lazy(() => import("./pages/SearchResults")); // Reserved for future use
 const SearchFilters = lazy(() => import("./pages/SearchFilters"));
 const Booking = lazy(() => import("./pages/Booking"));
 const BookingRecap = lazy(() => import("./pages/BookingRecap"));

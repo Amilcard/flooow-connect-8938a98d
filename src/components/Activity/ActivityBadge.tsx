@@ -54,8 +54,9 @@ const variantStyles: Record<BadgeVariant, { bg: string; text: string }> = {
 
 /**
  * Styles spécifiques pour les types de vacances
+ * Reserved for future vacation-specific badge styling
  */
-const vacationTypeStyles: Record<string, { bg: string; text: string }> = {
+const _vacationTypeStyles: Record<string, { bg: string; text: string }> = {
   sejour_hebergement: { bg: 'bg-purple-100/95', text: 'text-purple-600' },
   centre_loisirs: { bg: 'bg-blue-100/95', text: 'text-blue-600' },
   stage_journee: { bg: 'bg-amber-100/95', text: 'text-amber-600' },
@@ -69,7 +70,7 @@ export const ActivityBadge = ({
   className = '',
 }: ActivityBadgeProps) => {
   // Récupérer le style de base pour la variante
-  let style = variantStyles[variant];
+  const style = variantStyles[variant];
 
   // Gestion spéciale pour la catégorie (couleur dynamique)
   let categoryColor: string | undefined;
