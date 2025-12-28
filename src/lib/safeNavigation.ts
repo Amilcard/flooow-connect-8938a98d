@@ -49,8 +49,7 @@ export const safeOpenTel = (input: string): boolean => {
   }
 
   // Build safe tel: href - validated phone number only
-  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
-  window.location.href = `tel:${cleaned}`;
+  window.location.href = `tel:${cleaned}`; // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   return true;
 };
 
@@ -87,8 +86,7 @@ export const safeOpenExternalUrl = (
       console.warn('[safeNavigation] safeOpenExternalUrl: protocol-relative URL blocked');
       return false;
     }
-    // nosemgrep: javascript.browser.security.open-redirect.open-redirect
-    window.location.href = trimmed;
+    window.location.href = trimmed; // nosemgrep: javascript.browser.security.open-redirect.open-redirect
     return true;
   }
 
@@ -114,8 +112,7 @@ export const safeOpenExternalUrl = (
   }
 
   // URL validated: protocol is http/https, optionally same-origin
-  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
-  window.location.href = trimmed;
+  window.location.href = trimmed; // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   return true;
 };
 
@@ -152,8 +149,7 @@ export const safeOpenMailto = (params: {
   const mailtoUrl = `mailto:${to || ''}${query}`;
 
   // mailto: URL with validated email and encoded params
-  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
-  window.location.href = mailtoUrl;
+  window.location.href = mailtoUrl; // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   return true;
 };
 
@@ -173,7 +169,6 @@ export const safeOpenEmail = (email: string): boolean => {
   }
 
   // mailto: with validated email address
-  // nosemgrep: javascript.browser.security.open-redirect.open-redirect
-  window.location.href = `mailto:${email.trim()}`;
+  window.location.href = `mailto:${email.trim()}`; // nosemgrep: javascript.browser.security.open-redirect.open-redirect
   return true;
 };
