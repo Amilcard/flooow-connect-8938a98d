@@ -55,10 +55,12 @@ export const runSync = async (): Promise<SyncResult> => {
         throw new Error(`Security: mock path outside expected directory`);
       }
 
-      if (!fs.existsSync(resolvedPath)) {
+      // nosemgrep: javascript.lang.security.audit.path-traversal.path-traversal-non-literal
+      if (!fs.existsSync(resolvedPath)) { // Path validated above with startsWith check
         throw new Error(`Mock file not found: ${resolvedPath}`);
       }
-      rawOffers = JSON.parse(fs.readFileSync(resolvedPath, 'utf-8'));
+      // nosemgrep: javascript.lang.security.audit.path-traversal.path-traversal-non-literal
+      rawOffers = JSON.parse(fs.readFileSync(resolvedPath, 'utf-8')); // Path validated above
       console.log(`[Mock] Chargé ${rawOffers.length} offres depuis ${resolvedPath}`);
     } else {
       // Mode auto: TODO - appeler API externe (BlaBlaCar, SNCF, etc.)
