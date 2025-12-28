@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCategoryStyle } from "@/constants/categories";
 import { getActivityImage, optimizeSupabaseImage } from "@/lib/imageMapping";
-import { formatAgeRangeShort, formatAidLabel } from "@/utils/activityFormatters";
+import { formatAidLabel } from "@/utils/activityFormatters";
 
 // HELPERS: Reduce cognitive complexity by extracting badge rendering logic
 
@@ -79,19 +79,19 @@ interface ActivityCardProps {
 export const ActivityCard = ({
   title,
   image,
-  distance,
+  _distance,
   ageRange,
   category,
   price,
   hasAccessibility = false,
   paymentEchelonned = false,
-  hasFinancialAid = false,
+  _hasFinancialAid = false,
   periodType,
   structureName,
   structureAddress,
-  estimatedAidAmount,
+  _estimatedAidAmount,
   aidesEligibles = [],
-  mobility,
+  _mobility,
   onRequestClick,
   vacationType,
   priceUnit,
@@ -107,7 +107,7 @@ export const ActivityCard = ({
   const displayImage = optimizeSupabaseImage(image, { width: 320, height: 400 }) || fallbackImage;
 
   const priceAfterAids = price > 100 ? Math.round(price * 0.7) : price;
-  const hasAids = priceAfterAids < price || aidesEligibles.length > 0;
+  const _hasAids = priceAfterAids < price || aidesEligibles.length > 0;
 
   // Extract city from address
   const getCity = (address: string) => {
