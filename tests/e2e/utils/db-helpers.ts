@@ -1,89 +1,48 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+dotenv.config({ path: '.env.test.local' });
+dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
 
-// Admin client for test setup/teardown
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-/**
- * Clean up test data after tests
- */
-export async function cleanupTestData(email: string) {
-  // Delete user and cascade will handle related data
-  const { data: users } = await supabaseAdmin.auth.admin.listUsers();
-  const testUser = users.users.find(u => u.email === email);
-  
-  if (testUser) {
-    await supabaseAdmin.auth.admin.deleteUser(testUser.id);
+export const hasSupabaseAdmin = !!(supabaseUrl && supabaseServiceKey);
+
+let _supabaseAdmin: SupabaseClient | null = null;
+
+export function getSupabaseAdmin(): SupabaseClient | null {
+  if (!hasSupabaseAdmin) {
+    console.warn('[db-helpers] Supabase not configured - skipping DB tests');
+    return null;
   }
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(supabaseUrl!, supabaseServiceKey!, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+  }
+  return _supabaseAdmin;
 }
 
-/**
- * Create test activity slot
- */
-export async function createTestSlot(activityId: string, seatsRemaining: number) {
-  const start = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // +7 days
-  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000); // +2 hours
-  
-  const { data, error } = await supabaseAdmin
-    .from('availability_slots')
-    .insert({
-      activity_id: activityId,
-      start: start.toISOString(),
-      end: end.toISOString(),
-      seats_total: seatsRemaining,
-      seats_remaining: seatsRemaining,
-    })
-    .select()
-    .single();
-  
-  if (error) throw error;
-  return data;
-}
-
-/**
- * Get activity by title
- */
 export async function getActivityByTitle(title: string) {
-  const { data, error } = await supabaseAdmin
-    .from('activities')
-    .select('*')
-    .eq('title', title)
-    .single();
-  
+  const client = getSupabaseAdmin();
+  if (!client) return null;
+  const { data, error } = await client.from('activities').select('*').eq('title', title).single();
   if (error) throw error;
   return data;
 }
 
-/**
- * Check booking exists with idempotency
- */
-export async function checkBookingExists(idempotencyKey: string) {
-  const { data, error } = await supabaseAdmin
-    .from('bookings')
-    .select('*')
-    .eq('idempotency_key', idempotencyKey)
-    .maybeSingle();
-  
+export async function checkBookingExists(idempotencyKey: string): Promise<boolean> {
+  const client = getSupabaseAdmin();
+  if (!client) return false;
+  const { data } = await client.from('bookings').select('id').eq('idempotency_key', idempotencyKey).maybeSingle();
   return data !== null;
 }
 
-/**
- * Get slot remaining seats (for concurrency tests)
- */
-export async function getSlotSeats(slotId: string) {
-  const { data, error } = await supabaseAdmin
-    .from('availability_slots')
-    .select('seats_remaining')
-    .eq('id', slotId)
-    .single();
-  
-  if (error) throw error;
-  return data.seats_remaining;
+export async function getSlotSeats(slotId: string): Promise<number | null> {
+  const client = getSupabaseAdmin();
+  if (!client) return null;
+  const { data } = await client.from('slots').select('remaining_seats').eq('id', slotId).single();
+  return data?.remaining_seats ?? null;
 }

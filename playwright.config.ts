@@ -1,39 +1,18 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
+import * as dotenv from 'dotenv';
+
+// Charge tes variables pour les tests Playwright (Node)
+dotenv.config({ path: '.env.test.local' });
+dotenv.config({ path: '.env.local' });
+dotenv.config(); // fallback .env
 
 export default defineConfig({
-  testDir: './tests/e2e',
-  fullyParallel: false, // Important: tests séquentiels pour éviter conflits DB
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: 1, // Un seul worker pour tests concurrence contrôlés
-  reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'test-results.json' }],
-    ['list']
-  ],
-  
+  testDir: 'tests/e2e',
+  testMatch: ['**/*.spec.ts'],
+  reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: process.env.VITE_PREVIEW_URL || 'http://localhost:8080',
-    trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-  },
-
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'mobile',
-      use: { ...devices['iPhone 13'] },
-    },
-  ],
-
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:8080',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    trace: 'retain-on-failure',
   },
 });

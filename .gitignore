@@ -36,3 +36,19 @@ coverage/
 *.sln
 *.sw?
 supabase/.temp/
+
+# Playwright artifacts
+playwright-report/
+test-results/
+test-results.json
+test-results/.last-run.json
+**/.last-run.json
+
+# accidental nested folder
+flooow-connect-8938a98d/
+
+# Supabase temp
+supabase/.temp/
+
+# Local env
+.env.test.local
