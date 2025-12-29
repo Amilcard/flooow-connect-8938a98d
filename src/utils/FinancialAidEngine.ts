@@ -117,7 +117,40 @@ export function calculateAllEligibleAids(params: EligibilityParams): CalculatedA
   const reductionFratrie = evaluateReductionFratrie(params);
   if (reductionFratrie) aids.push(reductionFratrie);
 
-  return aids.filter(aid => aid.eligible);
+  // ============================================================================
+  // FILTRAGE STRICT PAR PÉRIODE (RÈGLE CRITIQUE)
+  // ============================================================================
+  // Aucune aide vacances sur activité scolaire, et inversement
+  
+  let filteredAids = aids.filter(aid => aid.eligible);
+
+  if (params.periode === 'saison_scolaire') {
+    // GARDER uniquement les aides saison scolaire
+    filteredAids = filteredAids.filter(aid => 
+      aid.code === 'PASS_SPORT' ||
+      aid.code === 'PASS_CULTURE' ||
+      aid.code === 'PASS_REGION' ||
+      aid.code === 'TARIFS_SOCIAUX_STE' ||
+      aid.code === 'CARTE_BOGE' ||
+      aid.code === 'BONUS_QPV_SEM' ||
+      aid.code === 'REDUCTION_FRATRIE' ||
+      aid.code === 'CHEQUES_LOISIRS_42'
+    );
+  } else if (params.periode === 'vacances') {
+    // GARDER uniquement les aides vacances
+    filteredAids = filteredAids.filter(aid => 
+      aid.code === 'PASS_COLO' ||
+      aid.code === 'VACAF_AVE' ||
+      aid.code === 'VACAF_AVF' ||
+      aid.code === 'CAF_LOIRE_TEMPS_LIBRE' ||
+      aid.code === 'CHEQUES_LOISIRS_42' ||
+      aid.code === 'CARTE_BOGE' ||
+      aid.code === 'BONUS_QPV_SEM' ||
+      aid.code === 'REDUCTION_FRATRIE'
+    );
+  }
+
+  return filteredAids;
 }
 
 // ============================================================================
@@ -694,8 +727,8 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
 
   // 4. AIDES POTENTIELLES selon l'âge et le type d'activité
 
-  // Pass'Sport (potentiel si 6-17 ans + sport)
-  if (params.age >= 6 && params.age <= 17 && params.type_activite === 'sport') {
+  // Pass'Sport (potentiel si 6-17 ans + sport + SAISON SCOLAIRE)
+  if (params.age >= 6 && params.age <= 17 && params.type_activite === 'sport' && params.periode === 'saison_scolaire') {
     aides_potentielles.push({
       name: "Pass'Sport",
       montant_possible: '50€',
@@ -705,7 +738,7 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
 
   // Pass Colo (potentiel si 11 ans + vacances)
   // CRITICAL: Check period strictly
-  if (params.age === 11 && params.type_activite === 'vacances' && params.periode !== 'saison_scolaire') {
+  if (params.age === 11 && params.type_activite === 'vacances' && params.periode === 'vacances') {
     aides_potentielles.push({
       name: 'Pass Colo',
       montant_possible: '200-350€ selon QF',
@@ -715,7 +748,7 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
 
   // VACAF (potentiel si vacances)
   // CRITICAL: Check period strictly
-  if (params.type_activite === 'vacances' && params.periode !== 'saison_scolaire') {
+  if (params.type_activite === 'vacances' && params.periode === 'vacances') {
     aides_potentielles.push({
       name: 'VACAF (CAF)',
       montant_possible: '100-400€',
@@ -723,9 +756,9 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
     });
   }
 
-  // CAF Loire (potentiel si âge 3-17 + vacances)
+  // CAF Loire (potentiel si âge 3-17 + VACANCES UNIQUEMENT)
   // CRITICAL: Check period strictly (Vacation aid only)
-  if (params.age >= 3 && params.age <= 17 && params.periode !== 'saison_scolaire') {
+  if (params.age >= 3 && params.age <= 17 && params.periode === 'vacances') {
     aides_potentielles.push({
       name: 'CAF Loire – Temps Libre',
       montant_possible: '20-80€ selon QF',
@@ -742,8 +775,8 @@ export function calculateQuickEstimate(params: QuickEstimateParams): EstimateRes
     });
   }
 
-  // Pass'Région (potentiel si âge lycéen probable)
-  if (params.age >= 15 && params.age <= 18) {
+  // Pass'Région (potentiel si âge lycéen probable + SAISON SCOLAIRE)
+  if (params.age >= 15 && params.age <= 18 && params.periode === 'saison_scolaire') {
     aides_potentielles.push({
       name: "Pass'Région",
       montant_possible: '30€',
@@ -1080,4 +1113,3 @@ export function calculateFastEstimate(params: FastEstimateParams): EstimateResul
     niveau_confiance: aides_detectees.length >= 2 ? 'élevé' : aides_detectees.length === 1 ? 'moyen' : 'faible',
   };
 }
-
