@@ -35,4 +35,12 @@ coverage/
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright artifacts (expanded)
+test-results/.last-run.json
+
+# Accidental nested folder
+flooow-connect-8938a98d/
+
+# Supabase temp
 supabase/.temp/
