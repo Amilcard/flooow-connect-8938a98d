@@ -24,15 +24,17 @@ dist-ssr
 *.sln
 *.sw?
 
-# Playwright artifacts
-playwright-report/
-test-results/
+
+
+# accidental nested folder
+flooow-connect-8938a98d/
 
 # Playwright artifacts
 playwright-report/
 test-results/
 test-results.json
 test-results/.last-run.json
+**/.last-run.json
 
-# accidental nested folder
-flooow-connect-8938a98d/
+# Supabase temp
+supabase/.temp/
