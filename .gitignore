@@ -26,3 +26,12 @@ dist-ssr
 # Playwright artifacts
 playwright-report/
 test-results/
+
+# Playwright artifacts
+playwright-report/
+test-results/
+test-results.json
+test-results/.last-run.json
+
+# accidental nested folder
+flooow-connect-8938a98d/
