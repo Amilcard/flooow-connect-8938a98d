@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { BackButton } from "@/components/BackButton";
+import { optimizeSupabaseImage } from "@/lib/imageMapping";
 import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
 import { getCategoryStyle } from "@/constants/categories";
-import { HERO_IMAGE_CLASSES } from "@/lib/responsive";
 
 interface CompactHeroHeaderProps {
   /**
@@ -16,7 +14,7 @@ interface CompactHeroHeaderProps {
   imageUrl?: string;
 
   /**
-   * Titre de l'activité (affiché en overlay)
+   * Titre de l'activité (pour alt text)
    */
   title: string;
 
@@ -61,24 +59,13 @@ const getCategoryImage = (category: string): string => {
 };
 
 /**
- * Header hero compact optimisé pour mobile et responsive
+ * Header avec image d'activité style "super-card"
  *
- * - Hauteur responsive : 240px (mobile) → 320px (tablet) → 400px (desktop)
- * - Protection aspect ratio pour images portrait (objectPosition: center 30%)
- * - Gradient amélioré pour lisibilité texte
- * - Fallback élégant si pas d'image
- * - Back button avec backdrop blur
- * - Category badge avec design system
- *
- * @example
- * ```tsx
- * <CompactHeroHeader
- *   imageUrl={activity.images?.[0]}
- *   title="Stage de danse hip-hop"
- *   category="Culture"
- *   backFallback="/activities"
- * />
- * ```
+ * Design aligné avec les cards de l'écran Recherche et Accueil :
+ * - Hauteur intermédiaire (pas trop landing page, pas trop petit)
+ * - Overlay léger pour lisibilité sans assombrir
+ * - Boutons discrets (retour, partage)
+ * - Badge catégorie style pill identique aux cards
  */
 export function CompactHeroHeader({
   imageUrl,
@@ -96,92 +83,66 @@ export function CompactHeroHeader({
     ? categories[0]
     : category;
 
-
-
   // Utiliser l'image fournie ou l'image de catégorie comme fallback
   const fallbackImage = getCategoryImage(displayCategory);
-  const finalImageUrl = (imageUrl && !imgError) ? imageUrl : fallbackImage;
+  // PERF: Optimize Supabase images with transformations
+  const optimizedUrl = optimizeSupabaseImage(imageUrl, { width: 800, height: 220 });
+  const finalImageUrl = (optimizedUrl && !imgError) ? optimizedUrl : fallbackImage;
 
   return (
     <div className="compact-hero-header relative w-full overflow-hidden">
-      {/* Conteneur responsive avec dimensions standardisées */}
-      <div className={`relative w-full ${HERO_IMAGE_CLASSES.compact}`}>
-        {/* Image de fond - toujours affichée (avec fallback catégorie) */}
+      {/* Conteneur style super-card - hauteur intermédiaire entre card et landing */}
+      <div className="relative w-full h-[180px] md:h-[200px] lg:h-[220px]">
+        {/* Image de fond - nette et centrée comme les cards */}
         <img
           src={finalImageUrl}
           alt={title}
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ 
-            filter: "brightness(0.85)",
-            objectPosition: "center 30%" // Meilleur cadrage pour images portrait
+          style={{
+            objectPosition: "center center"
           }}
           onError={(e) => {
-            // Si erreur de chargement, utiliser l'image de catégorie
             if (!imgError) {
               setImgError(true);
               (e.target as HTMLImageElement).src = fallbackImage;
             }
           }}
         />
-        {/* Gradient overlay pour lisibilité - intensité réduite */}
+        {/* Gradient léger - juste pour lisibilité des boutons, pas d'effet dramatique */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)"
+            background: "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.20) 100%)"
           }}
         />
       </div>
 
-      {/* Back Button - Top Left avec backdrop blur */}
+      {/* Back Button - Top Left - Style sobre cohérent avec Recherche */}
       <div className="absolute top-4 left-4 z-10">
         <BackButton
-          className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full flex items-center justify-center transition-all"
+          positioning="relative"
+          size="sm"
+          className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-md !h-10 !w-10 !min-w-[40px] !p-0 rounded-full flex items-center justify-center transition-colors"
         />
       </div>
 
-      {/* Category Badge - Top Right */}
+      {/* Category Badge + Actions - Top Right */}
       <div className="absolute top-4 right-4 z-10">
-        {rightContent ? (
-          <div className="flex items-center gap-2">
-            <div
-              className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
-            >
-              <span
-                className="text-xs font-bold uppercase font-poppins"
-                style={{ color: getCategoryStyle(displayCategory).color }}
-              >
-                {displayCategory}
-              </span>
-            </div>
-            {rightContent}
-          </div>
-        ) : (
+        <div className="flex items-center gap-2">
+          {/* Badge catégorie - même style que ActivityResultCard */}
           <div
-            className="px-3 py-1.5 rounded-lg backdrop-blur-sm"
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
+            className="px-2.5 py-1 rounded-lg backdrop-blur-sm shadow-sm"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)' }}
           >
             <span
-              className="text-xs font-bold uppercase font-poppins"
+              className="text-xs font-bold uppercase"
               style={{ color: getCategoryStyle(displayCategory).color }}
             >
               {displayCategory}
             </span>
           </div>
-        )}
-      </div>
-
-      {/* Title Overlay - Bottom avec text-shadow fort */}
-      <div className="absolute bottom-4 left-4 right-4 z-10">
-        <h1
-          className="text-white font-bold leading-tight line-clamp-2"
-          style={{
-            fontSize: "clamp(18px, 4vw, 20px)",
-            textShadow: "0px 2px 8px rgba(0,0,0,0.7), 0px 1px 2px rgba(0,0,0,0.5)"
-          }}
-        >
-          {title}
-        </h1>
+          {rightContent}
+        </div>
       </div>
     </div>
   );

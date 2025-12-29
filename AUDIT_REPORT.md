@@ -1006,7 +1006,7 @@ jobs:
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/cleanup-expired-signups
+            ${{ secrets.SUPABASE_URL }}/functions/v1/cleanup-expired-signups
 ```
 
 **Priorité:** 🟡 **MOYENNE** (mais important pour la production)

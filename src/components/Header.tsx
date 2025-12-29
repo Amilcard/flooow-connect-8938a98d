@@ -14,13 +14,13 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white shadow-sm">
-      <div className="container px-4 md:px-6">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo FLOOOW */}
-          <HeaderLogo />
+      <div className="max-w-5xl mx-auto px-4">
+        <div className="flex h-14 md:h-16 items-center justify-between gap-4">
+          {/* Logo FLOOOW - taille optimisée mobile/desktop */}
+          <HeaderLogo className="pl-0" />
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
+          {/* Actions - alignées à droite avec marge symétrique */}
+          <div className="flex items-center gap-2 pr-0">
             {!isAuthenticated ? (
               <>
                 <Button variant="ghost" className="hidden md:inline-flex" asChild>
@@ -36,7 +36,7 @@ const Header = () => {
                   variant="ghost"
                   size="icon"
                   className="relative"
-                  onClick={() => navigate("/account/mes-notifications")}
+                  onClick={() => navigate("/mon-compte/notifications")}
                   aria-label="Notifications"
                 >
                   <Bell className="h-5 w-5" />
@@ -45,10 +45,11 @@ const Header = () => {
                 <AuthNavigation />
               </>
             )}
+            {/* Menu hamburger masqué sur mobile car BottomNavigation présente */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <Menu className="w-5 h-5" />

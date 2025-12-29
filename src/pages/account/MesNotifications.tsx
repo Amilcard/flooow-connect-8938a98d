@@ -11,12 +11,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
-import { 
-  Bell, 
-  Calendar, 
+import {
+  Bell,
+  Calendar,
   CheckCircle,
   Info,
-  Gift,
   Trash2,
   Heart,
   MapPin,
@@ -26,17 +25,111 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReactNode } from 'react';
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+interface NotificationPreferencesRecord {
+  notify_territory_events?: boolean;
+  notify_favorite_categories?: boolean;
+  interested_categories?: string[];
+  email_notifications?: boolean;
+  recommendation_emails?: boolean;
+  event_reminders_enabled?: boolean;
+  event_reminder_days_before?: number;
+  event_reminder_email?: boolean;
+}
+
+interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  message?: string;
+  read: boolean;
+  created_at: string;
+  related_event_id?: string;
+  payload?: {
+    event_id?: string;
+    event_title?: string;
+  };
+}
+
+// ============================================================================
+// LOOKUP TABLES - Reduce cognitive complexity by avoiding switch statements
+// ============================================================================
+
+const NOTIFICATION_ICONS = new Map<string, ReactNode>([
+  ['event', <Calendar key="event" className="w-5 h-5 text-green-600" />],
+  ['event_reminder', <Clock key="event_reminder" className="w-5 h-5 text-orange-600" />],
+  ['favorite', <Heart key="favorite" className="w-5 h-5 text-pink-600" />],
+  ['booking', <CheckCircle key="booking" className="w-5 h-5 text-blue-600" />],
+  ['system', <Info key="system" className="w-5 h-5 text-muted-foreground" />],
+]);
+
+const NOTIFICATION_LABELS = new Map<string, string>([
+  ['event', 'Événement du territoire'],
+  ['event_reminder', "Rappel d'événement"],
+  ['favorite', "Centre d'intérêt"],
+  ['booking', 'Réservation'],
+  ['system', 'Système'],
+]);
+
+const DEFAULT_ICON = <Bell key="default" className="w-5 h-5 text-muted-foreground" />;
+const DEFAULT_LABEL = 'Notification';
+
+// ============================================================================
+// HELPER FUNCTIONS - Extracted to reduce main component complexity
+// ============================================================================
+
+function getNotificationIcon(type: string): ReactNode {
+  return NOTIFICATION_ICONS.get(type) ?? DEFAULT_ICON;
+}
+
+function getNotificationTypeLabel(type: string): string {
+  return NOTIFICATION_LABELS.get(type) ?? DEFAULT_LABEL;
+}
+
+function formatNotificationDate(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+  if (diffInHours < 1) return "À l'instant";
+  if (diffInHours < 24) return `Il y a ${Math.floor(diffInHours)} h`;
+  if (diffInHours < 48) return 'Hier';
+  return format(date, 'd MMM', { locale: fr });
+}
+
+// Helper to safely get preference boolean value with fallback
+function getPreferenceBool(preferences: NotificationPreferencesRecord | null | undefined, key: keyof NotificationPreferencesRecord, fallback: boolean): boolean {
+  if (!preferences || !(key in preferences)) return fallback;
+  const value = preferences[key];
+  return typeof value === 'boolean' ? value : fallback;
+}
+
+// Helper to safely get preference array value
+function getPreferenceArray(preferences: NotificationPreferencesRecord | null | undefined, key: keyof NotificationPreferencesRecord): string[] {
+  if (!preferences || !(key in preferences)) return [];
+  const value = preferences[key];
+  return Array.isArray(value) ? value : [];
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 
 const MesNotifications = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { 
-    notifications, 
-    unreadCount, 
+  const {
+    notifications,
+    unreadCount,
     isLoading: notificationsLoading,
     markAsRead,
     markAllAsRead,
-    deleteNotification 
+    deleteNotification
   } = useNotifications(user?.id);
 
   const {
@@ -45,46 +138,8 @@ const MesNotifications = () => {
     updatePreferences
   } = useNotificationPreferences(user?.id);
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'event': return <Calendar className="w-5 h-5 text-green-600" />;
-      case 'event_reminder': return <Clock className="w-5 h-5 text-orange-600" />;
-      case 'favorite': return <Heart className="w-5 h-5 text-pink-600" />;
-      case 'booking': return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'system': return <Info className="w-5 h-5 text-gray-600" />;
-      default: return <Bell className="w-5 h-5 text-gray-600" />;
-    }
-  };
-
-  const getNotificationTypeLabel = (type: string) => {
-    switch (type) {
-      case 'event': return 'Événement du territoire';
-      case 'event_reminder': return 'Rappel d\'événement';
-      case 'favorite': return 'Centre d\'intérêt';
-      case 'booking': return 'Réservation';
-      case 'system': return 'Système';
-      default: return 'Notification';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
-    if (diffInHours < 1) {
-      return 'À l\'instant';
-    } else if (diffInHours < 24) {
-      return `Il y a ${Math.floor(diffInHours)} h`;
-    } else if (diffInHours < 48) {
-      return 'Hier';
-    } else {
-      return format(date, 'd MMM', { locale: fr });
-    }
-  };
-
-  const handleViewEvent = (eventId: string) => {
-    navigate(`/agenda-community`);
+  const handleViewEvent = (_eventId: string) => {
+    navigate("/agenda-community");
   };
 
   const categoryOptions = [
@@ -113,6 +168,7 @@ const MesNotifications = () => {
     <ProfilLayout
       title="Mes notifications"
       subtitle={unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : 'Toutes lues'}
+      backFallback="/mon-compte"
       tourId="notifications-page"
       rightContent={
         unreadCount > 0 ? (
@@ -155,9 +211,10 @@ const MesNotifications = () => {
                 icon={Bell}
                 title="Aucune notification"
                 description="Vous serez notifié des nouveaux événements dans votre territoire ou correspondant à vos centres d'intérêt"
+                variant="inspiring"
               />
             ) : (
-              notifications.map((notification: any) => (
+              notifications.map((notification: NotificationItem) => (
                 <Card 
                   key={notification.id} 
                   className={`cursor-pointer hover:shadow-md transition-all ${
@@ -181,7 +238,7 @@ const MesNotifications = () => {
                                 {getNotificationTypeLabel(notification.type)}
                               </Badge>
                               <span className="text-xs text-muted-foreground">
-                                {formatDate(notification.created_at)}
+                                {formatNotificationDate(notification.created_at)}
                               </span>
                               {!notification.read && (
                                 <Badge variant="default" className="text-xs">
@@ -277,8 +334,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="notify_territory_events"
-                        checked={preferences && 'notify_territory_events' in preferences ? preferences.notify_territory_events : true}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'notify_territory_events', true)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ notify_territory_events: checked })
                         }
                       />
@@ -306,8 +363,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="notify_favorite_categories"
-                        checked={preferences && 'notify_favorite_categories' in preferences ? preferences.notify_favorite_categories : false}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'notify_favorite_categories', false)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ notify_favorite_categories: checked })
                         }
                       />
@@ -320,7 +377,7 @@ const MesNotifications = () => {
                           <div key={category.value} className="flex items-center space-x-2">
                             <Checkbox
                               id={`category-${category.value}`}
-                              checked={preferences && 'interested_categories' in preferences ? preferences.interested_categories?.includes(category.value) ?? false : false}
+                              checked={getPreferenceArray(preferences, 'interested_categories').includes(category.value)}
                               onCheckedChange={() => toggleCategory(category.value)}
                             />
                             <Label
@@ -356,8 +413,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="email_notifications"
-                        checked={preferences && 'email_notifications' in preferences ? preferences.email_notifications : false}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'email_notifications', false)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ email_notifications: checked })
                         }
                       />
@@ -374,8 +431,8 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="recommendation_emails"
-                        checked={preferences && 'recommendation_emails' in preferences ? preferences.recommendation_emails : false}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'recommendation_emails', false)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ recommendation_emails: checked })
                         }
                       />
@@ -403,14 +460,14 @@ const MesNotifications = () => {
                       </Label>
                       <Switch
                         id="event_reminders_enabled"
-                        checked={preferences && 'event_reminders_enabled' in preferences ? preferences.event_reminders_enabled : true}
-                        onCheckedChange={(checked) => 
+                        checked={getPreferenceBool(preferences, 'event_reminders_enabled', true)}
+                        onCheckedChange={(checked) =>
                           updatePreferences.mutate({ event_reminders_enabled: checked })
                         }
                       />
                     </div>
 
-                    {preferences && 'event_reminders_enabled' in preferences && preferences.event_reminders_enabled && (
+                    {getPreferenceBool(preferences, 'event_reminders_enabled', true) && (
                       <>
                         <div className="space-y-3 pt-4 border-t">
                           <Label htmlFor="event_reminder_days_before">
@@ -423,7 +480,7 @@ const MesNotifications = () => {
                             id="event_reminder_days_before"
                             value={preferences.event_reminder_days_before || 3}
                             onChange={(e) => 
-                              updatePreferences.mutate({ event_reminder_days_before: parseInt(e.target.value) })
+                              updatePreferences.mutate({ event_reminder_days_before: Number.parseInt(e.target.value, 10) })
                             }
                             className="w-full px-3 py-2 border border-input rounded-md bg-background"
                           >
@@ -446,8 +503,8 @@ const MesNotifications = () => {
                           </Label>
                           <Switch
                             id="event_reminder_email"
-                            checked={preferences && 'event_reminder_email' in preferences ? preferences.event_reminder_email : true}
-                            onCheckedChange={(checked) => 
+                            checked={getPreferenceBool(preferences, 'event_reminder_email', true)}
+                            onCheckedChange={(checked) =>
                               updatePreferences.mutate({ event_reminder_email: checked })
                             }
                           />

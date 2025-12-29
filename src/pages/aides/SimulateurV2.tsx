@@ -25,8 +25,35 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, ChevronRight } from 'lucide-react';
+import { FormattedText } from '@/components/ui/formatted-text';
 
 type EstimationMode = 'quick' | 'fast' | 'complete';
+
+// Helper: get step indicator state classes
+const getStepClasses = (
+  stepMode: EstimationMode,
+  currentMode: EstimationMode,
+  hasResult: boolean
+): { containerClass: string; badgeClass: string; content: string } => {
+  const isActive = currentMode === stepMode;
+  const isCompleted = hasResult && !isActive;
+
+  const containerClass = isActive
+    ? 'text-primary font-medium'
+    : 'text-muted-foreground';
+
+  let badgeClass = 'bg-muted text-muted-foreground';
+  if (isActive) {
+    badgeClass = 'bg-primary text-white';
+  } else if (isCompleted) {
+    badgeClass = 'bg-green-500 text-white';
+  }
+
+  const stepNumber = stepMode === 'quick' ? '1' : stepMode === 'fast' ? '2' : '3';
+  const content = isCompleted ? '✓' : stepNumber;
+
+  return { containerClass, badgeClass, content };
+};
 
 const SimulateurV2 = () => {
   const navigate = useNavigate();
@@ -81,7 +108,7 @@ const SimulateurV2 = () => {
   return (
     <PageLayout>
       <div className="container max-w-2xl px-4 py-6 space-y-6 pb-24">
-        <BackButton positioning="relative" size="sm" fallback="/aides" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/aides" />
 
         {/* Header */}
         <div className="space-y-3">
@@ -99,64 +126,27 @@ const SimulateurV2 = () => {
             </Badge>
           </div>
 
-          {/* Breadcrumb des étapes */}
+          {/* Breadcrumb des étapes - using helper to reduce cognitive complexity */}
           <div className="flex items-center gap-2 text-sm">
-            <div
-              className={`flex items-center gap-2 ${
-                mode === 'quick' ? 'text-primary font-medium' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                  mode === 'quick'
-                    ? 'bg-primary text-white'
-                    : quickResult
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {quickResult && mode !== 'quick' ? '✓' : '1'}
-              </div>
-              <span className="hidden sm:inline">Rapide</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <div
-              className={`flex items-center gap-2 ${
-                mode === 'fast' ? 'text-primary font-medium' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                  mode === 'fast'
-                    ? 'bg-primary text-white'
-                    : fastResult
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {fastResult && mode !== 'fast' ? '✓' : '2'}
-              </div>
-              <span className="hidden sm:inline">Affinage</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <div
-              className={`flex items-center gap-2 ${
-                mode === 'complete' ? 'text-primary font-medium' : 'text-muted-foreground'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                  mode === 'complete'
-                    ? 'bg-primary text-white'
-                    : completeResult
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                3
-              </div>
-              <span className="hidden sm:inline">Complète</span>
-            </div>
+            {(['quick', 'fast', 'complete'] as const).map((stepMode, index) => {
+              const hasResult = stepMode === 'quick' ? !!quickResult
+                : stepMode === 'fast' ? !!fastResult
+                : !!completeResult;
+              const step = getStepClasses(stepMode, mode, hasResult);
+              const labels = { quick: 'Rapide', fast: 'Affinage', complete: 'Complète' };
+
+              return (
+                <div key={stepMode} className="flex items-center gap-2">
+                  {index > 0 && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                  <div className={`flex items-center gap-2 ${step.containerClass}`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${step.badgeClass}`}>
+                      {step.content}
+                    </div>
+                    <span className="hidden sm:inline">{labels[stepMode]}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -222,15 +212,9 @@ const SimulateurV2 = () => {
                 {fastResult.message_incitation && (
                   <Alert className="bg-blue-50 border-blue-200">
                     <Info className="h-4 w-4 text-blue-600" />
-                    <AlertDescription
-                      className="text-sm text-blue-900"
-                      dangerouslySetInnerHTML={{
-                        __html: fastResult.message_incitation.replace(
-                          /\*\*(.*?)\*\*/g,
-                          '<strong>$1</strong>'
-                        ),
-                      }}
-                    />
+                    <AlertDescription className="text-sm text-blue-900">
+                      <FormattedText>{fastResult.message_incitation}</FormattedText>
+                    </AlertDescription>
                   </Alert>
                 )}
 
@@ -250,7 +234,7 @@ const SimulateurV2 = () => {
         )}
 
         {/* Note légale */}
-        <Alert variant="default" className="border-gray-300">
+        <Alert variant="default" className="border-border">
           <Info className="h-4 w-4" />
           <AlertDescription className="text-xs text-muted-foreground">
             <strong>Estimation indicative.</strong> Les montants affichés sont calculés selon les

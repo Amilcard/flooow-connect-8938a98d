@@ -12,16 +12,22 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
+interface EstimatedAid {
+  name: string;
+  amount: string;
+  description: string;
+}
+
 const ProfilEligibilite = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [age, setAge] = useState<string>("");
-  const [hasARS, setHasARS] = useState<string>("");
-  const [hasAEEH, setHasAEEH] = useState<string>("");
-  const [hasAAH, setHasAAH] = useState<string>("");
-  const [isStudent, setIsStudent] = useState<string>("");
-  const [qf, setQf] = useState<string>("");
-  const [estimatedAids, setEstimatedAids] = useState<any[]>([]);
+  const [age, setAge] = useState("");
+  const [hasARS, setHasARS] = useState("");
+  const [hasAEEH, setHasAEEH] = useState("");
+  const [hasAAH, setHasAAH] = useState("");
+  const [isStudent, setIsStudent] = useState("");
+  const [qf, setQf] = useState("");
+  const [estimatedAids, setEstimatedAids] = useState<EstimatedAid[]>([]);
 
   // Récupérer le profil utilisateur
   const { data: userProfile } = useQuery({
@@ -57,9 +63,9 @@ const ProfilEligibilite = () => {
       return;
     }
 
-    const ageNum = parseInt(age);
-    const qfNum = parseInt(qf);
-    const aids: any[] = [];
+    const ageNum = Number.parseInt(age, 10);
+    const qfNum = Number.parseInt(qf, 10);
+    const aids: EstimatedAid[] = [];
 
     // Pass'Sport
     if (ageNum >= 6 && ageNum <= 18 && (hasARS === "oui" || hasAEEH === "oui" || hasAAH === "oui")) {

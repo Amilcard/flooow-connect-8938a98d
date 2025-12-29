@@ -1,73 +1,64 @@
-# Welcome to your Lovable project
+# Flooow - Plateforme d'accès aux activités
 
-## Project info
+Plateforme gratuite pour faciliter l'accès aux activités sportives, culturelles et de loisirs pour les enfants de 3 à 17 ans.
 
-**URL**: https://lovable.dev/projects/00c715e6-b61d-41a9-bc95-96b7777cace5
+## Technologies
 
-## How can I edit this code?
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI**: shadcn/ui + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions)
+- **Analytics**: Lucky Orange (RGPD compliant)
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/00c715e6-b61d-41a9-bc95-96b7777cace5) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Installation locale
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Cloner le repo
+git clone <URL_DU_REPO>
+cd flooow-connect
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Installer les dépendances
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer le serveur de développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Scripts disponibles
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Commande | Description |
+|----------|-------------|
+| `npm run dev` | Serveur de développement (port 8080) |
+| `npm run build` | Build de production |
+| `npm run preview` | Preview du build |
+| `npm run lint` | Vérification ESLint |
+| `npm run typecheck` | Vérification TypeScript |
 
-**Use GitHub Codespaces**
+## Structure du projet
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/     # Composants React réutilisables
+├── pages/          # Pages de l'application
+├── hooks/          # Custom hooks
+├── utils/          # Fonctions utilitaires
+├── lib/            # Configuration et helpers
+├── contexts/       # React contexts
+└── integrations/   # Intégrations externes (Supabase)
+```
 
-## What technologies are used for this project?
+## Déploiement
 
-This project is built with:
+Le projet se déploie automatiquement via CI/CD sur merge vers `main`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Variables d'environnement
 
-## How can I deploy this project?
+Créer un fichier `.env` à la racine :
 
-Simply open [Lovable](https://lovable.dev/projects/00c715e6-b61d-41a9-bc95-96b7777cace5) and click on Share -> Publish.
+```env
+VITE_SUPABASE_URL=<URL_SUPABASE>
+VITE_SUPABASE_ANON_KEY=<CLE_ANONYME>
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Licence
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Propriétaire - InKlusif © 2025

@@ -1,0 +1,295 @@
+{
+  "audit_date": "2025-12-12",
+  "project": "Flooow Connect",
+  "stack": {
+    "frontend": "React 18 + TypeScript + Vite",
+    "ui": "Tailwind CSS + Shadcn/ui + Radix UI",
+    "state": "React Query (TanStack Query)",
+    "backend": "Supabase (PostgreSQL)"
+  },
+  "metrics": {
+    "total_screens": 25,
+    "total_components": 183,
+    "total_hooks": 20,
+    "slow_screens": 3
+  },
+  "screen_groups": {
+    "decouverte_catalogue": {
+      "screens": [
+        {
+          "name": "Accueil",
+          "route": "/home",
+          "file": "src/pages/Index.tsx",
+          "layout": "PageLayout",
+          "queries_on_mount": 4,
+          "performance": "good"
+        },
+        {
+          "name": "Recherche",
+          "route": "/search",
+          "file": "src/pages/Search.tsx",
+          "layout": "Custom",
+          "queries_on_mount": 1,
+          "performance": "good"
+        },
+        {
+          "name": "Détail activité",
+          "route": "/activity/:id",
+          "file": "src/pages/ActivityDetail.tsx",
+          "layout": "Custom",
+          "queries_on_mount": 5,
+          "performance": "medium"
+        }
+      ]
+    },
+    "informatif_services": {
+      "screens": [
+        {
+          "name": "Nos aides",
+          "route": "/aides",
+          "file": "src/pages/Aides.tsx",
+          "layout": "PageLayout",
+          "data_source": "supabase"
+        },
+        {
+          "name": "Simulateur",
+          "route": "/aides/simulateur",
+          "file": "src/pages/aides/Simulateur.tsx",
+          "data_source": "local_calculation"
+        },
+        {
+          "name": "Éco-Mobilité",
+          "route": "/eco-mobilite",
+          "file": "src/pages/EcoMobilite.tsx",
+          "data_source": "static + territory"
+        },
+        {
+          "name": "Ma ville mon actu",
+          "route": "/ma-ville-mon-actu",
+          "file": "src/pages/MaVilleMonActu.tsx",
+          "data_source": "static"
+        },
+        {
+          "name": "Bon Esprit",
+          "route": "/bon-esprit",
+          "file": "src/pages/BonEsprit.tsx",
+          "data_source": "local_form"
+        }
+      ]
+    },
+    "espace_client": {
+      "screens": [
+        {
+          "name": "Mon Compte",
+          "route": "/mon-compte",
+          "file": "src/pages/MonCompte.tsx",
+          "data_source": "mock",
+          "performance": "fast"
+        },
+        {
+          "name": "Mes informations",
+          "route": "/mon-compte/informations",
+          "file": "src/pages/account/MesInformations.tsx",
+          "data_source": "mock",
+          "issue": "no_real_data"
+        },
+        {
+          "name": "Profil éligibilité",
+          "route": "/mon-compte/eligibilite",
+          "file": "src/pages/account/ProfilEligibilite.tsx",
+          "data_source": "supabase"
+        },
+        {
+          "name": "Mes enfants",
+          "route": "/mon-compte/enfants",
+          "file": "src/pages/account/kids/MesEnfants.tsx",
+          "data_source": "supabase_raw",
+          "performance": "slow",
+          "issue": "no_cache_no_react_query",
+          "estimated_load_ms": "500-1500"
+        },
+        {
+          "name": "Lier un enfant",
+          "route": "/mon-compte/lier-enfant",
+          "file": "src/pages/account/LierEnfant.tsx",
+          "data_source": "supabase",
+          "performance": "slow",
+          "issue": "blocking_queries_nested_selects",
+          "estimated_load_ms": "800-1500"
+        },
+        {
+          "name": "Mes réservations",
+          "route": "/mon-compte/reservations",
+          "file": "src/pages/account/MesReservations.tsx",
+          "data_source": "mock",
+          "performance": "instant_but_fake",
+          "issue": "hardcoded_data"
+        },
+        {
+          "name": "Mon covoiturage",
+          "route": "/mon-compte/covoiturage",
+          "file": "src/pages/account/MonCovoiturage.tsx",
+          "data_source": "mock"
+        },
+        {
+          "name": "Mes justificatifs",
+          "route": "/mon-compte/justificatifs",
+          "file": "src/pages/account/MesJustificatifs.tsx",
+          "data_source": "mock"
+        },
+        {
+          "name": "Mes notifications",
+          "route": "/mon-compte/notifications",
+          "file": "src/pages/account/MesNotifications.tsx",
+          "data_source": "supabase",
+          "performance": "good"
+        },
+        {
+          "name": "Événements favoris",
+          "route": "/mes-evenements-favoris",
+          "file": "src/pages/MesEvenementsFavoris.tsx",
+          "data_source": "supabase"
+        },
+        {
+          "name": "Paramètres",
+          "route": "/mon-compte/parametres",
+          "file": "src/pages/account/Parametres.tsx",
+          "data_source": "local"
+        }
+      ]
+    }
+  },
+  "global_components": {
+    "navigation": [
+      {
+        "name": "Header",
+        "path": "src/components/Header.tsx",
+        "height": "64px",
+        "position": "sticky"
+      },
+      {
+        "name": "BottomNavigation",
+        "path": "src/components/BottomNavigation.tsx",
+        "tabs": 5,
+        "position": "fixed"
+      },
+      {
+        "name": "PageHeader",
+        "path": "src/components/PageHeader.tsx",
+        "height": "64px",
+        "position": "sticky"
+      }
+    ],
+    "cards": [
+      "ActivityCard",
+      "ActivityCardMobile",
+      "ActivityResultCard",
+      "AidCard",
+      "BookingCard"
+    ],
+    "forms": [
+      "Input",
+      "Select",
+      "Checkbox",
+      "RadioGroup",
+      "Textarea",
+      "Form"
+    ],
+    "states": [
+      "LoadingState",
+      "ErrorState",
+      "Skeleton",
+      "ActivityCardSkeleton"
+    ]
+  },
+  "performance_issues": {
+    "slow_screens": [
+      {
+        "screen": "MesEnfants",
+        "file": "src/pages/account/kids/MesEnfants.tsx",
+        "issue": "Raw Supabase call without React Query cache",
+        "recommendation": "Migrate to useQuery with staleTime",
+        "priority": "P0",
+        "effort": "1h"
+      },
+      {
+        "screen": "LierEnfant",
+        "file": "src/pages/account/LierEnfant.tsx",
+        "issue": "2 blocking queries with nested selects",
+        "recommendation": "Progressive render + pagination",
+        "priority": "P0",
+        "effort": "2h"
+      },
+      {
+        "screen": "MesReservations",
+        "file": "src/pages/account/MesReservations.tsx",
+        "issue": "Hardcoded mock data, no real bookings",
+        "recommendation": "Implement useBookings hook",
+        "priority": "P1",
+        "effort": "2h"
+      }
+    ],
+    "mock_data_screens": [
+      "MesInformations",
+      "MesReservations",
+      "MonCovoiturage",
+      "MesJustificatifs"
+    ]
+  },
+  "ui_inconsistencies": {
+    "p0_critical": [
+      "Icon imports: Mix Lucide direct vs AppIcon wrapper",
+      "Colors: CSS variables vs hardcoded hex",
+      "Empty states: No standardized component",
+      "Spacing: p-3/p-4/p-6 inconsistent"
+    ],
+    "p1_important": [
+      "Border radius: rounded-lg vs rounded-2xl vs rounded-full",
+      "Stroke width: 1.5-2.5 without clear rules",
+      "Button loading: No integrated loading state"
+    ],
+    "p2_minor": [
+      "Text truncation: line-clamp inconsistent",
+      "Shadow system: Various definitions",
+      "Z-index: Multiple z-50 without hierarchy"
+    ]
+  },
+  "design_tokens": {
+    "containers": {
+      "standard": "max-w-5xl mx-auto px-4",
+      "detail": "max-w-6xl mx-auto px-4 md:px-6 lg:px-8",
+      "form": "max-w-2xl mx-auto px-4"
+    },
+    "bottom_nav_spacing": {
+      "standard": "pb-24",
+      "alternative": "pb-20"
+    },
+    "breakpoints": {
+      "md": "768px",
+      "lg": "1024px"
+    }
+  },
+  "recommendations": {
+    "immediate": [
+      "Migrate MesEnfants to React Query",
+      "Implement progressive render in LierEnfant",
+      "Create useBookings hook for MesReservations"
+    ],
+    "short_term": [
+      "Create EmptyState generic component",
+      "Standardize icon imports via AppIcon",
+      "Add loading state to Button component"
+    ],
+    "long_term": [
+      "Create category color tokens",
+      "Standardize card padding variants",
+      "Migrate all mock data to real queries"
+    ]
+  },
+  "deliverables": [
+    "docs/UI_IMPLEMENTATION_MAP.md",
+    "docs/SCREENS_COMPONENTS_INVENTORY.md",
+    "docs/PERF_LOADING_DIAGNOSIS.md",
+    "docs/ui_map_summary.json"
+  ]
+}

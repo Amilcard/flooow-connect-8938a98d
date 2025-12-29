@@ -46,7 +46,7 @@ serve(async (req) => {
 
     // ===== DEACTIVATE ACCOUNT (Temporary suspension) =====
     if (action === 'deactivate') {
-      console.log(`[delete-account] Deactivating account for user ${user.id}`);
+      console.log('[delete-account] Deactivating account');
 
       // Get current profile
       const { data: profile } = await supabase
@@ -80,7 +80,7 @@ serve(async (req) => {
         read: false
       });
 
-      console.log(`[delete-account] Account deactivated for user ${user.id}`);
+      console.log('[delete-account] Account deactivated successfully');
 
       return new Response(
         JSON.stringify({
@@ -99,7 +99,7 @@ serve(async (req) => {
 
     // ===== REACTIVATE ACCOUNT =====
     if (action === 'reactivate') {
-      console.log(`[delete-account] Reactivating account for user ${user.id}`);
+      console.log('[delete-account] Reactivating account');
 
       const { data: profile } = await supabase
         .from('profiles')
@@ -131,7 +131,7 @@ serve(async (req) => {
         read: false
       });
 
-      console.log(`[delete-account] Account reactivated for user ${user.id}`);
+      console.log('[delete-account] Account reactivated successfully');
 
       return new Response(
         JSON.stringify({
@@ -157,7 +157,7 @@ serve(async (req) => {
             .select('profile_json')
             .eq('id', user.id)
             .single()
-            .then((result: any) => {
+            .then((result: { data?: { profile_json?: Record<string, unknown> } }) => {
               const profileJson = result.data?.profile_json || {};
               delete profileJson.deletion_scheduled_at;
               delete profileJson.deletion_scheduled_for;
@@ -180,7 +180,7 @@ serve(async (req) => {
         read: false
       });
 
-      console.log(`[delete-account] Deletion cancelled for user ${user.id}`);
+      console.log('[delete-account] Deletion cancelled successfully');
 
       return new Response(
         JSON.stringify({
@@ -195,7 +195,7 @@ serve(async (req) => {
     const scheduledFor = new Date();
     scheduledFor.setDate(scheduledFor.getDate() + DELETION_DELAY_DAYS);
 
-    console.log(`[delete-account] Scheduling deletion for user ${user.id}`);
+    console.log('[delete-account] Scheduling deletion');
 
     // Check for active bookings
     const { data: activeBookings } = await supabase
@@ -204,7 +204,7 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .in('status', ['en_attente', 'validee']);
 
-    const futureBookings = activeBookings?.filter((booking: any) => {
+    const futureBookings = activeBookings?.filter((booking: { availability_slots?: { start?: string } }) => {
       const slotStart = new Date(booking.availability_slots?.start);
       return slotStart > new Date();
     }) || [];
@@ -258,7 +258,7 @@ serve(async (req) => {
       read: false
     });
 
-    console.log(`[delete-account] Deletion scheduled for user ${user.id} on ${scheduledFor.toISOString()}`);
+    console.log('[delete-account] Deletion scheduled successfully');
 
     // Return success response
     return new Response(
@@ -282,7 +282,7 @@ serve(async (req) => {
     );
 
   } catch (err) {
-    console.error("[delete-account] Internal error:", err);
+    console.error("[delete-account] Internal error");
     return new Response(
       JSON.stringify({
         error: "internal_error",

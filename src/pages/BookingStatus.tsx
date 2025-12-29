@@ -76,23 +76,27 @@ const BookingStatus = () => {
         };
       case "annulee":
         return {
-          icon: <AlertCircle className="w-16 h-16 text-gray-500" />,
+          icon: <AlertCircle className="w-16 h-16 text-muted-foreground" />,
           title: "Réservation annulée",
           description: "Cette réservation a été annulée.",
-          color: "bg-gray-100 text-gray-700"
+          color: "bg-muted text-muted-foreground"
         };
       default:
         return {
-          icon: <AlertCircle className="w-16 h-16 text-gray-500" />,
+          icon: <AlertCircle className="w-16 h-16 text-muted-foreground" />,
           title: "Statut inconnu",
           description: "",
-          color: "bg-gray-100 text-gray-700"
+          color: "bg-muted text-muted-foreground"
         };
     }
   };
 
   const config = getStatusConfig(booking.status);
-  const b = booking as any;
+  // Type-safe access to booking properties
+  const basePriceCents = (booking as { base_price_cents?: number }).base_price_cents ?? 0;
+  const aidsTotalCents = (booking as { aids_total_cents?: number }).aids_total_cents ?? 0;
+  const finalPriceCents = (booking as { final_price_cents?: number }).final_price_cents ?? 0;
+  const aidsApplied = (booking as { aids_applied?: Array<{ aid_name: string; amount_cents: number }> }).aids_applied;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR", {
@@ -149,26 +153,26 @@ const BookingStatus = () => {
             )}
 
             {/* Pricing section - only show if activity has a price */}
-            {b?.base_price_cents > 0 && (
+            {basePriceCents > 0 && (
               <div className="border-t pt-4">
                 <p className="text-sm text-muted-foreground mb-2">Tarification</p>
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span>Prix initial</span>
-                    <span className="font-medium">{((b.base_price_cents || 0) / 100).toFixed(2)}€</span>
+                    <span className="font-medium">{(basePriceCents / 100).toFixed(2)}€</span>
                   </div>
-                  {(b.aids_total_cents || 0) > 0 && (
+                  {aidsTotalCents > 0 && (
                     <>
                       <div className="flex justify-between text-sm text-green-600">
                         <span>Aides financières</span>
-                        <span className="font-medium">- {((b.aids_total_cents || 0) / 100).toFixed(2)}€</span>
+                        <span className="font-medium">- {(aidsTotalCents / 100).toFixed(2)}€</span>
                       </div>
-                      {Array.isArray(b.aids_applied) && b.aids_applied.length > 0 && (
+                      {Array.isArray(aidsApplied) && aidsApplied.length > 0 && (
                         <div className="ml-4 mt-1 space-y-0.5">
-                          {b.aids_applied.map((aid: any, idx: number) => (
+                          {aidsApplied.map((aid, idx) => (
                             <div key={idx} className="flex justify-between text-xs text-muted-foreground">
                               <span>• {aid.aid_name}</span>
-                              <span>-{((aid.amount_cents || 0) / 100).toFixed(2)}€</span>
+                              <span>-{((aid.amount_cents ?? 0) / 100).toFixed(2)}€</span>
                             </div>
                           ))}
                         </div>
@@ -177,7 +181,7 @@ const BookingStatus = () => {
                   )}
                   <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                     <span>Reste à payer</span>
-                    <span className="text-primary">{((b.final_price_cents || 0) / 100).toFixed(2)}€</span>
+                    <span className="text-primary">{(finalPriceCents / 100).toFixed(2)}€</span>
                   </div>
                 </div>
               </div>

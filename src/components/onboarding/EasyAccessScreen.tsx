@@ -72,7 +72,7 @@ export const EasyAccessScreen = ({ onNext, onSkip }: EasyAccessScreenProps) => {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-foreground">Covoiturage</p>
-                <p className="text-xs text-muted-foreground">Trouve ou propose un trajet</p>
+                <p className="text-xs text-muted-foreground">Trouvez ou proposez un trajet</p>
               </div>
               <Leaf className="w-4 h-4 text-green-600" />
             </div>
@@ -96,7 +96,7 @@ export const EasyAccessScreen = ({ onNext, onSkip }: EasyAccessScreenProps) => {
           className="w-full h-14 text-base font-semibold bg-gradient-to-r from-primary to-accent hover:opacity-90"
           size="lg"
         >
-          C'est parti ! 🚀
+          C'est parti !
         </Button>
         
         <Button

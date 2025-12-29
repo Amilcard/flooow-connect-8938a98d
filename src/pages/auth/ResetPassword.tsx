@@ -8,6 +8,7 @@ import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { constantTimeEqual } from '@/utils/security/constantTimeEqual';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -54,7 +55,7 @@ const ResetPassword = () => {
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (!constantTimeEqual(password, confirmPassword)) {
       toast({
         title: "Erreur",
         description: "Les mots de passe ne correspondent pas",
@@ -82,11 +83,11 @@ const ResetPassword = () => {
 
       // Rediriger vers login après 3 secondes
       setTimeout(() => navigate('/login'), 3000);
-    } catch (error: any) {
-      console.error('Reset password error:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Impossible de réinitialiser le mot de passe. Veuillez réessayer.";
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de réinitialiser le mot de passe. Veuillez réessayer.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -189,6 +190,7 @@ const ResetPassword = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="pl-10 pr-10 h-12 border-2 focus:border-primary transition-colors"
+                    autoComplete="new-password"
                     required
                   />
                   <button
@@ -217,6 +219,7 @@ const ResetPassword = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
                     className="pl-10 pr-10 h-12 border-2 focus:border-primary transition-colors"
+                    autoComplete="new-password"
                     required
                   />
                   <button

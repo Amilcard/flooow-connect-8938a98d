@@ -122,10 +122,10 @@ const EventDetail = () => {
     <PageLayout>
       <div className="container px-4 py-6 space-y-6 max-w-4xl mx-auto">
         {/* Header avec bouton retour */}
-        {/* Header avec bouton retour */}
         <div className="mb-4">
           <BackButton
             positioning="relative"
+            size="sm"
             showText={true}
             label="Retour"
           />
@@ -134,9 +134,13 @@ const EventDetail = () => {
         {/* Image principale */}
         {event.image_url && (
           <div className="relative h-64 md:h-96 w-full overflow-hidden rounded-lg">
-            <img 
-              src={event.image_url} 
+            <img
+              src={event.image_url}
               alt={event.title}
+              fetchPriority="high"
+              decoding="async"
+              width={800}
+              height={400}
               className="w-full h-full object-cover"
             />
             <Badge 
@@ -162,10 +166,12 @@ const EventDetail = () => {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="sm"
                   onClick={handleShare}
+                  className="flex items-center gap-2"
                 >
                   <Share2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Partager</span>
                 </Button>
                 {user && (
                   <Button
@@ -273,7 +279,7 @@ const EventDetail = () => {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/login")}
                 >
                   <Heart className="h-4 w-4 mr-2" />
                   Ajouter à mon agenda

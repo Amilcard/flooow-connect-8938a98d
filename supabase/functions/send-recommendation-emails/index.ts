@@ -41,7 +41,7 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("recommendation_emails", true);
 
     if (usersError) {
-      console.error("Error fetching users:", usersError);
+      console.error("[send-recommendation-emails] Error fetching users");
       throw usersError;
     }
 
@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`Found ${users.length} users with recommendation emails enabled`);
+    console.log("[send-recommendation-emails] Found users with recommendation emails enabled");
 
     let emailsSent = 0;
     let emailsFailed = 0;
@@ -68,12 +68,12 @@ const handler = async (req: Request): Promise<Response> => {
           });
 
         if (recsError) {
-          console.error(`Error fetching recommendations for user ${user.user_id}:`, recsError);
+          console.error("[send-recommendation-emails] Error fetching recommendations for user");
           continue;
         }
 
         if (!recommendations || recommendations.length === 0) {
-          console.log(`No recommendations for user ${user.user_id}`);
+          console.log("[send-recommendation-emails] No recommendations for user");
           continue;
         }
 
@@ -85,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
           .single();
 
         if (profileError || !profile?.email) {
-          console.error(`Error fetching profile for user ${user.user_id}:`, profileError);
+          console.error("[send-recommendation-emails] Error fetching profile for user");
           continue;
         }
 
@@ -102,12 +102,12 @@ const handler = async (req: Request): Promise<Response> => {
           .limit(1);
 
         if (recentEmailError) {
-          console.error(`Error checking recent emails for user ${user.user_id}:`, recentEmailError);
+          console.error("[send-recommendation-emails] Error checking recent emails for user");
           continue;
         }
 
         if (recentEmail && recentEmail.length > 0) {
-          console.log(`Email already sent in the last 24h for user ${user.user_id}`);
+          console.log("[send-recommendation-emails] Email already sent in the last 24h for user");
           continue;
         }
 
@@ -126,7 +126,7 @@ const handler = async (req: Request): Promise<Response> => {
           .single();
 
         if (notificationError) {
-          console.error(`Error creating notification for user ${user.user_id}:`, notificationError);
+          console.error("[send-recommendation-emails] Error creating notification for user");
           continue;
         }
 
@@ -215,15 +215,15 @@ const handler = async (req: Request): Promise<Response> => {
           `,
         });
 
-        console.log(`Email sent to ${profile.email}:`, emailResponse);
+        console.log("[send-recommendation-emails] Email sent successfully");
         emailsSent++;
-      } catch (error) {
-        console.error(`Failed to send email to user ${user.user_id}:`, error);
+      } catch (error: unknown) {
+        console.error("[send-recommendation-emails] Failed to process user");
         emailsFailed++;
       }
     }
 
-    console.log(`Job completed: ${emailsSent} emails sent, ${emailsFailed} failed`);
+    console.log("[send-recommendation-emails] Job completed");
 
     return new Response(
       JSON.stringify({
@@ -237,10 +237,10 @@ const handler = async (req: Request): Promise<Response> => {
         status: 200,
       }
     );
-  } catch (error: any) {
-    console.error("Error in send-recommendation-emails function:", error);
+  } catch (error: unknown) {
+    console.error("[send-recommendation-emails] Internal error");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { UserCheck, PhoneCall } from "lucide-react";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 /**
  * Composant pour demander un accompagnement personnalisé
@@ -37,7 +37,7 @@ export const AccompagnementRequest = () => {
         .eq('id', user.id)
         .single();
 
-      const currentJson = profile?.profile_json as Record<string, any> || {};
+      const currentJson = (profile?.profile_json as Record<string, unknown>) || {};
 
       // Mettre à jour le profil avec les infos d'accompagnement dans profile_json
       const { error } = await supabase
@@ -59,7 +59,7 @@ export const AccompagnementRequest = () => {
         description: "Un conseiller va vous contacter dans les prochains jours pour vous accompagner dans vos inscriptions.",
       });
     } catch (error) {
-      console.error("Erreur demande accompagnement:", error);
+      console.error(safeErrorMessage(error, 'AccompagnementRequest.handleRequestAccompagnement'));
       toast({
         title: "Erreur",
         description: "Impossible d'envoyer la demande. Réessayez plus tard.",

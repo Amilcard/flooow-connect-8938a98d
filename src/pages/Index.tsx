@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+// Flooow v1.2 - 2025-12-18 - CLS optimization
+import { useState, useEffect, lazy, Suspense } from "react";
+import { logEvent } from "@/hooks/useEventLogger";
 import { SearchBar } from "@/components/SearchBar";
 import { AidesFinancieresCard } from "@/components/home/AidesFinancieresCard";
 import { MobiliteCard } from "@/components/home/MobiliteCard";
@@ -7,17 +9,18 @@ import { BonEspritCard } from "@/components/home/BonEspritCard";
 import { ActivityThematicSection } from "@/components/home/ActivityThematicSection";
 import { useActivities } from "@/hooks/useActivities";
 import { useTerritoryAccess } from "@/hooks/useTerritoryAccess";
-import { useUserTerritory } from "@/hooks/useUserTerritory";
-import { ErrorState } from "@/components/ErrorState";
+import { useTerritory } from "@/hooks/useTerritory";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TerritoryCheck } from "@/components/TerritoryCheck";
 import PageLayout from "@/components/PageLayout";
-import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
-import { useSearchFilters } from "@/hooks/useSearchFilters";
 import Footer from "@/components/Footer";
 import HelpFloatingButton from "@/components/HelpFloatingButton";
+import { useSearchFilters } from "@/hooks/useSearchFilters";
+
+// Lazy load AdvancedFiltersModal - only needed on filter button click (saves ~19KB)
+const AdvancedFiltersModal = lazy(() => import("@/components/Search/AdvancedFiltersModal").then(m => ({ default: m.AdvancedFiltersModal })));
 
 const Index = () => {
   const navigate = useNavigate();
@@ -30,6 +33,7 @@ const Index = () => {
   } = useSearchFilters();
 
   const handleSearch = (query: string) => {
+    logEvent({ eventType: "search", metadata: { query } });
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
@@ -61,7 +65,7 @@ const Index = () => {
 
   useEffect(() => {
     let mounted = true;
-    
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (mounted) setIsLoggedIn(!!session);
@@ -77,7 +81,6 @@ const Index = () => {
       subscription.unsubscribe();
     };
   }, []);
-
 
   // Fetch user profile to check postal code
   const { data: userProfile } = useQuery({
@@ -150,33 +153,95 @@ const Index = () => {
   const { data: territoryAccess } = useTerritoryAccess(userProfile?.postal_code || null);
   
   // Récupérer le territoire de l'utilisateur pour filtrer les activités
-  const { data: userTerritory } = useUserTerritory();
+  const { territoryId } = useTerritory();
 
-  // Charger les activités : avec territoire si connecté, sinon toutes les activités
-  const { activities: nearbyActivities = [], isLoading: loadingNearby, error: errorNearby } = useActivities({
-    limit: 6,
-    territoryId: userTerritory?.id || undefined // undefined permet de charger toutes les activités si pas de territoire
+  // Charger un vivier large d'activités pour le split intelligent
+  const { activities: allHomeActivities = [], isLoading: loadingActivities, error: errorActivities } = useActivities({
+    limit: 30,
+    territoryId: territoryId || undefined
   });
 
-  // Petits budgets (max 400€)
-  const { activities: budgetActivities = [], isLoading: loadingBudget } = useActivities({ 
-    limit: 6,
-    territoryId: userTerritory?.id,
-    maxPrice: 400
-  });
+  // Split intelligent: 6 pour "À proximité" + 6 pour "Petits budgets" avec diversité
+  const { proximityActivities, budgetActivities } = (() => {
+    if (allHomeActivities.length === 0) {
+      return { proximityActivities: [], budgetActivities: [] };
+    }
 
-  // Sport & bien-être
-  const { activities: sportActivities = [], isLoading: loadingSport } = useActivities({ 
-    limit: 6,
-    territoryId: userTerritory?.id,
-    category: 'sport'
-  });
+    // Helper: extraire la catégorie principale
+    const getMainCategory = (a: typeof allHomeActivities[0]) =>
+      Array.isArray(a.categories) && a.categories.length > 0 ? a.categories[0] : 'other';
 
-  // Activités recommandées
-  const { activities: recommendedActivities = [], isLoading: loadingRecommended, error: errorRecommended } = useActivities({ 
-    limit: 6,
-    territoryId: userTerritory?.id
-  });
+    // Helper: extraire la tranche d'âge
+    const getAgeGroup = (a: typeof allHomeActivities[0]) => {
+      const min = a.age_min ?? 0;
+      if (min <= 5) return '0-5';
+      if (min <= 10) return '6-10';
+      if (min <= 14) return '11-14';
+      return '15+';
+    };
+
+    // Helper: sélection diversifiée (greedy)
+    const selectDiverse = (
+      candidates: typeof allHomeActivities,
+      count: number,
+      excludeIds: Set<string>
+    ) => {
+      const selected: typeof allHomeActivities = [];
+      const usedCategories = new Map<string, number>();
+      const usedAgeGroups = new Map<string, number>();
+      const usedPeriods = new Map<string, number>();
+
+      // Filtrer les exclus
+      const pool = candidates.filter(a => !excludeIds.has(a.id));
+
+      // Greedy: prioriser la diversité
+      for (const activity of pool) {
+        if (selected.length >= count) break;
+
+        const cat = getMainCategory(activity);
+        const age = getAgeGroup(activity);
+        const period = activity.period_type || 'unknown';
+
+        // Limiter à 2 max par catégorie, 2 par tranche d'âge, 3 par période
+        const catCount = usedCategories.get(cat) || 0;
+        const ageCount = usedAgeGroups.get(age) || 0;
+        const periodCount = usedPeriods.get(period) || 0;
+
+        if (catCount < 2 && ageCount < 2 && periodCount < 3) {
+          selected.push(activity);
+          usedCategories.set(cat, catCount + 1);
+          usedAgeGroups.set(age, ageCount + 1);
+          usedPeriods.set(period, periodCount + 1);
+        }
+      }
+
+      // Fallback: si pas assez, remplir sans contrainte
+      if (selected.length < count) {
+        for (const activity of pool) {
+          if (selected.length >= count) break;
+          if (!selected.find(s => s.id === activity.id)) {
+            selected.push(activity);
+          }
+        }
+      }
+
+      return selected;
+    };
+
+    // Carrousel 1: "À proximité" - diversité maximale
+    const proximity = selectDiverse(allHomeActivities, 6, new Set());
+    const proximityIds = new Set(proximity.map(a => a.id));
+
+    // Carrousel 2: "Petits budgets" - trier par prix, puis diversifier
+    const sortedByPrice = [...allHomeActivities].sort((a, b) => {
+      const priceA = a.price ?? 9999;
+      const priceB = b.price ?? 9999;
+      return priceA - priceB;
+    });
+    const budget = selectDiverse(sortedByPrice, 6, proximityIds);
+
+    return { proximityActivities: proximity, budgetActivities: budget };
+  })();
 
 
 
@@ -190,18 +255,22 @@ const Index = () => {
         onSearch={handleSearch}
       />
       
-      <AdvancedFiltersModal
-        isOpen={isFiltersOpen}
-        onClose={() => setIsFiltersOpen(false)}
-        filters={filterState.advancedFilters}
-        onFiltersChange={updateAdvancedFilters}
-        resultsCount={0} // On Home we don't know count yet, or we could fetch it
-        isCountLoading={false}
-        onApply={handleApplyFilters}
-        onClear={clearAllFilters}
-      />
+      {isFiltersOpen && (
+        <Suspense fallback={null}>
+          <AdvancedFiltersModal
+            isOpen={isFiltersOpen}
+            onClose={() => setIsFiltersOpen(false)}
+            filters={filterState.advancedFilters}
+            onFiltersChange={updateAdvancedFilters}
+            resultsCount={0}
+            isCountLoading={false}
+            onApply={handleApplyFilters}
+            onClear={clearAllFilters}
+          />
+        </Suspense>
+      )}
       
-      <main className="max-w-[1200px] mx-auto px-6 pb-24">
+      <main className="max-w-5xl mx-auto px-4 pb-24">
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
           <TerritoryCheck 
@@ -233,19 +302,21 @@ const Index = () => {
               </div>
             </section>
 
-            {/* ========== SECTION 2: ACTIVITÉS RECOMMANDÉES ========== */}
-            {errorRecommended ? (
+
+
+            {/* ========== SECTION 2: ACTIVITÉS À PROXIMITÉ ========== */}
+            {errorActivities ? (
               <section className="py-6 px-4">
                 <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-center gap-3">
                   <div className="p-2 bg-red-100 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800">Impossible de charger les suggestions</p>
+                    <p className="text-sm font-medium text-red-800">Impossible de charger les activités</p>
                     <p className="text-xs text-red-600 mt-0.5">Vérifiez votre connexion ou réessayez plus tard.</p>
                   </div>
-                  <button 
-                    onClick={() => window.location.reload()} 
+                  <button
+                    onClick={() => window.location.reload()}
                     className="text-xs font-semibold text-red-700 hover:text-red-800 px-3 py-1.5 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
                   >
                     Réessayer
@@ -253,45 +324,31 @@ const Index = () => {
                 </div>
               </section>
             ) : (
-              !loadingRecommended && recommendedActivities.length > 0 && (
-                <section className="py-6" data-tour-id="home-reco-section">
-                  <ActivityThematicSection
-                    title="Activités recommandées"
-                    subtitle="Une sélection d'activités adaptées au profil de votre famille."
-                    activities={recommendedActivities}
-                    showSeeAll
-                    onActivityClick={handleActivityClick}
-                    onSeeAllClick={() => navigate('/activities')}
-                  />
-                </section>
-              )
-            )}
-
-            {/* ========== SECTION 3: PETITS BUDGETS ========== */}
-            {!loadingBudget && budgetActivities.length > 0 && (
-              <section className="py-6">
+              <section className="py-6" data-tour-id="home-reco-section">
                 <ActivityThematicSection
-                  title="Petits budgets"
-                  subtitle="Des idées d'activités à coût maîtrisé."
-                  activities={budgetActivities}
-                  badge="Budget maîtrisé"
+                  title="Activités à proximité"
+                  subtitle="Une sélection d'activités adaptées au profil de votre famille."
+                  activities={proximityActivities}
+                  showSeeAll
                   onActivityClick={handleActivityClick}
+                  onSeeAllClick={() => navigate('/activities')}
+                  isFirstSection
+                  isLoading={loadingActivities}
                 />
               </section>
             )}
 
-            {/* ========== SECTION 4: SPORT & BIEN-ÊTRE ========== */}
-            {!loadingSport && sportActivities.length > 0 && (
-              <section className="py-6">
-                <ActivityThematicSection
-                  title="Sport & bien-être"
-                  subtitle="Bouger, se défouler, se sentir bien."
-                  activities={sportActivities}
-                  badge="Sport"
-                  onActivityClick={handleActivityClick}
-                />
-              </section>
-            )}
+            {/* ========== SECTION 3: ACTIVITÉS PETITS BUDGETS ========== */}
+            <section className="py-6">
+              <ActivityThematicSection
+                title="Activités petits budgets"
+                subtitle="Des idées d'activités à coût maîtrisé."
+                activities={budgetActivities}
+                badge="Budget maîtrisé"
+                onActivityClick={handleActivityClick}
+                isLoading={loadingActivities}
+              />
+            </section>
           </>
         )}
       </main>

@@ -1,18 +1,18 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
-  Bus, 
-  Bike, 
-  Footprints, 
-  Car, 
-  Leaf, 
+import {
+  Bus,
+  Bike,
+  Footprints,
+  Car,
+  Leaf,
   MapPin,
   Mail,
   Phone,
@@ -22,8 +22,6 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 // Mock coherent durations for eco-mobility (12-45 min range)
 // Rule: Walk > Bike ≈ Bus
@@ -39,18 +37,32 @@ const getCoherentDurations = (activityId: string) => {
   };
 };
 
+// Constants for eco-mobility calculations
+const CO2_CAR_PER_KM = 120; // grams CO2 per km by car
+const CALORIES_BIKE_PER_MIN = 8; // kcal per minute cycling
+const CALORIES_WALK_PER_MIN = 4; // kcal per minute walking
+const STEPS_PER_KM = 1300; // average steps per km
+
+// Estimate distance based on duration and mode
+const estimateDistance = (durationMin: number, mode: 'bike' | 'walk') => {
+  const speedKmH = mode === 'bike' ? 15 : 5; // 15 km/h bike, 5 km/h walk
+  return (durationMin / 60) * speedKmH;
+};
+
 interface EcoMobilitySectionProps {
   activityId: string;
   activityAddress?: string;
+  activityLatLng?: { lat: number; lng: number };
   structureName?: string;
-  structureContactJson?: any;
+  structureContactJson?: Record<string, unknown> | null;
   onTransportModeSelected?: (mode: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string }) => void;
   selectedTransportMode?: { type: "bus" | "bike" | "walk"; label: string; duration: number; details?: string } | null;
 }
 
-export const EcoMobilitySection = ({ 
-  activityId, 
+export const EcoMobilitySection = ({
+  activityId,
   activityAddress,
+  activityLatLng,
   structureName,
   structureContactJson,
   onTransportModeSelected,
@@ -133,10 +145,18 @@ export const EcoMobilitySection = ({
     <section className="space-y-4">
       <div className="flex items-center gap-2">
         <Leaf className="w-6 h-6 text-green-600" />
-        <h2 className="text-2xl font-bold text-foreground">
-          Économe carbone, fais du bien à la planète 🌍
+        <h2 className="text-xl font-bold text-foreground">
+          Économe carbone, fais du bien à la planète
         </h2>
       </div>
+
+      {/* Bandeau incitatif écomobilité */}
+      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border border-green-200 dark:border-green-800 rounded-lg">
+        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+          🌱 En choisissant un mode écomobile, vous économisez du CO₂ à chaque séance et contribuez à un avenir plus vert pour vos enfants !
+        </p>
+      </div>
+
       <p className="text-sm text-muted-foreground">
         Choisissez un mode de transport écologique pour vous rendre à l'activité
       </p>
@@ -166,7 +186,7 @@ export const EcoMobilitySection = ({
                 </div>
                 
                 {nearestStop && (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin size={16} className="text-muted-foreground" />
                       <span className="font-medium">{nearestStop.name}</span>
@@ -179,9 +199,18 @@ export const EcoMobilitySection = ({
                         </Badge>
                       ))}
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock size={14} />
-                      <span>Temps estimé : {durations.bus} min</span>
+                    {/* Durée et CO2 - hiérarchie visuelle renforcée */}
+                    <div className="flex flex-wrap items-center gap-4 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={16} className="text-blue-600" />
+                        <span className="font-semibold text-blue-700 dark:text-blue-400">{durations.bus} min</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Leaf size={16} className="text-green-600" />
+                        <span className="font-semibold text-green-700 dark:text-green-400">
+                          {Math.round(estimateDistance(durations.bus, 'bus') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -190,7 +219,7 @@ export const EcoMobilitySection = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + '?tab=mobilite')}`)}
+                    onClick={() => navigate(`/itineraire?type=bus&destination=${encodeURIComponent(activityAddress || "")}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + "?tab=trajets")}`)}
                     className="mt-2"
                   >
                     Calculer mon itinéraire →
@@ -233,7 +262,7 @@ export const EcoMobilitySection = ({
                 </div>
                 
                 {nearestStation && (
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin size={16} className="text-muted-foreground" />
                       <span className="font-medium">{nearestStation.name}</span>
@@ -242,9 +271,23 @@ export const EcoMobilitySection = ({
                     <p className="text-sm text-muted-foreground">
                       {nearestStation.available_bikes} vélos disponibles
                     </p>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock size={14} />
-                      <span>Temps estimé : {durations.bike} min</span>
+                    {/* Durée et CO2 - hiérarchie visuelle renforcée */}
+                    <div className="flex flex-wrap items-center gap-4 p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-md">
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={16} className="text-emerald-600" />
+                        <span className="font-semibold text-emerald-700 dark:text-emerald-400">{durations.bike} min</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Leaf size={16} className="text-green-600" />
+                        <span className="font-semibold text-green-700 dark:text-green-400">
+                          {Math.round(estimateDistance(durations.bike, 'bike') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités
+                        </span>
+                      </div>
+                    </div>
+                    {/* Calories/pas en second niveau */}
+                    <div className="flex items-center gap-2 text-xs text-purple-600">
+                      <Footprints size={12} />
+                      <span>≈ {Math.round(durations.bike * CALORIES_BIKE_PER_MIN / 10) * 10} kcal brûlées</span>
                     </div>
                   </div>
                 )}
@@ -253,7 +296,7 @@ export const EcoMobilitySection = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + '?tab=mobilite')}`)}
+                    onClick={() => navigate(`/itineraire?type=bike&destination=${encodeURIComponent(activityAddress || "")}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + "?tab=trajets")}`)}
                     className="mt-2"
                   >
                     Calculer mon itinéraire →
@@ -297,15 +340,29 @@ export const EcoMobilitySection = ({
                 <p className="text-sm text-muted-foreground">
                   Idéal pour les enfants et adolescents ! Profitez d'une balade active.
                 </p>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Clock size={14} />
-                  <span>Temps estimé : {durations.walk} min</span>
+                {/* Durée et CO2 - hiérarchie visuelle renforcée */}
+                <div className="flex flex-wrap items-center gap-4 p-2 bg-purple-50 dark:bg-purple-950/30 rounded-md">
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={16} className="text-purple-600" />
+                    <span className="font-semibold text-purple-700 dark:text-purple-400">{durations.walk} min</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Leaf size={16} className="text-green-600" />
+                    <span className="font-semibold text-green-700 dark:text-green-400">
+                      {Math.round(estimateDistance(durations.walk, 'walk') * CO2_CAR_PER_KM / 1000 * 10) / 10} kg CO₂ évités
+                    </span>
+                  </div>
+                </div>
+                {/* Calories/pas en second niveau */}
+                <div className="flex items-center gap-2 text-xs text-purple-600">
+                  <Footprints size={12} />
+                  <span>≈ {Math.round(durations.walk * CALORIES_WALK_PER_MIN / 10) * 10} kcal • {Math.round(estimateDistance(durations.walk, 'walk') * STEPS_PER_KM / 100) * 100} pas</span>
                 </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || '')}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + '?tab=mobilite')}`)}
+                    onClick={() => navigate(`/itineraire?type=walk&destination=${encodeURIComponent(activityAddress || "")}&activityId=${activityId}&return=${encodeURIComponent(window.location.pathname + "?tab=trajets")}`)}
                     className="mt-2"
                   >
                     Calculer mon itinéraire →

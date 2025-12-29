@@ -11,6 +11,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { UserPlus, Clock } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { toast } from "sonner";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 const ChildSignup = () => {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const ChildSignup = () => {
     
     if (!session?.user) {
       toast.error("Vous devez être connecté");
-      navigate("/auth");
+      navigate("/login");
       return;
     }
 
@@ -54,7 +55,7 @@ const ChildSignup = () => {
         .single();
 
       if (error) {
-        console.error("Error creating child:", error);
+        console.error(safeErrorMessage(error, 'Create child'));
         throw error;
       }
 
@@ -68,20 +69,22 @@ const ChildSignup = () => {
       setTimeout(() => {
         navigate("/mon-compte/enfants");
       }, 100);
-    } catch (error: any) {
-      console.error("Error creating child:", error);
-      
+    } catch (error: unknown) {
+      console.error(safeErrorMessage(error, 'Create child'));
+
       // More specific error messages
       let errorMessage = "Erreur lors de la création du profil";
-      
-      if (error?.code === "23505") {
+
+      // Type guard for Supabase/Postgres error codes
+      const errorWithCode = error as { code?: string; message?: string };
+      if (errorWithCode?.code === "23505") {
         errorMessage = "Un profil similaire existe déjà";
-      } else if (error?.code === "42501") {
+      } else if (errorWithCode?.code === "42501") {
         errorMessage = "Vous n'avez pas les permissions nécessaires";
-      } else if (error?.message) {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -111,7 +114,7 @@ const ChildSignup = () => {
       <SearchBar />
       
       <div className="container py-6 space-y-6">
-        <BackButton fallback="/" />
+        <BackButton fallback="/" positioning="relative" size="sm" showText={true} label="Retour" />
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Créer un profil enfant</h1>

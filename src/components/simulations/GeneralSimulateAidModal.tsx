@@ -30,19 +30,115 @@ import { useAuth } from "@/hooks/useAuth";
 import { KidQuickAddModal } from "@/components/KidQuickAddModal";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
-import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
-import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
 
-interface GeneralSimulateAidModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
+// INTERFACES - Must be before helpers that reference them
 interface FinancialAid {
   aid_name: string;
   amount: number;
   territory_level: string;
   official_link: string | null;
+}
+
+interface Child {
+  id: string;
+  first_name: string;
+  dob: string;
+  user_id?: string;
+  isAnonymous?: boolean;
+}
+
+// HELPERS: Extract logic to reduce cognitive complexity
+
+/**
+ * Parse QF bracket string to numeric value
+ */
+const parseQFBracket = (qfString: string): number => {
+  if (qfString.includes('-')) {
+    const [min, max] = qfString.split('-').map(Number);
+    return (min + max) / 2;
+  }
+  if (qfString.includes('+')) {
+    return Number.parseInt(qfString.replace('+', ''), 10);
+  }
+  return Number.parseInt(qfString, 10);
+};
+
+/**
+ * Get child age from either children array or anonymous children
+ */
+const getChildAge = (
+  childId: string,
+  children: Child[],
+  anonymousChildren: Child[],
+  calculateAge: (dob: string) => number
+): number | undefined => {
+  const selectedChild = children.find(c => c.id === childId);
+  if (selectedChild) {
+    return calculateAge(selectedChild.dob);
+  }
+  const selectedAnonymous = anonymousChildren.find(c => c.id === childId);
+  if (selectedAnonymous) {
+    return calculateAge(selectedAnonymous.dob);
+  }
+  return undefined;
+};
+
+/**
+ * Get statut scolaire based on age
+ */
+const getStatutScolaire = (age: number): 'primaire' | 'college' | 'lycee' => {
+  if (age >= 15) return 'lycee';
+  if (age >= 11) return 'college';
+  return 'primaire';
+};
+
+/**
+ * Build eligibility params for the engine
+ */
+const buildEligibilityParams = (
+  childAge: number,
+  qfValue: number,
+  cityCode: string,
+  activityPrice: string,
+  activityCategory: string
+): EligibilityParams => ({
+  age: childAge,
+  quotient_familial: qfValue,
+  code_postal: cityCode || "",
+  ville: "",
+  departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
+  prix_activite: Number.parseFloat(activityPrice),
+  type_activite: getTypeActivite([activityCategory]),
+  periode: 'saison_scolaire',
+  nb_fratrie: 0,
+  allocataire_caf: !!qfValue,
+  statut_scolaire: getStatutScolaire(childAge),
+  est_qpv: false,
+  conditions_sociales: {
+    beneficie_ARS: false,
+    beneficie_AEEH: false,
+    beneficie_AESH: false,
+    beneficie_bourse: false,
+    beneficie_ASE: false
+  }
+});
+
+/**
+ * Map engine results to display format
+ */
+const mapEngineResultsToAids = (engineResults: ReturnType<typeof calculateAllEligibleAids>): FinancialAid[] => {
+  return engineResults.map(res => ({
+    aid_name: res.name,
+    amount: res.montant,
+    territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+    official_link: res.official_link || null
+  }));
+};
+
+interface GeneralSimulateAidModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface SimulationForm {
@@ -58,14 +154,6 @@ interface UserProfile {
   quotient_familial?: number;
   postal_code?: string;
   city_code?: string;
-}
-
-interface Child {
-  id: string;
-  first_name: string;
-  dob: string;
-  user_id?: string;
-  isAnonymous?: boolean;
 }
 
 const TERRITORY_LABELS = {
@@ -164,7 +252,7 @@ export const GeneralSimulateAidModal = ({
         setForm(prev => ({ ...prev, selectedChildId: childrenData[0].id }));
       }
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error(safeErrorMessage(error, 'GeneralSimulateAidModal.loadUserProfile'));
     }
   }, [user]);
 
@@ -176,7 +264,7 @@ export const GeneralSimulateAidModal = ({
         setAnonymousChildren(anonChildren);
       }
     } catch (error) {
-      console.error('Error loading anonymous children:', error);
+      console.error(safeErrorMessage(error, 'GeneralSimulateAidModal.loadAnonymousChildren'));
     }
   }, []);
 
@@ -199,87 +287,44 @@ export const GeneralSimulateAidModal = ({
     setHasSimulated(false);
 
     try {
+      // Validations
       if (!form.quotientFamilial) {
         throw new Error("Veuillez sélectionner votre tranche de quotient familial");
       }
-
       if (!form.activityCategory) {
         throw new Error("Veuillez sélectionner une catégorie d'activité");
       }
 
-      let childAge: number | undefined;
-      
-      const selectedChild = children.find(c => c.id === form.selectedChildId);
-      if (selectedChild) {
-        childAge = calculateAge(selectedChild.dob);
-      } else {
-        const selectedAnonymous = anonymousChildren.find(c => c.id === form.selectedChildId);
-        if (selectedAnonymous) {
-          childAge = calculateAge(selectedAnonymous.dob);
-        }
-      }
-
+      // Get child age using helper
+      const childAge = getChildAge(form.selectedChildId, children, anonymousChildren, calculateAge);
       if (!childAge) {
         throw new Error("Veuillez sélectionner un enfant ou ajouter un enfant");
       }
 
-      let qfValue = 0;
-      if (form.quotientFamilial.includes('-')) {
-        const [min, max] = form.quotientFamilial.split('-').map(Number);
-        qfValue = (min + max) / 2;
-      } else if (form.quotientFamilial.includes('+')) {
-        qfValue = parseInt(form.quotientFamilial.replace('+', ''));
-      } else {
-        qfValue = parseInt(form.quotientFamilial);
-      }
+      // Parse QF using helper
+      const qfValue = parseQFBracket(form.quotientFamilial);
 
-      // Simulation d'un délai pour l'UX
+      // Simulation delay for UX
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Préparation des paramètres pour le moteur TypeScript
-      const params: EligibilityParams = {
-        age: childAge,
-        quotient_familial: qfValue,
-        code_postal: form.cityCode || "",
-        ville: "", // Non disponible, impact mineur
-        departement: form.cityCode ? parseInt(form.cityCode.substring(0, 2)) : 0,
-        prix_activite: parseFloat(form.activityPrice),
-        type_activite: getTypeActivite([form.activityCategory]), // Utilisation du helper
-        periode: 'saison_scolaire', // Par défaut pour le simulateur général
-        nb_fratrie: 0,
-        allocataire_caf: !!qfValue,
-        statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
-        est_qpv: false,
-        conditions_sociales: {
-          beneficie_ARS: false,
-          beneficie_AEEH: false,
-          beneficie_AESH: false,
-          beneficie_bourse: false,
-          beneficie_ASE: false
-        }
-      };
+      // Build params using helper
+      const params = buildEligibilityParams(childAge, qfValue, form.cityCode, form.activityPrice, form.activityCategory);
 
-      // Exécution du moteur de calcul unifié
+      // Execute calculation engine
       const engineResults = calculateAllEligibleAids(params);
 
       if (engineResults.length === 0) {
         setAids([]);
         setError("Aucune aide disponible pour ces critères");
       } else {
-        // Mapping vers le format d'affichage local
-        const mappedAids: FinancialAid[] = engineResults.map(res => ({
-          aid_name: res.name,
-          amount: res.montant,
-          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
-          official_link: res.official_link || null
-        }));
-        setAids(mappedAids);
+        // Map results using helper
+        setAids(mapEngineResultsToAids(engineResults));
       }
 
       setHasSimulated(true);
-    } catch (err: any) {
-      console.error('Erreur simulation:', err);
-      setError(err.message || "Erreur lors de la simulation");
+    } catch (err: unknown) {
+      console.error(safeErrorMessage(err, 'GeneralSimulateAidModal.handleSimulate'));
+      setError(err instanceof Error ? err.message : "Erreur lors de la simulation");
     } finally {
       setIsLoading(false);
     }
@@ -305,7 +350,7 @@ export const GeneralSimulateAidModal = ({
   };
 
   const totalAids = aids.reduce((sum, aid) => sum + aid.amount, 0);
-  const priceNumeric = parseFloat(form.activityPrice) || 0;
+  const priceNumeric = Number.parseFloat(form.activityPrice) || 0;
   const remainingCost = Math.max(0, priceNumeric - totalAids);
 
   const allChildren = [...children, ...anonymousChildren];
@@ -410,12 +455,12 @@ export const GeneralSimulateAidModal = ({
                 <MapPin className="h-4 w-4" />
                 Ville de résidence (optionnel)
               </Label>
-              <Select 
-                value={form.cityCode} 
+              <Select
+                value={form.cityCode}
                 onValueChange={(value) => updateForm('cityCode', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez votre ville" />
+                  <SelectValue placeholder="Ex : Saint-Rémy-lès-Chevreuse" />
                 </SelectTrigger>
                 <SelectContent>
                   {SAMPLE_CITIES.map((city) => (
@@ -425,6 +470,7 @@ export const GeneralSimulateAidModal = ({
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">Ville ou code postal.</p>
             </div>
 
             {/* Catégorie d'activité */}

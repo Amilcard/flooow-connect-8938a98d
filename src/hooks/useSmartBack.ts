@@ -1,5 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
+/** Navigation state passed between routes */
+interface NavigationState {
+  from?: string;
+}
+
 /**
  * Smart back navigation:
  * - If no fallback is provided, always use navigate(-1) to preserve search context
@@ -18,7 +23,7 @@ export const useSmartBack = (fallback?: string) => {
 
     // If fallback provided, check if we have meaningful history
     try {
-      const state = location.state as any;
+      const state = location.state as NavigationState | null;
       if (state?.from) {
         navigate(-1);
         return;

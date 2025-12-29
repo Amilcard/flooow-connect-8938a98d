@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/EmptyState";
 import { Calendar, MapPin, Heart, Download } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -53,7 +54,7 @@ const MesEvenementsFavoris = () => {
         tourId="favorite-events-header"
       />
 
-      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="account-favorites">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-24" data-tour-id="account-favorites">
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2, 3].map((i) => (
@@ -65,21 +66,14 @@ const MesEvenementsFavoris = () => {
             ))}
           </div>
         ) : !events || events.length === 0 ? (
-          <Card className="p-8">
-            <div className="text-center space-y-4">
-              <Heart className="h-16 w-16 mx-auto text-muted-foreground" />
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Aucun événement favori</h3>
-                <p className="text-muted-foreground mb-4">
-                  Ajoutez des événements à vos favoris pour les retrouver facilement ici
-                </p>
-              </div>
-              <Button onClick={() => navigate("/agenda-community")} variant="default">
-                <Calendar className="w-4 h-4 mr-2" />
-                Découvrir les événements
-              </Button>
-            </div>
-          </Card>
+          <EmptyState
+            icon={Heart}
+            title="Aucun événement favori"
+            description="Découvrez les événements près de chez vous et ajoutez-les à vos favoris pour ne rien manquer"
+            actionLabel="Découvrir les événements"
+            onAction={() => navigate("/agenda-community")}
+            variant="inspiring"
+          />
         ) : (
           <div className="grid gap-4">
             {events.map((event) => (

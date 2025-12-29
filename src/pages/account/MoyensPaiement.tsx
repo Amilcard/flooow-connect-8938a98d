@@ -96,17 +96,17 @@ const MoyensPaiement = () => {
         } else if (method.brand === 'amex') {
           return <div className="w-8 h-5 bg-green-600 text-white text-xs font-bold flex items-center justify-center rounded">AMEX</div>;
         }
-        return <CreditCard className="w-6 h-6 text-gray-600" />;
+        return <CreditCard className="w-6 h-6 text-muted-foreground" />;
       case 'paypal':
         return <div className="w-8 h-5 bg-blue-500 text-white text-xs font-bold flex items-center justify-center rounded">PP</div>;
       case 'applepay':
-        return <Smartphone className="w-6 h-6 text-gray-900" />;
+        return <Smartphone className="w-6 h-6 text-foreground" />;
       case 'googlepay':
         return <Wallet className="w-6 h-6 text-blue-600" />;
       case 'sepa':
         return <Building className="w-6 h-6 text-green-600" />;
       default:
-        return <CreditCard className="w-6 h-6 text-gray-600" />;
+        return <CreditCard className="w-6 h-6 text-muted-foreground" />;
     }
   };
 
@@ -208,22 +208,22 @@ const MoyensPaiement = () => {
 
   return (
     <PageLayout showHeader={false}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-accent text-white p-4">
-        <div className="container flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <BackButton fallback="/mon-compte" variant="ghost" size="sm" className="text-white hover:bg-white/20" />
-            <div>
-              <h1 className="text-xl font-bold">Moyens de paiement</h1>
-              <p className="text-white/90 text-sm">
+      {/* Header blanc standard */}
+      <header className="bg-white border-b border-border shadow-sm sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+          <div className="flex items-start gap-5 flex-1 min-w-0">
+            <BackButton fallback="/mon-compte" positioning="relative" size="sm" showText={true} label="Retour" className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg font-semibold text-foreground leading-tight">Moyens de paiement</h1>
+              <p className="text-sm text-muted-foreground">
                 {paymentMethods.length} moyen{paymentMethods.length > 1 ? 's' : ''} de paiement
               </p>
             </div>
           </div>
-          
+
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogTrigger asChild>
-              <Button variant="secondary" size="sm">
+              <Button variant="outline" size="sm">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter
               </Button>
@@ -330,9 +330,9 @@ const MoyensPaiement = () => {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </header>
 
-      <div className="container px-4 py-6 space-y-6">
+      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         {/* Informations de sécurité */}
         <Card className="border-blue-200 bg-blue-50">
           <CardContent className="p-4">
@@ -462,7 +462,7 @@ const MoyensPaiement = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-5 bg-blue-500 text-white text-xs font-bold flex items-center justify-center rounded">PP</div>
                 <div>
@@ -474,10 +474,10 @@ const MoyensPaiement = () => {
                 Connecter
               </Button>
             </div>
-            
-            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+
+            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer">
               <div className="flex items-center space-x-3">
-                <Smartphone className="w-6 h-6 text-gray-900" />
+                <Smartphone className="w-6 h-6 text-foreground" />
                 <div>
                   <p className="font-medium">Apple Pay</p>
                   <p className="text-sm text-muted-foreground">Paiement rapide avec Touch ID</p>
@@ -488,7 +488,7 @@ const MoyensPaiement = () => {
               </Button>
             </div>
             
-            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer">
               <div className="flex items-center space-x-3">
                 <Wallet className="w-6 h-6 text-blue-600" />
                 <div>

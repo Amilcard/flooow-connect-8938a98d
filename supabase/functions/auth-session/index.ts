@@ -276,7 +276,7 @@ serve(async (req) => {
         );
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('[auth-session] Internal error');
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

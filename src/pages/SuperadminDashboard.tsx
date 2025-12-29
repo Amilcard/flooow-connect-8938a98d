@@ -15,6 +15,13 @@ import Header from "@/components/Header";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { safeErrorMessage } from "@/utils/sanitize";
+
+/** Profile JSON structure stored in profiles.profile_json */
+interface ProfileJson {
+  first_name?: string;
+  last_name?: string;
+}
 
 export default function SuperadminDashboard() {
   const { toast } = useToast();
@@ -69,7 +76,7 @@ export default function SuperadminDashboard() {
           territories: territories?.length || 0
         };
       } catch (error) {
-        console.error('Error fetching global stats:', error);
+        console.error(safeErrorMessage(error, 'SuperadminDashboard.globalStats'));
         return {
           kpis: {},
           totalActivities: 0,
@@ -153,10 +160,10 @@ export default function SuperadminDashboard() {
 
       // Refresh pending accounts
       await supabase.from('profiles').select('*').eq('account_status', 'pending');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de valider le compte",
+        description: error instanceof Error ? error.message : "Impossible de valider le compte",
         variant: "destructive"
       });
     }
@@ -205,10 +212,10 @@ export default function SuperadminDashboard() {
       
       // Refresh user roles list
       await supabase.from('user_roles').select('*');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de créer l'utilisateur",
+        description: error instanceof Error ? error.message : "Impossible de créer l'utilisateur",
         variant: "destructive"
       });
     } finally {
@@ -433,7 +440,7 @@ export default function SuperadminDashboard() {
                           <TableRow key={account.id}>
                             <TableCell className="font-medium">{account.email}</TableCell>
                             <TableCell>
-                              {(account.profile_json as any)?.first_name} {(account.profile_json as any)?.last_name}
+                              {(account.profile_json as ProfileJson | null)?.first_name} {(account.profile_json as ProfileJson | null)?.last_name}
                             </TableCell>
                             <TableCell>
                               {new Date(account.created_at).toLocaleDateString('fr-FR')}

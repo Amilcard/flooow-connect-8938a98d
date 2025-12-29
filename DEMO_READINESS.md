@@ -183,7 +183,8 @@ SELECT
 
 **Si tables vides → Utiliser mock-activities:**
 ```bash
-curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/mock-activities
+# Remplacer YOUR_PROJECT_REF par votre ID projet Supabase
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/mock-activities
 ```
 
 ---

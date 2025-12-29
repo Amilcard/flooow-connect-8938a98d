@@ -2,6 +2,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+/**
+ * Table name constant - notification_preferences table exists in DB
+ * but is not yet in generated Supabase types.
+ * TODO: Regenerate types with `supabase gen types typescript`
+ */
+const NOTIFICATION_PREFERENCES_TABLE = "notification_preferences" as const;
+
 interface NotificationPreferences {
   id?: string;
   user_id: string;
@@ -23,8 +30,9 @@ export const useNotificationPreferences = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) return null;
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Table not in generated types
       const { data, error } = await supabase
-        .from("notification_preferences" as any)
+        .from(NOTIFICATION_PREFERENCES_TABLE as any)
         .select("*")
         .eq("user_id", userId)
         .single();
@@ -54,24 +62,27 @@ export const useNotificationPreferences = (userId: string | undefined) => {
     mutationFn: async (newPreferences: Partial<NotificationPreferences>) => {
       if (!userId) throw new Error("User must be logged in");
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Table not in generated types
       const { data: existing } = await supabase
-        .from("notification_preferences" as any)
+        .from(NOTIFICATION_PREFERENCES_TABLE as any)
         .select("id")
         .eq("user_id", userId)
         .single();
 
       if (existing) {
         // Mise à jour
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Table not in generated types
         const { error } = await supabase
-          .from("notification_preferences" as any)
+          .from(NOTIFICATION_PREFERENCES_TABLE as any)
           .update(newPreferences)
           .eq("user_id", userId);
 
         if (error) throw error;
       } else {
         // Création
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Table not in generated types
         const { error } = await supabase
-          .from("notification_preferences" as any)
+          .from(NOTIFICATION_PREFERENCES_TABLE as any)
           .insert({
             user_id: userId,
             ...newPreferences,

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface KidQuickAddModalProps {
   open: boolean;
@@ -34,8 +35,8 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded, allowAnonymous =
     
     if (!firstName.trim() || !birthDate) {
       toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs obligatoires",
+        title: "Informations manquantes",
+        description: "Merci de renseigner le prénom et la date de naissance",
         variant: "destructive"
       });
       return;
@@ -97,11 +98,11 @@ export const KidQuickAddModal = ({ open, onClose, onChildAdded, allowAnonymous =
 
       onChildAdded(newChild?.id);
       onClose();
-    } catch (error: any) {
-      console.error("Error adding child:", error);
+    } catch (error: unknown) {
+      console.error(safeErrorMessage(error, 'KidQuickAddModal.handleSubmit'));
       toast({
         title: "Erreur",
-        description: error.message || "Impossible d'ajouter l'enfant",
+        description: error instanceof Error ? error.message : "Impossible d'ajouter l'enfant",
         variant: "destructive"
       });
     } finally {

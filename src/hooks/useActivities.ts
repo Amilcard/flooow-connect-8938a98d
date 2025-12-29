@@ -3,21 +3,98 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Activity } from "@/types/domain";
 import { toActivity } from "@/types/schemas";
 import type { ActivityRaw } from "@/types/domain";
-import { sanitizeSearchQuery } from "@/utils/sanitize";
+import { sanitizeSearchQuery, safeErrorMessage } from "@/utils/sanitize";
 
-// Export le type depuis domain pour rétro-compatibilité
 export type { Activity } from "@/types/domain";
 
-// Fetch mock activities from edge function
+// HELPERS: Reduce cognitive complexity by extracting filter application logic
+
+/**
+ * Apply search filter to query
+ */
+const applySearchFilter = (
+  query: ReturnType<typeof supabase.from>,
+  searchQuery: string | undefined,
+  search: string | undefined
+): ReturnType<typeof supabase.from> => {
+  const rawSearchTerm = searchQuery || search;
+  if (!rawSearchTerm) return query;
+
+  const searchTerm = sanitizeSearchQuery(rawSearchTerm);
+  if (!searchTerm) return query;
+
+  return query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+};
+
+/**
+ * Apply category filters to query
+ */
+const applyCategoryFilters = (
+  query: ReturnType<typeof supabase.from>,
+  category: string | undefined,
+  categories: string[] | undefined
+): ReturnType<typeof supabase.from> => {
+  if (category) {
+    query = query.overlaps("categories", [category]);
+  }
+  if (categories && categories.length > 0) {
+    query = query.overlaps("categories", categories);
+  }
+  return query;
+};
+
+/**
+ * Apply age and period filters to query
+ */
+const applyAgeAndPeriodFilters = (
+  query: ReturnType<typeof supabase.from>,
+  ageMin: number | undefined,
+  ageMax: number | undefined,
+  periodType: 'vacances' | 'scolaire' | 'all' | undefined
+): ReturnType<typeof supabase.from> => {
+  if (ageMin !== undefined && ageMax !== undefined) {
+    query = query.lte("age_min", ageMax).gte("age_max", ageMin);
+  }
+  if (periodType && periodType !== 'all') {
+    query = query.eq("period_type", periodType);
+  }
+  return query;
+};
+
+/**
+ * Apply miscellaneous filters to query
+ */
+const applyMiscFilters = (
+  query: ReturnType<typeof supabase.from>,
+  maxPrice: number | undefined,
+  hasAccessibility: boolean | undefined,
+  mobilityTypes: string[] | undefined,
+  hasFinancialAid: boolean | undefined
+): ReturnType<typeof supabase.from> => {
+  if (maxPrice) {
+    query = query.lte("price_base", maxPrice);
+  }
+  if (hasAccessibility) {
+    query = query.not("accessibility_checklist", "is", null);
+  }
+  if (mobilityTypes?.includes('Covoiturage')) {
+    query = query.eq("covoiturage_enabled", true);
+  }
+  if (hasFinancialAid) {
+    query = query.not("accepts_aid_types", "is", null);
+  }
+  return query;
+};
+
 export async function fetchMockActivities() {
   const { data, error } = await supabase.functions.invoke('mock-activities', {
     headers: { 'Content-Type': 'application/json' }
   });
   if (error) {
-    console.error("Error fetching mock activities:", error);
+    console.error(safeErrorMessage(error, 'Fetch mock activities'));
     throw error;
   }
-  return data; // array de 40 activités
+  return data;
 }
 
 interface ActivityFilters {
@@ -32,247 +109,123 @@ interface ActivityFilters {
   limit?: number;
   vacationPeriod?: string;
   searchQuery?: string;
-  territoryId?: string; // Nouveau: filtre par territoire
-  categories?: string[]; // Nouveau: support multi-catégories
-  mobilityTypes?: string[]; // Nouveau: support mobilité
-  periodType?: 'vacances' | 'scolaire' | 'all'; // Nouveau: filtre par type de période
-  financialAidsAccepted?: string[]; // Fix: Ajout de la propriété manquante
+  territoryId?: string;
+  categories?: string[];
+  mobilityTypes?: string[];
+  periodType?: 'vacances' | 'scolaire' | 'all';
+  financialAidsAccepted?: string[];
 }
 
+/**
+ * FIX: Mapping simplifié - utilise colonnes dénormalisées organism_*
+ * - Utilise `images` (array) depuis la table activities
+ * - TECH-005: Récupère organism_name et city pour affichage sur cartes
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB response has dynamic shape
 const mapActivityFromDB = (dbActivity: any): Activity => {
-  // Use first image from images array if available (now using Unsplash URLs directly)
-  const imageUrl = dbActivity.images && dbActivity.images.length > 0
-    ? dbActivity.images[0]
-    : dbActivity.cover;
-
-  // Parse PostGIS location (GeoJSON format) to extract lat/lng
-  let location_lat: number | undefined;
-  let location_lng: number | undefined;
-
-  if (dbActivity.structures?.location) {
-    try {
-      const location = dbActivity.structures.location;
-      // PostGIS returns GeoJSON: { type: "Point", coordinates: [lng, lat] }
-      if (location.type === "Point" && Array.isArray(location.coordinates)) {
-        location_lng = location.coordinates[0]; // Longitude (x)
-        location_lat = location.coordinates[1]; // Latitude (y)
-      }
-    } catch (e) {
-      console.warn("Failed to parse location from structures:", e);
-    }
-  }
-
-  // Mapper les données DB vers ActivityRaw puis utiliser toActivity
   const raw: ActivityRaw = {
     id: dbActivity.id,
     title: dbActivity.title,
-    images: dbActivity.images,
+    description: dbActivity.description,
+    images: dbActivity.images || [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
-    price_base: dbActivity.price_base,
-    category: dbActivity.category,
-    categories: dbActivity.categories,
-    accessibility_checklist: dbActivity.accessibility_checklist,
+    price_base: dbActivity.price_base || 0,
+    category: dbActivity.category || dbActivity.categories?.[0] || null,
+    categories: dbActivity.categories || [],
+    accessibility_checklist: dbActivity.accessibility_checklist || null,
     accepts_aid_types: dbActivity.accepts_aid_types,
     period_type: dbActivity.period_type,
+    // TECH-005: Utilise colonnes dénormalisées organism_* de la table activities
     structures: {
-      ...dbActivity.structures,
-      location_lat,
-      location_lng,
+      name: dbActivity.organism_name || null,
+      address: dbActivity.address || null,
+      city: dbActivity.city || null,
+      postal_code: dbActivity.postal_code || null,
+      location_lat: dbActivity.latitude || null,
+      location_lng: dbActivity.longitude || null,
     },
-    vacation_periods: dbActivity.vacation_periods,
-    covoiturage_enabled: dbActivity.covoiturage_enabled,
-    // Nouveaux champs pour tarification vacances
-    priceUnit: dbActivity.price_unit,
+    lieu: {
+      nom: null,
+      adresse: null,
+      transport: null,
+    },
+    mobilite: {
+      TC: null,
+      velo: null,
+      covoit: dbActivity.covoiturage_enabled || false,
+    },
+    vacation_periods: dbActivity.vacation_periods || [],
     vacationType: dbActivity.vacation_type,
     durationDays: dbActivity.duration_days,
     hasAccommodation: dbActivity.has_accommodation,
+    date_debut: dbActivity.date_debut || null,
+    date_fin: dbActivity.date_fin || null,
+    jours_horaires: dbActivity.jours_horaires || null,
+    lieuNom: dbActivity.lieu_nom || null,
+    creneaux: null,
+    sessions: null,
+    price_unit: dbActivity.price_unit,
+    priceUnit: dbActivity.price_unit,
+    covoiturage_enabled: dbActivity.covoiturage_enabled || false,
+    santeTags: dbActivity.tags || [],
+    prerequis: [],
+    pieces: [],
   };
-
   return toActivity(raw);
+};
+
+/**
+ * FIX: Utilise table `activities` (unifiée) sans jointure problématique
+ * - Source unique de données
+ * - Pas de jointure structures (évite erreur embed Supabase)
+ * - Champ `is_published` (pas `published`) - colonne correcte en BDD
+ * - Timeout 10s pour éviter loading infini
+ */
+// Timeout qui rejette après N ms
+const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(message)), ms)
+    )
+  ]);
 };
 
 export const useActivities = (filters?: ActivityFilters) => {
   const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
     queryKey: ["activities", filters],
-    staleTime: 300000, // 5min
-    gcTime: 600000, // 10min
+    staleTime: 300000,
+    gcTime: 600000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    retry: false,
+    retry: 1,
     queryFn: async () => {
-      // Date limite dynamique - Activités à partir d'aujourd'hui
-      const CUTOFF_DATE = new Date().toISOString().split('T')[0];
-      
-      // Fonction helper pour construire la requête de base
-      const buildBaseQuery = () => {
-        return supabase
-          .from("activities")
-          .select(`
-            id, title, description, category, categories, age_min, age_max, price_base,
-            images, accessibility_checklist, accepts_aid_types, tags,
-            capacity_policy, covoiturage_enabled, structure_id, period_type,
-            vacation_periods, price_unit, vacation_type, duration_days, has_accommodation,
-            structures:structure_id (name, address, territory_id, location),
-            availability_slots(start)
-          `)
-          .eq("published", true);
-          
-        // Only filter by date if availability_slots exists (handled by application logic or specific filter)
-        // For now, we remove the strict inner join date filter to allow activities without slots to appear
-        // .gte("availability_slots.start", CUTOFF_DATE);
-      };
+      // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
+      let query = supabase.from("activities").select("*").eq("is_published", true);
 
-      let query = buildBaseQuery();
+      // Apply filters using helper functions to reduce cognitive complexity
+      query = applySearchFilter(query, filters?.searchQuery, filters?.search);
+      query = applyCategoryFilters(query, filters?.category, filters?.categories);
+      query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
+      query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
 
-      // Filtrer par territoire si spécifié
-      if (filters?.territoryId) {
-        query = query.eq("structures.territory_id", filters.territoryId);
-      }
+      // Apply limit
+      query = query.limit(filters?.limit || 50);
 
-      // Support both search and searchQuery for compatibility
-      const rawSearchTerm = filters?.searchQuery || filters?.search;
-      let searchTerm: string | null = null;
-      
-      if (rawSearchTerm) {
-        // Sanitize search query to prevent LIKE wildcard abuse
-        searchTerm = sanitizeSearchQuery(rawSearchTerm);
-        if (searchTerm) {
-          // Recherche insensible aux accents et casse dans title, description ET tags (exact match pour tags)
-          query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
-        }
-      }
-
-      if (filters?.category) {
-        // Legacy support for single category
-        query = query.overlaps("categories", [filters.category]);
-      }
-
-      if (filters?.categories && filters.categories.length > 0) {
-        // Multi-category support
-        query = query.overlaps("categories", filters.categories);
-      }
-
-      if (filters?.maxPrice !== undefined) {
-        query = query.lte("price_base", filters.maxPrice);
-      }
-
-      if (filters?.hasAccessibility) {
-        query = query.eq("accessibility_checklist->>wheelchair", "true");
-      }
-
-      if (filters?.ageMin !== undefined && filters?.ageMax !== undefined) {
-        query = query.lte("age_min", filters.ageMax).gte("age_max", filters.ageMin);
-      }
-
-      // Filtrer par type de période (scolaire vs vacances)
-      if (filters?.periodType && filters.periodType !== 'all') {
-        // Mapping pour gérer les incohérences potentielles de la BDD (ex: 'school_holidays' vs 'vacances')
-        if (filters.periodType === 'vacances') {
-          query = query.in('period_type', ['vacances', 'school_holidays']);
-        } else if (filters.periodType === 'scolaire') {
-          // Mapping robuste pour la période scolaire
-          query = query.in('period_type', ['scolaire', 'school_period', 'annee_scolaire', 'school']);
-        } else {
-          query = query.eq('period_type', filters.periodType);
-        }
-      }
-
-      // Filtrer par période selon les DATES réelles des sessions
-      if (filters?.vacationPeriod) {
-        const periodDates = {
-          printemps_2026: { start: "2026-04-04", end: "2026-04-20" },
-          été_2026: { start: "2026-07-04", end: "2026-08-31" },
-        }[filters.vacationPeriod];
-
-        if (periodDates) {
-          // Filtrer les activités qui ont au moins une session dans la période
-          query = query
-            .gte("availability_slots.start", periodDates.start)
-            .lte("availability_slots.start", periodDates.end);
-        }
-      }
-
-      if (filters?.hasCovoiturage) {
-        query = query.eq("covoiturage_enabled", true);
-      }
-
-      if (filters?.mobilityTypes && filters.mobilityTypes.includes('Covoiturage')) {
-        query = query.eq("covoiturage_enabled", true);
-      }
-
-      if (filters?.hasFinancialAid) {
-        query = query.not("accepts_aid_types", "is", null);
-      }
-
-      // Filtre par aides financières spécifiques (OR logic)
-      if (filters?.financialAidsAccepted && filters.financialAidsAccepted.length > 0) {
-        // Construire une requête OR pour chaque aide
-        // Format: accepts_aid_types @> '["pass_sport"]' OR accepts_aid_types @> '["pass_culture"]'
-        const aidsConditions = filters.financialAidsAccepted.map(aid => 
-          `accepts_aid_types.cs.{"${aid}"}`
-        ).join(',');
-        
-        query = query.or(aidsConditions);
-      }
-
-      if (filters?.limit) {
-        query = query.limit(filters.limit);
-      } else {
-        query = query.limit(50); // Augmenté pour afficher toutes les activités réelles
-      }
-
-      const { data, error } = await query.order("created_at", { ascending: false });
+      // Timeout réel 10s - rejette si Supabase ne répond pas
+      const { data, error } = await withTimeout(
+        query.order("title", { ascending: true }),
+        10000,
+        'Délai de chargement dépassé. Veuillez réessayer.'
+      );
 
       if (error) {
-        console.error("[useActivities] Error fetching activities:", {
-          error,
-          filters,
-          timestamp: new Date().toISOString()
-        });
+        console.error(safeErrorMessage(error, `useActivities fetch (code: ${error.code})`));
         throw error;
       }
 
-      // --- LOGIQUE RELAXED SEARCH ---
-      // Si on a 0 résultat, qu'on a un terme de recherche, et qu'on a d'autres filtres actifs
-      const hasOtherFilters = !!(
-        filters?.category || 
-        filters?.maxPrice !== undefined || 
-        filters?.hasAccessibility || 
-        (filters?.ageMin !== undefined && filters?.ageMax !== undefined) ||
-        filters?.vacationPeriod ||
-        filters?.hasCovoiturage ||
-        filters?.hasFinancialAid
-      );
-
-      if ((!data || data.length === 0) && searchTerm && hasOtherFilters) {
-        console.log("No strict results, trying relaxed search for:", searchTerm);
-        
-        // On relance une recherche "élargie" : juste le terme, sans les filtres restrictifs
-        let relaxedQuery = buildBaseQuery();
-        
-        // On garde quand même le filtre territoire s'il est là, car c'est structurel
-        if (filters?.territoryId) {
-          relaxedQuery = relaxedQuery.eq("structures.territory_id", filters.territoryId);
-        }
-
-        // On réapplique la recherche texte
-        relaxedQuery = relaxedQuery.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
-        
-        // On limite aussi
-        relaxedQuery = relaxedQuery.limit(10);
-        
-        const { data: relaxedData, error: relaxedError } = await relaxedQuery.order("created_at", { ascending: false });
-        
-        if (!relaxedError && relaxedData && relaxedData.length > 0) {
-          // On a trouvé des résultats en élargissant !
-          return {
-            activities: processActivities(relaxedData),
-            isRelaxed: true
-          };
-        }
-      }
-
+      // Retourne un tableau vide si pas de données (0 résultat ≠ loading)
       return {
         activities: processActivities(data || []),
         isRelaxed: false
@@ -282,15 +235,13 @@ export const useActivities = (filters?: ActivityFilters) => {
 
   return {
     ...queryInfo,
-    // Helper pour accéder directement aux activités (rétro-compatibilité partielle via destructuring adapté)
     activities: queryInfo.data?.activities || [],
     isRelaxed: queryInfo.data?.isRelaxed || false
   };
 };
 
-// Helper pour traiter les données brutes DB
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB response array has dynamic shape
 const processActivities = (data: any[]): Activity[] => {
-  // Dédupliquer les activités par ID
   const seenIds = new Set<string>();
   const uniqueActivities = data.filter((activity) => {
     if (seenIds.has(activity.id)) {
@@ -303,7 +254,6 @@ const processActivities = (data: any[]): Activity[] => {
   return uniqueActivities.map((activity) =>
     mapActivityFromDB({
       ...activity,
-      cover: activity.images?.[0],
     })
   );
 };

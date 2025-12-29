@@ -58,7 +58,8 @@ export const ActivityShareButton = ({
     const success = await shareWithWebAPI(activity);
     if (!success) {
       toast({
-        description: "Le partage système n'est pas disponible sur cet appareil",
+        title: "Partage non disponible",
+        description: "Le partage système n'est pas disponible sur cet appareil. Utilisez les options ci-dessous.",
       });
     }
   };

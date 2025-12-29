@@ -14,445 +14,520 @@ export type Database = {
   }
   public: {
     Tables: {
-      active_sessions: {
-        Row: {
-          created_at: string
-          device_info: Json | null
-          expires_at: string
-          id: string
-          ip_address: unknown
-          last_seen: string
-          revoke_reason: string | null
-          revoked: boolean | null
-          revoked_at: string | null
-          revoked_by: string | null
-          session_id: string
-          tenant_id: string | null
-          user_agent: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          device_info?: Json | null
-          expires_at: string
-          id?: string
-          ip_address?: unknown
-          last_seen?: string
-          revoke_reason?: string | null
-          revoked?: boolean | null
-          revoked_at?: string | null
-          revoked_by?: string | null
-          session_id: string
-          tenant_id?: string | null
-          user_agent?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          device_info?: Json | null
-          expires_at?: string
-          id?: string
-          ip_address?: unknown
-          last_seen?: string
-          revoke_reason?: string | null
-          revoked?: boolean | null
-          revoked_at?: string | null
-          revoked_by?: string | null
-          session_id?: string
-          tenant_id?: string | null
-          user_agent?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "active_sessions_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "active_sessions_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
       activities: {
         Row: {
           accepts_aid_types: Json | null
-          accessibility_checklist: Json | null
-          activity_purpose: string | null
+          acm_type: string | null
+          address: string | null
           age_max: number | null
           age_min: number | null
-          capacity_policy: Json | null
+          bike_friendly: boolean | null
           categories: string[] | null
-          category: string
-          covoiturage_enabled: boolean | null
-          created_at: string
+          category_id: string | null
+          city: string | null
+          created_at: string | null
+          creneaux: Json | null
+          date_debut: string | null
+          date_fin: string | null
           description: string | null
-          documents_required: Json | null
           duration_days: number | null
-          external_portal_url: string | null
+          has_accessibility: boolean | null
           has_accommodation: boolean | null
+          has_free_trial: boolean | null
           id: string
-          images: string[] | null
-          is_apa: boolean | null
-          is_health_focused: boolean | null
-          payment_echelonned: boolean | null
-          payment_plans: Json | null
+          image_url: string | null
+          is_overnight: boolean | null
+          is_published: boolean | null
+          jours_horaires: string | null
+          latitude: number | null
+          lieu_nom: string | null
+          longitude: number | null
+          max_participants: number | null
+          mobility_covoit: boolean | null
+          mobility_tc: string | null
+          mobility_types: string[] | null
+          mobility_velo: boolean | null
+          organism_email: string | null
+          organism_id: string | null
+          organism_name: string | null
+          organism_phone: string | null
+          organism_type: string | null
+          organism_website: string | null
           period_type: string | null
+          pieces_a_fournir: string[] | null
+          postal_code: string | null
+          prerequis: string[] | null
           price_base: number | null
-          price_note: string | null
           price_unit: string | null
-          published: boolean | null
-          rules_acceptance_json: Json | null
-          structure_id: string
-          tags: string[] | null
+          public_transport_nearby: boolean | null
+          sante_tags: string[] | null
+          sessions: string | null
+          tags: Json | null
           title: string
-          transport_meta: Json | null
-          transport_options: Json | null
-          updated_at: string
-          vacation_periods: string[] | null
+          transport_info: string | null
+          updated_at: string | null
+          vacation_periods: Json | null
           vacation_type: string | null
-          video_url: string | null
-          webhook_url_for_docs: string | null
+          venue_name: string | null
+          walking_friendly: boolean | null
         }
         Insert: {
           accepts_aid_types?: Json | null
-          accessibility_checklist?: Json | null
-          activity_purpose?: string | null
+          acm_type?: string | null
+          address?: string | null
           age_max?: number | null
           age_min?: number | null
-          capacity_policy?: Json | null
+          bike_friendly?: boolean | null
           categories?: string[] | null
-          category: string
-          covoiturage_enabled?: boolean | null
-          created_at?: string
+          category_id?: string | null
+          city?: string | null
+          created_at?: string | null
+          creneaux?: Json | null
+          date_debut?: string | null
+          date_fin?: string | null
           description?: string | null
-          documents_required?: Json | null
           duration_days?: number | null
-          external_portal_url?: string | null
+          has_accessibility?: boolean | null
           has_accommodation?: boolean | null
+          has_free_trial?: boolean | null
           id?: string
-          images?: string[] | null
-          is_apa?: boolean | null
-          is_health_focused?: boolean | null
-          payment_echelonned?: boolean | null
-          payment_plans?: Json | null
+          image_url?: string | null
+          is_overnight?: boolean | null
+          is_published?: boolean | null
+          jours_horaires?: string | null
+          latitude?: number | null
+          lieu_nom?: string | null
+          longitude?: number | null
+          max_participants?: number | null
+          mobility_covoit?: boolean | null
+          mobility_tc?: string | null
+          mobility_types?: string[] | null
+          mobility_velo?: boolean | null
+          organism_email?: string | null
+          organism_id?: string | null
+          organism_name?: string | null
+          organism_phone?: string | null
+          organism_type?: string | null
+          organism_website?: string | null
           period_type?: string | null
+          pieces_a_fournir?: string[] | null
+          postal_code?: string | null
+          prerequis?: string[] | null
           price_base?: number | null
-          price_note?: string | null
           price_unit?: string | null
-          published?: boolean | null
-          rules_acceptance_json?: Json | null
-          structure_id: string
-          tags?: string[] | null
+          public_transport_nearby?: boolean | null
+          sante_tags?: string[] | null
+          sessions?: string | null
+          tags?: Json | null
           title: string
-          transport_meta?: Json | null
-          transport_options?: Json | null
-          updated_at?: string
-          vacation_periods?: string[] | null
+          transport_info?: string | null
+          updated_at?: string | null
+          vacation_periods?: Json | null
           vacation_type?: string | null
-          video_url?: string | null
-          webhook_url_for_docs?: string | null
+          venue_name?: string | null
+          walking_friendly?: boolean | null
         }
         Update: {
           accepts_aid_types?: Json | null
-          accessibility_checklist?: Json | null
-          activity_purpose?: string | null
+          acm_type?: string | null
+          address?: string | null
           age_max?: number | null
           age_min?: number | null
-          capacity_policy?: Json | null
+          bike_friendly?: boolean | null
           categories?: string[] | null
-          category?: string
-          covoiturage_enabled?: boolean | null
-          created_at?: string
+          category_id?: string | null
+          city?: string | null
+          created_at?: string | null
+          creneaux?: Json | null
+          date_debut?: string | null
+          date_fin?: string | null
           description?: string | null
-          documents_required?: Json | null
           duration_days?: number | null
-          external_portal_url?: string | null
+          has_accessibility?: boolean | null
           has_accommodation?: boolean | null
+          has_free_trial?: boolean | null
           id?: string
-          images?: string[] | null
-          is_apa?: boolean | null
-          is_health_focused?: boolean | null
-          payment_echelonned?: boolean | null
-          payment_plans?: Json | null
+          image_url?: string | null
+          is_overnight?: boolean | null
+          is_published?: boolean | null
+          jours_horaires?: string | null
+          latitude?: number | null
+          lieu_nom?: string | null
+          longitude?: number | null
+          max_participants?: number | null
+          mobility_covoit?: boolean | null
+          mobility_tc?: string | null
+          mobility_types?: string[] | null
+          mobility_velo?: boolean | null
+          organism_email?: string | null
+          organism_id?: string | null
+          organism_name?: string | null
+          organism_phone?: string | null
+          organism_type?: string | null
+          organism_website?: string | null
           period_type?: string | null
+          pieces_a_fournir?: string[] | null
+          postal_code?: string | null
+          prerequis?: string[] | null
           price_base?: number | null
-          price_note?: string | null
           price_unit?: string | null
-          published?: boolean | null
-          rules_acceptance_json?: Json | null
-          structure_id?: string
-          tags?: string[] | null
+          public_transport_nearby?: boolean | null
+          sante_tags?: string[] | null
+          sessions?: string | null
+          tags?: Json | null
           title?: string
-          transport_meta?: Json | null
-          transport_options?: Json | null
-          updated_at?: string
-          vacation_periods?: string[] | null
+          transport_info?: string | null
+          updated_at?: string | null
+          vacation_periods?: Json | null
           vacation_type?: string | null
-          video_url?: string | null
-          webhook_url_for_docs?: string | null
+          venue_name?: string | null
+          walking_friendly?: boolean | null
         }
         Relationships: [
           {
-            foreignKeyName: "activities_structure_id_fkey"
-            columns: ["structure_id"]
+            foreignKeyName: "activities_category_id_fkey"
+            columns: ["category_id"]
             isOneToOne: false
-            referencedRelation: "structures"
+            referencedRelation: "activity_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_organism_id_fkey"
+            columns: ["organism_id"]
+            isOneToOne: false
+            referencedRelation: "organisms"
             referencedColumns: ["id"]
           },
         ]
       }
-      activity_views: {
+      activity_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon_name: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon_name?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      activity_media: {
         Row: {
           activity_id: string | null
           created_at: string | null
+          display_order: number | null
           id: string
-          session_id: string | null
-          source: string | null
-          user_id: string | null
-          view_duration_seconds: number | null
+          media_type: string
+          media_url: string
+          thumbnail_url: string | null
         }
         Insert: {
           activity_id?: string | null
           created_at?: string | null
+          display_order?: number | null
           id?: string
-          session_id?: string | null
-          source?: string | null
-          user_id?: string | null
-          view_duration_seconds?: number | null
+          media_type: string
+          media_url: string
+          thumbnail_url?: string | null
         }
         Update: {
           activity_id?: string | null
           created_at?: string | null
+          display_order?: number | null
           id?: string
-          session_id?: string | null
-          source?: string | null
-          user_id?: string | null
-          view_duration_seconds?: number | null
+          media_type?: string
+          media_url?: string
+          thumbnail_url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "activity_views_activity_id_fkey"
+            foreignKeyName: "activity_media_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "activity_views_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "activity_media_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "activities_with_age_groups"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "activity_views_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "activity_media_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "v_profile_completion"
+            referencedRelation: "activities_with_sessions"
             referencedColumns: ["id"]
           },
         ]
       }
-      aid_simulations: {
+      activity_prices: {
         Row: {
-          activity_id: string
-          booking_id: string | null
-          child_id: string | null
-          created_at: string
+          activity_id: string | null
+          amount: number
+          created_at: string | null
           id: string
-          simulated_aids: Json
-          user_id: string
+          price_type: string
+          quotient_max: number | null
+          quotient_min: number | null
         }
         Insert: {
-          activity_id: string
-          booking_id?: string | null
-          child_id?: string | null
-          created_at?: string
+          activity_id?: string | null
+          amount: number
+          created_at?: string | null
           id?: string
-          simulated_aids?: Json
-          user_id: string
+          price_type: string
+          quotient_max?: number | null
+          quotient_min?: number | null
         }
         Update: {
-          activity_id?: string
-          booking_id?: string | null
-          child_id?: string | null
-          created_at?: string
+          activity_id?: string | null
+          amount?: number
+          created_at?: string | null
           id?: string
-          simulated_aids?: Json
-          user_id?: string
+          price_type?: string
+          quotient_max?: number | null
+          quotient_min?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "aid_simulations_activity_id_fkey"
+            foreignKeyName: "activity_prices_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "aid_simulations_booking_id_fkey"
-            columns: ["booking_id"]
+            foreignKeyName: "activity_prices_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "bookings"
+            referencedRelation: "activities_with_age_groups"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "aid_simulations_child_id_fkey"
-            columns: ["child_id"]
+            foreignKeyName: "activity_prices_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "aid_simulations_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "v_children_with_age"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "aid_simulations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "aid_simulations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
+            referencedRelation: "activities_with_sessions"
             referencedColumns: ["id"]
           },
         ]
       }
-      aids: {
+      activity_sessions: {
         Row: {
-          created_at: string
+          activity_id: string | null
+          age_max: number | null
+          age_min: number | null
+          created_at: string | null
+          current_participants: number | null
+          day_of_week: number | null
+          end_date: string | null
+          end_time: string
           id: string
-          metadata: Json | null
-          name: string
-          rules: Json
-          updated_at: string
+          location: string | null
+          max_participants: number | null
+          period_type: string | null
+          price: number | null
+          start_date: string | null
+          start_time: string
         }
         Insert: {
-          created_at?: string
+          activity_id?: string | null
+          age_max?: number | null
+          age_min?: number | null
+          created_at?: string | null
+          current_participants?: number | null
+          day_of_week?: number | null
+          end_date?: string | null
+          end_time: string
           id?: string
-          metadata?: Json | null
-          name: string
-          rules?: Json
-          updated_at?: string
+          location?: string | null
+          max_participants?: number | null
+          period_type?: string | null
+          price?: number | null
+          start_date?: string | null
+          start_time: string
         }
         Update: {
-          created_at?: string
+          activity_id?: string | null
+          age_max?: number | null
+          age_min?: number | null
+          created_at?: string | null
+          current_participants?: number | null
+          day_of_week?: number | null
+          end_date?: string | null
+          end_time?: string
           id?: string
-          metadata?: Json | null
+          location?: string | null
+          max_participants?: number | null
+          period_type?: string | null
+          price?: number | null
+          start_date?: string | null
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_sessions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_sessions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_sessions_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          key_hash: string
+          last_used_at: string | null
+          name: string
+          profile_id: string | null
+          scopes: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_hash: string
+          last_used_at?: string | null
+          name: string
+          profile_id?: string | null
+          scopes?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_hash?: string
+          last_used_at?: string | null
           name?: string
-          rules?: Json
-          updated_at?: string
+          profile_id?: string | null
+          scopes?: string[] | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       audit_logs: {
         Row: {
           action: string
-          created_at: string
+          created_at: string | null
           id: string
-          ip_address: unknown
-          metadata: Json | null
-          resource_id: string | null
-          resource_type: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string | null
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
           action: string
-          created_at?: string
+          created_at?: string | null
           id?: string
-          ip_address?: unknown
-          metadata?: Json | null
-          resource_id?: string | null
-          resource_type: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string
-          created_at?: string
+          created_at?: string | null
           id?: string
-          ip_address?: unknown
-          metadata?: Json | null
-          resource_id?: string | null
-          resource_type?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       availability_slots: {
         Row: {
-          activity_id: string
-          created_at: string
-          day_of_week: number | null
+          activity_id: string | null
+          created_at: string | null
           end: string
-          end_date: string | null
           id: string
-          price_override: number | null
-          recurrence: Json | null
-          recurrence_type: string | null
-          seats_available: number | null
-          seats_remaining: number
-          seats_total: number
+          seats_remaining: number | null
+          seats_total: number | null
           start: string
-          start_date: string | null
-          time_end: string | null
-          time_start: string | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
-          activity_id: string
-          created_at?: string
-          day_of_week?: number | null
+          activity_id?: string | null
+          created_at?: string | null
           end: string
-          end_date?: string | null
           id?: string
-          price_override?: number | null
-          recurrence?: Json | null
-          recurrence_type?: string | null
-          seats_available?: number | null
-          seats_remaining?: number
-          seats_total?: number
+          seats_remaining?: number | null
+          seats_total?: number | null
           start: string
-          start_date?: string | null
-          time_end?: string | null
-          time_start?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
-          activity_id?: string
-          created_at?: string
-          day_of_week?: number | null
+          activity_id?: string | null
+          created_at?: string | null
           end?: string
-          end_date?: string | null
           id?: string
-          price_override?: number | null
-          recurrence?: Json | null
-          recurrence_type?: string | null
-          seats_available?: number | null
-          seats_remaining?: number
-          seats_total?: number
+          seats_remaining?: number | null
+          seats_total?: number | null
           start?: string
-          start_date?: string | null
-          time_end?: string | null
-          time_start?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -462,907 +537,1164 @@ export type Database = {
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "availability_slots_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "availability_slots_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
         ]
       }
-      bike_stations: {
+      child_temp_requests: {
         Row: {
-          available_bikes: number | null
-          available_slots: number | null
+          activity_id: string
+          created_at: string | null
+          expires_at: string | null
           id: string
-          lat: number
-          lon: number
-          name: string | null
-          raw: Json | null
-          source: string
-          station_id: string
+          linking_code: string
+          minor_profile_id: string
+          parent_id: string | null
+          rejected_at: string | null
+          rejection_reason: string | null
+          slot_id: string | null
+          status: Database["public"]["Enums"]["child_request_status"]
           updated_at: string | null
+          validated_at: string | null
         }
         Insert: {
-          available_bikes?: number | null
-          available_slots?: number | null
+          activity_id: string
+          created_at?: string | null
+          expires_at?: string | null
           id?: string
-          lat: number
-          lon: number
-          name?: string | null
-          raw?: Json | null
-          source: string
-          station_id: string
+          linking_code: string
+          minor_profile_id: string
+          parent_id?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          slot_id?: string | null
+          status?: Database["public"]["Enums"]["child_request_status"]
           updated_at?: string | null
+          validated_at?: string | null
         }
         Update: {
-          available_bikes?: number | null
-          available_slots?: number | null
-          id?: string
-          lat?: number
-          lon?: number
-          name?: string | null
-          raw?: Json | null
-          source?: string
-          station_id?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      bookings: {
-        Row: {
-          abandon_raison_financiere: boolean | null
-          activity_id: string
-          aids_applied: Json | null
-          aids_total_cents: number
-          base_price_cents: number
-          child_id: string
-          created_at: string
-          express_flag: boolean | null
-          final_price_cents: number
-          history: Json | null
-          id: string
-          idempotency_key: string | null
-          parent_notified_at: string | null
-          participation_confirmed: boolean | null
-          participation_confirmed_at: string | null
-          participation_confirmed_by: string | null
-          reason_code: string | null
-          requires_parent_validation: boolean | null
-          reste_a_charge: number | null
-          slot_id: string
-          status: Database["public"]["Enums"]["booking_status"]
-          transport_mode: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          abandon_raison_financiere?: boolean | null
-          activity_id: string
-          aids_applied?: Json | null
-          aids_total_cents?: number
-          base_price_cents?: number
-          child_id: string
-          created_at?: string
-          express_flag?: boolean | null
-          final_price_cents?: number
-          history?: Json | null
-          id?: string
-          idempotency_key?: string | null
-          parent_notified_at?: string | null
-          participation_confirmed?: boolean | null
-          participation_confirmed_at?: string | null
-          participation_confirmed_by?: string | null
-          reason_code?: string | null
-          requires_parent_validation?: boolean | null
-          reste_a_charge?: number | null
-          slot_id: string
-          status?: Database["public"]["Enums"]["booking_status"]
-          transport_mode?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          abandon_raison_financiere?: boolean | null
           activity_id?: string
-          aids_applied?: Json | null
-          aids_total_cents?: number
-          base_price_cents?: number
-          child_id?: string
-          created_at?: string
-          express_flag?: boolean | null
-          final_price_cents?: number
-          history?: Json | null
+          created_at?: string | null
+          expires_at?: string | null
           id?: string
-          idempotency_key?: string | null
-          parent_notified_at?: string | null
-          participation_confirmed?: boolean | null
-          participation_confirmed_at?: string | null
-          participation_confirmed_by?: string | null
-          reason_code?: string | null
-          requires_parent_validation?: boolean | null
-          reste_a_charge?: number | null
-          slot_id?: string
-          status?: Database["public"]["Enums"]["booking_status"]
-          transport_mode?: string | null
-          updated_at?: string
-          user_id?: string
+          linking_code?: string
+          minor_profile_id?: string
+          parent_id?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          slot_id?: string | null
+          status?: Database["public"]["Enums"]["child_request_status"]
+          updated_at?: string | null
+          validated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "bookings_activity_id_fkey"
+            foreignKeyName: "child_temp_requests_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "bookings_child_id_fkey"
+            foreignKeyName: "child_temp_requests_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_temp_requests_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_temp_requests_minor_profile_id_fkey"
+            columns: ["minor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_temp_requests_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_temp_requests_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "availability_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      children: {
+        Row: {
+          allergies: string[] | null
+          birth_date: string
+          created_at: string | null
+          disability_type: string | null
+          emergency_contact: string | null
+          family_id: string | null
+          first_name: string
+          gender: Database["public"]["Enums"]["gender"] | null
+          has_disability: boolean | null
+          id: string
+          last_name: string
+          medical_notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          birth_date: string
+          created_at?: string | null
+          disability_type?: string | null
+          emergency_contact?: string | null
+          family_id?: string | null
+          first_name: string
+          gender?: Database["public"]["Enums"]["gender"] | null
+          has_disability?: boolean | null
+          id?: string
+          last_name: string
+          medical_notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          allergies?: string[] | null
+          birth_date?: string
+          created_at?: string | null
+          disability_type?: string | null
+          emergency_contact?: string | null
+          family_id?: string | null
+          first_name?: string
+          gender?: Database["public"]["Enums"]["gender"] | null
+          has_disability?: boolean | null
+          id?: string
+          last_name?: string
+          medical_notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "children_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "children_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
+          },
+        ]
+      }
+      collectivities: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string | null
+          id: string
+          name: string
+          postal_code: string | null
+          profile_id: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          postal_code?: string | null
+          profile_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          postal_code?: string | null
+          profile_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collectivities_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          activity_id: string | null
+          file_size: number | null
+          file_url: string
+          id: string
+          mime_type: string | null
+          name: string
+          profile_id: string | null
+          type: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          mime_type?: string | null
+          name: string
+          profile_id?: string | null
+          type: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          mime_type?: string | null
+          name?: string
+          profile_id?: string | null
+          type?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          activity_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          session_id: string | null
+          territory_code: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          territory_code?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          territory_code?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      families: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string | null
+          csp: string | null
+          email: string | null
+          family_situation:
+            | Database["public"]["Enums"]["family_situation"]
+            | null
+          id: string
+          is_qpv: boolean | null
+          latitude: number | null
+          longitude: number | null
+          max_distance_km: number | null
+          newsletter_opt_in: boolean | null
+          postal_code: string | null
+          preferred_categories: string[] | null
+          profile_id: string | null
+          quotient_familial: number | null
+          territory_code: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          csp?: string | null
+          email?: string | null
+          family_situation?:
+            | Database["public"]["Enums"]["family_situation"]
+            | null
+          id?: string
+          is_qpv?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          max_distance_km?: number | null
+          newsletter_opt_in?: boolean | null
+          postal_code?: string | null
+          preferred_categories?: string[] | null
+          profile_id?: string | null
+          quotient_familial?: number | null
+          territory_code?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          csp?: string | null
+          email?: string | null
+          family_situation?:
+            | Database["public"]["Enums"]["family_situation"]
+            | null
+          id?: string
+          is_qpv?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          max_distance_km?: number | null
+          newsletter_opt_in?: boolean | null
+          postal_code?: string | null
+          preferred_categories?: string[] | null
+          profile_id?: string | null
+          quotient_familial?: number | null
+          territory_code?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "families_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          activity_id: string | null
+          created_at: string | null
+          family_id: string | null
+          id: string
+        }
+        Insert: {
+          activity_id?: string | null
+          created_at?: string | null
+          family_id?: string | null
+          id?: string
+        }
+        Update: {
+          activity_id?: string | null
+          created_at?: string | null
+          family_id?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
+          },
+        ]
+      }
+      financial_aids: {
+        Row: {
+          amount: number | null
+          amount_type: string | null
+          created_at: string | null
+          description: string | null
+          eligibility_criteria: Json | null
+          id: string
+          name: string
+          partner_id: string | null
+          percentage: number | null
+          updated_at: string | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          amount?: number | null
+          amount_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          eligibility_criteria?: Json | null
+          id?: string
+          name: string
+          partner_id?: string | null
+          percentage?: number | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          amount?: number | null
+          amount_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          eligibility_criteria?: Json | null
+          id?: string
+          name?: string
+          partner_id?: string | null
+          percentage?: number | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_aids_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "financial_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_partners: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string | null
+          id: string
+          name: string
+          profile_id: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          profile_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          profile_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_partners_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          parent_message_id: string | null
+          recipient_id: string | null
+          sender_id: string | null
+          subject: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          parent_message_id?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+          subject?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          parent_message_id?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mobility_choices: {
+        Row: {
+          activity_id: string | null
+          created_at: string | null
+          id: string
+          station_name: string | null
+          transport_mode: string
+          user_id: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          created_at?: string | null
+          id?: string
+          station_name?: string | null
+          transport_mode: string
+          user_id?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          created_at?: string | null
+          id?: string
+          station_name?: string | null
+          transport_mode?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobility_choices_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobility_choices_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobility_choices_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          profile_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          profile_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          profile_id?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organisms: {
+        Row: {
+          address: string | null
+          approval_number: string | null
+          average_rating: number | null
+          city: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          id: string
+          insurance_certificate_url: string | null
+          is_verified: boolean | null
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          postal_code: string | null
+          profile_id: string | null
+          siret: string | null
+          total_reviews: number | null
+          type: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          approval_number?: string | null
+          average_rating?: number | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          insurance_certificate_url?: string | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          profile_id?: string | null
+          siret?: string | null
+          total_reviews?: number | null
+          type?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          approval_number?: string | null
+          average_rating?: number | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          insurance_certificate_url?: string | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          profile_id?: string | null
+          siret?: string | null
+          total_reviews?: number | null
+          type?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organisms_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          family_id: string | null
+          id: string
+          paid_at: string | null
+          payment_method: string | null
+          registration_id: string | null
+          status: Database["public"]["Enums"]["payment_status"] | null
+          transaction_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          family_id?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          registration_id?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          family_id?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          registration_id?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
+          },
+          {
+            foreignKeyName: "payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          dob: string | null
+          email: string
+          full_name: string | null
+          id: string
+          is_active: boolean | null
+          linking_code: string | null
+          parent_id: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string | null
+          white_label_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          dob?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          is_active?: boolean | null
+          linking_code?: string | null
+          parent_id?: string | null
+          phone?: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at?: string | null
+          white_label_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          dob?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          linking_code?: string | null
+          parent_id?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string | null
+          white_label_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registrations: {
+        Row: {
+          activity_id: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          child_id: string | null
+          confirmed_at: string | null
+          created_at: string | null
+          family_id: string | null
+          id: string
+          notes: string | null
+          registration_date: string | null
+          session_id: string | null
+          status: Database["public"]["Enums"]["registration_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          activity_id?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          child_id?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          family_id?: string | null
+          id?: string
+          notes?: string | null
+          registration_date?: string | null
+          session_id?: string | null
+          status?: Database["public"]["Enums"]["registration_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          activity_id?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          child_id?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          family_id?: string | null
+          id?: string
+          notes?: string | null
+          registration_date?: string | null
+          session_id?: string | null
+          status?: Database["public"]["Enums"]["registration_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_age_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_child_id_fkey"
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "children"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "bookings_child_id_fkey"
+            foreignKeyName: "registrations_child_id_fkey"
             columns: ["child_id"]
             isOneToOne: false
-            referencedRelation: "v_children_with_age"
+            referencedRelation: "vw_enfants_infos_sante"
+            referencedColumns: ["child_id"]
+          },
+          {
+            foreignKeyName: "registrations_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "bookings_participation_confirmed_by_fkey"
-            columns: ["participation_confirmed_by"]
+            foreignKeyName: "registrations_family_id_fkey"
+            columns: ["family_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
           },
           {
-            foreignKeyName: "bookings_participation_confirmed_by_fkey"
-            columns: ["participation_confirmed_by"]
+            foreignKeyName: "registrations_session_id_fkey"
+            columns: ["session_id"]
             isOneToOne: false
-            referencedRelation: "v_profile_completion"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bookings_slot_id_fkey"
-            columns: ["slot_id"]
-            isOneToOne: false
-            referencedRelation: "availability_slots"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bookings_slot_id_fkey"
-            columns: ["slot_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alternative_slots"
-            referencedColumns: ["slot_id"]
-          },
-          {
-            foreignKeyName: "bookings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bookings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
+            referencedRelation: "activity_sessions"
             referencedColumns: ["id"]
           },
         ]
       }
-      child_signup_requests: {
+      reservations: {
         Row: {
-          child_dob: string
-          child_first_name: string
+          activity_id: string | null
+          aid_types_used: Json | null
+          amount_aided: number | null
+          amount_paid: number | null
+          amount_total: number | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          child_id: string | null
+          confirmed_at: string | null
           created_at: string | null
-          expires_at: string
+          family_id: string | null
           id: string
-          parent_email: string
           status: string | null
-          validated_at: string | null
-          validation_token: string
+          transport_mode: string | null
         }
         Insert: {
-          child_dob: string
-          child_first_name: string
+          activity_id?: string | null
+          aid_types_used?: Json | null
+          amount_aided?: number | null
+          amount_paid?: number | null
+          amount_total?: number | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          child_id?: string | null
+          confirmed_at?: string | null
           created_at?: string | null
-          expires_at?: string
+          family_id?: string | null
           id?: string
-          parent_email: string
           status?: string | null
-          validated_at?: string | null
-          validation_token: string
+          transport_mode?: string | null
         }
         Update: {
-          child_dob?: string
-          child_first_name?: string
+          activity_id?: string | null
+          aid_types_used?: Json | null
+          amount_aided?: number | null
+          amount_paid?: number | null
+          amount_total?: number | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          child_id?: string | null
+          confirmed_at?: string | null
           created_at?: string | null
-          expires_at?: string
+          family_id?: string | null
           id?: string
-          parent_email?: string
           status?: string | null
-          validated_at?: string | null
-          validation_token?: string
-        }
-        Relationships: []
-      }
-      children: {
-        Row: {
-          accessibility_flags: Json | null
-          created_at: string
-          dob: string
-          education_level: string | null
-          first_name: string
-          id: string
-          is_student: boolean | null
-          needs_json: Json | null
-          school_postal_code: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          accessibility_flags?: Json | null
-          created_at?: string
-          dob: string
-          education_level?: string | null
-          first_name: string
-          id?: string
-          is_student?: boolean | null
-          needs_json?: Json | null
-          school_postal_code?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          accessibility_flags?: Json | null
-          created_at?: string
-          dob?: string
-          education_level?: string | null
-          first_name?: string
-          id?: string
-          is_student?: boolean | null
-          needs_json?: Json | null
-          school_postal_code?: string | null
-          updated_at?: string
-          user_id?: string
+          transport_mode?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "children_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "children_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      event_registrations: {
-        Row: {
-          created_at: string
-          event_id: string
-          id: string
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          event_id: string
-          id?: string
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          event_id?: string
-          id?: string
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_registrations_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "event_stats"
-            referencedColumns: ["event_id"]
-          },
-          {
-            foreignKeyName: "event_registrations_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "territory_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      event_reminders_sent: {
-        Row: {
-          days_before: number
-          event_id: string
-          id: string
-          reminder_type: string
-          sent_at: string
-          user_id: string
-        }
-        Insert: {
-          days_before: number
-          event_id: string
-          id?: string
-          reminder_type: string
-          sent_at?: string
-          user_id: string
-        }
-        Update: {
-          days_before?: number
-          event_id?: string
-          id?: string
-          reminder_type?: string
-          sent_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_reminders_sent_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "event_stats"
-            referencedColumns: ["event_id"]
-          },
-          {
-            foreignKeyName: "event_reminders_sent_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "territory_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      favorite_events: {
-        Row: {
-          created_at: string
-          event_id: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          event_id: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          event_id?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "favorite_events_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "event_stats"
-            referencedColumns: ["event_id"]
-          },
-          {
-            foreignKeyName: "favorite_events_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "territory_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      financial_aids: {
-        Row: {
-          active: boolean
-          age_max: number
-          age_min: number
-          amount_type: string
-          amount_value: number
-          categories: string[]
-          created_at: string
-          cumulative: boolean
-          eligibility_summary: string | null
-          id: string
-          name: string
-          official_link: string | null
-          qf_max: number | null
-          slug: string
-          territory_codes: string[]
-          territory_level: string
-          updated_at: string
-          verification_notes: string | null
-        }
-        Insert: {
-          active?: boolean
-          age_max: number
-          age_min: number
-          amount_type: string
-          amount_value: number
-          categories?: string[]
-          created_at?: string
-          cumulative?: boolean
-          eligibility_summary?: string | null
-          id?: string
-          name: string
-          official_link?: string | null
-          qf_max?: number | null
-          slug: string
-          territory_codes?: string[]
-          territory_level: string
-          updated_at?: string
-          verification_notes?: string | null
-        }
-        Update: {
-          active?: boolean
-          age_max?: number
-          age_min?: number
-          amount_type?: string
-          amount_value?: number
-          categories?: string[]
-          created_at?: string
-          cumulative?: boolean
-          eligibility_summary?: string | null
-          id?: string
-          name?: string
-          official_link?: string | null
-          qf_max?: number | null
-          slug?: string
-          territory_codes?: string[]
-          territory_level?: string
-          updated_at?: string
-          verification_notes?: string | null
-        }
-        Relationships: []
-      }
-      mfa_settings: {
-        Row: {
-          backup_codes_hashed: string[] | null
-          backup_codes_used: Json | null
-          created_at: string
-          enforced: boolean | null
-          id: string
-          mfa_enabled: boolean | null
-          mfa_method: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          backup_codes_hashed?: string[] | null
-          backup_codes_used?: Json | null
-          created_at?: string
-          enforced?: boolean | null
-          id?: string
-          mfa_enabled?: boolean | null
-          mfa_method?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          backup_codes_hashed?: string[] | null
-          backup_codes_used?: Json | null
-          created_at?: string
-          enforced?: boolean | null
-          id?: string
-          mfa_enabled?: boolean | null
-          mfa_method?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      notification_preferences: {
-        Row: {
-          created_at: string
-          email_notifications: boolean | null
-          event_reminder_days_before: number | null
-          event_reminder_email: boolean | null
-          event_reminders_enabled: boolean | null
-          id: string
-          interested_categories: string[] | null
-          notify_favorite_categories: boolean | null
-          notify_territory_events: boolean | null
-          recommendation_emails: boolean | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          email_notifications?: boolean | null
-          event_reminder_days_before?: number | null
-          event_reminder_email?: boolean | null
-          event_reminders_enabled?: boolean | null
-          id?: string
-          interested_categories?: string[] | null
-          notify_favorite_categories?: boolean | null
-          notify_territory_events?: boolean | null
-          recommendation_emails?: boolean | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          email_notifications?: boolean | null
-          event_reminder_days_before?: number | null
-          event_reminder_email?: boolean | null
-          event_reminders_enabled?: boolean | null
-          id?: string
-          interested_categories?: string[] | null
-          notify_favorite_categories?: boolean | null
-          notify_territory_events?: boolean | null
-          recommendation_emails?: boolean | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      notifications: {
-        Row: {
-          created_at: string
-          id: string
-          payload: Json | null
-          read: boolean | null
-          type: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          payload?: Json | null
-          read?: boolean | null
-          type: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          payload?: Json | null
-          read?: boolean | null
-          type?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      postal_codes: {
-        Row: {
-          city: string
-          code: string
-          created_at: string
-          id: string
-          territory_id: string | null
-        }
-        Insert: {
-          city: string
-          code: string
-          created_at?: string
-          id?: string
-          territory_id?: string | null
-        }
-        Update: {
-          city?: string
-          code?: string
-          created_at?: string
-          id?: string
-          territory_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "postal_codes_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "postal_codes_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          account_status: string | null
-          city_insee: string | null
-          created_at: string
-          email: string
-          family_code: string | null
-          id: string
-          marital_status: string | null
-          postal_code: string | null
-          price_blocked: boolean | null
-          profile_json: Json | null
-          quotient_familial: number | null
-          rejection_reason: string | null
-          seuil_prix_max: number | null
-          street_address: string | null
-          territory_id: string | null
-          updated_at: string
-          validated_at: string | null
-          validated_by: string | null
-        }
-        Insert: {
-          account_status?: string | null
-          city_insee?: string | null
-          created_at?: string
-          email: string
-          family_code?: string | null
-          id: string
-          marital_status?: string | null
-          postal_code?: string | null
-          price_blocked?: boolean | null
-          profile_json?: Json | null
-          quotient_familial?: number | null
-          rejection_reason?: string | null
-          seuil_prix_max?: number | null
-          street_address?: string | null
-          territory_id?: string | null
-          updated_at?: string
-          validated_at?: string | null
-          validated_by?: string | null
-        }
-        Update: {
-          account_status?: string | null
-          city_insee?: string | null
-          created_at?: string
-          email?: string
-          family_code?: string | null
-          id?: string
-          marital_status?: string | null
-          postal_code?: string | null
-          price_blocked?: boolean | null
-          profile_json?: Json | null
-          quotient_familial?: number | null
-          rejection_reason?: string | null
-          seuil_prix_max?: number | null
-          street_address?: string | null
-          territory_id?: string | null
-          updated_at?: string
-          validated_at?: string | null
-          validated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "profiles_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      promo_codes: {
-        Row: {
-          activity_id: string
-          code: string
-          created_at: string
-          discount_percentage: number
-          id: string
-          max_usage: number
-          updated_at: string
-          usage_count: number
-          valid_until: string
-        }
-        Insert: {
-          activity_id: string
-          code: string
-          created_at?: string
-          discount_percentage?: number
-          id?: string
-          max_usage?: number
-          updated_at?: string
-          usage_count?: number
-          valid_until?: string
-        }
-        Update: {
-          activity_id?: string
-          code?: string
-          created_at?: string
-          discount_percentage?: number
-          id?: string
-          max_usage?: number
-          updated_at?: string
-          usage_count?: number
-          valid_until?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "promo_codes_activity_id_fkey"
+            foreignKeyName: "reservations_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      qpv_reference: {
-        Row: {
-          code_insee: string
-          code_qp: string
-          commune_qp: string
-          created_at: string
-          departement: string | null
-          id: string
-          metadata: Json | null
-          nom_qp: string
-          population: number | null
-          postal_codes: string[] | null
-          region: string | null
-          updated_at: string
-        }
-        Insert: {
-          code_insee: string
-          code_qp: string
-          commune_qp: string
-          created_at?: string
-          departement?: string | null
-          id?: string
-          metadata?: Json | null
-          nom_qp: string
-          population?: number | null
-          postal_codes?: string[] | null
-          region?: string | null
-          updated_at?: string
-        }
-        Update: {
-          code_insee?: string
-          code_qp?: string
-          commune_qp?: string
-          created_at?: string
-          departement?: string | null
-          id?: string
-          metadata?: Json | null
-          nom_qp?: string
-          population?: number | null
-          postal_codes?: string[] | null
-          region?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      refresh_tokens: {
-        Row: {
-          created_at: string
-          expires_at: string
-          id: string
-          revoked: boolean
-          session_id: string
-          token_hash: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at: string
-          id?: string
-          revoked?: boolean
-          session_id: string
-          token_hash: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          revoked?: boolean
-          session_id?: string
-          token_hash?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "refresh_tokens_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: "reservations_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      reports_metrics: {
-        Row: {
-          created_at: string
-          id: string
-          metric_key: string
-          metric_value: Json | null
-          period_end: string
-          period_start: string
-          territory_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          metric_key: string
-          metric_value?: Json | null
-          period_end: string
-          period_start: string
-          territory_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          metric_key?: string
-          metric_value?: Json | null
-          period_end?: string
-          period_start?: string
-          territory_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reports_metrics_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
+            referencedRelation: "activities_with_age_groups"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "reports_metrics_territory_id_fkey"
-            columns: ["territory_id"]
+            foreignKeyName: "reservations_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "vw_enfants_infos_sante"
+            referencedColumns: ["child_id"]
+          },
+          {
+            foreignKeyName: "reservations_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
           },
         ]
       }
       reviews: {
         Row: {
-          activity_id: string
-          child_id: string
+          activity_id: string | null
           comment: string | null
-          created_at: string
+          created_at: string | null
+          family_id: string | null
           id: string
-          published_at: string | null
-          rating: number
-          user_id: string
+          is_verified: boolean | null
+          rating: number | null
+          updated_at: string | null
         }
         Insert: {
-          activity_id: string
-          child_id: string
+          activity_id?: string | null
           comment?: string | null
-          created_at?: string
+          created_at?: string | null
+          family_id?: string | null
           id?: string
-          published_at?: string | null
-          rating: number
-          user_id: string
+          is_verified?: boolean | null
+          rating?: number | null
+          updated_at?: string | null
         }
         Update: {
-          activity_id?: string
-          child_id?: string
+          activity_id?: string | null
           comment?: string | null
-          created_at?: string
+          created_at?: string | null
+          family_id?: string | null
           id?: string
-          published_at?: string | null
-          rating?: number
-          user_id?: string
+          is_verified?: boolean | null
+          rating?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1373,969 +1705,529 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "reviews_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "v_children_with_age"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      search_logs: {
-        Row: {
-          created_at: string | null
-          filters_applied: Json | null
-          id: string
-          results_count: number | null
-          search_query: string | null
-          session_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          filters_applied?: Json | null
-          id?: string
-          results_count?: number | null
-          search_query?: string | null
-          session_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          filters_applied?: Json | null
-          id?: string
-          results_count?: number | null
-          search_query?: string | null
-          session_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "search_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "search_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      sessions: {
-        Row: {
-          access_jti: string | null
-          created_at: string
-          device: string | null
-          id: string
-          ip: unknown
-          last_seen_at: string
-          mfa_verified: boolean
-          revoked: boolean
-          roles: string[]
-          tenant_id: string | null
-          user_id: string
-        }
-        Insert: {
-          access_jti?: string | null
-          created_at?: string
-          device?: string | null
-          id?: string
-          ip?: unknown
-          last_seen_at?: string
-          mfa_verified?: boolean
-          revoked?: boolean
-          roles?: string[]
-          tenant_id?: string | null
-          user_id: string
-        }
-        Update: {
-          access_jti?: string | null
-          created_at?: string
-          device?: string | null
-          id?: string
-          ip?: unknown
-          last_seen_at?: string
-          mfa_verified?: boolean
-          revoked?: boolean
-          roles?: string[]
-          tenant_id?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      structures: {
-        Row: {
-          accessibility_profile: Json | null
-          address: string | null
-          contact_json: Json | null
-          created_at: string
-          id: string
-          location: unknown
-          name: string
-          territory_id: string
-          updated_at: string
-        }
-        Insert: {
-          accessibility_profile?: Json | null
-          address?: string | null
-          contact_json?: Json | null
-          created_at?: string
-          id?: string
-          location?: unknown
-          name: string
-          territory_id: string
-          updated_at?: string
-        }
-        Update: {
-          accessibility_profile?: Json | null
-          address?: string | null
-          contact_json?: Json | null
-          created_at?: string
-          id?: string
-          location?: unknown
-          name?: string
-          territory_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "structures_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "structures_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      territories: {
-        Row: {
-          active: boolean | null
-          config_json: Json | null
-          covered: boolean | null
-          created_at: string
-          department_code: string | null
-          geojson: Json | null
-          id: string
-          name: string
-          parent_id: string | null
-          postal_codes: string[] | null
-          region_code: string | null
-          type: string | null
-          updated_at: string
-        }
-        Insert: {
-          active?: boolean | null
-          config_json?: Json | null
-          covered?: boolean | null
-          created_at?: string
-          department_code?: string | null
-          geojson?: Json | null
-          id?: string
-          name: string
-          parent_id?: string | null
-          postal_codes?: string[] | null
-          region_code?: string | null
-          type?: string | null
-          updated_at?: string
-        }
-        Update: {
-          active?: boolean | null
-          config_json?: Json | null
-          covered?: boolean | null
-          created_at?: string
-          department_code?: string | null
-          geojson?: Json | null
-          id?: string
-          name?: string
-          parent_id?: string | null
-          postal_codes?: string[] | null
-          region_code?: string | null
-          type?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "territories_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "territories_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      territory_events: {
-        Row: {
-          age_max: number | null
-          age_min: number | null
-          booking_url: string | null
-          created_at: string
-          description: string | null
-          end_date: string
-          event_type: string
-          external_link: string | null
-          id: string
-          image_url: string | null
-          location: string | null
-          organizer_contact: string | null
-          organizer_name: string | null
-          price_indicative: number | null
-          published: boolean | null
-          start_date: string
-          territory_id: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          age_max?: number | null
-          age_min?: number | null
-          booking_url?: string | null
-          created_at?: string
-          description?: string | null
-          end_date: string
-          event_type: string
-          external_link?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string | null
-          organizer_contact?: string | null
-          organizer_name?: string | null
-          price_indicative?: number | null
-          published?: boolean | null
-          start_date: string
-          territory_id: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          age_max?: number | null
-          age_min?: number | null
-          booking_url?: string | null
-          created_at?: string
-          description?: string | null
-          end_date?: string
-          event_type?: string
-          external_link?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string | null
-          organizer_contact?: string | null
-          organizer_name?: string | null
-          price_indicative?: number | null
-          published?: boolean | null
-          start_date?: string
-          territory_id?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "territory_events_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "territory_events_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      transport_offers: {
-        Row: {
-          activity_id: string
-          arrival_time: string | null
-          carbon_saved_kg: number | null
-          created_at: string | null
-          currency: string | null
-          departure_time: string | null
-          distance_m: number | null
-          end_lat: number | null
-          end_lon: number | null
-          expired: boolean | null
-          external_id: string | null
-          id: string
-          mode: string
-          nearest_station_id: string | null
-          nearest_station_source: string | null
-          nearest_stop_id: string | null
-          nearest_stop_source: string | null
-          price_cents: number | null
-          price_estimate: number | null
-          raw: Json | null
-          route_details: Json | null
-          source: string | null
-          start_lat: number | null
-          start_lon: number | null
-          station_id: string | null
-          travel_time_min: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          activity_id: string
-          arrival_time?: string | null
-          carbon_saved_kg?: number | null
-          created_at?: string | null
-          currency?: string | null
-          departure_time?: string | null
-          distance_m?: number | null
-          end_lat?: number | null
-          end_lon?: number | null
-          expired?: boolean | null
-          external_id?: string | null
-          id?: string
-          mode: string
-          nearest_station_id?: string | null
-          nearest_station_source?: string | null
-          nearest_stop_id?: string | null
-          nearest_stop_source?: string | null
-          price_cents?: number | null
-          price_estimate?: number | null
-          raw?: Json | null
-          route_details?: Json | null
-          source?: string | null
-          start_lat?: number | null
-          start_lon?: number | null
-          station_id?: string | null
-          travel_time_min?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          activity_id?: string
-          arrival_time?: string | null
-          carbon_saved_kg?: number | null
-          created_at?: string | null
-          currency?: string | null
-          departure_time?: string | null
-          distance_m?: number | null
-          end_lat?: number | null
-          end_lon?: number | null
-          expired?: boolean | null
-          external_id?: string | null
-          id?: string
-          mode?: string
-          nearest_station_id?: string | null
-          nearest_station_source?: string | null
-          nearest_stop_id?: string | null
-          nearest_stop_source?: string | null
-          price_cents?: number | null
-          price_estimate?: number | null
-          raw?: Json | null
-          route_details?: Json | null
-          source?: string | null
-          start_lat?: number | null
-          start_lon?: number | null
-          station_id?: string | null
-          travel_time_min?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transport_offers_activity_id_fkey"
+            foreignKeyName: "reviews_activity_id_fkey"
             columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "activities"
+            referencedRelation: "activities_with_age_groups"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "transport_offers_station_id_fkey"
-            columns: ["station_id"]
+            foreignKeyName: "reviews_activity_id_fkey"
+            columns: ["activity_id"]
             isOneToOne: false
-            referencedRelation: "transport_stations"
+            referencedRelation: "activities_with_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
+          },
+        ]
+      }
+      search_history: {
+        Row: {
+          created_at: string | null
+          family_id: string | null
+          filters: Json | null
+          id: string
+          query: string
+          results_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          family_id?: string | null
+          filters?: Json | null
+          id?: string
+          query: string
+          results_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          family_id?: string | null
+          filters?: Json | null
+          id?: string
+          query?: string
+          results_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_history_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "search_history_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "vw_fratrie_groups"
+            referencedColumns: ["family_id"]
+          },
+        ]
+      }
+      system_settings: {
+        Row: {
+          description: string | null
+          id: string
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
       transport_stations: {
         Row: {
+          capacity: number | null
           created_at: string | null
           external_id: string | null
           id: string
-          location: unknown
+          lat: number | null
+          lon: number | null
           metadata: Json | null
-          name: string
-          station_type: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          external_id?: string | null
-          id?: string
-          location?: unknown
-          metadata?: Json | null
-          name: string
-          station_type?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          external_id?: string | null
-          id?: string
-          location?: unknown
-          metadata?: Json | null
-          name?: string
-          station_type?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      transport_stops: {
-        Row: {
-          id: string
-          lat: number
-          lines: string[] | null
-          lon: number
           name: string | null
-          raw: Json | null
-          source: string
-          stop_id: string
-          updated_at: string | null
+          provider: string
         }
         Insert: {
+          capacity?: number | null
+          created_at?: string | null
+          external_id?: string | null
           id?: string
-          lat: number
-          lines?: string[] | null
-          lon: number
+          lat?: number | null
+          lon?: number | null
+          metadata?: Json | null
           name?: string | null
-          raw?: Json | null
-          source: string
-          stop_id: string
-          updated_at?: string | null
+          provider: string
         }
         Update: {
+          capacity?: number | null
+          created_at?: string | null
+          external_id?: string | null
           id?: string
-          lat?: number
-          lines?: string[] | null
-          lon?: number
+          lat?: number | null
+          lon?: number | null
+          metadata?: Json | null
           name?: string | null
-          raw?: Json | null
-          source?: string
-          stop_id?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      transport_sync_meta: {
-        Row: {
-          created_at: string | null
-          details: Json | null
-          error_message: string | null
-          id: string
-          last_sync_at: string | null
-          provider: string
-          status: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          details?: Json | null
-          error_message?: string | null
-          id?: string
-          last_sync_at?: string | null
-          provider: string
-          status?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          details?: Json | null
-          error_message?: string | null
-          id?: string
-          last_sync_at?: string | null
           provider?: string
-          status?: string | null
-          updated_at?: string | null
         }
         Relationships: []
       }
-      user_roles: {
+      webhooks: {
         Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          territory_id: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          territory_id?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          territory_id?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_roles_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      validations_parentales: {
-        Row: {
-          booking_id: string
-          created_at: string
-          id: string
-          parent_id: string
-          reason_refus: string | null
-          reminders_sent: number | null
-          status: string
-          updated_at: string
-          validated_at: string | null
-        }
-        Insert: {
-          booking_id: string
-          created_at?: string
-          id?: string
-          parent_id: string
-          reason_refus?: string | null
-          reminders_sent?: number | null
-          status: string
-          updated_at?: string
-          validated_at?: string | null
-        }
-        Update: {
-          booking_id?: string
-          created_at?: string
-          id?: string
-          parent_id?: string
-          reason_refus?: string | null
-          reminders_sent?: number | null
-          status?: string
-          updated_at?: string
-          validated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "validations_parentales_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: true
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
-    Views: {
-      event_stats: {
-        Row: {
-          confirmed_count: number | null
-          event_id: string | null
-          interested_count: number | null
-          participants_count: number | null
-          start_date: string | null
-          title: string | null
-        }
-        Relationships: []
-      }
-      territory_user_stats: {
-        Row: {
-          avg_quotient_familial: number | null
-          divorced_count: number | null
-          high_income_count: number | null
-          low_income_count: number | null
-          married_count: number | null
-          medium_income_count: number | null
-          postal_code_prefixes: string[] | null
-          single_count: number | null
-          territory_id: string | null
-          total_users: number | null
-          widowed_count: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "territories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "profiles_territory_id_fkey"
-            columns: ["territory_id"]
-            isOneToOne: false
-            referencedRelation: "vw_dashboard_collectivite_overview"
-            referencedColumns: ["territory_id"]
-          },
-        ]
-      }
-      v_children_with_age: {
-        Row: {
-          accessibility_flags: Json | null
-          age: number | null
           created_at: string | null
-          dob: string | null
-          education_level: string | null
-          first_name: string | null
-          id: string | null
-          is_student: boolean | null
-          needs_json: Json | null
-          school_postal_code: string | null
-          student_status_hint: string | null
-          updated_at: string | null
-          user_id: string | null
+          events: string[]
+          id: string
+          is_active: boolean | null
+          last_triggered_at: string | null
+          profile_id: string | null
+          secret: string | null
+          url: string
         }
         Insert: {
-          accessibility_flags?: Json | null
-          age?: never
           created_at?: string | null
-          dob?: string | null
-          education_level?: string | null
-          first_name?: string | null
-          id?: string | null
-          is_student?: boolean | null
-          needs_json?: Json | null
-          school_postal_code?: string | null
-          student_status_hint?: never
-          updated_at?: string | null
-          user_id?: string | null
+          events: string[]
+          id?: string
+          is_active?: boolean | null
+          last_triggered_at?: string | null
+          profile_id?: string | null
+          secret?: string | null
+          url: string
         }
         Update: {
-          accessibility_flags?: Json | null
-          age?: never
           created_at?: string | null
-          dob?: string | null
-          education_level?: string | null
-          first_name?: string | null
-          id?: string | null
-          is_student?: boolean | null
-          needs_json?: Json | null
-          school_postal_code?: string | null
-          student_status_hint?: never
-          updated_at?: string | null
-          user_id?: string | null
+          events?: string[]
+          id?: string
+          is_active?: boolean | null
+          last_triggered_at?: string | null
+          profile_id?: string | null
+          secret?: string | null
+          url?: string
         }
         Relationships: [
           {
-            foreignKeyName: "children_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "webhooks_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "children_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_completion"
-            referencedColumns: ["id"]
-          },
         ]
       }
-      v_non_recours_financier: {
+      white_labels: {
         Row: {
-          familles_bloquees: number | null
-          rac_moyen: number | null
-          reservations_abandonnees_prix: number | null
-          reservations_rac_eleve: number | null
-          seuil_prix_median: number | null
+          created_at: string | null
+          custom_css: string | null
+          domain: string
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          name: string
+          primary_color: string | null
+          secondary_color: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_css?: string | null
+          domain: string
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_css?: string | null
+          domain?: string
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
-      v_profile_completion: {
+    }
+    Views: {
+      activities_with_age_groups: {
         Row: {
-          completion_message: string | null
-          completion_status: string | null
-          email: string | null
-          has_children: boolean | null
-          has_marital_status: boolean | null
-          has_postal_code: boolean | null
-          has_qf: boolean | null
-          has_territory: boolean | null
-          id: string | null
-        }
-        Relationships: []
-      }
-      v_qpv_stats: {
-        Row: {
-          qpv_percentage: number | null
-          qpv_profiles: number | null
-          total_profiles: number | null
-        }
-        Relationships: []
-      }
-      vw_alternative_slots: {
-        Row: {
-          activity_id: string | null
-          activity_title: string | null
+          accepts_aid_types: Json | null
+          address: string | null
+          age_groups: string | null
           age_max: number | null
           age_min: number | null
-          category: string | null
-          end: string | null
+          bike_friendly: boolean | null
+          categories: string[] | null
+          category_id: string | null
+          city: string | null
+          created_at: string | null
+          date_debut: string | null
+          date_fin: string | null
+          description: string | null
+          has_accessibility: boolean | null
+          has_free_trial: boolean | null
+          id: string | null
+          is_published: boolean | null
+          jours_horaires: string | null
+          latitude: number | null
+          longitude: number | null
+          max_participants: number | null
+          mobility_types: string[] | null
+          organism_id: string | null
           period_type: string | null
+          postal_code: string | null
           price_base: number | null
-          seats_remaining: number | null
-          seats_total: number | null
-          slot_id: string | null
-          start: string | null
-          structure_address: string | null
-          structure_name: string | null
+          price_unit: string | null
+          public_transport_nearby: boolean | null
+          sessions: string | null
+          tags: Json | null
+          title: string | null
+          updated_at: string | null
+          vacation_periods: Json | null
+          walking_friendly: boolean | null
+        }
+        Insert: {
+          accepts_aid_types?: Json | null
+          address?: string | null
+          age_groups?: never
+          age_max?: number | null
+          age_min?: number | null
+          bike_friendly?: boolean | null
+          categories?: string[] | null
+          category_id?: string | null
+          city?: string | null
+          created_at?: string | null
+          date_debut?: string | null
+          date_fin?: string | null
+          description?: string | null
+          has_accessibility?: boolean | null
+          has_free_trial?: boolean | null
+          id?: string | null
+          is_published?: boolean | null
+          jours_horaires?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          max_participants?: number | null
+          mobility_types?: string[] | null
+          organism_id?: string | null
+          period_type?: string | null
+          postal_code?: string | null
+          price_base?: number | null
+          price_unit?: string | null
+          public_transport_nearby?: boolean | null
+          sessions?: string | null
+          tags?: Json | null
+          title?: string | null
+          updated_at?: string | null
+          vacation_periods?: Json | null
+          walking_friendly?: boolean | null
+        }
+        Update: {
+          accepts_aid_types?: Json | null
+          address?: string | null
+          age_groups?: never
+          age_max?: number | null
+          age_min?: number | null
+          bike_friendly?: boolean | null
+          categories?: string[] | null
+          category_id?: string | null
+          city?: string | null
+          created_at?: string | null
+          date_debut?: string | null
+          date_fin?: string | null
+          description?: string | null
+          has_accessibility?: boolean | null
+          has_free_trial?: boolean | null
+          id?: string | null
+          is_published?: boolean | null
+          jours_horaires?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          max_participants?: number | null
+          mobility_types?: string[] | null
+          organism_id?: string | null
+          period_type?: string | null
+          postal_code?: string | null
+          price_base?: number | null
+          price_unit?: string | null
+          public_transport_nearby?: boolean | null
+          sessions?: string | null
+          tags?: Json | null
+          title?: string | null
+          updated_at?: string | null
+          vacation_periods?: Json | null
+          walking_friendly?: boolean | null
         }
         Relationships: [
           {
-            foreignKeyName: "availability_slots_activity_id_fkey"
-            columns: ["activity_id"]
+            foreignKeyName: "activities_category_id_fkey"
+            columns: ["category_id"]
             isOneToOne: false
-            referencedRelation: "activities"
+            referencedRelation: "activity_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_organism_id_fkey"
+            columns: ["organism_id"]
+            isOneToOne: false
+            referencedRelation: "organisms"
             referencedColumns: ["id"]
           },
         ]
       }
-      vw_dashboard_collectivite_overview: {
+      activities_with_sessions: {
         Row: {
-          published_activities: number | null
-          territory_id: string | null
-          territory_name: string | null
-          territory_type: string | null
-          total_activities: number | null
-          total_aid_simulations: number | null
-          total_registrations: number | null
-          total_revenue_potential: number | null
-          unique_children_registered: number | null
+          accepts_aid_types: Json | null
+          accessibility: Json | null
+          address: string | null
+          age_max: number | null
+          age_min: number | null
+          categories: string[] | null
+          category: string | null
+          city: string | null
+          covoiturage_enabled: boolean | null
+          created_at: string | null
+          creneaux: Json | null
+          date_debut: string | null
+          date_fin: string | null
+          description: string | null
+          duration_days: number | null
+          has_accessibility: boolean | null
+          has_accommodation: boolean | null
+          id: string | null
+          image_url: string | null
+          is_published: boolean | null
+          jours_horaires: string | null
+          latitude: number | null
+          lieu_nom: string | null
+          longitude: number | null
+          mobility_covoit: boolean | null
+          mobility_tc: string | null
+          mobility_types: string[] | null
+          mobility_velo: boolean | null
+          organism_email: string | null
+          organism_id: string | null
+          organism_name: string | null
+          organism_phone: string | null
+          organism_type: string | null
+          organism_website: string | null
+          period_type: string | null
+          pieces_a_fournir: string[] | null
+          postal_code: string | null
+          prerequis: string[] | null
+          price_base: number | null
+          price_unit: string | null
+          sante_tags: string[] | null
+          session_age_max: number | null
+          session_age_min: number | null
+          sessions_json: Json | null
+          tags: Json | null
+          title: string | null
+          transport_info: string | null
+          updated_at: string | null
+          vacation_periods: Json | null
+          vacation_type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_organism_id_fkey"
+            columns: ["organism_id"]
+            isOneToOne: false
+            referencedRelation: "organisms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_enfants_infos_sante: {
+        Row: {
+          age: number | null
+          allergies: string[] | null
+          child_id: string | null
+          city: string | null
+          emergency_contact: string | null
+          first_name: string | null
+          last_name: string | null
+          medical_notes: string | null
+          nombre_inscriptions: number | null
+          postal_code: string | null
+          statut_infos_sante: string | null
         }
         Relationships: []
       }
-      vw_dashboard_financeur_aid_usage: {
+      vw_fratrie_groups: {
         Row: {
-          aid_categories: string[] | null
-          aid_description: string | null
-          aid_id: string | null
-          aid_name: string | null
-          avg_aid_amount: number | null
-          territory_level: string | null
-          total_children_benefiting: number | null
-          total_simulated_amount: number | null
-          total_simulations: number | null
-          unique_users: number | null
+          ages: number[] | null
+          city: string | null
+          family_id: string | null
+          nombre_enfants: number | null
+          prenoms: string[] | null
+        }
+        Relationships: []
+      }
+      vw_inscriptions_stats: {
+        Row: {
+          activites_reservees: number | null
+          enfants_inscrits: number | null
+          familles_inscrites: number | null
+          inscriptions_3_mois: number | null
+          inscriptions_annulees: number | null
+          inscriptions_confirmees: number | null
+          total_inscriptions: number | null
         }
         Relationships: []
       }
     }
     Functions: {
-      calculate_age: { Args: { birth_date: string }; Returns: number }
-      calculate_eligible_aids: {
-        Args: {
-          p_activity_price: number
-          p_age: number
-          p_categories: string[]
-          p_city_code: string
-          p_duration_days: number
-          p_qf: number
-        }
+      create_child_temp_request: {
+        Args: { p_activity_id: string; p_minor_id: string; p_slot_id?: string }
         Returns: {
-          aid_name: string
-          amount: number
-          official_link: string
-          territory_level: string
+          linking_code: string
+          request_id: string
         }[]
       }
-      calculate_eligible_aids_capped: {
-        Args: {
-          p_activity_price: number
-          p_age: number
-          p_categories: string[]
-          p_city_code: string
-          p_duration_days: number
-          p_qf: number
-        }
-        Returns: {
-          aid_name: string
-          amount: number
-          applied_amount: number
-          capped: boolean
-          official_link: string
-          territory_level: string
-        }[]
-      }
-      calculate_reste_a_charge: {
-        Args: { p_price_base: number; p_simulated_aids: Json }
-        Returns: number
-      }
-      calculate_reste_a_charge_capped: {
-        Args: { p_price_base: number; p_simulated_aids: Json }
-        Returns: number
-      }
-      check_slot_availability: { Args: { slot_id: string }; Returns: boolean }
-      cleanup_expired_sessions: { Args: never; Returns: number }
-      cleanup_expired_sessions_and_tokens: { Args: never; Returns: number }
-      cleanup_old_sessions: { Args: never; Returns: number }
-      decrement_seat_atomic: {
-        Args: { _booking_id: string; _slot_id: string }
-        Returns: Json
-      }
-      decrement_slot_seats: { Args: { slot_id: string }; Returns: undefined }
-      get_child_age: { Args: { birth_date: string }; Returns: number }
-      get_recommended_events: {
-        Args: { p_limit?: number; p_user_id: string }
-        Returns: {
-          description: string
-          end_date: string
-          event_type: string
-          external_link: string
-          id: string
-          image_url: string
-          location: string
-          organizer_contact: string
-          organizer_name: string
-          recommendation_reason: string
-          relevance_score: number
-          start_date: string
-          territory_id: string
-          territory_name: string
-          title: string
-        }[]
-      }
-      get_slot_availability: {
-        Args: { slot_id: string }
-        Returns: {
-          availability_percentage: number
-          booked_seats: number
-          remaining_seats: number
-          total_seats: number
-        }[]
-      }
-      get_territories_from_postal: {
-        Args: { postal_code: string }
-        Returns: {
-          territory_id: string
-          territory_level: number
-          territory_name: string
-          territory_type: string
-        }[]
-      }
-      get_territory_by_postal_code: {
-        Args: { p_postal_code: string }
-        Returns: {
-          city_name: string
-          postal_code: string
-          territory_id: string
-          territory_name: string
-        }[]
-      }
-      get_territory_from_postal: {
-        Args: { postal_code: string }
-        Returns: {
-          territory_id: string
-          territory_name: string
-          territory_type: string
-        }[]
-      }
-      get_user_territory: { Args: { _user_id: string }; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      hash_backup_code: { Args: { plain_code: string }; Returns: string }
-      increment_slot_seats: { Args: { slot_id: string }; Returns: undefined }
-      is_profile_in_qpv: { Args: { p_profile_id: string }; Returns: boolean }
-      log_audit_event: {
-        Args: {
-          _action: string
-          _ip_address?: unknown
-          _metadata?: Json
-          _resource_id?: string
-          _resource_type: string
-          _user_agent?: string
-          _user_id: string
-        }
+      earth: { Args: never; Returns: number }
+      generate_linking_code: { Args: never; Returns: string }
+      generate_profile_linking_code: {
+        Args: { profile_id: string }
         Returns: string
       }
-      revoke_session: {
-        Args: { p_reason?: string; p_session_id: string }
-        Returns: undefined
+      get_activities_with_details: {
+        Args: never
+        Returns: {
+          accepts_aid_types: Json
+          age_max: number
+          age_min: number
+          categories: string[]
+          category_id: string
+          covoiturage_enabled: boolean
+          description: string
+          has_free_trial: boolean
+          id: string
+          is_published: boolean
+          latitude: number
+          longitude: number
+          organism_address: string
+          organism_id: string
+          organism_logo_url: string
+          organism_name: string
+          period_type: string
+          prices: Json
+          sessions: Json
+          tags: Json
+          title: string
+          vacation_periods: Json
+        }[]
       }
-      touch_session_lastseen: {
-        Args: { p_session_id: string }
-        Returns: undefined
-      }
-      update_session_last_seen: {
-        Args: { _session_id: string }
-        Returns: undefined
-      }
-      validate_booking_eligibility: {
-        Args: { p_activity_id: string; p_child_id: string; p_slot_id: string }
+      link_parent_to_minor: {
+        Args: { p_linking_code: string; p_parent_id: string }
         Returns: Json
       }
-      validate_mfa_backup_code: {
-        Args: { p_code_attempt: string; p_user_id: string }
-        Returns: boolean
-      }
-      verify_backup_code: {
-        Args: { hashed_code: string; plain_code: string }
-        Returns: boolean
+      validate_child_request: {
+        Args: { p_action: string; p_parent_id: string; p_request_id: string }
+        Returns: Json
       }
     }
     Enums: {
-      app_role:
+      child_request_status:
+        | "waiting_parent_link"
+        | "parent_linked"
+        | "validated"
+        | "rejected"
+        | "expired"
+      family_situation: "single" | "couple" | "single_parent" | "blended"
+      gender: "male" | "female" | "other" | "prefer_not_to_say"
+      payment_status: "pending" | "paid" | "partial" | "failed" | "refunded"
+      registration_status:
+        | "pending"
+        | "confirmed"
+        | "cancelled"
+        | "waiting_list"
+      user_role:
         | "family"
-        | "structure"
-        | "territory_admin"
-        | "partner"
-        | "superadmin"
-        | "collectivite_viewer"
-      booking_status: "en_attente" | "validee" | "refusee" | "annulee"
+        | "organism"
+        | "collectivity"
+        | "financial_partner"
+        | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2463,15 +2355,29 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: [
-        "family",
-        "structure",
-        "territory_admin",
-        "partner",
-        "superadmin",
-        "collectivite_viewer",
+      child_request_status: [
+        "waiting_parent_link",
+        "parent_linked",
+        "validated",
+        "rejected",
+        "expired",
       ],
-      booking_status: ["en_attente", "validee", "refusee", "annulee"],
+      family_situation: ["single", "couple", "single_parent", "blended"],
+      gender: ["male", "female", "other", "prefer_not_to_say"],
+      payment_status: ["pending", "paid", "partial", "failed", "refunded"],
+      registration_status: [
+        "pending",
+        "confirmed",
+        "cancelled",
+        "waiting_list",
+      ],
+      user_role: [
+        "family",
+        "organism",
+        "collectivity",
+        "financial_partner",
+        "super_admin",
+      ],
     },
   },
 } as const

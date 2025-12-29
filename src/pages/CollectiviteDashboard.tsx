@@ -376,7 +376,7 @@ export default function CollectiviteDashboard() {
               <CardContent>
                 <div className="text-xs space-y-1">
                   {/* Source: bookings.transport_mode */}
-                  {kpis.mobilite?.distribution?.slice(0, 3).map((item: any) => (
+                  {kpis.mobilite?.distribution?.slice(0, 3).map((item: { mode: string; percentage: number }) => (
                     <div key={item.mode} className="flex justify-between">
                       <span className="capitalize">{item.mode}:</span>
                       <span className="font-semibold">{item.percentage}%</span>
@@ -1047,7 +1047,7 @@ export default function CollectiviteDashboard() {
                             <span className="font-medium">{item.motivation}</span>
                             <span className="text-muted-foreground">{item.count} ({item.percentage}%)</span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
                               className="bg-pink-600 h-2 rounded-full"
                               style={{ width: `${item.percentage}%` }}
@@ -1099,7 +1099,7 @@ export default function CollectiviteDashboard() {
                             <span>QPV</span>
                             <span className="font-semibold text-orange-600">{safetyData?.taux_saturation_qpv}%</span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div className="bg-orange-600 h-2 rounded-full" style={{ width: `${safetyData?.taux_saturation_qpv}%` }} />
                           </div>
                         </div>
@@ -1108,7 +1108,7 @@ export default function CollectiviteDashboard() {
                             <span>Hors QPV</span>
                             <span className="font-semibold text-green-600">{safetyData?.taux_saturation_hors_qpv}%</span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div className="bg-green-600 h-2 rounded-full" style={{ width: `${safetyData?.taux_saturation_hors_qpv}%` }} />
                           </div>
                         </div>
@@ -1318,7 +1318,7 @@ export default function CollectiviteDashboard() {
                             <span className="font-medium">{item.reason}</span>
                             <span className="text-muted-foreground">{item.count}</span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
                               className="bg-indigo-600 h-2 rounded-full"
                               style={{ width: `${(item.count / (mobilityData?.abandons_transport_total || 1)) * 100}%` }}
@@ -1389,7 +1389,7 @@ export default function CollectiviteDashboard() {
                             <span className="font-medium">{item.type}</span>
                             <span className="text-muted-foreground">{item.count}</span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
                               className="bg-teal-600 h-2 rounded-full"
                               style={{ width: `${(item.count / (accessibilityData?.enfants_besoins_specifiques || 1)) * 100}%` }}

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface Props {
   activityPrice: number;
@@ -32,6 +33,84 @@ const TERRITORY_ICONS = {
   organisateur: "🤝"
 } as const;
 
+// Aides uniquement disponibles en période vacances
+const VACATION_ONLY_AIDS = ['Pass Colo', 'VACAF AVE', 'VACAF AVF', 'CAF Loire', 'ANCV'];
+
+/**
+ * Map period type to engine format
+ */
+const mapPeriodType = (periodType: string | undefined): 'vacances' | 'saison_scolaire' => {
+  if (!periodType) return 'saison_scolaire';
+  const p = periodType.toLowerCase();
+  if (p === 'vacances' || p === 'school_holidays' || p.includes('vacances')) {
+    return 'vacances';
+  }
+  return 'saison_scolaire';
+};
+
+/**
+ * Determine school status based on age
+ */
+const getStatutScolaire = (age: number): 'lycee' | 'college' | 'primaire' => {
+  if (age >= 15) return 'lycee';
+  if (age >= 11) return 'college';
+  return 'primaire';
+};
+
+/**
+ * Build eligibility params for the engine
+ */
+const buildEligibilityParams = (
+  childAge: number,
+  quotientFamilial: number,
+  cityCode: string,
+  activityPrice: number,
+  activityCategories: string[],
+  mappedPeriod: 'vacances' | 'saison_scolaire'
+): EligibilityParams => ({
+  age: childAge,
+  quotient_familial: quotientFamilial,
+  code_postal: cityCode,
+  ville: "",
+  departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
+  prix_activite: activityPrice,
+  type_activite: getTypeActivite(activityCategories),
+  periode: mappedPeriod,
+  nb_fratrie: 0,
+  allocataire_caf: !!quotientFamilial,
+  statut_scolaire: getStatutScolaire(childAge),
+  est_qpv: false,
+  conditions_sociales: {
+    beneficie_ARS: false,
+    beneficie_AEEH: false,
+    beneficie_AESH: false,
+    beneficie_bourse: false,
+    beneficie_ASE: false
+  }
+});
+
+/**
+ * Filter vacation-only aids when in school period
+ */
+const filterVacationAids = <T extends { name: string }>(
+  aids: T[],
+  mappedPeriod: 'vacances' | 'saison_scolaire'
+): T[] => {
+  if (mappedPeriod !== 'saison_scolaire') return aids;
+  return aids.filter(aid => !VACATION_ONLY_AIDS.some(vacAid => aid.name.includes(vacAid)));
+};
+
+/**
+ * Map engine result to display format
+ */
+const mapToDisplayFormat = (res: { name: string; montant: number; niveau: string; official_link?: string }): FinancialAid => ({
+  aid_name: res.name,
+  amount: res.montant,
+  territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+  official_link: res.official_link || null,
+  is_informational: false
+});
+
 export const FinancialAidsCalculator = ({
   activityPrice,
   activityCategories,
@@ -45,77 +124,30 @@ export const FinancialAidsCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // CRITICAL: If activity price <= 0, don't render anything
-  if (activityPrice <= 0) {
-    return null;
-  }
-
   useEffect(() => {
+    // Skip calculation if activity price is invalid
+    if (activityPrice <= 0) return;
+
     const calculateAids = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // Simulation d'un délai pour l'UX (optionnel, peut être retiré pour instantanéité)
+        // UX delay for visual feedback
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Mapping robuste des périodes (DB vs Engine)
-        let mappedPeriod: 'vacances' | 'saison_scolaire' = 'saison_scolaire';
-        if (periodType) {
-            const p = periodType.toLowerCase();
-            if (p === 'vacances' || p === 'school_holidays' || p.includes('vacances')) {
-                mappedPeriod = 'vacances';
-            }
-        }
+        const mappedPeriod = mapPeriodType(periodType);
+        const params = buildEligibilityParams(
+          childAge, quotientFamilial, cityCode, activityPrice, activityCategories, mappedPeriod
+        );
 
-        // Préparation des paramètres pour le moteur TypeScript
-        const params: EligibilityParams = {
-          age: childAge,
-          quotient_familial: quotientFamilial,
-          code_postal: cityCode,
-          ville: "", // Non disponible dans les props actuelles, impact mineur sur aides ville
-          departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
-          prix_activite: activityPrice,
-          type_activite: getTypeActivite(activityCategories),
-          periode: mappedPeriod,
-          nb_fratrie: 0, // Non disponible, par défaut 0
-          allocataire_caf: !!quotientFamilial, // Déduit si QF présent
-          statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
-          est_qpv: false, // Non disponible
-          conditions_sociales: {
-            beneficie_ARS: false,
-            beneficie_AEEH: false,
-            beneficie_AESH: false,
-            beneficie_bourse: false,
-            beneficie_ASE: false
-          }
-        };
-
-        // Exécution du moteur de calcul unifié
         const engineResults = calculateAllEligibleAids(params);
-
-        // PHASE B: Filtrage UI contextuel (défense en profondeur)
-        // Masquer les aides vacances si activité en période scolaire
-        const VACATION_ONLY_AIDS = ['Pass Colo', 'VACAF AVE', 'VACAF AVF', 'CAF Loire', 'ANCV'];
-        
-        const contextualResults = mappedPeriod === 'saison_scolaire'
-          ? engineResults.filter(aid => 
-              !VACATION_ONLY_AIDS.some(vacAid => aid.name.includes(vacAid))
-            )
-          : engineResults;
-
-        // Mapping vers le format d'affichage local
-        const mappedAids: FinancialAid[] = contextualResults.map(res => ({
-          aid_name: res.name,
-          amount: res.montant,
-          territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
-          official_link: res.official_link || null,
-          is_informational: false
-        }));
+        const contextualResults = filterVacationAids(engineResults, mappedPeriod);
+        const mappedAids = contextualResults.map(mapToDisplayFormat);
 
         setAids(mappedAids);
       } catch (err) {
-        console.error("Error calculating financial aids:", err);
+        console.error(safeErrorMessage(err, 'FinancialAidsCalculator.calculateAids'));
         setError("Impossible de calculer les aides disponibles");
       } finally {
         setLoading(false);
@@ -130,6 +162,11 @@ export const FinancialAidsCalculator = ({
   const totalAids = calculableAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, activityPrice - totalAids);
   const savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
+
+  // CRITICAL: If activity price <= 0, don't render anything (moved after hooks)
+  if (activityPrice <= 0) {
+    return null;
+  }
 
   return (
     <Card className="p-4 space-y-4">

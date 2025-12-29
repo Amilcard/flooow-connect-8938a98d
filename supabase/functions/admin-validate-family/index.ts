@@ -53,11 +53,21 @@ serve(async (req) => {
     // Parse request
     const { profileId, action, reason } = await req.json();
 
-    console.log('Validating family account:', { profileId, action, reason });
+    console.log('[admin-validate-family] Processing request');
 
+    // Validate required fields
     if (!profileId || !action) {
       return new Response(
         JSON.stringify({ error: 'profileId et action requis' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate UUID format for profileId
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return new Response(
+        JSON.stringify({ error: 'Format profileId invalide' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -98,7 +108,7 @@ serve(async (req) => {
     }
 
     // Update profile status
-    const updateData: any = {
+    const updateData: Record<string, string | undefined> = {
       account_status: action === 'approve' ? 'active' : 'rejected',
       validated_at: new Date().toISOString(),
       validated_by: user.id
@@ -114,7 +124,7 @@ serve(async (req) => {
       .eq('id', profileId);
 
     if (updateError) {
-      console.error('Error updating profile:', updateError);
+      console.error('[admin-validate-family] Error updating profile');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la mise à jour' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -135,14 +145,14 @@ serve(async (req) => {
         }
       });
 
-    console.log('Family account validation completed:', action);
+    console.log('[admin-validate-family] Validation completed');
 
     return new Response(
       JSON.stringify({ 
         success: true,
         message: action === 'approve' 
-          ? `Compte validé avec succès`
-          : `Compte rejeté`,
+          ? "Compte validé avec succès"
+          : "Compte rejeté",
         email: profile.email
       }),
       { 
@@ -151,11 +161,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[admin-validate-family] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
-      { 
+      JSON.stringify({ error: 'Erreur interne' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }

@@ -36,7 +36,7 @@ export default function DemoDashboard() {
         </Card>
 
         {/* Sélecteur de rôle */}
-        <Tabs value={activeRole} onValueChange={(v) => setActiveRole(v as any)} className="w-full">
+        <Tabs value={activeRole} onValueChange={(v) => setActiveRole(v as "collectivite" | "financeur")} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="collectivite" className="gap-2">
               <Building2 className="w-4 h-4" />

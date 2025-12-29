@@ -40,11 +40,11 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("event_reminders_enabled", true);
 
     if (prefsError) {
-      console.error("Error fetching preferences:", prefsError);
+      console.error("[event-reminders] Error fetching preferences");
       throw prefsError;
     }
 
-    console.log(`Found ${usersWithPrefs?.length || 0} users with reminders enabled`);
+    console.log("[event-reminders] Found users with reminders enabled");
 
     let remindersProcessed = 0;
     let emailsSent = 0;
@@ -67,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
         .eq("user_id", userPref.user_id);
 
       if (favError) {
-        console.error(`Error fetching favorites for user ${userPref.user_id}:`, favError);
+        console.error("[event-reminders] Error fetching favorites for user");
         continue;
       }
 
@@ -79,13 +79,13 @@ const handler = async (req: Request): Promise<Response> => {
         .single();
 
       if (!profile?.email) {
-        console.log(`No email found for user ${userPref.user_id}`);
+        console.log("[event-reminders] No email found for user");
         continue;
       }
 
       // Pour chaque événement favori
       for (const favorite of favoriteEvents || []) {
-        const event = favorite.territory_events as any;
+        const event = favorite.territory_events as { id: string; title: string; start_date: string; location?: string } | null;
         if (!event || Array.isArray(event)) continue;
 
         const eventDate = new Date(event.start_date);
@@ -104,11 +104,11 @@ const handler = async (req: Request): Promise<Response> => {
             .maybeSingle();
 
           if (alreadySent) {
-            console.log(`Reminder already sent for event ${event.id} to user ${userPref.user_id}`);
+            console.log("[event-reminders] Reminder already sent for event");
             continue;
           }
 
-          console.log(`Sending reminder for event "${event.title}" to user ${userPref.user_id}`);
+          console.log("[event-reminders] Sending reminder for event");
 
           // Créer la notification in-app d'abord pour obtenir l'ID
           const { data: notificationData, error: notificationError } = await supabase
@@ -233,7 +233,7 @@ const handler = async (req: Request): Promise<Response> => {
                 });
 
             } catch (emailError) {
-              console.error(`Error sending email to ${profile.email}:`, emailError);
+              console.error("[event-reminders] Error sending email");
             }
           }
 
@@ -242,7 +242,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    console.log(`Reminders check complete: ${remindersProcessed} processed, ${notificationsCreated} notifications, ${emailsSent} emails`);
+    console.log("[event-reminders] Reminders check complete");
 
     return new Response(
       JSON.stringify({
@@ -257,10 +257,10 @@ const handler = async (req: Request): Promise<Response> => {
       }
     );
 
-  } catch (error: any) {
-    console.error("Error in event-reminders function:", error);
+  } catch (error: unknown) {
+    console.error("[event-reminders] Internal error");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

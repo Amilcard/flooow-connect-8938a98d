@@ -12,11 +12,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Calendar, MapPin, User, Euro, CheckCircle2, AlertCircle, Bus, Bike } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+interface AidItem {
+  aid_name: string;
+  amount: number;
+  territory_level?: string;
+  official_link?: string | null;
+  is_informational?: boolean;
+}
+
 interface LocationState {
   childId: string;
   quotientFamilial: string;
   cityCode: string;
-  aids: any[];
+  aids: AidItem[];
   totalAids: number;
   remainingPrice: number;
   transportMode?: {
@@ -53,9 +61,10 @@ const BookingRecap = () => {
   const { data: activity, isLoading: loadingActivity } = useQuery({
     queryKey: ["activity", id],
     queryFn: async () => {
+      // FIX: Removed structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("activities")
-        .select("*, structures:structure_id(name, address)")
+        .select("*")
         .eq("id", id)
         .single();
       if (error) throw error;
@@ -124,11 +133,13 @@ const BookingRecap = () => {
         }
       });
 
-      if (!error && data && (data as any).success === false) {
-        const err = (data as any).error || {};
+      // Type-safe response handling
+      const response = data as { success?: boolean; error?: { message?: string }; id?: string } | null;
+      if (!error && response && response.success === false) {
+        const errMsg = response.error?.message ?? "Cette réservation n'est pas possible";
         toast({
           title: "Réservation non éligible",
-          description: err.message || "Cette réservation n'est pas possible",
+          description: errMsg,
           variant: "destructive",
         });
         setIsSubmitting(false);
@@ -145,11 +156,11 @@ const BookingRecap = () => {
         description: "Votre demande de réservation a bien été enregistrée"
       });
 
-      navigate(`/booking-status/${data.id}`);
-    } catch (error: any) {
+      navigate(`/booking-status/${response?.id ?? id}`);
+    } catch (error: unknown) {
       toast({
         title: "Erreur lors de la réservation",
-        description: error.message || "Une erreur est survenue",
+        description: error instanceof Error ? error.message : "Une erreur est survenue",
         variant: "destructive"
       });
     } finally {
@@ -217,7 +228,7 @@ const BookingRecap = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback={`/activity/${id}`} variant="ghost" size="icon" />
+          <BackButton fallback={`/activity/${id}`} positioning="relative" size="sm" showText={true} label="Retour" />
           <h1 className="font-semibold text-lg">Récapitulatif de la demande</h1>
         </div>
       </div>
@@ -293,7 +304,7 @@ const BookingRecap = () => {
                 <Separator />
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Aides appliquées</p>
-                  {state.aids.map((aid: any, index: number) => (
+                  {state.aids.map((aid, index) => (
                     <div key={index} className="flex justify-between items-center text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-muted-foreground">{aid.aid_name}</span>

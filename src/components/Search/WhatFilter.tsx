@@ -17,9 +17,21 @@ const CATEGORIES = [
   "Culture",
   "Loisirs",
   "Vacances",
-  "Scolarité",
-  "Insertion"
+  "Scolarité"
+  // "Insertion" // supprimé temporairement
 ];
+
+// Couleurs par catégorie
+const CATEGORY_COLORS: Record<string, string> = {
+  'Sport': '#EF4444',
+  'Culture': '#8B5CF6',
+  'Loisirs': '#F59E0B',
+  'Scolarité': '#3B82F6',
+};
+
+const getCategoryColor = (category: string): string => {
+  return CATEGORY_COLORS[category] || '#8B5CF6';
+};
 
 export const WhatFilter = ({
   categories,
@@ -45,6 +57,7 @@ export const WhatFilter = ({
               variant={categories.includes(category) ? "default" : "outline"}
               className="cursor-pointer"
               onClick={() => toggleCategory(category)}
+              style={{ backgroundColor: categories.includes(category) ? getCategoryColor(category) : undefined }}
             >
               {category}
               {categories.includes(category) && (

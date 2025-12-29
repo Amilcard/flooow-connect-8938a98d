@@ -410,8 +410,8 @@ supabase functions deploy validate-child-signup-token
 
 **Vérification:**
 ```bash
-# Tester que les secrets sont bien définis
-curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/child-signup-email \
+# Tester que les secrets sont bien définis (remplacer YOUR_PROJECT_REF)
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/child-signup-email \
   -H "Content-Type: application/json" \
   -d '{"parentEmail":"test@test.com","childName":"Test","childDob":"2010-01-01"}'
 
@@ -729,8 +729,8 @@ supabase db push
 # 4. Vérifier les secrets
 supabase secrets list
 
-# 5. Tests de fumée
-curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/validate-child-signup-token \
+# 5. Tests de fumée (remplacer YOUR_PROJECT_REF)
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/validate-child-signup-token \
   -H "Content-Type: application/json" \
   -d '{"token":"test","action":"approve"}'
 

@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActivityCard } from "@/components/Activity/ActivityCard";
@@ -14,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
+
+type ActivityRow = Database['public']['Tables']['activities']['Row'];
 
 const Alternatives = () => {
   const navigate = useNavigate();
@@ -36,20 +39,21 @@ const Alternatives = () => {
     enabled: !!activityId,
   });
 
-  // Fetch similar activities (simple logic: same category)
+  // Fetch similar activities (simple logic: same categories)
+  // FIX: column is 'categories' (array), not 'category'
   const { data: alternatives, isLoading } = useQuery({
-    queryKey: ["alternatives", activityId, originalActivity?.category],
+    queryKey: ["alternatives", activityId, originalActivity?.categories],
     queryFn: async () => {
-      if (!originalActivity) return [];
-      
+      if (!originalActivity || !originalActivity.categories?.length) return [];
+
       const { data } = await supabase
         .from("activities")
         .select("*")
-        .eq("category", originalActivity.category)
+        .overlaps("categories", originalActivity.categories)
         .eq("published", true)
         .neq("id", activityId)
         .limit(5);
-      
+
       return data || [];
     },
     enabled: !!originalActivity,
@@ -71,7 +75,7 @@ const Alternatives = () => {
       <SearchBar />
       
       <div className="container py-6 space-y-6">
-        <BackButton fallback="/" />
+        <BackButton fallback="/" positioning="relative" size="sm" showText={true} label="Retour" />
 
         {/* Refusal notice */}
         <Card className="border-2 border-destructive/20 bg-destructive/5">
@@ -141,7 +145,7 @@ const Alternatives = () => {
             <LoadingState />
           ) : alternatives && alternatives.length > 0 ? (
             <div className="grid gap-4">
-              {alternatives.map((activity: any) => (
+              {alternatives.map((activity: ActivityRow) => (
                 <ActivityCard
                   key={activity.id}
                   id={activity.id}

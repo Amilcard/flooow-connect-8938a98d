@@ -6,15 +6,16 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SearchPageHeader } from '@/components/search/SearchPageHeader';
-import { QuickFiltersBar } from '@/components/search/QuickFiltersBar';
-import { ActiveFiltersDisplay } from '@/components/search/ActiveFiltersDisplay';
-import { ResultsHeader } from '@/components/search/ResultsHeader';
-import { ResultsGrid } from '@/components/search/ResultsGrid';
-import { ActivityMap } from '@/components/search/ActivityMap';
+import { SearchPageHeader } from '@/components/Search/SearchPageHeader';
+import { QuickFiltersBar } from '@/components/Search/QuickFiltersBar';
+import { ActiveFiltersDisplay } from '@/components/Search/ActiveFiltersDisplay';
+import { ResultsHeader } from '@/components/Search/ResultsHeader';
+import { ResultsGrid } from '@/components/Search/ResultsGrid';
+import { MapSearchView } from '@/components/Search/MapSearchView';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { useSearchFilters } from '@/hooks/useSearchFilters';
 import { buildActivityQuery, getResultsCount } from '@/utils/buildActivityQuery';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 const SearchResults = () => {
   const {
@@ -42,14 +43,36 @@ const SearchResults = () => {
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error fetching activities:', error);
+        console.error(safeErrorMessage(error, 'Fetch activities'));
         throw error;
       }
 
-      // Map database types to Activity type and deduplicate
+      // LOT 1 - T1_4: Mapping amélioré pour cohérence avec les cartes
+      // Refonte vue carte: ajout coordonnées + organism info
       const mappedActivities = (data || []).map((activity: any) => ({
-        ...activity,
+        id: activity.id,
+        title: activity.title,
+        category: activity.category || (activity.categories && activity.categories[0]) || 'Loisirs',
+        images: activity.images || [],
+        age_min: activity.age_min,
+        age_max: activity.age_max,
+        period_type: activity.period_type,
+        price_amount: activity.price_base,
         price_is_free: activity.price_base === 0 || activity.price_base === null,
+        // Organism info (denormalized)
+        organism_name: activity.organism_name,
+        organism_city: activity.organism_city,
+        // Location for map
+        location: activity.location || (activity.structures?.location ? {
+          lat: activity.structures.location.lat,
+          lng: activity.structures.location.lng
+        } : null),
+        location_name: activity.organism_name
+          ? `${activity.organism_name}${activity.organism_city ? ' • ' + activity.organism_city : ''}`
+          : activity.structures?.name
+            ? `${activity.structures.name}${activity.structures.address ? ' • ' + activity.structures.address : ''}`
+            : undefined,
+        financial_aids_accepted: activity.accepts_aid_types || [],
       }));
 
       // Deduplicate by ID first
@@ -146,19 +169,33 @@ const SearchResults = () => {
 
       {/* Results Grid or Map */}
       {filterState.viewMode === 'map' ? (
-        <div className="px-4 pb-8">
-          <ActivityMap activities={activities} />
-        </div>
-      ) : (
-        <ResultsGrid
-          activities={activities}
+        <MapSearchView 
+          activities={activities.map((a: any) => ({
+            id: a.id,
+            title: a.title,
+            category: a.category,
+            price_base: a.price_amount || 0,
+            age_min: a.age_min,
+            age_max: a.age_max,
+            period_type: a.period_type,
+            images: a.images,
+            organism_name: a.organism_name || a.location_name?.split(' • ')[0],
+            organism_city: a.organism_city,
+            location: a.location,
+          }))}
           isLoading={isActivitiesLoading}
-          onResetFilters={handleClearFilters}
         />
+      ) : (
+        <>
+          <ResultsGrid
+            activities={activities}
+            isLoading={isActivitiesLoading}
+            onResetFilters={handleClearFilters}
+          />
+          {/* Bottom margin for navigation - only for list view */}
+          <div className="h-20" />
+        </>
       )}
-
-      {/* Bottom margin for navigation */}
-      <div className="h-20" />
 
       {/* Bottom Navigation */}
       <BottomNavigation />

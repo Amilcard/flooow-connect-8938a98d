@@ -10,6 +10,7 @@ import {
   Users
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatAgeRangeForCard } from "@/utils/categoryMapping";
 
 interface Activity {
   id: string;
@@ -132,10 +133,10 @@ export function ZeroResultState({
     <div className="max-w-3xl mx-auto py-8 space-y-6">
       {/* Message principal zéro résultat */}
       <div className="text-center space-y-2">
-        <p className="text-lg text-gray-700 font-medium">
+        <p className="text-lg text-foreground font-medium">
           {searchTerm ? `Pas de ${searchTerm} ici.` : "Aucun résultat."}
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           On propose autre chose ?
         </p>
       </div>
@@ -151,7 +152,7 @@ export function ZeroResultState({
 
           {/* Message contextuel */}
           {searchTerm && suggestedTerms && (
-            <p className="text-sm text-gray-600 -mt-2">
+            <p className="text-sm text-muted-foreground -mt-2">
               {getSuggestionMessage(searchTerm, suggestedTerms)}
             </p>
           )}
@@ -167,7 +168,7 @@ export function ZeroResultState({
                 <CardContent className="p-4">
                   <div className="flex gap-4">
                     {/* Thumbnail image */}
-                    <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
                       {activity.images?.[0] ? (
                         <img
                           src={activity.images[0]}
@@ -193,12 +194,12 @@ export function ZeroResultState({
                       </div>
 
                       {activity.structures?.name && (
-                        <p className="text-sm text-gray-600 line-clamp-1">
+                        <p className="text-sm text-muted-foreground line-clamp-1">
                           {activity.structures.name}
                         </p>
                       )}
 
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                         {activity.structures?.address && (
                           <div className="flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5" />
@@ -207,14 +208,14 @@ export function ZeroResultState({
                         )}
                         <div className="flex items-center gap-1">
                           <Users className="w-3.5 h-3.5" />
-                          <span>{activity.age_min}-{activity.age_max} ans</span>
+                          <span>{formatAgeRangeForCard(activity.age_min, activity.age_max)}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between pt-1">
                         <div className="text-sm">
                           <span className="font-medium text-foreground">{activity.price_base}€</span>
-                          <span className="text-xs text-gray-500 italic ml-1.5">
+                          <span className="text-xs text-muted-foreground italic ml-1.5">
                             Prix indicatif - Test
                           </span>
                         </div>
@@ -272,7 +273,7 @@ export function ZeroResultState({
       {/* Fallback ultime - si vraiment aucune suggestion */}
       {!hasSuggestions && (
         <div className="text-center space-y-4 pt-4 border-t">
-          <p className="text-sm text-gray-600">Toujours rien ? On vous aide.</p>
+          <p className="text-sm text-muted-foreground">Toujours rien ? On vous aide.</p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Button
               variant="outline"

@@ -46,7 +46,7 @@ serve(async (req) => {
 
     const { parentEmail, childName, childDob } = await req.json();
 
-    console.log('Child signup email validation request:', { parentEmail, childName, childDob });
+    console.log('Child signup email validation request received');
 
     // Validate input
     if (!parentEmail || !childName || !childDob) {
@@ -64,7 +64,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (parentError) {
-      console.error('Error checking parent:', parentError);
+      console.error('[child-signup-email] Error checking parent');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la vérification du compte parent' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -98,7 +98,7 @@ serve(async (req) => {
       .gte('created_at', oneDayAgo);
 
     if (countError) {
-      console.error('Error checking rate limit:', countError);
+      console.error('[child-signup-email] Error checking rate limit');
     }
 
     const requestCount = recentRequests?.length || 0;
@@ -142,7 +142,7 @@ serve(async (req) => {
       .single();
 
     if (requestError) {
-      console.error('Error creating signup request:', requestError);
+      console.error('[child-signup-email] Error creating signup request');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la création de la demande' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -240,8 +240,7 @@ serve(async (req) => {
     });
 
     if (!emailResponse.ok) {
-      const errorData = await emailResponse.json();
-      console.error('Resend API error:', emailResponse.status, errorData);
+      console.error('[child-signup-email] Email API request failed');
 
       let userMessage = 'Impossible d\'envoyer l\'email';
       let statusCode = emailResponse.status;
@@ -263,7 +262,7 @@ serve(async (req) => {
           userMessage = 'Service d\'email temporairement indisponible. Réessayez plus tard.';
           break;
         default:
-          userMessage = `Erreur lors de l\'envoi de l\'email (${emailResponse.status})`;
+          userMessage = 'Erreur lors de l\'envoi de l\'email';
       }
 
       return new Response(
@@ -272,7 +271,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Validation email sent successfully to:', parentEmail);
+    console.log('[child-signup-email] Validation email sent successfully');
 
     return new Response(
       JSON.stringify({ 
@@ -286,11 +285,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[child-signup-email] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
-      { 
+      JSON.stringify({ error: 'Erreur interne' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }

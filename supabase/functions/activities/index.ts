@@ -55,16 +55,16 @@ serve(async (req) => {
       filters.push(`price_base=lte.${encodeURIComponent(qp.get("max_price")!)}`);
     }
     if (qp.get("accessibility") === "true") {
-      filters.push(`accessibility_checklist->>wheelchair=eq.true`);
+      filters.push("accessibility_checklist->>wheelchair=eq.true");
     }
     if (qp.get("covoiturage") === "true") {
-      filters.push(`covoiturage_enabled=eq.true`);
+      filters.push("covoiturage_enabled=eq.true");
     }
 
     // Construct Supabase REST URL
     const restUrl = `${SUPABASE_URL}/rest/v1/activities?select=${encodeURIComponent(baseSelect)}&${filters.join("&")}&limit=${limit}&offset=${offset}&order=created_at.desc`;
 
-    console.log(`[activities] Fetching: ${restUrl}`);
+    console.log('[activities] Fetching activities');
 
     // Call Supabase REST API
     const response = await fetch(restUrl, {
@@ -77,12 +77,10 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      console.error(`[activities] Supabase error: ${response.status} ${response.statusText}`);
-      const errorText = await response.text();
-      console.error(`[activities] Error body: ${errorText}`);
-      
+      console.error('[activities] Upstream request failed');
+
       return new Response(
-        JSON.stringify({ error: "upstream_error", details: errorText }), 
+        JSON.stringify({ error: "upstream_error" }), 
         {
           status: 502,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -91,7 +89,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log(`[activities] Success: ${data.length} activities returned`);
+    console.log('[activities] Request successful');
 
     // Return with cache headers (60 seconds)
     return new Response(JSON.stringify(data), {
@@ -104,12 +102,9 @@ serve(async (req) => {
     });
 
   } catch (err) {
-    console.error("[activities] Internal error:", err);
+    console.error("[activities] Internal error");
     return new Response(
-      JSON.stringify({ 
-        error: "internal_error", 
-        message: err instanceof Error ? err.message : String(err) 
-      }), 
+      JSON.stringify({ error: "internal_error" }), 
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

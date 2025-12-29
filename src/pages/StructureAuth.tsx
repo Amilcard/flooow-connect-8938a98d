@@ -106,7 +106,7 @@ const StructureAuth = () => {
         description: "Bienvenue ! Vous pouvez maintenant créer vos activités."
       });
 
-      navigate("/structure-dashboard");
+      navigate("/dashboard/structure");
     } catch (error: any) {
       console.error("Structure signup error:", error);
       toast({
@@ -123,7 +123,7 @@ const StructureAuth = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback="/" />
+          <BackButton fallback="/" positioning="relative" size="sm" showText={true} label="Retour" />
           <h1 className="font-semibold text-lg">Inscription Structure</h1>
         </div>
       </div>

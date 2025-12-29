@@ -64,7 +64,7 @@ const ProfileCompletion = () => {
         .from("profiles")
         .update({
           postal_code: formData.postalCode,
-          quotient_familial: formData.quotientFamilial ? parseFloat(formData.quotientFamilial) : null,
+          quotient_familial: formData.quotientFamilial ? Number.parseFloat(formData.quotientFamilial) : null,
           marital_status: formData.maritalStatus || null,
           updated_at: new Date().toISOString()
         })
@@ -94,10 +94,10 @@ const ProfileCompletion = () => {
       });
 
       navigate("/home");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de sauvegarder le profil",
+        description: error instanceof Error ? error.message : "Impossible de sauvegarder le profil",
         variant: "destructive"
       });
     } finally {
@@ -111,7 +111,7 @@ const ProfileCompletion = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback="/" />
+          <BackButton fallback="/" positioning="relative" size="sm" showText={true} label="Retour" />
           <h1 className="font-semibold text-lg">Complétez votre profil</h1>
         </div>
       </div>

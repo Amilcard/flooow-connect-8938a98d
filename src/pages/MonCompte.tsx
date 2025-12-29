@@ -1,18 +1,15 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PageHeader } from "@/components/PageHeader";
 import PageLayout from "@/components/PageLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
   User,
   Users,
+  UserPlus,
   FileText,
   Bell,
   HelpCircle,
@@ -20,12 +17,6 @@ import {
   ChevronRight,
   Settings,
   Shield,
-  Calendar,
-  MapPin,
-  Phone,
-  Mail,
-  Edit,
-  ArrowLeft,
   Car,
   Euro,
   Heart
@@ -39,7 +30,7 @@ const MonCompte = () => {
 
   // Redirect to auth if not authenticated
   if (!isLoading && !isAuthenticated) {
-    navigate("/auth");
+    navigate("/login");
     return null;
   }
 
@@ -77,10 +68,10 @@ const MonCompte = () => {
         description: "\u00C0 bient\u00F4t !",
       });
       navigate("/home");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erreur",
-        description: error?.message || String(error),
+        description: error instanceof Error ? error.message : String(error),
         variant: "destructive",
       });
     }
@@ -129,6 +120,14 @@ const MonCompte = () => {
       tourId: "account-children",
     },
     {
+      icon: <UserPlus size={20} />,
+      title: "Lier un enfant",
+      subtitle: "Valider les inscriptions de vos enfants",
+      badge: null,
+      onClick: () => navigate("/mon-compte/lier-enfant"),
+      tourId: "account-link-child",
+    },
+    {
       icon: <Calendar size={20} />,
       title: "Mes réservations",
       subtitle: "Historique et réservations en cours",
@@ -165,17 +164,17 @@ const MonCompte = () => {
   // SECTION B : Autres infos (items secondaires)
   const otherInfoItems = [
     {
-      icon: <Calendar size={18} className="text-orange-600" />,
+      icon: <Calendar size={18} className="text-primary" />,
       label: "Mes sessions",
       onClick: () => navigate("/mon-compte/sessions"),
     },
     {
-      icon: <Settings size={18} className="text-gray-600" />,
+      icon: <Settings size={18} className="text-muted-foreground" />,
       label: "Paramètres",
       onClick: () => navigate("/mon-compte/parametres"),
     },
     {
-      icon: <HelpCircle size={18} className="text-indigo-600" />,
+      icon: <HelpCircle size={18} className="text-primary" />,
       label: "Aide & Support",
       onClick: () => navigate("/support"),
     },
@@ -216,8 +215,8 @@ const MonCompte = () => {
         }
       />
 
-      {/* Bloc Bonjour [Prénom] avec avatar */}
-      <div className="container px-4 pt-4 pb-2">
+      {/* Bloc Bonjour [Prénom] avec avatar - max-w-5xl pour alignement cohérent */}
+      <div className="max-w-5xl mx-auto px-4 pt-4 pb-2">
         <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-primary/10">
           <Avatar className="h-12 w-12 ring-2 ring-primary/20">
             <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-semibold text-lg">
@@ -236,7 +235,7 @@ const MonCompte = () => {
       </div>
 
       {/* SECTION A : Mes espaces principaux */}
-      <div className="container px-4 pt-6 pb-4">
+      <div className="max-w-5xl mx-auto px-4 pt-6 pb-4">
         <div className="mb-4">
           <h3 className="text-xl font-bold text-foreground">Mes espaces principaux</h3>
           <p className="text-sm text-muted-foreground">Accès rapide à vos informations et démarches</p>
@@ -262,11 +261,11 @@ const MonCompte = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {item.badge && (
+                    {item.badge ? (
                       <Badge variant="secondary" className="bg-primary/10 text-primary">
                         {item.badge}
                       </Badge>
-                    )}
+                    ) : null}
                     <ChevronRight className="text-muted-foreground" size={20} />
                   </div>
                 </div>
@@ -277,7 +276,7 @@ const MonCompte = () => {
       </div>
 
       {/* SECTION B : Autres infos */}
-      <div className="container px-4 pb-6">
+      <div className="max-w-5xl mx-auto px-4 pb-6">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-foreground">Autres infos</h3>
         </div>
@@ -305,7 +304,7 @@ const MonCompte = () => {
       </div>
 
       {/* Bouton déconnexion discret */}
-      <div className="container px-4 pb-8">
+      <div className="max-w-5xl mx-auto px-4 pb-8">
         <button
           onClick={handleLogout}
           className="flex items-center justify-center gap-2 w-full py-4 text-sm text-muted-foreground hover:text-destructive transition-colors duration-200 underline"

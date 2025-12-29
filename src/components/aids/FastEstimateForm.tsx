@@ -28,22 +28,22 @@ interface FastEstimateFormProps {
 }
 
 export function FastEstimateForm({ quickParams, onSubmit, onBack }: FastEstimateFormProps) {
-  const [quotientFamilial, setQuotientFamilial] = useState<string>('');
-  const [allocataireCaf, setAllocataireCaf] = useState<string>('');
-  const [conditionSociale, setConditionSociale] = useState<string>('');
-  const [statutScolaire, setStatutScolaire] = useState<string>('');
-  const [nbEnfants, setNbEnfants] = useState<string>('1');
+  const [quotientFamilial, setQuotientFamilial] = useState('');
+  const [allocataireCaf, setAllocataireCaf] = useState('');
+  const [conditionSociale, setConditionSociale] = useState('');
+  const [statutScolaire, setStatutScolaire] = useState('');
+  const [nbEnfants, setNbEnfants] = useState('1');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const params: FastEstimateParams = {
       ...quickParams,
-      quotient_familial: quotientFamilial ? parseFloat(quotientFamilial) : undefined,
+      quotient_familial: quotientFamilial ? Number.parseFloat(quotientFamilial) : undefined,
       allocataire_caf: allocataireCaf === 'oui' ? true : allocataireCaf === 'non' ? false : undefined,
       a_condition_sociale: conditionSociale === 'oui' ? true : conditionSociale === 'non' ? false : undefined,
       statut_scolaire: statutScolaire ? (statutScolaire as 'primaire' | 'college' | 'lycee') : undefined,
-      nb_enfants: nbEnfants ? parseInt(nbEnfants) : undefined,
+      nb_enfants: nbEnfants ? Number.parseInt(nbEnfants, 10) : undefined,
     };
 
     onSubmit(params);

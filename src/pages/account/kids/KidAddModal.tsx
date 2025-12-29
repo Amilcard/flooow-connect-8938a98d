@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { safeErrorMessage } from '@/utils/sanitize';
 import { 
   Baby,
   Loader2
@@ -171,7 +172,7 @@ const KidAddModal: React.FC<KidAddModalProps> = ({
         description: `Le profil de ${newChild.firstName} a été créé avec succès.`,
       });
     } catch (error) {
-      console.error('Erreur lors de l\'ajout de l\'enfant:', error);
+      console.error(safeErrorMessage(error, 'KidAddModal.handleAddChild'));
       toast({
         title: "Erreur",
         description: "Impossible d'ajouter l'enfant. Veuillez réessayer.",

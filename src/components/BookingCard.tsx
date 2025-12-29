@@ -1,16 +1,17 @@
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Calendar, AlertCircle } from "lucide-react";
 import { SlotPicker } from "@/components/SlotPicker";
-import { FinancialAidBadges } from "@/components/activities/FinancialAidBadges";
-import { FinancialAidsCalculator } from "@/components/activities/FinancialAidsCalculator";
+import type { Activity } from "@/types/domain";
+import type { CalculatedAid } from "@/utils/FinancialAidEngine";
 
-interface Slot {
+// ============================================
+// INTERFACES TYPÉES
+// ============================================
+
+interface BookingSlot {
   id: string;
   start: string;
   end: string;
@@ -18,50 +19,50 @@ interface Slot {
   seats_total: number;
 }
 
-interface Child {
+interface BookingChild {
   id: string;
   first_name: string;
   dob: string;
 }
 
-interface UserProfile {
+interface BookingUserProfile {
   quotient_familial?: number;
   postal_code?: string;
 }
 
 interface BookingCardProps {
-  activity: any;
-  slots: Slot[];
-  children: Child[];
-  userProfile: UserProfile | null;
+  activity: Activity;
+  slots: BookingSlot[];
+  children: BookingChild[];
+  userProfile: BookingUserProfile | null;
   selectedSlotId?: string;
   selectedChildId?: string;
   onSelectSlot: (slotId: string) => void;
   onSelectChild: (childId: string) => void;
   onBooking: () => void;
   calculateAge: (dob: string) => number;
-  calculateDurationDays: (slot: any) => number;
+  calculateDurationDays: (slot: BookingSlot) => number;
   adjustedPrice?: number | null;
-  calculatedAids?: any[];
+  calculatedAids?: CalculatedAid[];
 }
 
 export const BookingCard = ({
   activity,
   slots,
   children,
-  userProfile,
+  userProfile: _userProfile, // Reserved for future aid calculation display
   selectedSlotId,
   selectedChildId,
   onSelectSlot,
-  onSelectChild,
+  onSelectChild: _onSelectChild, // Reserved for future child selection UI
   onBooking,
-  calculateAge,
-  calculateDurationDays,
+  calculateAge: _calculateAge, // Reserved for age-based pricing
+  calculateDurationDays: _calculateDurationDays, // Reserved for multi-day pricing
   adjustedPrice,
-  calculatedAids = [],
+  calculatedAids: _calculatedAids = [], // Reserved for displaying calculated aids
 }: BookingCardProps) => {
-  const selectedSlot = slots.find((s) => s.id === selectedSlotId);
-  const selectedChild = children.find((c) => c.id === selectedChildId);
+  const _selectedSlot = slots.find((s) => s.id === selectedSlotId); // Reserved for slot details display
+  const _selectedChild = children.find((c) => c.id === selectedChildId); // Reserved for child info display
 
   // Filter slots to show only upcoming ones (max 6)
   const upcomingSlots = slots
@@ -79,10 +80,11 @@ export const BookingCard = ({
               {adjustedPrice !== null && adjustedPrice !== undefined ? (
                 <div className="space-y-1">
                   <div className="flex items-baseline gap-2">
+                    {/* TECH-009: Protection reste à charge ≥ 0 */}
                     <span className="text-3xl font-bold text-primary">
-                      {adjustedPrice === 0 ? "Gratuit" : `${adjustedPrice}€`}
+                      {Math.max(0, adjustedPrice) === 0 ? "Gratuit" : `${Math.max(0, adjustedPrice)}€`}
                     </span>
-                    {adjustedPrice > 0 && (
+                    {Math.max(0, adjustedPrice) > 0 && (
                       <span className="text-sm text-muted-foreground">par enfant</span>
                     )}
                   </div>
@@ -91,7 +93,8 @@ export const BookingCard = ({
                       {activity.price_base}€
                     </span>
                     <Badge variant="secondary" className="text-xs">
-                      Avec aides: -{activity.price_base - adjustedPrice}€
+                      {/* TECH-009: Protection économie ≥ 0 */}
+                      Avec aides: -{Math.max(0, activity.price_base - Math.max(0, adjustedPrice))}€
                     </Badge>
                   </div>
                 </div>
@@ -117,7 +120,7 @@ export const BookingCard = ({
               <Separator />
               <div className="space-y-2">
                 <p className="text-sm font-semibold text-foreground">Options tarifaires</p>
-                {activity.payment_plans.map((plan: any, idx: number) => (
+                {activity.payment_plans.map((plan: { label: string; price: number }, idx: number) => (
                   <div
                     key={idx}
                     className="flex justify-between text-sm p-2 rounded-lg hover:bg-muted/50 transition-colors"
@@ -147,7 +150,7 @@ export const BookingCard = ({
                 />
                 {slots.length > 6 && (
                   <p className="text-xs text-center text-muted-foreground">
-                    +{slots.length - 6} autres créneaux disponibles
+                    +{slots.length - 6} autre{slots.length - 6 > 1 ? 's' : ''} créneau{slots.length - 6 > 1 ? 'x' : ''} disponible{slots.length - 6 > 1 ? 's' : ''}
                   </p>
                 )}
               </>

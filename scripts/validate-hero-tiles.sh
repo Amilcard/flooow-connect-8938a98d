@@ -22,7 +22,7 @@ TILES=(
 for file in "${TILES[@]}"; do
   echo "Checking $file..."
 
-  if [ ! -f "$file" ]; then
+  if [[ ! -f "$file" ]]; then
     echo "  ❌ File not found!"
     FAILED=1
     continue
@@ -62,7 +62,7 @@ for file in "${TILES[@]}"; do
   echo ""
 done
 
-if [ $FAILED -eq 1 ]; then
+if [[ $FAILED -eq 1 ]]; then
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "❌ VALIDATION FAILED"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

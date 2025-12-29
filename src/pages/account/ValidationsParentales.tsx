@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LoadingState } from "@/components/LoadingState";
 import { EmptyState } from "@/components/EmptyState";
-import { ArrowLeft, User, Calendar, MapPin, CheckCircle, XCircle, Clock } from "lucide-react";
+import { User, Calendar, MapPin, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useSmartBack } from "@/hooks/useSmartBack";
+import { ProfilLayout } from "@/components/ProfilLayout";
 
 const ValidationsParentales = () => {
   const navigate = useNavigate();
@@ -37,11 +36,12 @@ const ValidationsParentales = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      // FIX: Removed nested structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("bookings")
         .select(`
           *,
-          activities:activity_id(title, images, category, structures:structure_id(name, address)),
+          activities:activity_id(title, images, category),
           children:child_id(first_name, dob),
           availability_slots:slot_id(start, end),
           validations_parentales!validations_parentales_booking_id_fkey(*)
@@ -135,31 +135,14 @@ const ValidationsParentales = () => {
     return new Date().getFullYear() - new Date(dob).getFullYear();
   };
 
-  if (isLoading) return <LoadingState />;
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container flex items-center gap-3 py-3 px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Retour"
-          >
-            <ArrowLeft />
-          </Button>
-          <h1 className="font-semibold text-lg">Demandes d'inscription</h1>
-          {bookings.length > 0 && (
-            <Badge variant="secondary" className="ml-auto">
-              {bookings.length}
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      <div className="container px-4 py-6 space-y-4 max-w-2xl mx-auto">
+    <ProfilLayout
+      title="Demandes d'inscription"
+      subtitle={bookings.length > 0 ? `${bookings.length} en attente` : undefined}
+      backFallback="/mon-compte"
+      isLoading={isLoading}
+    >
+      <div className="space-y-4">
         {bookings.length === 0 ? (
           <EmptyState 
             icon={Clock}
@@ -289,7 +272,7 @@ const ValidationsParentales = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </ProfilLayout>
   );
 };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormRegister, UseFormWatch, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,10 +16,13 @@ interface ChildData {
   education_level?: string;
 }
 
+/** Marital status options */
+type MaritalStatus = 'single' | 'couple' | 'divorced' | 'widowed';
+
 interface ProfileFormData {
   postal_code: string;
   quotient_familial?: number;
-  marital_status?: 'single' | 'couple' | 'divorced' | 'widowed';
+  marital_status?: MaritalStatus;
   children: ChildData[];
 }
 
@@ -93,11 +96,12 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
           
           <div className="mt-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="postal-code" className="block text-sm font-medium mb-2">
                 Code postal
               </label>
               <Input
-                {...register('postal_code', { 
+                id="postal-code"
+                {...register('postal_code', {
                   required: 'Code postal requis',
                   pattern: {
                     value: /^[0-9]{5}$/,
@@ -129,10 +133,11 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
           </legend>
           
           <div className="mt-4">
-            <label className="block text-sm font-medium mb-2">
+            <label htmlFor="quotient-familial" className="block text-sm font-medium mb-2">
               Quotient familial CAF (en €/mois)
             </label>
             <Input
+              id="quotient-familial"
               {...register('quotient_familial', {
                 min: { value: 0, message: 'Montant invalide' },
                 max: { value: 5000, message: 'Montant trop élevé' }
@@ -169,7 +174,7 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
           </legend>
           
           <div className="mt-4">
-            <Select onValueChange={(value) => setValue('marital_status', value as any)}>
+            <Select onValueChange={(value) => setValue('marital_status', value as MaritalStatus)}>
               <SelectTrigger>
                 <SelectValue placeholder="Non renseigné" />
               </SelectTrigger>
@@ -253,12 +258,12 @@ export function OnboardingProfileForm({ onSubmit, onSkip }: OnboardingProfileFor
 // Composant enfant individuel
 interface ChildFormSectionProps {
   index: number;
-  register: any;
-  watch: any;
-  setValue: any;
+  register: UseFormRegister<ProfileFormData>;
+  watch: UseFormWatch<ProfileFormData>;
+  setValue: UseFormSetValue<ProfileFormData>;
   remove: () => void;
   canRemove: boolean;
-  errors: any;
+  errors: FieldErrors<ProfileFormData>;
 }
 
 function ChildFormSection({ index, register, watch, setValue, remove, canRemove, errors }: ChildFormSectionProps) {
@@ -318,7 +323,7 @@ function ChildFormSection({ index, register, watch, setValue, remove, canRemove,
             <input
               type="checkbox"
               {...register(`children.${index}.is_student`)}
-              className="rounded border-gray-300"
+              className="rounded border-border"
             />
             <span className="text-sm">
               Scolarisé ou en apprentissage

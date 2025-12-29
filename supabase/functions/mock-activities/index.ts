@@ -1,33 +1,57 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 // Rate limit: 1 requête par seconde par IP
-const lastCall: Record<string, number> = {};
+const lastCall = new Map<string, number>();
 
 // Fonction pour transformer les aides au format demandé
 function transformAides(aides: string[]): string[] {
-  const mapping: Record<string, string> = {
-    'caf-sport': 'CAF/VACAF',
-    'caf-loisirs': 'CAF/VACAF',
-    'pass-sport': "Pass'Sport",
-    'pass-culture': "Pass'Culture",
-    'pass-culture-sport': "Pass'Culture+Sport",
-    'bourse-collectivite': 'Bourse Collectivité',
-    'coupon-sport': 'Coupon Sport',
-    'aide-jeune-actif': 'ANCV',
-    'ancv': 'ANCV'
-  };
-  
+  const mapping = new Map<string, string>([
+    ['caf-sport', 'CAF/VACAF'],
+    ['caf-loisirs', 'CAF/VACAF'],
+    ['pass-sport', "Pass'Sport"],
+    ['pass-culture', "Pass'Culture"],
+    ['pass-culture-sport', "Pass'Culture+Sport"],
+    ['bourse-collectivite', 'Bourse Collectivité'],
+    ['coupon-sport', 'Coupon Sport'],
+    ['aide-jeune-actif', 'ANCV'],
+    ['ancv', 'ANCV']
+  ]);
+
   const transformed = new Set<string>();
   aides.forEach(aide => {
-    const mapped = mapping[aide] || aide;
+    const mapped = mapping.get(aide) ?? aide;
     transformed.add(mapped);
   });
-  
+
   return Array.from(transformed);
 }
 
+// Type pour les données de mobilité
+interface MobiliteData {
+  transportCommun?: { disponible?: boolean; lignes?: string[] };
+  velo?: { disponible?: boolean; station?: string };
+  covoiturage?: { disponible?: boolean };
+}
+
+// Type pour les activités mock
+interface MockActivity {
+  id: string;
+  theme: string;
+  titre: string;
+  description: string;
+  ageMin: number;
+  ageMax: number;
+  accessibilite: string[];
+  creneaux: Array<{ jour: string; heureDebut: string; heureFin: string; dates?: string[] }>;
+  lieu: { nom: string; adresse: string; transport: string };
+  cout: number;
+  priceUnit: string;
+  aidesEligibles: string[];
+  mobilite: MobiliteData;
+}
+
 // Fonction pour transformer la mobilité au format simplifié
-function transformMobilite(mobilite: any): { TC: string; velo: boolean; covoit: boolean } {
+function transformMobilite(mobilite: MobiliteData | undefined): { TC: string; velo: boolean; covoit: boolean } {
   const lignes = mobilite?.transportCommun?.lignes || [];
   const premiereLigne = lignes[0] || "Bus disponible";
   
@@ -38,7 +62,7 @@ function transformMobilite(mobilite: any): { TC: string; velo: boolean; covoit: 
   };
 }
 
-const mockActivities = [
+const mockActivities: MockActivity[] = [
   {
     "id": "sport-judo-6-10",
     "theme": "Sport",
@@ -1326,32 +1350,17 @@ serve(async (req) => {
 
   // Accept both GET and POST (POST is used by supabase.functions.invoke)
   if (req.method === "GET" || req.method === "POST") {
-    const CUTOFF_DATE = new Date('2025-11-01');
-    
-    // Filtrer les activités avec créneaux valides (>= 01/11/2025)
-    const validActivities = mockActivities.filter((activity: any) => {
-      // Vérifier si l'activité a des créneaux futurs
-      const hasFutureSlots = activity.creneaux?.some((creneau: any) => {
-        // Pour les périodes de vacances (contient "vacances" dans periode), 
-        // on considère toujours valide car c'est pour 2025
-        if (creneau.periode && creneau.periode.includes('vacances')) return true;
-        
-        // Pour les créneaux hebdomadaires récurrents sans période spécifique,
-        // on les garde aussi (mercredi, samedi, etc.)
-        return true;
-      });
-      
-      return hasFutureSlots !== false;
-    });
-    
+    // NOTE: Toutes les activités sont actuellement valides (créneaux vacances 2025 et hebdomadaires)
+    // Un filtrage par date pourra être implémenté ultérieurement si nécessaire
+
     // Transformer les activités au format demandé
-    const transformedActivities = validActivities.map((activity: any) => ({
+    const transformedActivities = mockActivities.map((activity) => ({
       ...activity,
       aidesEligibles: transformAides(activity.aidesEligibles || []),
       mobilite: transformMobilite(activity.mobilite)
     }));
     
-    console.log(`📅 Filtered activities: ${transformedActivities.length}/${mockActivities.length} valid`);
+    console.log(`📅 Activities loaded: ${transformedActivities.length}`);
     
     return new Response(JSON.stringify(transformedActivities), {
       headers,

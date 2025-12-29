@@ -100,7 +100,7 @@ export const ActivityDetail = ({ activity, onBack, onEnroll }: ActivityDetailPro
                 <div className="aspect-[16/9] relative overflow-hidden">
                   <img
                     src={image}
-                    alt={`${activity.title} - Photo ${index + 1}`}
+                    alt={`${activity.title} - ${index + 1}`}
                     className="w-full h-full object-cover"
                     loading={index === 0 ? "eager" : "lazy"}
                   />

@@ -8,12 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, Calculator, Info, UserPlus } from "lucide-react";
+import { Loader2, CheckCircle2, Calculator, Info, UserPlus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 import { useNavigate } from "react-router-dom";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface Child {
   id: string;
@@ -58,6 +59,94 @@ const TERRITORY_ICONS = {
   commune: "🏘️"
 } as const;
 
+// HELPERS: Reduce cognitive complexity
+
+/**
+ * Calculate age from date of birth
+ */
+const calculateAge = (dob: string): number => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+/**
+ * Get statut scolaire based on age
+ */
+const getStatutScolaire = (age: number): 'primaire' | 'college' | 'lycee' => {
+  if (age >= 15) return 'lycee';
+  if (age >= 11) return 'college';
+  return 'primaire';
+};
+
+/**
+ * Determine activity type from categories
+ */
+const determineActivityType = (categories: string[]): 'sport' | 'culture' | 'vacances' | 'loisirs' => {
+  if (categories.some(c => c.toLowerCase().includes('sport'))) return 'sport';
+  if (categories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) return 'culture';
+  if (categories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) return 'vacances';
+  return 'loisirs';
+};
+
+/**
+ * Map territory level from engine result
+ */
+const mapTerritoryLevel = (niveau: string): string => {
+  if (niveau === 'departemental') return 'departement';
+  if (niveau === 'communal') return 'commune';
+  return niveau;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VALIDATION HELPERS - Extracted to reduce cognitive complexity
+// ═══════════════════════════════════════════════════════════════════════════
+
+type ValidationResult = { valid: boolean; title?: string; description?: string };
+
+const validateChildSelection = (isLoggedIn: boolean, selectedChildId: string, manualChildAge: string): ValidationResult => {
+  if (isLoggedIn && !selectedChildId) {
+    return { valid: false, title: "Enfant requis", description: "Veuillez sélectionner un enfant" };
+  }
+  if (!isLoggedIn && !manualChildAge) {
+    return { valid: false, title: "Âge requis", description: "Veuillez indiquer l'âge de votre enfant" };
+  }
+  return { valid: true };
+};
+
+const validatePostalCode = (cityCode: string): ValidationResult => {
+  if (cityCode && !/^\d{5}$/.test(cityCode)) {
+    return { valid: false, title: "Code postal invalide", description: "Le code postal doit contenir 5 chiffres" };
+  }
+  return { valid: true };
+};
+
+const validateChildAge = (manualChildAge: string): ValidationResult => {
+  const age = Number.parseInt(manualChildAge, 10);
+  if (Number.isNaN(age) || age < 0 || age > 18) {
+    return { valid: false, title: "Âge invalide", description: "Veuillez indiquer un âge entre 0 et 18 ans" };
+  }
+  return { valid: true };
+};
+
+const validateAgeEligibility = (childAge: number, ageMin?: number, ageMax?: number): ValidationResult => {
+  if (ageMin !== undefined && ageMax !== undefined) {
+    if (childAge < ageMin || childAge > ageMax) {
+      return {
+        valid: false,
+        title: "Âge incompatible",
+        description: `Cette activité est réservée aux enfants de ${ageMin} à ${ageMax} ans. Votre enfant a ${childAge} ans.`
+      };
+    }
+  }
+  return { valid: true };
+};
+
 export const EnhancedFinancialAidCalculator = ({
   activityId,
   activityPrice,
@@ -71,13 +160,13 @@ export const EnhancedFinancialAidCalculator = ({
 }: Props) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { state: savedState, saveAidCalculation } = useActivityBookingState(activityId);
+  const { state: savedState, saveAidCalculation, clearState } = useActivityBookingState(activityId);
 
   const [loading, setLoading] = useState(false);
-  const [selectedChildId, setSelectedChildId] = useState<string>("");
-  const [manualChildAge, setManualChildAge] = useState<string>("");
-  const [quotientFamilial, setQuotientFamilial] = useState<string>("");
-  const [cityCode, setCityCode] = useState<string>("");
+  const [selectedChildId, setSelectedChildId] = useState("");
+  const [manualChildAge, setManualChildAge] = useState("");
+  const [quotientFamilial, setQuotientFamilial] = useState("");
+  const [cityCode, setCityCode] = useState("");
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
 
@@ -115,78 +204,53 @@ export const EnhancedFinancialAidCalculator = ({
     }
   }, [userProfile, savedState?.calculated, quotientFamilial, cityCode]);
 
-  const calculateAge = (dob: string): number => {
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
+  // PROTECTION CONFIDENTIALITÉ: Effacement automatique à la fermeture
+  useEffect(() => {
+    return () => {
+      // Cleanup: effacer les données quand le composant est démonté
+      if (clearState) {
+        clearState();
+      }
+    };
+  }, [clearState]);
 
   const handleCalculate = async () => {
-    // Validation: soit un enfant sélectionné (logged in), soit un âge manuel (not logged in)
-    if (isLoggedIn && !selectedChildId) {
-      toast({
-        title: "Enfant requis",
-        description: "Veuillez sélectionner un enfant",
-        variant: "destructive"
-      });
+    // Run validation helpers (reduces cognitive complexity)
+    const childSelectionResult = validateChildSelection(isLoggedIn, selectedChildId, manualChildAge);
+    if (!childSelectionResult.valid) {
+      toast({ title: childSelectionResult.title!, description: childSelectionResult.description!, variant: "destructive" });
       return;
     }
 
-    if (!isLoggedIn && !manualChildAge) {
-      toast({
-        title: "Âge requis",
-        description: "Veuillez indiquer l'âge de votre enfant",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Validate postal code format (5 digits for French postal codes)
-    if (cityCode && !/^\d{5}$/.test(cityCode)) {
-      toast({
-        title: "Code postal invalide",
-        description: "Le code postal doit contenir 5 chiffres",
-        variant: "destructive"
-      });
+    const postalResult = validatePostalCode(cityCode);
+    if (!postalResult.valid) {
+      toast({ title: postalResult.title!, description: postalResult.description!, variant: "destructive" });
       return;
     }
 
     // Déterminer l'âge de l'enfant: depuis profil (logged in) ou manuel (not logged in)
     let childAge: number;
     let nbFratrie = 0;
-    
+
     if (isLoggedIn) {
       const selectedChild = children.find(c => c.id === selectedChildId);
       if (!selectedChild) return;
       childAge = calculateAge(selectedChild.dob);
       nbFratrie = children.length;
     } else {
-      childAge = parseInt(manualChildAge);
-      if (isNaN(childAge) || childAge < 0 || childAge > 18) {
-        toast({
-          title: "Âge invalide",
-          description: "Veuillez indiquer un âge entre 0 et 18 ans",
-          variant: "destructive"
-        });
+      const ageResult = validateChildAge(manualChildAge);
+      if (!ageResult.valid) {
+        toast({ title: ageResult.title!, description: ageResult.description!, variant: "destructive" });
         return;
       }
+      childAge = Number.parseInt(manualChildAge, 10);
     }
 
-    // VALIDATION: Vérifier que l'âge de l'enfant correspond à la tranche d'âge de l'activité
-    if (activityAgeMin !== undefined && activityAgeMax !== undefined) {
-      if (childAge < activityAgeMin || childAge > activityAgeMax) {
-        toast({
-          title: "Âge incompatible",
-          description: `Cette activité est réservée aux enfants de ${activityAgeMin} à ${activityAgeMax} ans. Votre enfant a ${childAge} ans.`,
-          variant: "destructive"
-        });
-        return;
-      }
+    // Validate age eligibility for activity
+    const eligibilityResult = validateAgeEligibility(childAge, activityAgeMin, activityAgeMax);
+    if (!eligibilityResult.valid) {
+      toast({ title: eligibilityResult.title!, description: eligibilityResult.description!, variant: "destructive" });
+      return;
     }
 
     // Pour les activités de vacances, QF est requis
@@ -201,24 +265,17 @@ export const EnhancedFinancialAidCalculator = ({
 
     setLoading(true);
     try {
-      // Déduction du statut scolaire
-      let statut_scolaire: 'primaire' | 'college' | 'lycee' = 'primaire';
-      if (childAge >= 11 && childAge <= 14) statut_scolaire = 'college';
-      if (childAge >= 15) statut_scolaire = 'lycee';
-
-      // Déduction du type d'activité
-      let type_activite: 'sport' | 'culture' | 'vacances' | 'loisirs' = 'loisirs';
-      if (activityCategories.some(c => c.toLowerCase().includes('sport'))) type_activite = 'sport';
-      else if (activityCategories.some(c => c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité'))) type_activite = 'culture';
-      else if (activityCategories.some(c => c.toLowerCase().includes('colo') || c.toLowerCase().includes('vacances'))) type_activite = 'vacances';
+      // Use helpers to reduce cognitive complexity
+      const statut_scolaire = getStatutScolaire(childAge);
+      const type_activite = determineActivityType(activityCategories);
 
       // UTILISER LE MOTEUR COMPLET avec filtrage par période
       const context: EligibilityParams = {
         age: childAge,
-        quotient_familial: parseInt(quotientFamilial) || 0,
+        quotient_familial: Number.parseInt(quotientFamilial, 10) || 0,
         code_postal: cityCode || "00000",
         ville: "",
-        departement: cityCode ? parseInt(cityCode.substring(0, 2)) : 0,
+        departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
         prix_activite: activityPrice,
         type_activite: type_activite,
         periode: periodType === 'vacances' ? 'vacances' : 'saison_scolaire', // CRITICAL: Filtrage par période
@@ -240,7 +297,7 @@ export const EnhancedFinancialAidCalculator = ({
       const calculatedAids: FinancialAid[] = engineResults.map(res => ({
         aid_name: res.name,
         amount: res.montant,
-        territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+        territory_level: mapTerritoryLevel(res.niveau),
         official_link: res.official_link || null,
         is_informational: false
       }));
@@ -278,7 +335,7 @@ export const EnhancedFinancialAidCalculator = ({
         });
       }
     } catch (err) {
-      console.error("Error calculating aids:", err);
+      console.error(safeErrorMessage(err, 'EnhancedFinancialAidCalculator.handleCalculate'));
       toast({
         title: "Erreur",
         description: "Impossible de calculer les aides",
@@ -287,6 +344,27 @@ export const EnhancedFinancialAidCalculator = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  // PROTECTION CONFIDENTIALITÉ: Fonction de réinitialisation manuelle
+  const handleReset = () => {
+    // Effacer l'état persisté
+    if (clearState) {
+      clearState();
+    }
+    
+    // Réinitialiser tous les champs
+    setSelectedChildId("");
+    setManualChildAge("");
+    setQuotientFamilial("");
+    setCityCode("");
+    setAids([]);
+    setCalculated(false);
+    
+    toast({
+      title: "Données effacées",
+      description: "Vos informations ont été supprimées pour protéger votre confidentialité",
+    });
   };
 
   const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
@@ -443,6 +521,19 @@ export const EnhancedFinancialAidCalculator = ({
           </>
         )}
       </Button>
+
+      {/* Bouton Effacer (Protection confidentialité) */}
+      {calculated && (
+        <Button
+          variant="outline"
+          onClick={handleReset}
+          className="w-full"
+          size="sm"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Effacer mes données
+        </Button>
+      )}
 
       {/* Résultats */}
       {calculated && aids.length > 0 && (

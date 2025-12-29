@@ -28,6 +28,49 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateAllEligibleAids, EligibilityParams } from "@/utils/FinancialAidEngine";
 import { getTypeActivite } from "@/utils/AidCalculatorHelpers";
+import { safeErrorMessage } from '@/utils/sanitize';
+
+// HELPERS: Reduce cognitive complexity
+
+/**
+ * Get statut scolaire based on age
+ */
+const getStatutScolaire = (age: number): 'primaire' | 'college' | 'lycee' => {
+  if (age >= 15) return 'lycee';
+  if (age >= 11) return 'college';
+  return 'primaire';
+};
+
+/**
+ * Build eligibility params for the calculation engine
+ */
+const buildSimulationParams = (
+  childAge: number,
+  qf: number,
+  cityCode: string,
+  activityPrice: number,
+  activityCategories: string[]
+): EligibilityParams => ({
+  age: childAge,
+  quotient_familial: qf,
+  code_postal: cityCode || "",
+  ville: "",
+  departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
+  prix_activite: activityPrice,
+  type_activite: getTypeActivite(activityCategories),
+  periode: 'saison_scolaire',
+  nb_fratrie: 0,
+  allocataire_caf: !!qf,
+  statut_scolaire: getStatutScolaire(childAge),
+  est_qpv: false,
+  conditions_sociales: {
+    beneficie_ARS: false,
+    beneficie_AEEH: false,
+    beneficie_AESH: false,
+    beneficie_bourse: false,
+    beneficie_ASE: false
+  }
+});
 
 interface SimulateAidModalProps {
   open: boolean;
@@ -137,7 +180,7 @@ export const SimulateAidModal = ({
       if (childrenError) throw childrenError;
       setChildren(childrenData || []);
     } catch (err) {
-      console.error('Erreur lors du chargement des données:', err);
+      console.error(safeErrorMessage(err, 'SimulateAidModal.loadUserProfile'));
     }
   }, [user]);
 
@@ -184,8 +227,8 @@ export const SimulateAidModal = ({
         childAge = calculateAge(selectedChild.dob);
       } else {
         // Saisie manuelle de l'âge
-        childAge = parseInt(form.selectedChildId);
-        if (isNaN(childAge) || childAge < 6 || childAge > 18) {
+        childAge = Number.parseInt(form.selectedChildId, 10);
+        if (Number.isNaN(childAge) || childAge < 6 || childAge > 18) {
           setError("L'âge doit être entre 6 et 18 ans");
           setIsLoading(false);
           return;
@@ -198,35 +241,15 @@ export const SimulateAidModal = ({
         return;
       }
 
-      const qf = parseInt(form.quotientFamilial) || 0;
+      const qf = Number.parseInt(form.quotientFamilial, 10) || 0;
 
       // Simulation d'un délai pour l'UX
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Préparation des paramètres pour le moteur TypeScript
-      const params: EligibilityParams = {
-        age: childAge,
-        quotient_familial: qf,
-        code_postal: form.cityCode || "",
-        ville: "", // Non disponible
-        departement: form.cityCode ? parseInt(form.cityCode.substring(0, 2)) : 0,
-        prix_activite: activityPrice,
-        type_activite: getTypeActivite(activityCategories), // Utilisation du helper
-        periode: 'saison_scolaire', // Par défaut
-        nb_fratrie: 0,
-        allocataire_caf: !!qf,
-        statut_scolaire: childAge >= 15 ? 'lycee' : childAge >= 11 ? 'college' : 'primaire',
-        est_qpv: false,
-        conditions_sociales: {
-          beneficie_ARS: false,
-          beneficie_AEEH: false,
-          beneficie_AESH: false,
-          beneficie_bourse: false,
-          beneficie_ASE: false
-        }
-      };
+      // Build params using helper
+      const params = buildSimulationParams(childAge, qf, form.cityCode, activityPrice, activityCategories);
 
-      // Exécution du moteur de calcul unifié
+      // Execute calculation engine
       const engineResults = calculateAllEligibleAids(params);
       
       // Mapping vers le format d'affichage local
@@ -247,7 +270,7 @@ export const SimulateAidModal = ({
         onSimulationComplete(calculatedFinalPrice, mappedAids);
       }
     } catch (err) {
-      console.error('Erreur lors de la simulation:', err);
+      console.error(safeErrorMessage(err, 'SimulateAidModal.handleSimulate'));
       setError(err instanceof Error ? err.message : "Erreur lors du calcul des aides");
     } finally {
       setIsLoading(false);
@@ -406,7 +429,7 @@ export const SimulateAidModal = ({
                 </Label>
                 <Select value={form.cityCode} onValueChange={(value) => setForm(prev => ({ ...prev, cityCode: value }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez votre ville" />
+                    <SelectValue placeholder="Ex : Saint-Rémy-lès-Chevreuse" />
                   </SelectTrigger>
                   <SelectContent>
                     {SAMPLE_CITIES.map(city => (

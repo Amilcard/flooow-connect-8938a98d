@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Activity } from "@/types/domain";
 import { Users, MapPin } from "lucide-react";
+import { optimizeSupabaseImage } from "@/lib/imageMapping";
 
 interface ActivityCardMobileProps {
   activity: Activity;
@@ -18,12 +19,13 @@ export const ActivityCardMobile = ({ activity }: ActivityCardMobileProps) => {
   };
 
   const fallbackBg = "hsl(var(--primary-soft))";
-  const imageUrl = activity.image || "";
+  // PERF: Optimize Supabase images with transformations
+  const imageUrl = optimizeSupabaseImage(activity.image, { width: 320, height: 570 }) || "";
 
   return (
-    <article
+    <div
       onClick={handleClick}
-      className="aspect-[9/16] rounded-2xl overflow-hidden shadow-md bg-[hsl(var(--bg-surface))] relative cursor-pointer transition-transform active:scale-[0.98]"
+      className="aspect-[9/16] rounded-2xl overflow-hidden shadow-md bg-[hsl(var(--bg-surface))] relative cursor-pointer transition-transform active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -107,6 +109,6 @@ export const ActivityCardMobile = ({ activity }: ActivityCardMobileProps) => {
       >
         Voir
       </Button>
-    </article>
+    </div>
   );
 };

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { safeErrorMessage } from '@/utils/sanitize';
 import KidAddModal from './KidAddModal';
 import {
   Plus,
@@ -97,11 +98,11 @@ const MesEnfants = () => {
 
       setChildren(parsedChildren);
     } catch (error) {
-      console.error('Erreur lors du chargement des enfants:', error);
+      console.error(safeErrorMessage(error, 'MesEnfants.loadChildren'));
       toast({
-        title: "Erreur",
-        description: "Impossible de charger les enfants.",
-        variant: "destructive"
+        title: "Chargement interrompu",
+        description: "Impossible de charger vos enfants pour le moment. Vérifiez votre connexion et réessayez.",
+        variant: "default"
       });
     } finally {
       setIsLoading(false);
@@ -147,10 +148,10 @@ const MesEnfants = () => {
         description: `Le profil de ${child?.first_name} a été supprimé.`,
       });
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+      console.error(safeErrorMessage(error, 'MesEnfants.handleDeleteChild'));
       toast({
-        title: "Erreur",
-        description: "Impossible de supprimer l'enfant. Veuillez réessayer.",
+        title: "Suppression impossible",
+        description: "Nous n'avons pas pu supprimer ce profil. Veuillez réessayer.",
         variant: "destructive"
       });
     }
@@ -189,9 +190,10 @@ const MesEnfants = () => {
           <EmptyState
             icon={Baby}
             title="Aucun enfant enregistré"
-            description="Ajoutez le profil de vos enfants pour personnaliser leur expérience"
+            description="Ajoutez le profil de vos enfants pour découvrir des activités adaptées à leur âge et leurs centres d'intérêt"
             actionLabel="Ajouter mon premier enfant"
             onAction={() => setIsAddingChild(true)}
+            variant="inspiring"
           />
         ) : (
           children.map((child) => {

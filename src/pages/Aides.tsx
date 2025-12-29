@@ -4,7 +4,6 @@
  */
 
 import { useState, useEffect } from "react";
-import { BottomNavigation } from "@/components/BottomNavigation";
 import PageLayout from "@/components/PageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { SharedAidCalculator } from "@/components/aids/SharedAidCalculator";
@@ -157,7 +156,7 @@ const Aides = () => {
       />
 
       {/* Main Content Container with max-width and horizontal padding */}
-      <div className="max-w-[1200px] mx-auto px-4">
+      <div className="max-w-5xl mx-auto px-4">
         {/* Simulateur d'aides avec reset automatique - periodType removed: user chooses period */}
         <SharedAidCalculator
           resetOnMount={true}
@@ -177,10 +176,6 @@ const Aides = () => {
         <AidsInfoBox />
       </div>
 
-      {/* Bottom margin for navigation */}
-      <div className="h-20" />
-
-      <BottomNavigation />
     </PageLayout>
   );
 };

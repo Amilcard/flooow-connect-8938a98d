@@ -93,6 +93,7 @@ export default {
         'gradient-orange': 'var(--gradient-orange)',
         'gradient-green': 'var(--gradient-green)',
         'gradient-pink': 'var(--gradient-pink)',
+        'gradient-splash': 'var(--gradient-splash)',
         'card-gradient-1': 'var(--card-gradient-1)',
         'card-gradient-2': 'var(--card-gradient-2)',
       },
@@ -103,11 +104,23 @@ export default {
         display: ['Poppins', 'system-ui', '-apple-system'],
         sans: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         body: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        poppins: ['Poppins', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      zIndex: {
+        'dropdown': 'var(--z-dropdown)',
+        'sticky': 'var(--z-sticky)',
+        'fixed': 'var(--z-fixed)',
+        'modal-backdrop': 'var(--z-modal-backdrop)',
+        'modal': 'var(--z-modal)',
+        'popover': 'var(--z-popover)',
+        'tooltip': 'var(--z-tooltip)',
+        'toast': 'var(--z-toast)',
+        'skip-link': 'var(--z-skip-link)',
       },
       keyframes: {
         "accordion-down": {

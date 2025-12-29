@@ -1,17 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Heart, Euro } from "lucide-react";
+import { Calendar, MapPin, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, isThisWeek, isWithinInterval, addDays, startOfDay, endOfDay } from "date-fns";
+import { format, isWithinInterval, addDays, startOfDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFavoriteEvents } from "@/hooks/useFavoriteEvents";
 import { useAuth } from "@/hooks/useAuth";
 import { EventShareButton } from "@/components/EventShareButton";
 import { EventRegistrationButton } from "@/components/EventRegistrationButton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 

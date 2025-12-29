@@ -4,8 +4,10 @@
  */
 
 import { z } from 'zod';
-import type { Activity, ActivityRaw, ActivityCategory } from './domain';
+import type { Activity, ActivityRaw } from './domain';
 import { getActivityImage } from '@/lib/imageMapping';
+import { safeErrorMessage } from '@/utils/sanitize';
+import { formatAgeRangeForCard } from '@/utils/categoryMapping';
 
 /**
  * Schema Zod pour validation des créneaux horaires (availability_slots)
@@ -60,90 +62,135 @@ export const ActivityDomainSchema = z.object({
   priceUnit: z.string().optional(),
   durationDays: z.number().optional(),
   hasAccommodation: z.boolean().optional(),
+  dateDebut: z.string().optional(),
+  dateFin: z.string().optional(),
+  joursHoraires: z.string().optional(),
+  sessions: z.string().optional(),
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS: Reduce cognitive complexity in toActivity
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Check if an image URL is valid
+ */
+const isValidImageUrl = (url: string | null | undefined): boolean =>
+  !!(url && url.startsWith('http') && !url.includes('cdn.example.com'));
+
+/**
+ * Extract base activity fields with defaults
+ */
+const extractBaseFields = (raw: ActivityRaw) => {
+  const title = raw.titre || raw.title || 'Activité sans titre';
+  const ageMin = raw.ageMin ?? raw.age_min ?? 6;
+  const ageMax = raw.ageMax ?? raw.age_max ?? 17;
+  const price = raw.cout ?? raw.price ?? raw.price_base ?? 0;
+  const category = raw.theme || raw.category || (raw.categories && raw.categories[0]) || 'Loisirs';
+
+  const firstImage = raw.images?.[0];
+  const image = (firstImage && isValidImageUrl(firstImage))
+    ? firstImage
+    : getActivityImage(title, category, ageMin, ageMax);
+
+  return { title, ageMin, ageMax, price, category, image };
+};
+
+/**
+ * Extract vacation pricing fields
+ */
+const extractVacationFields = (raw: ActivityRaw): Partial<Activity> => {
+  const fields: Partial<Activity> = {};
+  if (raw.vacationType) fields.vacationType = raw.vacationType;
+  if (raw.priceUnit || raw.price_unit) fields.priceUnit = raw.priceUnit || raw.price_unit;
+  if (raw.durationDays) fields.durationDays = raw.durationDays;
+  if (raw.hasAccommodation !== undefined) fields.hasAccommodation = raw.hasAccommodation;
+  return fields;
+};
+
+/**
+ * Extract mobility fields
+ */
+const extractMobilityFields = (raw: ActivityRaw): Partial<Activity> => {
+  if (!raw.mobilite && !raw.covoiturage_enabled) return {};
+  return {
+    mobility: {
+      TC: raw.mobilite?.TC || raw.lieu?.transport,
+      velo: raw.mobilite?.velo,
+      covoit: raw.mobilite?.covoit ?? raw.covoiturage_enabled,
+    }
+  };
+};
+
+/**
+ * Extract location fields
+ */
+const extractLocationFields = (raw: ActivityRaw): Partial<Activity> => {
+  if (!raw.structures?.location_lat || !raw.structures?.location_lng) return {};
+  return {
+    location: {
+      lat: raw.structures.location_lat,
+      lng: raw.structures.location_lng,
+      adresse: raw.structures.address || '',
+      ville: raw.structures.city || '',
+      codePostal: raw.structures.postal_code || '',
+    }
+  };
+};
+
+/**
+ * Extract enriched optional fields
+ */
+const extractEnrichedFields = (raw: ActivityRaw): Partial<Activity> => {
+  const fields: Partial<Activity> = {};
+  if (raw.lieu?.nom) fields.lieuNom = raw.lieu.nom;
+  if (raw.lieu?.transport) fields.transportInfo = raw.lieu.transport;
+  if (raw.santeTags?.length) fields.santeTags = raw.santeTags;
+  if (raw.prerequis?.length) fields.prerequis = raw.prerequis;
+  if (raw.pieces?.length) fields.piecesAFournir = raw.pieces;
+  if (Array.isArray(raw.creneaux) && raw.creneaux.length) fields.creneaux = raw.creneaux;
+  return fields;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
 
 /**
  * Adapter avec defaults sécurisés
  * Convertit ActivityRaw (sources externes) → Activity (domain)
  */
 export function toActivity(raw: ActivityRaw): Activity {
-  // Normalisation des champs avec plusieurs variantes possibles
-  const title = raw.titre || raw.title || 'Activité sans titre';
-  const ageMin = raw.ageMin ?? raw.age_min ?? 6;
-  const ageMax = raw.ageMax ?? raw.age_max ?? 17;
-  const price = raw.cout ?? raw.price ?? raw.price_base ?? 0;
-  const category = raw.theme || raw.category || 'Loisirs';
-  
-  // Attribution intelligente de l'image selon thématique et âge
-  // Fix: Filtrer les URLs invalides (cdn.example.com) qui causent des erreurs
-  const isValidImage = (url: string | null | undefined) => 
-    url && url.startsWith('http') && !url.includes('cdn.example.com');
+  const base = extractBaseFields(raw);
 
-  const activityImage = (raw.images && raw.images.length > 0 && isValidImage(raw.images[0])) 
-    ? raw.images[0] 
-    : getActivityImage(title, category, ageMin, ageMax);
-  
   // Construction objet avec valeurs par défaut
   const activity: Activity = {
     id: raw.id,
-    title,
-    image: activityImage,
-    ageRange: `${ageMin}-${ageMax} ans`,
-    ageMin,
-    ageMax,
-    category,
-    categories: raw.categories || [category],
-    price: Number(price),
-    hasAccessibility: !!(raw.accessibilite && raw.accessibilite.length > 0) || 
-                      !!(raw.accessibility_checklist?.wheelchair),
-    hasFinancialAid: !!(raw.aidesEligibles && raw.aidesEligibles.length > 0) || 
-                     !!(raw.accepts_aid_types && raw.accepts_aid_types.length > 0),
+    title: base.title,
+    image: base.image,
+    ageRange: formatAgeRangeForCard(base.ageMin, base.ageMax),
+    ageMin: base.ageMin,
+    ageMax: base.ageMax,
+    category: base.category,
+    categories: raw.categories || [base.category],
+    price: Number(base.price),
+    hasAccessibility: !!(raw.accessibilite?.length) || !!(raw.accessibility_checklist?.wheelchair),
+    hasFinancialAid: !!(raw.aidesEligibles?.length) || !!(raw.accepts_aid_types?.length),
     periodType: raw.period_type,
     structureName: raw.lieu?.nom || raw.structures?.name,
     structureAddress: raw.lieu?.adresse || raw.structures?.address,
     vacationPeriods: raw.vacation_periods || [],
     description: raw.description,
-    aidesEligibles: raw.aidesEligibles || [],
+    aidesEligibles: raw.aidesEligibles || raw.accepts_aid_types || [],
+    dateDebut: raw.date_debut,
+    dateFin: raw.date_fin,
+    joursHoraires: raw.jours_horaires,
+    sessions: raw.sessions,
+    // Optional fields via spread
+    ...extractVacationFields(raw),
+    ...extractMobilityFields(raw),
+    ...(raw.accessibility_checklist && { accessibility: raw.accessibility_checklist }),
+    ...extractLocationFields(raw),
+    ...extractEnrichedFields(raw),
   };
-
-  // Nouveaux champs tarification vacances
-  if (raw.vacationType) {
-    activity.vacationType = raw.vacationType;
-  }
-  if (raw.priceUnit) {
-    activity.priceUnit = raw.priceUnit;
-  }
-  if (raw.durationDays) {
-    activity.durationDays = raw.durationDays;
-  }
-  if (raw.hasAccommodation !== undefined) {
-    activity.hasAccommodation = raw.hasAccommodation;
-  }
-
-  // Mobilité optionnelle
-  if (raw.mobilite || raw.covoiturage_enabled) {
-    activity.mobility = {
-      TC: raw.lieu?.transport || raw.mobilite?.TC,
-      velo: raw.mobilite?.velo,
-      covoit: raw.mobilite?.covoit ?? raw.covoiturage_enabled,
-    };
-  }
-
-  // Accessibilité optionnelle
-  if (raw.accessibility_checklist) {
-    activity.accessibility = raw.accessibility_checklist;
-  }
-
-  // Location géographique (pour carte interactive)
-  if (raw.structures?.location_lat && raw.structures?.location_lng) {
-    activity.location = {
-      lat: raw.structures.location_lat,
-      lng: raw.structures.location_lng,
-      adresse: raw.structures.address || '',
-      ville: '', // Peut être extrait du code postal si nécessaire
-      codePostal: '', // Peut être ajouté si disponible
-    };
-  }
 
   return activity;
 }
@@ -178,7 +225,7 @@ export function validateAndParseActivity(raw: ActivityRaw): {
       success: true,
     };
   } catch (error) {
-    console.error(`❌ Erreur critique parsing activité ${raw.id}:`, error);
+    console.error(safeErrorMessage(error, `Erreur critique parsing activité ${raw.id}`));
     return {
       activity: null,
       success: false,

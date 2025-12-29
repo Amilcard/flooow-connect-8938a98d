@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * RPC function name - exists in DB but not in generated Supabase types.
+ * TODO: Regenerate types with `supabase gen types typescript`
+ */
+const GET_ORGANIZER_EVENT_STATS_RPC = "get_organizer_event_stats" as const;
+
 export interface EventStats {
   event_id: string;
   title: string;
@@ -22,7 +28,8 @@ export const useEventStats = (territoryId?: string) => {
   return useQuery({
     queryKey: ["event-stats", territoryId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_organizer_event_stats" as any, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPC not in generated types
+      const { data, error } = await supabase.rpc(GET_ORGANIZER_EVENT_STATS_RPC as any, {
         p_territory_id: territoryId || null,
       });
 

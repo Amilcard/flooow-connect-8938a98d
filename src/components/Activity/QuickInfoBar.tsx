@@ -1,26 +1,27 @@
-import { Star, Baby, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Users } from "lucide-react";
+import { getCategoryStyle } from "@/constants/categories";
 
 interface QuickInfoBarProps {
   /**
-   * Note moyenne de l'activité
+   * Catégorie principale de l'activité
    */
-  rating?: {
-    average: number;
-    count: number;
+  category?: string;
+
+  /**
+   * Type de période (scolaire ou vacances)
+   */
+  periodType?: "scolaire" | "vacances" | string;
+
+  /**
+   * Tranche d'âge { min, max }
+   */
+  ageRange?: {
+    min?: number;
+    max?: number;
   };
 
   /**
-   * Tranche d'âge de l'activité
-   */
-  ageRange: {
-    min: number;
-    max: number;
-    label?: string;
-  };
-
-  /**
-   * Indique si l'activité est gratuite
+   * Indique si l'activité propose une séance d'essai
    */
   isFree?: boolean;
 
@@ -46,26 +47,14 @@ interface QuickInfoBarProps {
 }
 
 /**
- * Barre condensée d'informations rapides sous le hero
+ * Barre de tags alignée avec les cards Recherche/Accueil
  *
- * Affiche les informations essentielles en un coup d'œil :
- * - Rating avec étoiles
- * - Tranche d'âge avec icône
- * - Badge "GRATUIT" si applicable
- * - Indicateur de places restantes
- *
- * @example
- * ```tsx
- * <QuickInfoBar
- *   rating={{ average: 4.8, count: 23 }}
- *   ageRange={{ min: 6, max: 12, label: "6-12 ans" }}
- *   isFree={false}
- *   spotsRemaining={3}
- * />
- * ```
+ * Ordre d'affichage : [Catégorie] [Période] [Âge] [Séance d'essai] [Solidaire] [InKlusif] [Places]
+ * Styles identiques aux badges de ActivityResultCard
  */
 export function QuickInfoBar({
-  rating,
+  category,
+  periodType,
   ageRange,
   isFree,
   spotsRemaining,
@@ -73,80 +62,111 @@ export function QuickInfoBar({
   hasAccessibility,
   className = ""
 }: QuickInfoBarProps) {
-  // Déterminer la couleur de l'indicateur de places selon le nombre restant
-  const getSpotsColor = (remaining: number): string => {
-    if (remaining < 5) return "#EF4444"; // Rouge (urgent)
-    if (remaining < 10) return "#F59E0B"; // Orange (attention)
-    return "#10B981"; // Vert (disponible)
+  // Couleur catégorie via le système existant
+  const categoryStyle = category ? getCategoryStyle(category) : null;
+
+  // Formater la période
+  const getPeriodLabel = (type?: string): string | null => {
+    if (!type) return null;
+    if (type === "scolaire") return "Année scolaire";
+    if (type === "vacances") return "Vacances";
+    return type;
   };
 
-  const spotsColor = spotsRemaining ? getSpotsColor(spotsRemaining) : "#10B981";
-  const ageLabel = ageRange.label || `${ageRange.min}-${ageRange.max} ans`;
+  // Formater l'âge (même logique que ActivityResultCard)
+  const getAgeLabel = (range?: { min?: number; max?: number }): string | null => {
+    if (!range) return null;
+    const { min, max } = range;
+    if (min && max) return `${min}-${max} ans`;
+    if (min) return `Dès ${min} ans`;
+    if (max) return `Jusqu'à ${max} ans`;
+    return null;
+  };
+
+  // Couleur places restantes
+  const getSpotsColor = (remaining: number): string => {
+    if (remaining < 5) return "#EF4444";
+    if (remaining < 10) return "#F59E0B";
+    return "#10B981";
+  };
+
+  const periodLabel = getPeriodLabel(periodType);
+  const ageLabel = getAgeLabel(ageRange);
+  const spotsColor = spotsRemaining !== undefined ? getSpotsColor(spotsRemaining) : "#10B981";
 
   return (
     <div
-      className={`quick-info-bar flex items-center gap-3 flex-wrap py-3 px-4 bg-white border-b border-gray-200 ${className}`}
+      className={`quick-info-bar flex items-center gap-2 flex-wrap py-2 px-4 bg-background border-b border-border/40 ${className}`}
     >
-      {/* Rating */}
-      {rating && (
-        <div className="flex items-center gap-1.5">
-          <Star size={16} fill="#F59E0B" color="#F59E0B" strokeWidth={0} />
-          <span className="text-sm font-semibold text-gray-900">
-            {rating.average.toFixed(1)}
-          </span>
-          <span className="text-sm text-gray-500">
-            ({rating.count} avis)
+      {/* 1. Catégorie - style identique ActivityResultCard */}
+      {category && categoryStyle && (
+        <div
+          className="px-2.5 py-1 rounded-md"
+          style={{ backgroundColor: `${categoryStyle.color}15` }}
+        >
+          <span
+            className="text-xs font-bold uppercase"
+            style={{ color: categoryStyle.color }}
+          >
+            {category}
           </span>
         </div>
       )}
 
-      {/* Séparateur si rating présent */}
-      {rating && <div className="w-px h-5 bg-gray-300" />}
+      {/* 2. Période - style neutre */}
+      {periodLabel && (
+        <div className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+            {periodLabel}
+          </span>
+        </div>
+      )}
 
-      {/* Age Range */}
-      <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1 rounded-md">
-        <Baby size={16} color="#4A90E2" strokeWidth={2} />
-        <span className="text-sm font-semibold text-blue-700">
-          {ageLabel}
-        </span>
-      </div>
+      {/* 3. Âge - style bleu comme ActivityResultCard */}
+      {ageLabel && (
+        <div className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/50 rounded-md">
+          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+            {ageLabel}
+          </span>
+        </div>
+      )}
 
-      {/* Badge Gratuit */}
+      {/* 4. Séance d'essai - style émeraude */}
       {isFree && (
-        <Badge
-          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-green-100 text-green-700 border-0"
-        >
-          GRATUIT
-        </Badge>
+        <div className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/50 rounded-md">
+          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            Séance d'essai
+          </span>
+        </div>
       )}
 
-      {/* Badge SOLIDAIRE */}
+      {/* 5. Solidaire (paiement échelonné) - style ambre */}
       {paymentEchelonned && (
-        <Badge
-          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0"
-        >
-          SOLIDAIRE
-        </Badge>
+        <div className="px-2 py-1 bg-amber-50 dark:bg-amber-950/50 rounded-md">
+          <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+            Aides possibles
+          </span>
+        </div>
       )}
 
-      {/* Badge INCLUSIVITÉ */}
+      {/* 6. InKlusif - style bleu clair */}
       {hasAccessibility && (
-        <Badge
-          className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 bg-blue-100 text-blue-700 border-0"
-        >
-          InKlusif
-        </Badge>
+        <div className="px-2 py-1 bg-sky-50 dark:bg-sky-950/50 rounded-md">
+          <span className="text-[11px] font-semibold text-sky-600 dark:text-sky-400">
+            InKlusif
+          </span>
+        </div>
       )}
 
-      {/* Places restantes (seulement si < 10) */}
+      {/* 7. Places restantes (si < 10) - aligné à droite */}
       {spotsRemaining !== undefined && spotsRemaining < 10 && (
-        <div className="flex items-center gap-1.5 ml-auto">
-          <Users size={14} color={spotsColor} strokeWidth={2.5} />
+        <div className="flex items-center gap-1 ml-auto">
+          <Users size={12} color={spotsColor} strokeWidth={2.5} />
           <span
-            className="text-sm font-semibold"
+            className="text-xs font-semibold"
             style={{ color: spotsColor }}
           >
-            {spotsRemaining} place{spotsRemaining > 1 ? "s" : ""} restante{spotsRemaining > 1 ? "s" : ""}
+            {spotsRemaining} place{spotsRemaining > 1 ? "s" : ""}
           </span>
         </div>
       )}

@@ -8,21 +8,26 @@ import { useActivities } from "@/hooks/useActivities";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, List, X, SlidersHorizontal, Info } from "lucide-react";
+import { MapPin, List, X, SlidersHorizontal, Info, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { logSearch } from "@/lib/tracking";
 import { InteractiveMapActivities } from "@/components/Search/InteractiveMapActivities";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { AdvancedFiltersModal } from "@/components/Search/AdvancedFiltersModal";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+
+// Nombre d'activités affichées initialement et par "Charger plus"
+const ITEMS_PER_PAGE = 10;
 
 const Search = () => {
   const navigate = useNavigate();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  
+  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
+
   // Use the unified hook for filter state management
-  const { 
-    filterState, 
+  const {
+    filterState,
     updateSearchQuery,
     updateAdvancedFilters,
     getActiveFilterTags,
@@ -34,12 +39,18 @@ const Search = () => {
   const { advancedFilters, viewMode, searchQuery } = filterState;
 
   // Map advanced filters to useActivities filters
+  // Ne pas appliquer les filtres si les valeurs par défaut sont utilisées
+  const isAgeFilterActive = advancedFilters.age_range[0] !== 4 || advancedFilters.age_range[1] !== 17;
+  const isPriceFilterActive = advancedFilters.max_budget !== 500; // 500€ est la valeur par défaut
+
   const activityFilters = {
     searchQuery: searchQuery,
     categories: advancedFilters.categories,
-    ageMin: advancedFilters.age_range[0],
-    ageMax: advancedFilters.age_range[1],
-    maxPrice: advancedFilters.max_budget,
+    // Seulement appliquer le filtre d'âge si l'utilisateur l'a modifié
+    ageMin: isAgeFilterActive ? advancedFilters.age_range[0] : undefined,
+    ageMax: isAgeFilterActive ? advancedFilters.age_range[1] : undefined,
+    // Seulement appliquer le filtre de prix si l'utilisateur l'a modifié
+    maxPrice: isPriceFilterActive ? advancedFilters.max_budget : undefined,
     hasAccessibility: advancedFilters.inclusivity || advancedFilters.specific_needs.length > 0,
     hasFinancialAid: advancedFilters.financial_aids_accepted.length > 0 || advancedFilters.payment_echelon || advancedFilters.qf_based_pricing,
     mobilityTypes: advancedFilters.mobility_types,
@@ -51,8 +62,18 @@ const Search = () => {
 
   const { activities, isRelaxed, isLoading, error } = useActivities(activityFilters);
 
-  const displayActivities = activities || [];
+  const allActivities = activities || [];
   const activeTags = getActiveFilterTags();
+
+  // Pagination: afficher seulement displayCount activités
+  const displayActivities = allActivities.slice(0, displayCount);
+  const hasMore = displayCount < allActivities.length;
+  const remainingCount = allActivities.length - displayCount;
+
+  // Reset pagination quand les filtres changent
+  useEffect(() => {
+    setDisplayCount(ITEMS_PER_PAGE);
+  }, [searchQuery, advancedFilters]);
 
   // Logger la recherche quand les résultats changent
   useEffect(() => {
@@ -64,6 +85,10 @@ const Search = () => {
     }
   }, [activities, isLoading]);
 
+  const handleLoadMore = () => {
+    setDisplayCount(prev => prev + ITEMS_PER_PAGE);
+  };
+
   if (error) {
     return <ErrorState message="Impossible de charger les activités" />;
   }
@@ -71,8 +96,8 @@ const Search = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-10 bg-background border-b">
-        <div className="container py-2">
-          <BackButton positioning="relative" size="sm" />
+        <div className="max-w-5xl mx-auto px-4 py-2">
+          <BackButton positioning="relative" size="sm" showText={true} label="Retour" />
         </div>
         <SearchBar 
           onFilterClick={() => setIsFiltersOpen(true)}
@@ -81,7 +106,7 @@ const Search = () => {
         />
       </div>
       
-      <div className="container py-4 space-y-4">
+      <div className="max-w-5xl mx-auto px-4 py-4 space-y-4">
         {/* Search query display */}
         {searchQuery && (
           <div className="mb-2 space-y-2">
@@ -128,7 +153,7 @@ const Search = () => {
         {/* View toggle + Results count */}
         <div className="flex items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            {displayActivities?.length || 0} activité(s) trouvée(s)
+            {displayActivities.length} sur {allActivities.length} activité(s)
           </p>
           
           <div className="flex gap-2">
@@ -162,13 +187,29 @@ const Search = () => {
         {isLoading ? (
           <LoadingState />
         ) : viewMode === "list" ? (
-          <ActivitySection
-            title="Résultats de recherche"
-            activities={displayActivities || []}
-          />
+          <>
+            <ActivitySection
+              title="Résultats de recherche"
+              activities={displayActivities}
+            />
+            {/* Bouton Charger plus */}
+            {hasMore && (
+              <div className="flex justify-center pt-4 pb-2">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleLoadMore}
+                  className="gap-2 px-8"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                  Voir {Math.min(remainingCount, ITEMS_PER_PAGE)} activités de plus
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <InteractiveMapActivities
-            activities={displayActivities || []}
+            activities={allActivities}
             height="600px"
           />
         )}
@@ -179,12 +220,13 @@ const Search = () => {
         onClose={() => setIsFiltersOpen(false)}
         filters={advancedFilters}
         onFiltersChange={updateAdvancedFilters}
-        resultsCount={displayActivities.length}
+        resultsCount={allActivities.length}
         isCountLoading={isLoading}
         onApply={() => setIsFiltersOpen(false)}
         onClear={clearAllFilters}
       />
 
+      <ScrollToTopButton />
       <BottomNavigation />
     </div>
   );

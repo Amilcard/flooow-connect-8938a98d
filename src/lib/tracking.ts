@@ -1,4 +1,7 @@
+import { useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { safeErrorMessage } from '@/utils/sanitize';
+import { trackFirstSearch, trackAidsEstimationCompleted, trackBookingConfirmed } from '@/utils/luckyOrange';
 
 /**
  * Helper pour le tracking des actions utilisateur
@@ -18,15 +21,25 @@ const getSessionId = (): string => {
 /**
  * Logger une recherche utilisateur
  */
+// Track if user has already performed a first search this session
+const FIRST_SEARCH_KEY = 'flooow_first_search_tracked';
+
 export const logSearch = async (params: {
   searchQuery?: string;
-  filtersApplied: Record<string, any>;
+  filtersApplied: Record<string, unknown>;
   resultsCount: number;
 }) => {
   try {
+    // Track first search for Lucky Orange (once per session)
+    if (!sessionStorage.getItem(FIRST_SEARCH_KEY)) {
+      sessionStorage.setItem(FIRST_SEARCH_KEY, 'true');
+      trackFirstSearch();
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
-    
-    await supabase.from('search_logs').insert({
+
+    // Tables analytics non typées dans Supabase types générés
+    await (supabase.from('search_logs' as never) as ReturnType<typeof supabase.from>).insert({
       user_id: user?.id || null,
       session_id: getSessionId(),
       search_query: params.searchQuery || null,
@@ -35,7 +48,7 @@ export const logSearch = async (params: {
     });
   } catch (error) {
     // Fail silently pour ne pas bloquer l'UX
-    console.error('Error logging search:', error);
+    console.error(safeErrorMessage(error, 'Error logging search'));
   }
 };
 
@@ -49,8 +62,9 @@ export const logActivityView = async (params: {
 }) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
-    await supabase.from('activity_views').insert({
+
+    // Tables analytics non typées dans Supabase types générés
+    await (supabase.from('activity_views' as never) as ReturnType<typeof supabase.from>).insert({
       activity_id: params.activityId,
       user_id: user?.id || null,
       session_id: getSessionId(),
@@ -58,7 +72,7 @@ export const logActivityView = async (params: {
       source: params.source
     });
   } catch (error) {
-    console.error('Error logging activity view:', error);
+    console.error(safeErrorMessage(error, 'Error logging activity view'));
   }
 };
 
@@ -70,13 +84,13 @@ export const useActivityViewTracking = (
   activityId: string | undefined,
   source: 'search' | 'home' | 'direct' | 'favorites' = 'direct'
 ) => {
-  const startTime = Date.now();
+  const startTimeRef = useRef(Date.now());
 
-  return () => {
+  return useCallback(() => {
     if (!activityId) return;
-    
-    const durationSeconds = Math.floor((Date.now() - startTime) / 1000);
-    
+
+    const durationSeconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+
     // Logger seulement si durée > 2 secondes (évite les bounces)
     if (durationSeconds > 2) {
       logActivityView({
@@ -85,5 +99,19 @@ export const useActivityViewTracking = (
         viewDurationSeconds: durationSeconds
       });
     }
-  };
+  }, [activityId, source]);
+};
+
+/**
+ * Log aids estimation completion (Lucky Orange event)
+ */
+export const logAidsEstimationCompleted = (savingsPercent?: number): void => {
+  trackAidsEstimationCompleted(savingsPercent);
+};
+
+/**
+ * Log booking confirmation (Lucky Orange event)
+ */
+export const logBookingConfirmed = (activityId?: string): void => {
+  trackBookingConfirmed(activityId);
 };

@@ -62,13 +62,41 @@ export interface Activity {
   vacationType?: VacationType; // Type d'accueil vacances
   priceUnit?: string;          // Unité du prix (par semaine, par jour, par an, etc.)
   durationDays?: number;       // Durée en jours pour les séjours/stages
+  dateDebut?: string;          // Date de début (YYYY-MM-DD)
+  dateFin?: string;            // Date de fin (YYYY-MM-DD)
+  joursHoraires?: string;      // Jours et horaires (scolaire)
+  creneaux?: TimeSlot[];       // Créneaux structurés
+  sessions?: string;           // Sessions (vacances)
   hasAccommodation?: boolean;  // Hébergement inclus ou non
   price_is_free?: boolean;     // Indicateur activité gratuite
+  // Champs enrichis
+  lieuNom?: string;            // Nom du lieu distinct de l'organisme
+  transportInfo?: string;      // Info transport en commun
+  santeTags?: string[];        // Ex: ["Certificat médical requis"]
+  prerequis?: string[];        // Ex: ["Savoir nager"]
+  piecesAFournir?: string[];   // Ex: ["Photo d'identité", "Certificat médical"]
+  
+  // Champs organisateur dénormalisés (depuis Supabase)
+  organism_id?: string;
+  organism_name?: string;
+  organism_type?: string;
+  organism_phone?: string;
+  organism_email?: string;
+  organism_website?: string;
+}
+
+/**
+ * Type pour les créneaux structurés
+ */
+export interface TimeSlot {
+  jour: string;      // Ex: "mercredi"
+  debut: string;     // Ex: "14:00"
+  fin: string;       // Ex: "16:00"
 }
 
 /**
  * Type pour les données brutes issues de sources externes
- * (Edge Function mock-activities, API, etc.)
+ * (Edge Function mock-activities, API, Supabase)
  */
 export interface ActivityRaw {
   id: string;
@@ -83,6 +111,7 @@ export interface ActivityRaw {
   cout?: number;
   price?: number;
   price_base?: number;
+  price_unit?: string;
   lieu?: {
     nom?: string;
     adresse?: string;
@@ -101,6 +130,8 @@ export interface ActivityRaw {
   structures?: {
     name?: string;
     address?: string;
+    city?: string;
+    postal_code?: string;
     location_lat?: number;     // PostGIS lat from structures.location
     location_lng?: number;     // PostGIS lng from structures.location
   };
@@ -109,4 +140,15 @@ export interface ActivityRaw {
   priceUnit?: string;
   durationDays?: number;
   hasAccommodation?: boolean;
+  // Dates et horaires
+  date_debut?: string;
+  date_fin?: string;
+  jours_horaires?: string;
+  creneaux?: TimeSlot[];  // JSON array of time slots
+  sessions?: string;
+  lieuNom?: string;        // Lieu de RDV pour séjours vacances
+  // Santé et prérequis
+  santeTags?: string[];
+  prerequis?: string[];
+  pieces?: string[];
 }

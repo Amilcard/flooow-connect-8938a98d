@@ -1,7 +1,7 @@
 /**
  * LOT 6 - QuickFiltersBar Component
  * Horizontal scrollable chips for quick 1-click filters
- * Most used filters: gratuit, vacances été, âge, aides, proche, mercredi, sport, culture
+ * Most used filters: séance d'essai, vacances été, âge, aides, proche, mercredi, sport, culture
  */
 
 import { QuickFilters, QuickFilterChip } from '@/types/searchFilters';
@@ -14,7 +14,7 @@ interface QuickFiltersBarProps {
 const QUICK_FILTER_CHIPS: QuickFilterChip[] = [
   {
     id: 'gratuit',
-    label: 'Gratuit',
+    label: 'Séance d\'essai',
     color_active: '#10B981',
     bg_active: '#DCFCE7'
   },
@@ -64,8 +64,9 @@ const QUICK_FILTER_CHIPS: QuickFilterChip[] = [
 
 export const QuickFiltersBar = ({ quickFilters, onToggleFilter }: QuickFiltersBarProps) => {
   return (
-    <div className="sticky top-[69px] z-[90] bg-gray-50 py-3 border-b border-gray-200 overflow-x-auto overflow-y-hidden scrollbar-hide webkit-overflow-scrolling-touch">
-      <div className="flex gap-2 px-4 whitespace-nowrap">
+    <div className="sticky top-[69px] z-[90] bg-muted py-3 border-b border-border overflow-x-auto overflow-y-hidden scrollbar-hide webkit-overflow-scrolling-touch">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex gap-2 px-4 whitespace-nowrap">
         {QUICK_FILTER_CHIPS.map((chip) => {
           const isActive = quickFilters[chip.id];
 
@@ -86,6 +87,7 @@ export const QuickFiltersBar = ({ quickFilters, onToggleFilter }: QuickFiltersBa
             </button>
           );
         })}
+        </div>
       </div>
     </div>
   );

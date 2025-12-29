@@ -1,4 +1,5 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { logEvent } from "@/hooks/useEventLogger";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VACATION_PERIOD_DATES } from "@/components/VacationPeriodFilter";
@@ -40,7 +41,9 @@ import {
   Share2,
   Copy,
   Check,
-  Leaf
+  Leaf,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContactOrganizerModal } from "@/components/ContactOrganizerModal";
@@ -52,35 +55,112 @@ import activitySportImg from "@/assets/activity-sport.jpg";
 import activityLoisirsImg from "@/assets/activity-loisirs.jpg";
 import activityVacancesImg from "@/assets/activity-vacances.jpg";
 import activityCultureImg from "@/assets/activity-culture.jpg";
-import { CompactHeroHeader } from "@/components/Activity/CompactHeroHeader";
+import { ActivityImageCard } from "@/components/Activity/ActivityImageCard";
+import { ActivityDetailHero } from "@/components/Activity/ActivityDetailHero";
+import { SessionSlotCard } from "@/components/Activity/SessionSlotCard";
+import { SessionAccordion, SelectedSessionSummary } from "@/components/Activity/SessionAccordion";
+import { SlotAccordion, SelectedSlotSummary } from "@/components/Activity/SlotAccordion";
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
+import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
 
 const getCategoryImage = (category: string): string => {
-  const categoryMap: Record<string, string> = {
-    Sport: activitySportImg,
-    Loisirs: activityLoisirsImg,
-    Vacances: activityVacancesImg,
-    Scolarité: activityCultureImg,
-    Culture: activityCultureImg,
-  };
-  return categoryMap[category] || activityLoisirsImg;
+  const categoryMap = new Map<string, string>([
+    ['Sport', activitySportImg],
+    ['Loisirs', activityLoisirsImg],
+    ['Vacances', activityVacancesImg],
+    ['Scolarité', activityCultureImg],
+    ['Culture', activityCultureImg],
+  ]);
+  return categoryMap.get(category) ?? activityLoisirsImg;
 };
+
+// ============================================================================
+// HELPER FUNCTIONS - Extracted to reduce cognitive complexity
+// ============================================================================
+
+/**
+ * Calculate age from date of birth
+ */
+const calculateAge = (dob: string): number => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+/**
+ * Calculate duration in days from slot
+ */
+const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
+  if (!slot || !slot.start || !slot.end) return 1;
+  const start = new Date(slot.start);
+  const end = new Date(slot.end);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays);
+};
+
+/**
+ * Get next dates with ISO format for a given day of week
+ */
+const DAY_NAMES_SHORT = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+
+const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array<{iso: string, label: string, labelShort: string}> => {
+  if (dayOfWeek === null) return [];
+  const dates: Array<{iso: string, label: string, labelShort: string}> = [];
+  const today = new Date();
+  const currentDay = today.getDay();
+  let daysUntil = dayOfWeek - currentDay;
+  if (daysUntil <= 0) daysUntil += 7;
+  for (let i = 0; i < count; i++) {
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + daysUntil + (i * 7));
+    dates.push({
+      iso: nextDate.toISOString().split('T')[0],
+      label: nextDate.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }),
+      labelShort: `${DAY_NAMES_SHORT[nextDate.getDay()]} ${nextDate.getDate()} ${nextDate.toLocaleDateString("fr-FR", { month: "short" })}`
+    });
+  }
+  return dates;
+};
+
+/**
+ * Get next dates labels (simplified)
+ */
+const getNextDates = (dayOfWeek: number | null, count: number = 3): string[] => {
+  return getNextDatesWithISO(dayOfWeek, count).map(d => d.label.replace(/^\w+\.?\s*/, ''));
+};
+
+/**
+ * Get next single date label
+ */
+const getNextDate = (dayOfWeek: number | null): string => getNextDates(dayOfWeek, 1)[0] || "";
 
 const ActivityDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
+  // Guard: id requis
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const periodFilter = searchParams.get("period") || undefined;
   const tabParam = searchParams.get("tab");
   const visualParam = searchParams.get("visual");
   const [activeTab, setActiveTab] = useState<string>(
-    ["infos", "tarifs", "mobilite"].includes(tabParam || "")
+    ["infos", "tarifs", "trajets"].includes(tabParam || "")
       ? tabParam!
       : "infos"
   );
   const [selectedSlotId, setSelectedSlotId] = useState<string>();
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [selectedOccurrenceDate, setSelectedOccurrenceDate] = useState<string | null>(null); // Date ISO de la séance choisie
+  const [showAllDates, setShowAllDates] = useState(false); // Pour "Voir plus de dates"
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null); // Pour l'accordéon
   const [showContactModal, setShowContactModal] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -90,7 +170,7 @@ const ActivityDetail = () => {
   const mobileVisualMode = visualParam === "true";
   
   // Hook pour la persistance des données d'aides et de transport
-  const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id!);
+  const { state: bookingState, saveAidCalculation, saveTransportMode } = useActivityBookingState(id || "");
   
   // États pour les aides calculées
   const [aidsData, setAidsData] = useState<{
@@ -104,7 +184,7 @@ const ActivityDetail = () => {
 
   // Restaurer les données d'aides depuis le state persisté
   useEffect(() => {
-    if (bookingState?.calculated) {
+    if (bookingState?.calculated && !aidsData) {
       setAidsData({
         childId: bookingState.childId,
         quotientFamilial: bookingState.quotientFamilial,
@@ -114,41 +194,72 @@ const ActivityDetail = () => {
         remainingPrice: bookingState.remainingPrice
       });
     }
-  }, [bookingState?.calculated]);
+  }, [bookingState, aidsData]);
 
   // Tracking consultation activité (durée)
   const trackActivityView = useActivityViewTracking(id, 'direct');
-  
+
   useEffect(() => {
     // Cleanup: logger la durée de consultation à la fermeture
     return trackActivityView;
-  }, [id]);
+  }, [trackActivityView]);
 
   // Fetch activity details
   const { data: activity, isLoading, error } = useQuery({
     queryKey: ["activity", id],
+    enabled: !!id,
     queryFn: async () => {
+      // FIX: Removed structures join to avoid Supabase embed error
       const { data, error } = await supabase
         .from("activities")
-        .select(`
-          *,
-          structures:structure_id (
-            name,
-            address,
-            contact_json
-          )
-        `)
+        .select(`*`)
         .eq("id", id)
         .single();
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000,
+    gcTime: 600000
   });
 
+
+  // Fetch sessions pour cette activité
+  const { data: sessions = [] } = useQuery({
+    queryKey: ["activity_sessions", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activity_sessions")
+        .select("*")
+        .eq("activity_id", id)
+        .order("age_min", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    staleTime: 300000,
+    gcTime: 600000
+  });
+
+  // Log consultation activité
+  useEffect(() => {
+    if (activity && id) {
+      logEvent({
+        eventType: "view_activity",
+        activityId: id,
+        metadata: {
+          title: activity.title,
+          category: activity.categories?.[0],
+          periodType: activity.period_type,
+          price: activity.price_base
+        }
+      });
+    }
+  }, [activity, id]);
   // Fetch availability slots
   const { data: allSlots = [] } = useQuery({
     queryKey: ["slots", id],
+    enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("availability_slots")
@@ -160,7 +271,8 @@ const ActivityDetail = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    staleTime: 300000,
+    gcTime: 600000
   });
 
   // Filtrer les créneaux selon la période sélectionnée
@@ -192,7 +304,9 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000, // 5min cache
+    gcTime: 600000
   });
 
 
@@ -210,7 +324,9 @@ const ActivityDetail = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
+    staleTime: 300000,
+    gcTime: 600000
   });
 
   // Nettoyer les données persistées si l'utilisateur n'est pas connecté
@@ -229,6 +345,31 @@ const ActivityDetail = () => {
     checkAndCleanState();
   }, [userProfile]);
 
+  // Logique des états d'inscription basée sur les VRAIES données (places disponibles)
+  // Pas de règle arbitraire "après octobre c'est fermé"
+  const hasAvailableSlots = slots.some(slot => slot.seats_remaining > 0);
+  const hasAvailableSessions = sessions.length > 0; // Sessions scolaires considérées dispo par défaut
+  const isActivityOpen = activity ? (activity.period_type === "scolaire" ? hasAvailableSessions : hasAvailableSlots) : false;
+  const isActivityClosed = !!activity && !isActivityOpen;
+
+  // Fetch activités alternatives si activité complète (DOIT être avant early returns)
+  const { data: alternatives = [] } = useQuery({
+    queryKey: ["alternatives", activity?.id, activity?.categories, activity?.age_min, activity?.age_max],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("activities")
+        .select("id, title, categories, age_min, age_max, price_base, period_type, images")
+        .neq("id", activity!.id)
+        .eq("is_published", true)
+        .lte("age_min", activity!.age_max)
+        .gte("age_max", activity!.age_min)
+        .limit(3);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isActivityClosed
+  });
+
   if (isLoading) return <LoadingState />;
   if (error || !activity) {
     return (
@@ -242,7 +383,7 @@ const ActivityDetail = () => {
   }
 
   const handleBooking = () => {
-    if (!selectedSlotId) {
+    if (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId) {
       toast({
         title: "Créneau requis",
         description: "Veuillez sélectionner un créneau",
@@ -253,7 +394,16 @@ const ActivityDetail = () => {
 
     // Rediriger vers la page d'inscription
     // Les aides sont optionnelles, elles seront reprises si calculées
-    navigate(`/booking/${id}?slotId=${selectedSlotId}`);
+    // Pour les sessions scolaires, on passe sessionId + occurrenceDate (date ISO de la séance choisie)
+    if (activity.period_type === "scolaire" && selectedSessionId) {
+      const params = new URLSearchParams({ sessionId: selectedSessionId });
+      if (selectedOccurrenceDate) {
+        params.append('occurrenceDate', selectedOccurrenceDate);
+      }
+      navigate(`/booking/${id}?${params.toString()}`);
+    } else if (selectedSlotId) {
+      navigate(`/booking/${id}?slotId=${selectedSlotId}`);
+    }
   };
 
   const handleAidsCalculated = (data: {
@@ -287,7 +437,8 @@ const ActivityDetail = () => {
         });
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
-          console.error('Error sharing:', err);
+          // Share cancelled or failed - non-critical error
+          console.log('Share cancelled or failed');
         }
       }
     } else {
@@ -305,7 +456,8 @@ const ActivityDetail = () => {
         setShowShareMenu(false);
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      // Copy failed - non-critical, no PII exposure
+      console.log('Copy to clipboard failed');
     }
   };
 
@@ -320,42 +472,21 @@ const ActivityDetail = () => {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
-  // Calculate age from date of birth
-  const calculateAge = (dob: string): number => {
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
-  // Calculate duration in days from slot
-    const calculateDurationDays = (slot?: { start: string | Date; end: string | Date } | null): number => {
-      if (!slot || !slot.start || !slot.end) return 1;
-      const start = new Date(slot.start);
-      const end = new Date(slot.end);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return Math.max(1, diffDays);
-    };
-
   const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
   const fallbackImage = getCategoryImage(activity.category);
-  const displayImage = activity.images?.[0] || fallbackImage;
-  const ageRange = `${activity.age_min}-${activity.age_max} ans`;
+  // Fix: vérifie aussi les strings vides dans images
+  const rawImage = activity.images?.[0];
+  const displayImage = (rawImage && rawImage.trim() !== '') ? rawImage : fallbackImage;
+  const ageRange = sessions.length > 0
+    ? sessions.map(s => formatAgeRangeForDetail(s.age_min, s.age_max)).filter((v, i, a) => a.indexOf(v) === i).join(" / ")
+    : formatAgeRangeForDetail(activity.age_min, activity.age_max);
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Compact Hero Header (160px optimisé) */}
-      <CompactHeroHeader
-        imageUrl={displayImage}
+      {/* Page Header avec flèche retour alignée à gauche */}
+      <PageHeader
         title={activity.title}
-        category={activity.category}
-        categories={activity.categories}
         backFallback="/home"
         rightContent={
           <div className="relative">
@@ -363,12 +494,12 @@ const ActivityDetail = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="secondary"
+                    variant="ghost"
                     size="icon"
                     onClick={handleShare}
-                    className="bg-white/90 backdrop-blur-md hover:bg-white shadow-md w-10 h-10 rounded-full"
+                    className="h-9 w-9"
                   >
-                    <Share2 size={18} className="text-foreground" />
+                    <Share2 size={18} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -422,91 +553,54 @@ const ActivityDetail = () => {
         }
       />
 
-      {/* Quick Info Bar - Informations essentielles en un coup d'œil */}
-      <QuickInfoBar
-        ageRange={{ min: activity.age_min, max: activity.age_max }}
-        isFree={activity.price_base === 0}
-        spotsRemaining={slots.reduce((min, slot) => Math.min(min, slot.seats_remaining), Infinity)}
-        paymentEchelonned={activity.payment_echelonned || false}
-        hasAccessibility={
-          typeof activity.accessibility_checklist === 'object' &&
-          activity.accessibility_checklist !== null &&
-          'wheelchair' in activity.accessibility_checklist &&
-          Boolean((activity.accessibility_checklist as any).wheelchair)
+      {/* Hero Section - Photo + Infos Organisateur (layout cohérent avec Accueil/Recherche) */}
+      <ActivityDetailHero
+        title={activity.title}
+        category={activity.category}
+        categories={activity.categories}
+        periodType={activity.period_type}
+        ageMin={activity.age_min}
+        ageMax={activity.age_max}
+        priceBase={activity.price_base}
+        imageUrl={displayImage}
+        organismName={activity.organism_name}
+        organismType={activity.organism_type}
+        organismPhone={activity.organism_phone}
+        organismEmail={activity.organism_email}
+        organismWebsite={activity.organism_website}
+        address={activity.address}
+        city={activity.city}
+        postalCode={activity.postal_code}
+        venueName={activity.venue_name}
+        nextSessionLabel={sessions.length > 0 && sessions[0].day_of_week !== null 
+          ? `Prochaine : ${getNextDates(sessions[0].day_of_week, 1)[0] || ''}`
+          : slots.length > 0 
+            ? `Prochaine : ${new Date(slots[0].start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+            : undefined
         }
+        onContactClick={() => setShowContactModal(true)}
       />
 
-      {/* Main Content Container - Airbnb Style with Grid */}
-      <div className="container px-4 md:px-6 py-8 max-w-[1140px] mx-auto">
-        {/* Header Section - Réorganisé: Titre → Méta → Organisateur */}
-        <div className="space-y-4 pb-8 border-b mb-8" data-tour-id="activity-header">
-          {/* Titre H1 fort sans bouton partage (maintenant sur l'image) */}
-          <h1 className="title-page md:text-4xl">
-            {activity.title}
-          </h1>
-          
-          {/* Méta informations (âge, durée, lieu) */}
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
-            <span className="flex items-center gap-2">
-              <Users size={20} className="text-primary" />
-              <span className="font-medium text-foreground">{ageRange}</span>
-            </span>
-            
-            {activity.period_type && (
-              <span className="flex items-center gap-2">
-                <CalendarRange size={20} className="text-primary" />
-                <span className="text-muted-foreground">
-                  {activity.period_type === 'annual' || activity.period_type === 'trimester' 
-                    ? 'Année scolaire' 
-                    : 'Vacances scolaires'}
-                </span>
-              </span>
-            )}
-            
-            {activity.structures?.address && (
-              <span className="flex items-center gap-2">
-                <MapPin size={20} className="text-primary" />
-                <span className="text-muted-foreground">{activity.structures.address}</span>
-              </span>
-            )}
-          </div>
-
-          {/* Organisateur avec lien contact discret */}
-          {activity.structures?.name && (
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-2">
-                <Building2 size={20} className="text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">
-                  Organisé par {activity.structures.name}
-                </span>
-              </div>
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => setShowContactModal(true)}
-                className="h-auto p-0 text-sm text-primary hover:underline font-medium"
-              >
-                <MessageCircle size={16} className="mr-1.5" />
-                Contacter l'organisateur
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Grid 12 colonnes: 8 pour contenu, 4 pour booking card */}
-        <div className="grid md:grid-cols-12 gap-8">
-          {/* Left Column - Main content with Tabs (8/12) */}
-          <div className="md:col-span-8">
+      {/* Main Content Container */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
+        {/* Grid 12 colonnes: 8 pour contenu principal, 4 pour panneau latéral d'action */}
+        <div className="grid md:grid-cols-12 gap-6 lg:gap-8">
+          {/* Main Content - Informations détaillées (8/12) */}
+          <main className="md:col-span-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full grid grid-cols-2 md:grid-cols-3 gap-1 h-auto p-1 mb-6">
-                <TabsTrigger value="infos" className="text-xs md:text-sm">Infos</TabsTrigger>
-                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center gap-1.5" data-tour-id="tab-tarifs">
-                  <Euro size={14} className="hidden md:inline" />
-                  Tarifs & aides
+              <TabsList className="w-full grid grid-cols-3 gap-1 h-auto p-1 mb-6">
+                <TabsTrigger value="infos" className="text-xs md:text-sm flex items-center justify-center gap-1.5">
+                  <Info size={14} />
+                  <span className="hidden sm:inline">Infos</span>
                 </TabsTrigger>
-                <TabsTrigger value="mobilite" className="text-xs md:text-sm flex items-center gap-1.5">
-                  <Leaf size={14} className="hidden md:inline" />
-                  Mobilité
+                <TabsTrigger value="tarifs" className="text-xs md:text-sm flex items-center justify-center gap-1.5" data-tour-id="tab-tarifs">
+                  <Euro size={14} />
+                  <span className="hidden sm:inline">Tarifs</span>
+                  <span className="hidden md:inline">&nbsp;& aides</span>
+                </TabsTrigger>
+                <TabsTrigger value="trajets" className="text-xs md:text-sm flex items-center justify-center gap-1.5">
+                  <Leaf size={14} />
+                  <span className="hidden sm:inline">Trajets</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -527,13 +621,40 @@ const ActivityDetail = () => {
                   <div className="grid sm:grid-cols-2 gap-6">
                     {/* Colonne gauche */}
                     <div className="space-y-4">
-                      <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                        <Users size={20} className="text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">Tranche d'âge</p>
-                          <p className="text-sm text-muted-foreground">{ageRange}</p>
+                      {sessions.length > 0 && (
+                        <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+                          <Calendar size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Rythme</p>
+                            <p className="text-sm text-muted-foreground">
+                              {activity.period_type === "scolaire" ? "Atelier hebdomadaire" : "Stage vacances"} — voir créneaux disponibles
+                            </p>
+                          </div>
                         </div>
-                      </div>
+                      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                       {typeof activity.accessibility_checklist === 'object' &&
                        activity.accessibility_checklist !== null &&
@@ -551,21 +672,28 @@ const ActivityDetail = () => {
 
                     {/* Colonne droite */}
                     <div className="space-y-4">
-                      {activity.structures?.address && (
+                      {/* Lieu d'entraînement (peut être différent du siège du club) */}
+                      {(activity.venue_name || activity.location_name) && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <MapPin size={20} className="text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Lieu</p>
-                            <p className="text-sm text-muted-foreground">{activity.structures.address}</p>
+                            <p className="font-medium text-sm">Lieu d'entraînement</p>
+                            <p className="text-sm font-medium text-foreground">
+                              {activity.venue_name || activity.location_name}
+                            </p>
+                            {activity.location_address && (
+                              <p className="text-sm text-muted-foreground">{activity.location_address}</p>
+                            )}
+                            {(activity.location_postal_code || activity.location_city) && (
+                              <p className="text-sm text-muted-foreground">
+                                {activity.location_postal_code} {activity.location_city}
+                              </p>
+                            )}
                           </div>
                         </div>
                       )}
-                    </div>
-                  </div>
 
-                  {/* Informations supplémentaires en dessous */}
-                  {(activity.covoiturage_enabled || activity.payment_echelonned) && (
-                    <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                      {/* Covoiturage */}
                       {activity.covoiturage_enabled && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <Car size={20} className="text-primary mt-0.5 flex-shrink-0" />
@@ -576,6 +704,7 @@ const ActivityDetail = () => {
                         </div>
                       )}
 
+                      {/* Paiement échelonné */}
                       {activity.payment_echelonned && (
                         <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
                           <CreditCard size={20} className="text-primary mt-0.5 flex-shrink-0" />
@@ -586,8 +715,16 @@ const ActivityDetail = () => {
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
                 </section>
+
+                {/* Cross-links vers autres onglets - texte d'orientation discret */}
+                <div className="mt-6 p-3 bg-muted/30 rounded-lg border border-border/50">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    💡 Consultez l'onglet <button onClick={() => setActiveTab("tarifs")} className="font-medium text-primary hover:underline">Tarifs & aides</button> pour estimer votre reste à charge,
+                    ou <button onClick={() => setActiveTab("trajets")} className="font-medium text-primary hover:underline">Trajets</button> pour préparer vos déplacements (transports en commun, vélo, covoiturage).
+                  </p>
+                </div>
               </TabsContent>
 
               {/* Onglet Tarifs & aides */}
@@ -598,8 +735,8 @@ const ActivityDetail = () => {
                     <span className="text-3xl font-bold text-primary">
                       {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
                     </span>
-                    {activity.price_note && (
-                      <span className="text-sm text-muted-foreground">{activity.price_note}</span>
+                    {(activity.price_note || activity.period_type) && (
+                      <span className="text-sm text-muted-foreground">{activity.price_note || (activity.period_type === "scolaire" ? "la saison" : "le séjour")}</span>
                     )}
                   </div>
 
@@ -616,7 +753,7 @@ const ActivityDetail = () => {
                         </div>
                         <Separator />
                         <div className="flex justify-between text-lg font-bold" data-tour-id="reste-charge-title">
-                          <span>Reste à charge</span>
+                          <span>Reste à charge estimé</span>
                           <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
                         </div>
                       </div>
@@ -643,6 +780,8 @@ const ActivityDetail = () => {
                         activityPrice={activity.price_base || 0}
                         activityCategories={activity.categories || [activity.category]}
                         periodType={activity.period_type}
+                        ageMin={activity.age_min || 3}
+                        ageMax={activity.age_max || 17}
                         userProfile={userProfile}
                         children={children}
                         onAidsCalculated={handleAidsCalculated}
@@ -652,14 +791,23 @@ const ActivityDetail = () => {
                 )}
               </TabsContent>
 
-              {/* Onglet Mobilité */}
-              <TabsContent value="mobilite" className="mt-0">
+              {/* Onglet Trajets */}
+              <TabsContent value="trajets" className="mt-0">
                 <div data-tour-id="mobility-cards">
                   <EcoMobilitySection
                     activityId={activity.id}
-                    activityAddress={activity.structures?.address}
-                    structureName={activity.structures?.name}
-                    structureContactJson={activity.structures?.contact_json}
+                    activityAddress={[
+                      activity.venue_name,
+                      activity.address,
+                      activity.city,
+                      activity.postal_code
+                    ].filter(Boolean).join(', ') || activity.address}
+                    activityLatLng={activity.latitude && activity.longitude ? {
+                      lat: activity.latitude,
+                      lng: activity.longitude
+                    } : undefined}
+                    structureName={activity.organism_name}
+                    structureContactJson={activity.organism_phone}
                     onTransportModeSelected={(mode) => {
                       console.log('Transport mode selected:', mode);
                     }}
@@ -667,19 +815,27 @@ const ActivityDetail = () => {
                 </div>
               </TabsContent>
             </Tabs>
-          </div>
+          </main>
 
-          {/* Right Column - Sticky Booking Card (4/12) */}
-          <div className="md:col-span-4">
-            <Card className="p-6 md:sticky md:top-24 space-y-6">
+          {/* ============================================
+              PANNEAU LATÉRAL D'ACTION (Aside) - Sticky
+              Contient: Tarifs, Créneaux, CTA Inscription
+              ============================================ */}
+          <aside className="md:col-span-4" aria-label="Panneau de réservation">
+            <Card className="p-5 md:sticky md:top-20 space-y-5 shadow-lg border-2 border-border/50">
+              {/* En-tête du panneau */}
+              <div className="space-y-1">
+                <h2 className="font-bold text-lg text-foreground">Tarifs & créneaux disponibles</h2>
+                <p className="text-xs text-muted-foreground">Sélectionnez un créneau pour inscrire votre enfant</p>
+              </div>
               {/* Prix et aides */}
               <div className="space-y-4">
                 <div className="flex items-baseline justify-between">
                   <span className="text-3xl font-bold">
                     {activity.price_base === 0 ? "Gratuit" : `${activity.price_base}€`}
                   </span>
-                  {activity.price_note && (
-                    <span className="text-sm text-muted-foreground">{activity.price_note}</span>
+                  {(activity.price_note || activity.period_type) && (
+                    <span className="text-sm text-muted-foreground">{activity.price_note || (activity.period_type === "scolaire" ? "la saison" : "le séjour")}</span>
                   )}
                 </div>
 
@@ -696,7 +852,7 @@ const ActivityDetail = () => {
                         <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
                       </div>
                       <div className="flex justify-between text-lg font-bold border-t pt-2" data-tour-id="reste-charge-sticky">
-                        <span>Reste à charge</span>
+                        <span>Reste à charge estimé</span>
                         <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
                       </div>
                     </div>
@@ -704,78 +860,242 @@ const ActivityDetail = () => {
                 )}
               </div>
 
+              {/* Dates du séjour - VACANCES UNIQUEMENT - Info stratégique pour la réservation */}
+              {activity.period_type === "vacances" && (activity.date_debut || activity.date_fin) && (
+                <>
+                  <Separator />
+                  <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={18} className="text-primary" />
+                      <h3 className="font-semibold text-primary">Dates du séjour</h3>
+                    </div>
+                    <div className="space-y-2 pl-6">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">Départ :</span>
+                        <span>{activity.date_debut ? new Date(activity.date_debut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">Retour :</span>
+                        <span>{activity.date_fin ? new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                      </div>
+                      {(activity.duration_days ?? 0) > 0 && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span className="font-medium">Durée :</span>
+                          <span>{activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Horaires départ/retour et lieu RDV */}
+                    {(activity.jours_horaires || activity.lieu_nom) && (
+                      <div className="space-y-2 pl-6 pt-2 border-t border-primary/10">
+                        {activity.jours_horaires && (
+                          <div className="text-sm">
+                            <span className="font-medium">Horaires :</span>
+                            <p className="text-muted-foreground whitespace-pre-line mt-1">{activity.jours_horaires}</p>
+                          </div>
+                        )}
+                        {activity.lieu_nom && (
+                          <div className="flex items-start gap-2 text-sm">
+                            <MapPin size={14} className="text-primary mt-0.5 flex-shrink-0" />
+                            <div>
+                              <span className="font-medium">Lieu de RDV :</span>
+                              <p className="text-muted-foreground">{activity.lieu_nom}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
               {/* Créneaux disponibles */}
-              {slots.length > 0 && (
+              {(activity.period_type === "scolaire" ? sessions.length > 0 : slots.length > 0) && (
                 <>
                   <Separator />
                   <div className="space-y-4" data-tour-id="aid-creneaux-list">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg">Créneaux disponibles</h3>
+                      <h3 className="font-semibold text-lg">Horaires</h3>
                       {periodFilter && (
                         <Badge variant="secondary" className="text-xs">
                           {periodFilter === "printemps_2026" ? "🌸 Printemps" : "☀️ Été"}
                         </Badge>
                       )}
                     </div>
+
+                    {/* Notice: saison déjà commencée mais inscription possible */}
+                    {activity.period_type === "scolaire" && !isActivityClosed && (
+                      <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+                        <Info size={14} />
+                        <span>Saison en cours · Inscription toujours possible</span>
+                      </div>
+                    )}
                     
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                      {slots.map(slot => {
-                        const startDate = new Date(slot.start);
-                        const endDate = new Date(slot.end);
-                        return (
-                          <Card 
-                            key={slot.id}
-                            className={`p-3 cursor-pointer transition-all ${
-                              selectedSlotId === slot.id 
-                                ? 'ring-2 ring-primary bg-accent' 
-                                : 'hover:bg-accent/50'
-                            }`}
-                            onClick={() => setSelectedSlotId(slot.id)}
-                          >
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <Calendar size={14} className="text-primary" />
-                                  <span className="text-sm font-medium">
-                                    {startDate.toLocaleDateString('fr-FR', { 
-                                      day: 'numeric', 
-                                      month: 'short' 
-                                    })}
-                                  </span>
-                                </div>
-                                <Badge variant="outline" className="text-xs">
-                                  {slot.seats_remaining} places
-                                </Badge>
-                              </div>
-                              <div className="text-xs text-muted-foreground ml-5">
-                                {startDate.toLocaleTimeString('fr-FR', { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })} - {endDate.toLocaleTimeString('fr-FR', { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })}
-                              </div>
-                            </div>
-                          </Card>
-                        );
-                      })}
+                    {activity.period_type === "scolaire" ? (
+                    <div className="space-y-3">
+                      {/* Accordéons de sessions scolaires */}
+                      {sessions.map((s, index) => (
+                        <SessionAccordion
+                          key={s.id}
+                          session={{
+                            id: s.id,
+                            day_of_week: s.day_of_week,
+                            start_time: s.start_time,
+                            end_time: s.end_time,
+                            age_min: s.age_min,
+                            age_max: s.age_max,
+                            location: s.location,
+                            price: s.price,
+                          }}
+                          isExpanded={expandedSessionId === s.id || (index === 0 && expandedSessionId === null)}
+                          onToggle={() => setExpandedSessionId(expandedSessionId === s.id ? null : s.id)}
+                          selectedDate={selectedSessionId === s.id ? selectedOccurrenceDate : null}
+                          onSelectDate={(sessionId, date) => {
+                            setSelectedSessionId(sessionId);
+                            setSelectedOccurrenceDate(date);
+                            setExpandedSessionId(sessionId);
+                          }}
+                          activityLocation={activity.location_name || undefined}
+                        />
+                      ))}
+                      
+                      {/* Récap séance choisie */}
+                      {selectedSessionId && selectedOccurrenceDate && (
+                        <SelectedSessionSummary
+                          session={sessions.find(s => s.id === selectedSessionId) || null}
+                          selectedDate={selectedOccurrenceDate}
+                        />
+                      )}
                     </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {/* Accordéon de slots vacances */}
+                      <SlotAccordion
+                        slots={slots}
+                        ageMin={activity.age_min}
+                        ageMax={activity.age_max}
+                        selectedSlotId={selectedSlotId || null}
+                        onSelectSlot={(slotId) => setSelectedSlotId(slotId)}
+                        periodLabel={periodFilter === "printemps_2026" ? "Vacances de Printemps" : periodFilter === "ete_2026" ? "Vacances d'Été" : "Vacances"}
+                        defaultExpanded={true}
+                      />
+                      
+                      {/* Récap créneau choisi */}
+                      {selectedSlotId && (
+                        <SelectedSlotSummary
+                          slot={slots.find(s => s.id === selectedSlotId) || null}
+                          ageMin={activity.age_min}
+                          ageMax={activity.age_max}
+                        />
+                      )}
+                    </div>
+                  )}
+                    
+                    {/* Récap "Créneau sélectionné" - bien visible avant le bouton */}
+                    {activity.period_type === "scolaire" && selectedSessionId && sessions.find(s => s.id === selectedSessionId) && (() => {
+                      const session = sessions.find(s => s.id === selectedSessionId)!;
+                      const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+                      const dayLabel = session.day_of_week !== null ? dayNames[session.day_of_week] : "Vacances";
+                      const timeLabel = session.start_time && session.end_time
+                        ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
+                        : "";
+                      // Formater la date sélectionnée
+                      const selectedDateLabel = selectedOccurrenceDate 
+                        ? new Date(selectedOccurrenceDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+                        : null;
+                      return (
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-primary" />
+                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-base font-semibold text-foreground">{dayLabel} {timeLabel}</p>
+                            {selectedDateLabel && (
+                              <p className="text-sm font-medium text-primary">
+                                📅 Séance du {selectedDateLabel}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                              {session.age_min}-{session.age_max} ans
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    {activity.period_type !== "scolaire" && selectedSlotId && slots.find(s => s.id === selectedSlotId) && (() => {
+                      const selectedSlot = slots.find(s => s.id === selectedSlotId)!;
+                      const startDate = new Date(selectedSlot.start);
+                      const endDate = new Date(selectedSlot.end);
+                      const dayName = startDate.toLocaleDateString('fr-FR', { weekday: 'long' });
+                      const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+                      const dateFormatted = startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                      const timeStart = startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                      const timeEnd = endDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                      return (
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={18} className="text-primary" />
+                            <p className="text-sm font-semibold text-primary">Créneau sélectionné</p>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-base font-semibold text-foreground">{dayNameCapitalized} {dateFormatted}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {timeStart} – {timeEnd}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     <Button
                       onClick={handleBooking}
-                      disabled={!selectedSlotId}
+                      disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
                       className="w-full h-12 text-base font-semibold"
                       size="lg"
                     >
-                      {!selectedSlotId 
-                        ? "Sélectionnez un créneau"
-                        : "Inscrire mon enfant"}
+                      {isActivityClosed
+                        ? "Inscriptions complètes"
+                        : (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)
+                          ? "Sélectionnez un créneau"
+                          : selectedOccurrenceDate
+                            ? `Inscrire (${new Date(selectedOccurrenceDate).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })})`
+                            : "Inscrire mon enfant"}
                     </Button>
 
+                    {isActivityClosed && (
+                      <div className="mt-4 p-4 bg-accent/50 rounded-lg space-y-3">
+                        <p className="text-sm font-medium text-center">
+                          L'atelier affiche complet, mais on ne vous laisse pas tomber 💪
+                        </p>
+                        <div className="text-xs text-center text-muted-foreground space-y-1">
+                          <p>Vous pouvez demander une place sur liste d'attente via la <strong className="text-primary">Flooow Family</strong>.</p>
+                          <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowContactModal(true)}>
+                            <MessageCircle size={14} className="mr-1" />
+                            Contacter via Flooow Family
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {isActivityClosed && alternatives.length > 0 && (
+                      <div className="mt-4 space-y-3">
+                        <p className="text-sm font-medium text-center">Autres idées pour votre enfant :</p>
+                        {alternatives.map((alt: any) => (
+                          <Card key={alt.id} className="p-3 cursor-pointer hover:bg-accent/50" onClick={() => navigate("/activity/" + alt.id)}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-sm font-medium">{alt.title}</p>
+                                <p className="text-xs text-muted-foreground">{alt.age_min}-{alt.age_max} ans</p>
+                              </div>
+                              <span className="text-sm font-bold text-primary">{alt.price_base === 0 ? "Gratuit" : `${alt.price_base}€`}</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
                     {!aidsData && (
                       <p className="text-xs text-center text-muted-foreground">
-                        💡 Vous pouvez calculer vos aides dans l'onglet "Tarifs" (optionnel)
+                        {activeTab === "infos" ? "💡 Avant de confirmer, estimez vos aides dans l'onglet « Tarifs & aides »." : activeTab === "trajets" ? "💡 Estimez vos aides dans « Tarifs & aides » puis choisissez votre trajet." : "💡 Utilisez le calculateur ci-dessus pour estimer vos aides."}
                       </p>
                     )}
                   </div>
@@ -796,18 +1116,18 @@ const ActivityDetail = () => {
                 </div>
               </div>
             </Card>
-          </div>
+          </aside>
         </div>
       </div>
 
 
-      {activity.structures && typeof activity.structures.contact_json === 'object' && activity.structures.contact_json !== null && (
+      {activity.organism_name && (
         <ContactOrganizerModal
           open={showContactModal}
           onOpenChange={setShowContactModal}
-          organizerName={activity.structures.name}
-          organizerEmail={'email' in activity.structures.contact_json ? String(activity.structures.contact_json.email) : ''}
-          organizerPhone={'phone' in activity.structures.contact_json ? String(activity.structures.contact_json.phone) : undefined}
+          organizerName={activity.organism_name}
+          organizerEmail={activity.organism_email || ''}
+          organizerPhone={typeof activity.organism_phone === 'string' ? activity.organism_phone : undefined}
           activityTitle={activity.title}
         />
       )}
@@ -819,8 +1139,8 @@ const ActivityDetail = () => {
         priceUnit={activity.price_note || "par activité"}
         onBook={handleBooking}
         onShare={handleShare}
-        disabled={!selectedSlotId}
-        buttonText={!selectedSlotId ? "Sélectionnez un créneau" : "Réserver"}
+        disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
+        buttonText={(activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
         mobileOnly={true}
       />
 

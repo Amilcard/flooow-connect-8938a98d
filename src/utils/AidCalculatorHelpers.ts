@@ -19,10 +19,6 @@ export function getTypeActivite(categories: string[]): 'sport' | 'culture' | 'va
  * Returns 'vacances' if in holidays, 'scolaire' otherwise
  */
 export function getPeriode(date: Date): 'scolaire' | 'vacances' {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1; // 0-indexed
-  const day = date.getDate();
-
   // Vacances 2024-2025 (Zone A)
   const vacances2024_2025 = [
     { start: new Date(2024, 9, 19), end: new Date(2024, 10, 3) },   // Toussaint
@@ -62,9 +58,9 @@ export function getPeriode(date: Date): 'scolaire' | 'vacances' {
  */
 export function shouldShowQF(
   typeAct: string,
-  periode: string,
-  age: number,
-  cp: string
+  _periode: string,
+  _age: number,
+  _cp: string
 ): boolean {
   // Always show for vacation activities
   if (typeAct === 'vacances') return true;

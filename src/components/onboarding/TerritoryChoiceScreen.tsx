@@ -6,13 +6,68 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronRight, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { safeErrorMessage } from '@/utils/sanitize';
 
 interface TerritoryChoiceScreenProps {
   onNext: (territoryId: string | null, isCovered: boolean) => void;
   onSkip: () => void;
 }
 
-const COVERED_TERRITORIES = [
+interface CoveredTerritory {
+  value: string;
+  label: string;
+  postalCode: string;
+}
+
+// HELPERS: Reduce cognitive complexity
+
+/**
+ * Get postal code to check, handling territory selection
+ */
+const getPostalCodeToCheck = (
+  postalCode: string,
+  selectedTerritory: string,
+  territories: CoveredTerritory[]
+): string | null => {
+  if (selectedTerritory) {
+    const territory = territories.find(t => t.value === selectedTerritory);
+    if (territory && (!postalCode || postalCode.length < 5)) {
+      return territory.postalCode + "000";
+    }
+  }
+  return postalCode || null;
+};
+
+/**
+ * Save territory info to localStorage
+ */
+const saveTerritoryToStorage = (territoryId: string | null, postalCode: string): void => {
+  if (territoryId) {
+    localStorage.setItem('userTerritoryId', territoryId);
+  }
+  localStorage.setItem('userPostalCode', postalCode);
+};
+
+/**
+ * Try to find territory by name when postal code lookup fails
+ */
+const findTerritoryByName = async (
+  selectedTerritory: string,
+  territories: CoveredTerritory[]
+): Promise<{ id: string; name: string } | null> => {
+  const territory = territories.find(t => t.value === selectedTerritory);
+  if (!territory) return null;
+
+  const { data: territoryData } = await supabase
+    .from('territories')
+    .select('id, name')
+    .ilike('name', `%${territory.label}%`)
+    .maybeSingle();
+
+  return territoryData;
+};
+
+const COVERED_TERRITORIES: CoveredTerritory[] = [
   { value: "paris", label: "Paris / Île-de-France", postalCode: "75" },
   { value: "lyon", label: "Lyon Métropole", postalCode: "69" },
   { value: "grenoble", label: "Grenoble Alpes Métropole", postalCode: "38" },
@@ -54,20 +109,10 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
 
   const handleValidate = async () => {
     setIsLoading(true);
-    
+
     try {
-      let codeToCheck = postalCode;
-      
-      // Si un territoire est sélectionné, utiliser son code postal comme référence
-      if (selectedTerritory) {
-        const territory = COVERED_TERRITORIES.find(t => t.value === selectedTerritory);
-        if (territory) {
-          // On garde le code postal saisi mais on utilise le territoire sélectionné
-          if (!postalCode || postalCode.length < 5) {
-            codeToCheck = territory.postalCode + "000";
-          }
-        }
-      }
+      // Get postal code to check using helper
+      const codeToCheck = getPostalCodeToCheck(postalCode, selectedTerritory, COVERED_TERRITORIES);
 
       if (!codeToCheck) {
         toast.error("Veuillez saisir un code postal ou sélectionner un territoire");
@@ -82,42 +127,32 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
         .eq('code', codeToCheck)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error("Erreur lors de la vérification du territoire:", error);
+      if (error?.code !== 'PGRST116' && error) {
+        console.error(safeErrorMessage(error, 'TerritoryChoiceScreen.handleValidate.postalCodeCheck'));
       }
 
-      if (data && data.territory_id) {
-        // Territoire trouvé et couvert
-        localStorage.setItem('userTerritoryId', data.territory_id);
-        localStorage.setItem('userPostalCode', codeToCheck);
+      // Territory found in postal_codes table
+      if (data?.territory_id) {
+        saveTerritoryToStorage(data.territory_id, codeToCheck);
         onNext(data.territory_id, true);
-      } else {
-        // Code postal non trouvé: essayer avec le territoire sélectionné
-        if (selectedTerritory) {
-          const territory = COVERED_TERRITORIES.find(t => t.value === selectedTerritory);
-          if (territory) {
-            // Récupérer l'ID du territoire par son nom
-            const { data: territoryData } = await supabase
-              .from('territories')
-              .select('id, name')
-              .ilike('name', `%${territory.label}%`)
-              .maybeSingle();
-
-            if (territoryData) {
-              localStorage.setItem('userTerritoryId', territoryData.id);
-              localStorage.setItem('userPostalCode', codeToCheck);
-              onNext(territoryData.id, true);
-              return;
-            }
-          }
-        }
-
-        // Territoire non couvert
-        localStorage.setItem('userPostalCode', codeToCheck);
-        onNext(null, false);
+        return;
       }
+
+      // Try to find territory by name if postal code lookup failed
+      if (selectedTerritory) {
+        const territoryData = await findTerritoryByName(selectedTerritory, COVERED_TERRITORIES);
+        if (territoryData) {
+          saveTerritoryToStorage(territoryData.id, codeToCheck);
+          onNext(territoryData.id, true);
+          return;
+        }
+      }
+
+      // Territory not covered
+      saveTerritoryToStorage(null, codeToCheck);
+      onNext(null, false);
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error(safeErrorMessage(error, 'TerritoryChoiceScreen.handleValidate'));
       toast.error("Une erreur est survenue");
       onNext(null, false);
     } finally {
@@ -130,16 +165,16 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         <div className="text-center space-y-3">
           <h2 className="text-2xl font-bold text-foreground">
-            Où habites-tu ou où tu souhaites tester Flooow ?
+            Où habitez-vous ou souhaitez-vous tester Flooow ?
           </h2>
           <p className="text-sm text-muted-foreground">
-            Saisis ton code postal pour découvrir ton territoire
+            Saisissez votre code postal pour découvrir votre territoire
           </p>
         </div>
 
         <div className="bg-muted/50 p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">
-            📍 Cette information permet d'adapter les activités et les aides à ton territoire. Tu pourras la modifier plus tard.
+            Cette information permet d'adapter les activités et les aides à votre territoire. Vous pourrez la modifier plus tard.
           </p>
         </div>
 
@@ -191,7 +226,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
           {postalCode.length >= 2 && availableTerritories.length === 0 && (
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                📍 Ce code postal ne correspond pas encore à un territoire de test. Vous pouvez choisir un territoire manuellement ci-dessous.
+                Ce code postal ne correspond pas encore à un territoire de test. Vous pouvez choisir un territoire manuellement ci-dessous.
               </p>
             </div>
           )}
@@ -200,7 +235,7 @@ export const TerritoryChoiceScreen = ({ onNext, onSkip }: TerritoryChoiceScreenP
             <>
               <div className="relative flex items-center gap-3">
                 <div className="flex-1 h-px bg-border" />
-                <span className="text-sm text-muted-foreground">ou choisis directement</span>
+                <span className="text-sm text-muted-foreground">ou choisissez directement</span>
                 <div className="flex-1 h-px bg-border" />
               </div>
 

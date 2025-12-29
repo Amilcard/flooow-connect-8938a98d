@@ -53,10 +53,10 @@ const Simulateur = () => {
 
   // Validation et calcul
   const handleCalculate = () => {
-    const qf = parseFloat(quotientFamilial);
-    const age = parseInt(ageEnfant);
+    const qf = Number.parseFloat(quotientFamilial);
+    const age = Number.parseInt(ageEnfant, 10);
     const cp = codePostal;
-    const prix = parseFloat(prixActivite);
+    const prix = Number.parseFloat(prixActivite);
 
     // Validation
     if (!qf || qf < 0 || qf > 3000) {
@@ -113,12 +113,12 @@ const Simulateur = () => {
     setPrixActivite(String(DEFAULT_ACTIVITY_PRICE));
   };
 
-  const isEligible = calculationResult && calculationResult.montantAide > 0;
+  const isEligible = (calculationResult?.montantAide ?? 0) > 0;
 
   return (
     <PageLayout>
       <div className="container max-w-2xl px-4 py-6 space-y-6 pb-24">
-        <BackButton positioning="relative" size="sm" fallback="/aides" />
+        <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/aides" />
 
         {/* Header CityCrunch */}
         <div className="space-y-3">
@@ -136,7 +136,7 @@ const Simulateur = () => {
             </Badge>
           </div>
 
-          <p className="text-sm text-gray-600 pb-2">
+          <p className="text-sm text-muted-foreground pb-2">
             On calcule. On économise. On respire.
           </p>
         </div>
@@ -162,7 +162,7 @@ const Simulateur = () => {
                   className="w-full"
                 />
                 <div className="flex items-center gap-1.5">
-                  <Info className="w-3.5 h-3.5 text-gray-500" />
+                  <Info className="w-3.5 h-3.5 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground">
                     Sur avis CAF ou impôts
                   </p>
@@ -264,28 +264,28 @@ const Simulateur = () => {
                 <Card className="border-green-200 bg-green-50/50">
                   <CardContent className="p-6 space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-700">Activité</span>
+                      <span className="text-muted-foreground">Activité</span>
                       <div className="text-right">
-                        <span className="font-medium text-gray-900">{calculationResult.prixInitial}€</span>
+                        <span className="font-medium text-foreground">{calculationResult.prixInitial}€</span>
                       </div>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-700">Aide</span>
+                      <span className="text-sm text-muted-foreground">Aide</span>
                       <span className="text-lg font-bold text-green-600">
                         -{calculationResult.montantAide}€
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center py-3 px-4 bg-orange-50 rounded-lg border border-orange-200">
-                      <span className="text-lg font-bold text-gray-900">On paye</span>
+                      <span className="text-lg font-bold text-foreground">On paye</span>
                       <span className="text-2xl font-bold text-orange-600">
                         {calculationResult.montantAPayer}€
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-700">Économie</span>
+                      <span className="text-sm text-muted-foreground">Économie</span>
                       <span className="text-lg font-bold text-green-600">
                         {calculationResult.pourcentageEconomie}% 🎉
                       </span>
@@ -294,7 +294,7 @@ const Simulateur = () => {
                 </Card>
 
                 {/* Message paiement échelonné */}
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CreditCard className="w-4 h-4" />
                   <span>Paiement échelonné possible.</span>
                 </div>
@@ -320,7 +320,7 @@ const Simulateur = () => {
               /* État NON ÉLIGIBLE */
               <>
                 <div className="text-center space-y-2 py-4">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-foreground">
                     Pas d'aide pour ce QF
                   </h2>
                   <p className="text-base text-muted-foreground">
@@ -398,7 +398,7 @@ const Simulateur = () => {
                     "bg-green-700 text-white",
                     "bg-green-600 text-white",
                     "bg-green-400 text-white",
-                    "bg-gray-300 text-gray-700"
+                    "bg-muted text-muted-foreground"
                   ];
                   return (
                     <div key={index} className={`flex justify-between items-center p-3 rounded-lg ${colorClasses[index]}`}>
@@ -414,7 +414,7 @@ const Simulateur = () => {
                 })}
               </div>
 
-              <p className="text-xs text-gray-500 italic mt-3">
+              <p className="text-xs text-muted-foreground italic mt-3">
                 Barème indicatif période test. Montants réels selon partenaire.
               </p>
             </AccordionContent>

@@ -55,12 +55,29 @@ serve(async (req) => {
     // Parse request body
     const { email, firstName, lastName, role, territoryId } = await req.json();
 
-    console.log('Creating user:', { email, firstName, lastName, role, territoryId });
+    console.log('[admin-create-user] Creating user');
 
-    // Validate input
+    // Validate required fields
     if (!email || !firstName || !lastName || !role) {
       return new Response(
         JSON.stringify({ error: 'Données manquantes (email, firstName, lastName, role requis)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: 'Format email invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate name lengths (prevent overflow)
+    if (firstName.length > 100 || lastName.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Nom ou prénom trop long (max 100 caractères)' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -97,14 +114,14 @@ serve(async (req) => {
     });
 
     if (createError) {
-      console.error('Error creating user:', createError);
+      console.error('[admin-create-user] Error creating user');
       return new Response(
         JSON.stringify({ error: createError.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('User created:', newUser.user.id);
+    console.log('[admin-create-user] User created successfully');
 
     // Create profile entry
     const { error: profileError } = await supabaseAdmin
@@ -119,7 +136,7 @@ serve(async (req) => {
       });
 
     if (profileError) {
-      console.error('Error creating profile:', profileError);
+      console.error('[admin-create-user] Error creating profile');
       // Don't fail - profile might already exist via trigger
     }
 
@@ -133,14 +150,14 @@ serve(async (req) => {
       });
 
     if (roleError) {
-      console.error('Error assigning role:', roleError);
+      console.error('[admin-create-user] Error assigning role');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de l\'assignation du rôle' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Role assigned:', role);
+    console.log('[admin-create-user] Role assigned successfully');
 
     // Send password reset email
     const { error: resetError } = await supabaseAdmin.auth.admin.generateLink({
@@ -152,7 +169,7 @@ serve(async (req) => {
     });
 
     if (resetError) {
-      console.error('Error sending password reset:', resetError);
+      console.error('[admin-create-user] Error sending password reset');
     }
 
     return new Response(
@@ -167,11 +184,11 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[admin-create-user] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
-      { 
+      JSON.stringify({ error: 'Erreur interne' }),
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }

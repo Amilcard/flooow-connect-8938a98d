@@ -51,14 +51,15 @@ Pour que les rappels soient envoyés automatiquement, vous devez configurer un c
 
 ```sql
 -- Planifier l'exécution tous les jours à 8h00 UTC
+-- IMPORTANT: Remplacez YOUR_SUPABASE_URL et YOUR_ANON_KEY par vos valeurs depuis le dashboard Supabase
 SELECT cron.schedule(
   'event-reminders-daily',
   '0 8 * * *',
   $$
   SELECT
     net.http_post(
-        url:='https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/event-reminders',
-        headers:='{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkZGx6bHRodHd1d3h4cnJieHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNzI3MjEsImV4cCI6MjA3NTg0ODcyMX0.G19gvS7x4tYgtRPKbq7njqG_5OAo0bTYO9O0_fNRlyM"}'::jsonb,
+        url:='https://YOUR_PROJECT_REF.supabase.co/functions/v1/event-reminders',
+        headers:='{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SUPABASE_ANON_KEY"}'::jsonb,
         body:=jsonb_build_object('time', NOW())
     ) as request_id;
   $$
@@ -89,7 +90,7 @@ jobs:
       - name: Call event reminders function
         run: |
           curl -X POST \
-            https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/event-reminders \
+            ${{ secrets.SUPABASE_URL }}/functions/v1/event-reminders \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -d '{"time": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}'
@@ -99,13 +100,13 @@ jobs:
 
 Utilisez un service comme cron-job.org ou EasyCron pour appeler l'URL de l'edge function :
 
-**URL** : `https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/event-reminders`
+**URL** : `https://YOUR_PROJECT_REF.supabase.co/functions/v1/event-reminders`
 
 **Méthode** : POST
 
 **Headers** :
 - `Content-Type: application/json`
-- `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkZGx6bHRodHd1d3h4cnJieHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNzI3MjEsImV4cCI6MjA3NTg0ODcyMX0.G19gvS7x4tYgtRPKbq7njqG_5OAo0bTYO9O0_fNRlyM`
+- `Authorization: Bearer YOUR_SUPABASE_ANON_KEY` (depuis Settings > API dans le dashboard Supabase)
 
 **Body** : `{"time": "2025-01-10T08:00:00Z"}`
 
@@ -114,10 +115,11 @@ Utilisez un service comme cron-job.org ou EasyCron pour appeler l'URL de l'edge 
 Pour tester la fonction manuellement, vous pouvez l'appeler via curl :
 
 ```bash
+# Remplacez YOUR_PROJECT_REF et YOUR_SUPABASE_ANON_KEY par vos valeurs
 curl -X POST \
-  https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/event-reminders \
+  https://YOUR_PROJECT_REF.supabase.co/functions/v1/event-reminders \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkZGx6bHRodHd1d3h4cnJieHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNzI3MjEsImV4cCI6MjA3NTg0ODcyMX0.G19gvS7x4tYgtRPKbq7njqG_5OAo0bTYO9O0_fNRlyM" \
+  -H "Authorization: Bearer YOUR_SUPABASE_ANON_KEY" \
   -d '{"time": "2025-01-10T08:00:00Z"}'
 ```
 

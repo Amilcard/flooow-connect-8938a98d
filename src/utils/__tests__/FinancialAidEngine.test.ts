@@ -121,6 +121,7 @@ describe('FinancialAidEngine', () => {
       const params = createBaseParams();
       params.age = 11;
       params.type_activite = 'vacances';
+      params.periode = 'vacances'; // Required for vacation aids
       params.quotient_familial = 150;
 
       const aids = calculateAllEligibleAids(params);
@@ -134,6 +135,7 @@ describe('FinancialAidEngine', () => {
       const params = createBaseParams();
       params.age = 11;
       params.type_activite = 'vacances';
+      params.periode = 'vacances'; // Required for vacation aids
       params.quotient_familial = 150;
       params.prix_activite = 500; // Prix élevé pour voir le vrai montant
 
@@ -146,6 +148,7 @@ describe('FinancialAidEngine', () => {
     it('ne devrait PAS être éligible pour 10 ou 12 ans', () => {
       const params = createBaseParams();
       params.type_activite = 'vacances';
+      params.periode = 'vacances'; // Required for vacation aids
       params.quotient_familial = 150;
 
       params.age = 10;
@@ -165,6 +168,7 @@ describe('FinancialAidEngine', () => {
       const params = createBaseParams();
       params.age = 10;
       params.type_activite = 'vacances';
+      params.periode = 'vacances'; // Required for vacation aids
       params.allocataire_caf = true;
       params.sejour_labellise = true;
       params.quotient_familial = 500;
@@ -179,6 +183,7 @@ describe('FinancialAidEngine', () => {
     it('ne devrait PAS être éligible si séjour non labellisé', () => {
       const params = createBaseParams();
       params.type_activite = 'vacances';
+      params.periode = 'vacances'; // Required for vacation aids
       params.allocataire_caf = true;
       params.sejour_labellise = false;
       params.quotient_familial = 500;
@@ -219,6 +224,7 @@ describe('FinancialAidEngine', () => {
       params.allocataire_caf = true;
       params.quotient_familial = 300;
       params.age = 10;
+      params.periode = 'vacances'; // CAF Loire only applies to vacation period
 
       const aids = calculateAllEligibleAids(params);
       const cafLoire = aids.find(aid => aid.code === 'CAF_LOIRE_TEMPS_LIBRE');
@@ -231,6 +237,7 @@ describe('FinancialAidEngine', () => {
       const params = createBaseParams();
       params.allocataire_caf = true;
       params.quotient_familial = 800;
+      params.periode = 'vacances'; // CAF Loire only applies to vacation period
 
       const aids = calculateAllEligibleAids(params);
       const cafLoire = aids.find(aid => aid.code === 'CAF_LOIRE_TEMPS_LIBRE');

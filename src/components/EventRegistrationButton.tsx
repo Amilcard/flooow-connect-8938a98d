@@ -173,7 +173,7 @@ export const EventRegistrationButton = ({
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {participants && participants.length > 0 ? (
-              participants.map((participant: any) => (
+              participants.map((participant: { id: string; status: string; profiles?: { email?: string } }) => (
                 <div
                   key={participant.id}
                   className="flex items-center justify-between p-3 border rounded-lg"

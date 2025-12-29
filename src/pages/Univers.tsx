@@ -11,15 +11,14 @@ const Univers = () => {
   const selectedCategory = searchParams.get('category');
 
   return (
-    <PageLayout>
-      <div className="container px-4 py-6">
-        {/* Header */}
-        <PageHeader title="Nos Univers" />
+    <PageLayout showHeader={false}>
+      <PageHeader
+        title="Nos Univers"
+        subtitle="Découvrez toutes nos activités par thématiques"
+        backFallback="/home"
+      />
 
-        {/* Description */}
-        <p className="text-muted-foreground mb-6">
-          Découvrez toutes nos activités organisées par thématiques : Sport, Culture, Apprentissage, Loisirs et Vacances.
-        </p>
+      <div className="max-w-5xl mx-auto px-4 py-6">
 
         {/* Univers Cards */}
         <UniversSection />

@@ -57,7 +57,7 @@ const Activities = () => {
   };
   
   const [activeTab, setActiveTab] = useState(getInitialTab());
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Mettre à jour l'onglet actif si les paramètres URL changent
   useEffect(() => {
@@ -69,17 +69,23 @@ const Activities = () => {
 
   // Filtres pour l'onglet "Toutes" - sans filtrage par catégorie
   const getAllFilters = () => {
-    const filters: any = {};
+    const filters: {
+      maxPrice?: number;
+      hasAccessibility?: boolean;
+      vacationPeriod?: string;
+      ageMin?: number;
+      ageMax?: number;
+    } = {};
     if (type === "budget") filters.maxPrice = 50;
     if (type === "health") filters.hasAccessibility = true;
     if (selectedVacationPeriod) filters.vacationPeriod = selectedVacationPeriod;
-    
+
     // Pré-filtrage par profil enfant
     if (ageMin && ageMax) {
-      filters.ageMin = parseInt(ageMin);
-      filters.ageMax = parseInt(ageMax);
+      filters.ageMin = Number.parseInt(ageMin, 10);
+      filters.ageMax = Number.parseInt(ageMax, 10);
     }
-    
+
     return filters;
   };
 
@@ -118,13 +124,6 @@ const Activities = () => {
     setSearchTerm(query);
   };
 
-  console.log("📊 Activities page state:", { 
-    mode: USE_MOCK_DATA ? 'MOCK' : 'REAL',
-    activitiesCount: allActivities.length, 
-    activeTab,
-    universeFromUrl
-  });
-
   const getTitle = () => {
     if (activeTab !== "all") return `Activités ${activeTab}`;
     if (type === "budget") return "Activités Petits budgets";
@@ -137,7 +136,7 @@ const Activities = () => {
     return (
       <PageLayout>
         <SearchBar
-          onFilterClick={() => console.log("Filter clicked")}
+          onFilterClick={() => {}}
           onSearch={handleSearch}
         />
         <main className="container px-4 py-6">
@@ -154,10 +153,10 @@ const Activities = () => {
     <PageLayout>
       <div className="sticky top-0 z-10 bg-background">
         <div className="container px-4 pt-2">
-          <BackButton positioning="relative" size="sm" showSplash={true} fallback="/home" />
+          <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/home" />
         </div>
         <SearchBar
-          onFilterClick={() => console.log("Filter clicked")}
+          onFilterClick={() => {}}
           onSearch={handleSearch}
         />
       </div>
@@ -216,7 +215,7 @@ const Activities = () => {
               <ActivitySection
                 title={getTitle()}
                 activities={allActivities}
-                onActivityClick={(id) => console.log("Activity clicked:", id)}
+                onActivityClick={() => {}}
               />
             )}
           </TabsContent>
@@ -271,7 +270,7 @@ const CategoryActivities = ({
     <ActivitySection
       title={`Activités ${category}`}
       activities={activities}
-      onActivityClick={(id) => console.log("Activity clicked:", id)}
+      onActivityClick={() => {}}
     />
   );
 };

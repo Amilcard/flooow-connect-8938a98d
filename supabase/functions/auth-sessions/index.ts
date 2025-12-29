@@ -174,7 +174,7 @@ serve(async (req) => {
         });
 
       if (sessError) {
-        console.error('Session insert error:', sessError);
+        console.error('[auth-sessions] Session insert error');
         return new Response(
           JSON.stringify({ error: 'Session creation failed' }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -196,7 +196,7 @@ serve(async (req) => {
         });
 
       if (rtError) {
-        console.error('Refresh token insert error:', rtError);
+        console.error('[auth-sessions] Refresh token insert error');
         // Cleanup session
         await supabase.from('sessions').delete().eq('id', sessionId);
         return new Response(
@@ -379,7 +379,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('[auth-sessions] Internal error');
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

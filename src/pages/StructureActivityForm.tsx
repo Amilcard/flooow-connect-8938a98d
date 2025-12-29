@@ -76,7 +76,7 @@ const StructureActivityForm = () => {
             description: "Activité introuvable",
             variant: "destructive"
           });
-          navigate("/structure-dashboard");
+          navigate("/dashboard/structure");
           return;
         }
 
@@ -166,7 +166,7 @@ const StructureActivityForm = () => {
         });
       }
 
-      navigate("/structure-dashboard");
+      navigate("/dashboard/structure");
     } catch (error: any) {
       console.error("Activity save error:", error);
       toast({
@@ -187,7 +187,7 @@ const StructureActivityForm = () => {
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton fallback="/structure-dashboard" />
+          <BackButton fallback="/dashboard/structure" positioning="relative" size="sm" showText={true} label="Retour" />
           <h1 className="font-semibold text-lg">
             {id ? "Modifier l'activité" : "Nouvelle activité"}
           </h1>
@@ -297,7 +297,7 @@ const StructureActivityForm = () => {
               type="button"
               variant="outline"
               className="flex-1"
-              onClick={() => navigate("/structure-dashboard")}
+              onClick={() => navigate("/dashboard/structure")}
             >
               Annuler
             </Button>

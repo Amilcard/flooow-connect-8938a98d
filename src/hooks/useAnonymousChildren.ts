@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { getSecureItem, setSecureItem, removeSecureItem } from '@/lib/secureStorage';
+import { safeErrorMessage } from '@/utils/sanitize';
 
 export interface AnonymousChild {
   id: string;
@@ -11,7 +13,7 @@ export interface DatabaseChild {
   id: string;
   first_name: string;
   dob: string;
-  needs_json?: any;
+  needs_json?: unknown;
   isAnonymous?: false;
 }
 
@@ -21,26 +23,37 @@ const STORAGE_KEY = 'anonymous_children';
 
 export const useAnonymousChildren = () => {
   const [anonymousChildren, setAnonymousChildren] = useState<AnonymousChild[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Charger les enfants anonymes depuis le localStorage
+  // Charger les enfants anonymes depuis le stockage sécurisé
   useEffect(() => {
-    const loadAnonymousChildren = () => {
+    const loadAnonymousChildren = async () => {
       try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const children = JSON.parse(stored) as AnonymousChild[];
+        const children = await getSecureItem<AnonymousChild[]>(STORAGE_KEY);
+        if (children) {
           setAnonymousChildren(children);
         }
       } catch (error) {
-        console.error('Error loading anonymous children:', error);
+        console.error(safeErrorMessage(error, 'Load anonymous children'));
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadAnonymousChildren();
   }, []);
 
+  // Sauvegarder de manière sécurisée
+  const saveChildren = useCallback(async (children: AnonymousChild[]) => {
+    try {
+      await setSecureItem(STORAGE_KEY, children);
+    } catch (error) {
+      console.error(safeErrorMessage(error, 'Save anonymous children'));
+    }
+  }, []);
+
   // Ajouter un enfant anonyme
-  const addAnonymousChild = (child: Omit<AnonymousChild, 'id' | 'isAnonymous'>) => {
+  const addAnonymousChild = useCallback(async (child: Omit<AnonymousChild, 'id' | 'isAnonymous'>) => {
     const newChild: AnonymousChild = {
       ...child,
       id: `anonymous-${Date.now()}`,
@@ -49,26 +62,27 @@ export const useAnonymousChildren = () => {
 
     const updated = [...anonymousChildren, newChild];
     setAnonymousChildren(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    
+    await saveChildren(updated);
+
     return newChild;
-  };
+  }, [anonymousChildren, saveChildren]);
 
   // Supprimer un enfant anonyme
-  const removeAnonymousChild = (id: string) => {
+  const removeAnonymousChild = useCallback(async (id: string) => {
     const updated = anonymousChildren.filter(child => child.id !== id);
     setAnonymousChildren(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  };
+    await saveChildren(updated);
+  }, [anonymousChildren, saveChildren]);
 
   // Nettoyer tous les enfants anonymes
-  const clearAnonymousChildren = () => {
+  const clearAnonymousChildren = useCallback(() => {
     setAnonymousChildren([]);
-    localStorage.removeItem(STORAGE_KEY);
-  };
+    removeSecureItem(STORAGE_KEY);
+  }, []);
 
   return {
     anonymousChildren,
+    isLoading,
     addAnonymousChild,
     removeAnonymousChild,
     clearAnonymousChildren

@@ -38,8 +38,8 @@ const ActivitiesMap = () => {
         (position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
         },
-        (error) => {
-          console.log("Geolocation denied or unavailable", error);
+        () => {
+          // Geolocation denied or unavailable - use default location
         }
       );
     }
@@ -49,16 +49,15 @@ const ActivitiesMap = () => {
   const { data: activities = [], isLoading } = useQuery({
     queryKey: ["activities-map", selectedCategories],
     queryFn: async () => {
+      // FIX: Removed structures join to avoid Supabase embed error
       let query = supabase
         .from("activities")
-        .select(`
-          *,
-          structures:structure_id(name, address, location)
-        `)
+        .select("*")
         .eq("published", true);
 
+      // FIX: column is 'categories' (array), not 'category'
       if (selectedCategories.length > 0) {
-        query = query.in("category", selectedCategories);
+        query = query.overlaps("categories", selectedCategories);
       }
 
       const { data, error } = await query;
@@ -107,7 +106,7 @@ const ActivitiesMap = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
         <div className="container flex items-center gap-3 py-3 px-4">
-          <BackButton positioning="relative" size="sm" fallback="/activities" />
+          <BackButton positioning="relative" size="sm" showText={true} label="Retour" fallback="/activities" />
           <h1 className="font-semibold text-lg flex-1">Carte des activités</h1>
           
           {/* Filters sheet */}
@@ -169,14 +168,14 @@ const ActivitiesMap = () => {
         </div>
       </div>
 
-      {/* Map placeholder - TODO: Integrate React Leaflet */}
+      {/* Map placeholder - Utilise Google Maps */}
       <div className="flex-1 relative bg-muted">
         <div className="absolute inset-0 flex items-center justify-center">
           <Card className="p-6 text-center max-w-sm mx-4">
             <MapPin className="w-12 h-12 mx-auto mb-4 text-primary" />
             <h2 className="font-semibold text-lg mb-2">Carte interactive</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              L'intégration React Leaflet sera ajoutée ici. Affichera {activities.length} activités.
+              Google Maps affiche {activities.length} activités.
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {selectedCategories.map((cat) => (

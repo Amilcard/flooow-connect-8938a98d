@@ -96,27 +96,29 @@ export function StickyBookingCTA({
     onToggleFavorite?.();
   };
 
-  const displayPrice = discountedPrice ?? price;
-  const hasDiscount = discountedPrice !== undefined && discountedPrice < price;
+  // TECH-009: Protection reste à charge ≥ 0 (jamais de prix négatif affiché)
+  const safeDiscountedPrice = discountedPrice !== undefined ? Math.max(0, discountedPrice) : undefined;
+  const displayPrice = safeDiscountedPrice ?? price;
+  const hasDiscount = safeDiscountedPrice !== undefined && safeDiscountedPrice < price;
 
   return (
     <>
       {/* Floating Action Buttons - Au-dessus de la CTA bar */}
       <div
         className={`fixed right-4 z-40 flex flex-col gap-2 ${mobileOnly ? "md:hidden" : ""}`}
-        style={{ bottom: "88px" }} // Au-dessus de la CTA bar (60px) + gap
+        style={{ bottom: 'calc(88px + var(--safe-area-bottom))' }} // Au-dessus de la CTA bar (60px) + gap + safe-area
       >
         {/* Bouton Favoris */}
         {onToggleFavorite && (
           <button
             onClick={handleFavoriteClick}
-            className="w-11 h-11 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
+            className="w-11 h-11 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
             aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
           >
             <Heart
               size={20}
               fill={isFavorite ? "#EF4444" : "none"}
-              color={isFavorite ? "#EF4444" : "#6B7280"}
+              className={isFavorite ? "text-red-500" : "text-muted-foreground"}
               strokeWidth={2}
             />
           </button>
@@ -126,38 +128,39 @@ export function StickyBookingCTA({
         {onShare && (
           <button
             onClick={onShare}
-            className="w-11 h-11 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
+            className="w-11 h-11 bg-background border-2 border-border rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
             aria-label="Partager l'activité"
           >
-            <Share2 size={20} color="#6B7280" strokeWidth={2} />
+            <Share2 size={20} className="text-muted-foreground" strokeWidth={2} />
           </button>
         )}
       </div>
 
       {/* Sticky CTA Bar - Bottom */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl ${
+        className={`fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-2xl ${
           mobileOnly ? "md:hidden" : ""
         }`}
+        style={{ paddingBottom: 'var(--safe-area-bottom)' }}
       >
         <div className="flex items-center gap-3 px-4 py-3">
           {/* Prix */}
           <div className="flex-1">
             {price === 0 ? (
-              <p className="text-xl font-bold text-gray-900">GRATUIT</p>
+              <p className="text-xl font-bold text-foreground">GRATUIT</p>
             ) : (
               <>
                 <div className="flex items-baseline gap-2">
                   {hasDiscount && (
-                    <span className="text-sm text-gray-500 line-through">
+                    <span className="text-sm text-muted-foreground line-through">
                       {price}€
                     </span>
                   )}
-                  <span className="text-xl font-bold text-gray-900">
+                  <span className="text-xl font-bold text-foreground">
                     {displayPrice}€
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-0.5">{priceUnit}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{priceUnit}</p>
               </>
             )}
           </div>

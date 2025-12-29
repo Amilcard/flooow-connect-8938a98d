@@ -19,6 +19,8 @@ import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { QF_BRACKETS } from "@/lib/qfBrackets";
 import { calculateAidFromQF } from "@/utils/aidesCalculator";
+import { safeErrorMessage } from '@/utils/sanitize';
+import { logAidsEstimationCompleted } from '@/lib/tracking';
 
 interface FinancialAid {
   aid_name: string;
@@ -42,9 +44,9 @@ export const StandaloneAidCalculator = () => {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
-  const [ageEnfant, setAgeEnfant] = useState<string>("");
-  const [quotientFamilial, setQuotientFamilial] = useState<string>("");
-  const [cityCode, setCityCode] = useState<string>("");
+  const [ageEnfant, setAgeEnfant] = useState("");
+  const [quotientFamilial, setQuotientFamilial] = useState("");
+  const [cityCode, setCityCode] = useState("");
   const [activityPrice, setActivityPrice] = useState<string>(String(DEFAULT_ACTIVITY_PRICE));
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
@@ -60,8 +62,8 @@ export const StandaloneAidCalculator = () => {
       return;
     }
 
-    const age = parseInt(ageEnfant);
-    if (isNaN(age) || age < 0 || age > 18) {
+    const age = Number.parseInt(ageEnfant, 10);
+    if (Number.isNaN(age) || age < 0 || age > 18) {
       toast({
         title: "Âge invalide",
         description: "Veuillez indiquer un âge entre 0 et 18 ans",
@@ -89,13 +91,13 @@ export const StandaloneAidCalculator = () => {
       return;
     }
 
-    const prix = parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
+    const prix = Number.parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
 
     setLoading(true);
     try {
       // Utiliser la fonction pure calculateAidFromQF
       const result = calculateAidFromQF({
-        qf: parseInt(quotientFamilial),
+        qf: Number.parseInt(quotientFamilial, 10),
         prixActivite: prix
       });
 
@@ -111,6 +113,9 @@ export const StandaloneAidCalculator = () => {
       setAids(calculatedAids);
       setCalculated(true);
 
+      // Track aids estimation completion (Lucky Orange)
+      logAidsEstimationCompleted(result.economiePourcent);
+
       // Message adapté selon le résultat
       if (result.aide > 0) {
         toast({
@@ -125,7 +130,7 @@ export const StandaloneAidCalculator = () => {
         });
       }
     } catch (err) {
-      console.error("Error calculating aids:", err);
+      console.error(safeErrorMessage(err, 'StandaloneAidCalculator.handleCalculate'));
       toast({
         title: "Erreur",
         description: "Impossible de calculer les aides",
@@ -145,7 +150,7 @@ export const StandaloneAidCalculator = () => {
     setCalculated(false);
   };
 
-  const prix = parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
+  const prix = Number.parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
   const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, prix - totalAids);
   const savingsPercent = prix > 0 ? Math.round((totalAids / prix) * 100) : 0;

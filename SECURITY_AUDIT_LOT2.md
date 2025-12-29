@@ -168,7 +168,6 @@ if (dbActivity.structures?.location) {
 **CDN vérifiés**:
 - Leaflet CSS
 - Google Fonts
-- Usetiful script
 
 **Protections en place**:
 - ✅ Leaflet CSS a un hash d'intégrité SHA-256

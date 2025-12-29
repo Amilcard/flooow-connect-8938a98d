@@ -68,10 +68,10 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('❌ Error generating mock KPIs:', error);
+  } catch (error: unknown) {
+    console.error('[dashboard-kpis-mock] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Unknown error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

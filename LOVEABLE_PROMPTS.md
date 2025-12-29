@@ -244,8 +244,8 @@ http://localhost:5173/validate-child-signup?token=test&action=approve
 ### Test 2 : Vérification parent fonctionne
 
 ```bash
-# Appeler l'API avec un email invalide
-curl -X POST https://lddlzlthtwuwxxrrbxuc.supabase.co/functions/v1/child-signup-email \
+# Appeler l'API avec un email invalide (remplacer YOUR_PROJECT_REF)
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/child-signup-email \
   -H "Content-Type: application/json" \
   -d '{"parentEmail":"nonexistent@test.com","childName":"Test","childDob":"2010-01-01"}'
 ```

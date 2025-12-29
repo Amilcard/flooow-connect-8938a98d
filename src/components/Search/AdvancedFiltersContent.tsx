@@ -68,8 +68,8 @@ export const AdvancedFiltersContent = ({
       'Culture',
       'Loisirs',
       'Scolarité',
-      'Vacances',
-      'Insertion'
+      'Vacances'
+      // 'Insertion' // supprimé temporairement
     ];
   };
 
@@ -216,20 +216,18 @@ export const AdvancedFiltersContent = ({
         onToggle={() => toggleSection('mobility')}
       >
         <div className="space-y-6">
-          {/* Distance */}
-          <div className="space-y-3">
-            <Label className="text-sm font-semibold">Distance maximum</Label>
+          {/* Distance - DÉSACTIVÉ (pas de lat/lng en BDD) */}
+          <div className="space-y-3 opacity-50">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              Distance maximum
+              <span className="text-xs text-muted-foreground font-normal">(bientôt disponible)</span>
+            </Label>
             <div className="flex gap-2">
               {[10, 20, 30].map((dist) => (
                 <button
                   key={dist}
-                  onClick={() => updateFilter('max_distance', dist)}
-                  className={cn(
-                    "flex-1 py-2 px-3 rounded-md text-sm border transition-all",
-                    filters.max_distance === dist
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background border-input hover:bg-accent hover:text-accent-foreground"
-                  )}
+                  disabled
+                  className="flex-1 py-2 px-3 rounded-md text-sm border bg-muted text-muted-foreground cursor-not-allowed"
                 >
                   ≤ {dist} min
                 </button>
@@ -237,24 +235,29 @@ export const AdvancedFiltersContent = ({
             </div>
           </div>
 
-          {/* Modes de transport */}
+          {/* Modes de transport - Seul Covoiturage est fonctionnel */}
           <div className="space-y-3">
             <Label className="text-sm font-semibold">Écomobilité</Label>
             <div className="grid grid-cols-1 gap-2">
               {[
-                "Marche & bien-être",
-                "Vélos / Velivert",
-                "Transports en commun (STAS)",
-                "Covoiturage"
+                { value: "Covoiturage", label: "Covoiturage", enabled: true },
+                { value: "Marche & bien-être", label: "Marche & bien-être", enabled: false },
+                { value: "Vélos / Velivert", label: "Vélos / Velivert", enabled: false },
+                { value: "Transports en commun (STAS)", label: "Transports en commun (STAS)", enabled: false },
               ].map((mode) => (
-                <div key={mode} className="flex items-center space-x-3">
+                <div key={mode.value} className={cn("flex items-center space-x-3", !mode.enabled && "opacity-50")}>
                   <Checkbox
-                    id={`mobility-${mode}`}
-                    checked={filters.mobility_types?.includes(mode)}
-                    onCheckedChange={() => toggleArrayItem('mobility_types', mode)}
+                    id={`mobility-${mode.value}`}
+                    checked={filters.mobility_types?.includes(mode.value)}
+                    onCheckedChange={() => mode.enabled && toggleArrayItem('mobility_types', mode.value)}
+                    disabled={!mode.enabled}
                   />
-                  <Label htmlFor={`mobility-${mode}`} className="text-sm font-normal cursor-pointer">
-                    {mode}
+                  <Label
+                    htmlFor={`mobility-${mode.value}`}
+                    className={cn("text-sm font-normal", mode.enabled ? "cursor-pointer" : "cursor-not-allowed")}
+                  >
+                    {mode.label}
+                    {!mode.enabled && <span className="text-xs text-muted-foreground ml-1">(bientôt)</span>}
                   </Label>
                 </div>
               ))}
@@ -335,15 +338,19 @@ export const AdvancedFiltersContent = ({
         </div>
       </FilterSection>
 
-      {/* 7. PLUS DE DÉTAILS (Accordéon) */}
+      {/* 7. PLUS DE DÉTAILS - DÉSACTIVÉ (champs non disponibles en BDD) */}
       <FilterSection
         title="Plus de détails"
-        icon={<Info className="w-5 h-5 text-primary" />}
+        icon={<Info className="w-5 h-5 text-muted-foreground" />}
         isOpen={!collapsedSections.details}
         onToggle={() => toggleSection('details')}
         className="border-b-0"
+        description="Bientôt disponible"
       >
-        <div className="space-y-3">
+        <div className="space-y-3 opacity-50">
+          <p className="text-xs text-muted-foreground italic">
+            Ces filtres seront disponibles prochainement.
+          </p>
           {[
             "Horaires",
             "Jours de la semaine",
@@ -354,10 +361,10 @@ export const AdvancedFiltersContent = ({
             <div key={detail} className="flex items-center space-x-3">
               <Checkbox
                 id={`detail-${detail}`}
-                checked={filters.details?.includes(detail)}
-                onCheckedChange={() => toggleArrayItem('details', detail)}
+                checked={false}
+                disabled
               />
-              <Label htmlFor={`detail-${detail}`} className="text-sm font-normal cursor-pointer">
+              <Label htmlFor={`detail-${detail}`} className="text-sm font-normal cursor-not-allowed text-muted-foreground">
                 {detail}
               </Label>
             </div>
@@ -391,16 +398,16 @@ const FilterSection = ({
   className
 }: FilterSectionProps) => {
   return (
-    <div className={cn("border-b border-gray-100", className)}>
+    <div className={cn("border-b border-border", className)}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-muted transition-colors"
       >
         <div className="flex items-center gap-3">
           {icon}
           <div className="text-left">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-900">{title}</span>
+              <span className="font-semibold text-foreground">{title}</span>
               {isCritical && <span className="text-red-500 text-xs">*</span>}
             </div>
             {description && (
@@ -409,9 +416,9 @@ const FilterSection = ({
           </div>
         </div>
         {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-gray-400" />
+          <ChevronUp className="w-5 h-5 text-muted-foreground" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
+          <ChevronDown className="w-5 h-5 text-muted-foreground" />
         )}
       </button>
       

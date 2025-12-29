@@ -35,7 +35,7 @@ serve(async (req) => {
 
     const { token, action } = await req.json();
 
-    console.log('Validating child signup:', { token, action });
+    console.log('[validate-child-signup-token] Processing request');
 
     // Validation des paramètres
     if (!token || !['approve', 'reject'].includes(action)) {
@@ -54,7 +54,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (requestError) {
-      console.error('Error fetching request:', requestError);
+      console.error('[validate-child-signup-token] Error fetching request');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la récupération de la demande' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -89,7 +89,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (parentError || !parent) {
-      console.error('Parent not found:', request.parent_email);
+      console.error('[validate-child-signup-token] Parent not found');
       return new Response(
         JSON.stringify({
           error: 'Compte parent non trouvé. Créez un compte d\'abord sur l\'application.'
@@ -168,7 +168,7 @@ serve(async (req) => {
       .single();
 
     if (childError) {
-      console.error('Error creating child:', childError);
+      console.error('[validate-child-signup-token] Error creating child');
       return new Response(
         JSON.stringify({ error: 'Erreur lors de la création de l\'enfant' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -198,11 +198,11 @@ serve(async (req) => {
       });
 
     if (notifError) {
-      console.error('Failed to create notification:', notifError);
+      console.error('[validate-child-signup-token] Failed to create notification');
       // Continue quand même (notification non critique)
     }
 
-    console.log('Child created successfully:', newChild.id);
+    console.log('[validate-child-signup-token] Child created successfully');
 
     return new Response(
       JSON.stringify({
@@ -213,10 +213,10 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('[validate-child-signup-token] Internal error');
     return new Response(
-      JSON.stringify({ error: error?.message || 'Erreur interne' }),
+      JSON.stringify({ error: 'Erreur interne' }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

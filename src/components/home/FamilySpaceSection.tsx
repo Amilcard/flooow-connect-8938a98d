@@ -45,7 +45,7 @@ export const FamilySpaceSection = () => {
           </div>
         </Card>
 
-        {/* Prix Bon Esprit */}
+        {/* Clubs solidaires */}
         <Card
           className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-2 border-border rounded-2xl p-6"
           onClick={() => navigate('/bon-esprit')}
@@ -57,7 +57,7 @@ export const FamilySpaceSection = () => {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-text-main mb-2 group-hover:text-primary transition-colors">
-                Prix Bon Esprit
+                Clubs solidaires
               </h3>
               <p className="text-sm text-text-muted mb-4 leading-relaxed">
                 Valorisez les belles actions ! Votez pour ceux qui font briller votre quartier par leur solidarité et leur engagement.

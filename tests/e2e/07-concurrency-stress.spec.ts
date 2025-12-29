@@ -55,7 +55,7 @@ test.describe('Scenario 7: Concurrency Stress Test', () => {
     const successful = results.filter(r => r.success).length;
     const failed = results.filter(r => !r.success).length;
     
-    console.log(`\n📊 Concurrency Test Results:`);
+    console.log("\n📊 Concurrency Test Results:");
     console.log(`   Total attempts: ${CONCURRENT_REQUESTS}`);
     console.log(`   Successful: ${successful}`);
     console.log(`   Failed: ${failed}`);
@@ -79,7 +79,7 @@ test.describe('Scenario 7: Concurrency Stress Test', () => {
     // At least some requests should have succeeded
     expect(successful).toBeGreaterThan(0);
     
-    console.log(`\n✅ PASS: Zero overbooking detected - atomicity preserved`);
+    console.log("\n✅ PASS: Zero overbooking detected - atomicity preserved");
   });
 
   test('should handle rapid duplicate requests with idempotency', async () => {
@@ -114,7 +114,7 @@ test.describe('Scenario 7: Concurrency Stress Test', () => {
     // Only ONE should succeed due to unique constraint on idempotency_key
     const successful = results.filter(r => r.success).length;
     
-    console.log(`\n🔒 Idempotency Test Results:`);
+    console.log("\n🔒 Idempotency Test Results:");
     console.log(`   Duplicate attempts: ${DUPLICATE_ATTEMPTS}`);
     console.log(`   Successful: ${successful}`);
     console.log(`   Rejected: ${DUPLICATE_ATTEMPTS - successful}`);
@@ -122,6 +122,6 @@ test.describe('Scenario 7: Concurrency Stress Test', () => {
     // CRITICAL: Exactly one request should succeed
     expect(successful).toBe(1);
     
-    console.log(`✅ PASS: Idempotency constraint working - only 1 booking created`);
+    console.log("✅ PASS: Idempotency constraint working - only 1 booking created");
   });
 });

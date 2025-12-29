@@ -5,7 +5,139 @@
  * - SQL/PostgREST injection
  * - LIKE wildcard abuse
  * - XSS (when needed beyond React's auto-escaping)
+ * - Sensitive data exposure in logs (JS-A1004)
  */
+
+/**
+ * List of sensitive field names that should be redacted in logs
+ */
+const SENSITIVE_FIELDS = [
+  'email',
+  'password',
+  'mot_de_passe',
+  'token',
+  'access_token',
+  'refresh_token',
+  'phone',
+  'telephone',
+  'mobile',
+  'dob',
+  'date_naissance',
+  'birthdate',
+  'ssn',
+  'numero_secu',
+  'address',
+  'adresse',
+  'iban',
+  'carte',
+  'card_number',
+  'cvv',
+  'secret',
+  'api_key',
+  'apikey',
+  'authorization',
+  'cookie',
+  'session',
+] as const;
+
+/**
+ * Redact sensitive data from objects before logging
+ *
+ * Prevents exposure of PII and sensitive information in logs (JS-A1004).
+ * Recursively processes nested objects and arrays.
+ *
+ * @param data - The data to redact
+ * @param maxDepth - Maximum recursion depth (default: 5)
+ * @returns Redacted copy of the data safe for logging
+ *
+ * @example
+ * ```ts
+ * const user = { email: 'test@example.com', name: 'John' };
+ * console.log(redactSensitiveData(user));
+ * // Output: { email: '[REDACTED]', name: 'John' }
+ *
+ * const error = new Error('Auth failed');
+ * console.error('Error:', redactSensitiveData({ error, user }));
+ * ```
+ */
+export function redactSensitiveData(data: unknown, maxDepth = 5): unknown {
+  if (maxDepth <= 0) {
+    return '[MAX_DEPTH_REACHED]';
+  }
+
+  // Handle null/undefined
+  if (data === null || data === undefined) {
+    return data;
+  }
+
+  // Handle primitives
+  if (typeof data !== 'object') {
+    return data;
+  }
+
+  // Handle Error objects specially
+  if (data instanceof Error) {
+    return {
+      name: data.name,
+      message: data.message,
+      // Don't include stack trace in production as it may leak file paths
+    };
+  }
+
+  // Handle arrays
+  if (Array.isArray(data)) {
+    return data.map(item => redactSensitiveData(item, maxDepth - 1));
+  }
+
+  // Handle objects using Map to avoid dynamic key injection
+  const resultMap = new Map<string, unknown>();
+  const record = data as Record<string, unknown>;
+
+  for (const key of Object.keys(record)) {
+    const lowerKey = key.toLowerCase();
+    const isSensitive = SENSITIVE_FIELDS.some(field => lowerKey.includes(field));
+
+    if (isSensitive) {
+      resultMap.set(key, '[REDACTED]');
+    } else {
+      resultMap.set(key, redactSensitiveData(record[key], maxDepth - 1));
+    }
+  }
+
+  return Object.fromEntries(resultMap);
+}
+
+/**
+ * Create a safe error message for logging
+ *
+ * Extracts error information without exposing sensitive details.
+ *
+ * @param error - The error to process
+ * @param context - Optional context string (will be sanitized)
+ * @returns Safe string for logging
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await login(credentials);
+ * } catch (error) {
+ *   console.error(safeErrorMessage(error, 'Login attempt'));
+ * }
+ * ```
+ */
+export function safeErrorMessage(error: unknown, context?: string): string {
+  const prefix = context ? `[${context}] ` : '';
+
+  if (error instanceof Error) {
+    return `${prefix}${error.name}: ${error.message}`;
+  }
+
+  if (typeof error === 'string') {
+    return `${prefix}Error: ${error}`;
+  }
+
+  return `${prefix}Unknown error occurred`;
+}
 
 /**
  * Escape LIKE wildcard characters in search queries
@@ -51,7 +183,7 @@ export function escapeLikeWildcards(input: string): string {
  * sanitizeSearchQuery("a".repeat(300)) // => "a".repeat(200)
  * ```
  */
-export function sanitizeSearchQuery(query: string, maxLength: number = 200): string {
+export function sanitizeSearchQuery(query: string, maxLength = 200): string {
   if (!query || typeof query !== 'string') {
     return '';
   }
@@ -61,6 +193,7 @@ export function sanitizeSearchQuery(query: string, maxLength: number = 200): str
       .trim()
       .slice(0, maxLength)
       // Remove null bytes and control characters (security best practice)
+      // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x1F\x7F]/g, '')
   );
 }
@@ -88,15 +221,15 @@ export function validateCoordinates(
 ): { isValid: boolean; lat: number; lng: number } {
   const isLatValid =
     typeof lat === 'number' &&
-    !isNaN(lat) &&
-    isFinite(lat) &&
+    !Number.isNaN(lat) &&
+    Number.isFinite(lat) &&
     lat >= -90 &&
     lat <= 90;
 
   const isLngValid =
     typeof lng === 'number' &&
-    !isNaN(lng) &&
-    isFinite(lng) &&
+    !Number.isNaN(lng) &&
+    Number.isFinite(lng) &&
     lng >= -180 &&
     lng <= 180;
 

@@ -44,7 +44,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in mapbox-token:', error);
+    console.error('[mapbox-token] Internal error');
     return new Response(
       JSON.stringify({ error: String(error) }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

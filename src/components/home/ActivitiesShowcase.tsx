@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { ActivityCard } from "@/components/Activity/ActivityCard";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { formatAgeRangeForCard } from "@/utils/categoryMapping";
 
 interface Activity {
   id: string;
@@ -37,7 +38,7 @@ interface ActivitiesShowcaseProps {
 
 export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
   const navigate = useNavigate();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [_currentSlide, setCurrentSlide] = useState(0);
 
   // Autoplay pour le carrousel principal
   useEffect(() => {
@@ -56,12 +57,12 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
 
   // Filtrer les activités pour les sous-carrousels
   const budgetActivities = activities.filter(a => a.price < 50 || a.hasFinancialAid).slice(0, 6);
-  const innovativeActivities = activities.filter(a => 
+  const _innovativeActivities = activities.filter(a => 
     a.category === 'innovation' || 
     a.title.toLowerCase().includes('nouveau') ||
     a.title.toLowerCase().includes('innovant')
   ).slice(0, 6);
-  const nearbyActivities = activities.slice(0, 6); // Déjà triées par proximité
+  const _nearbyActivities = activities.slice(0, 6); // Déjà triées par proximité
 
   // Carrousel principal (5 premières activités)
   const heroActivities = activities.slice(0, 5);
@@ -83,9 +84,12 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                 key={activity.id} 
                 className="w-[70vw] max-w-[500px] flex-shrink-0 snap-start"
               >
-                <div 
-                  className="bg-white rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer hover:shadow-lg transition-shadow"
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="bg-white rounded-[20px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   onClick={() => handleActivityClick(activity.id)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleActivityClick(activity.id)}
                 >
                   {/* Image 70% de la hauteur - ratio 4:3 */}
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
@@ -109,7 +113,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                       </Badge>
                       {activity.age_min && activity.age_max && (
                         <Badge variant="outline" className="text-xs">
-                          {activity.age_min}-{activity.age_max} ans
+                          {formatAgeRangeForCard(activity.age_min, activity.age_max).replace(/ ans$/, "")}
                         </Badge>
                       )}
                     </div>
@@ -156,6 +160,7 @@ export const ActivitiesShowcase = ({ activities }: ActivitiesShowcaseProps) => {
                     )}
                     <ActivityCard
                       {...activity}
+                      image={activity.image}
                       ageRange={activity.age_min && activity.age_max ? `${activity.age_min}-${activity.age_max} ans` : activity.ageRange}
                       periodType={activity.periodType}
                       structureName={activity.structureName}

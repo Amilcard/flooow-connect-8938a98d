@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { safeErrorMessage } from "@/utils/sanitize";
 
 interface FinancialAid {
   aid_name: string;
@@ -29,11 +30,12 @@ interface ActivityBookingState {
 const STORAGE_KEY_PREFIX = "activity_booking_";
 
 export const useActivityBookingState = (activityId: string) => {
-  const storageKey = `${STORAGE_KEY_PREFIX}${activityId}`;
+  const storageKey = useMemo(() => `${STORAGE_KEY_PREFIX}${activityId}`, [activityId]);
 
   const [state, setState] = useState<ActivityBookingState | null>(() => {
+    if (!activityId) return null;
     try {
-      const stored = localStorage.getItem(storageKey);
+      const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}${activityId}`);
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -41,16 +43,16 @@ export const useActivityBookingState = (activityId: string) => {
   });
 
   useEffect(() => {
-    if (state) {
+    if (state && activityId) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(state));
       } catch (error) {
-        console.error("Failed to save booking state:", error);
+        console.error(safeErrorMessage(error, 'Save booking state'));
       }
     }
-  }, [state, storageKey]);
+  }, [state, storageKey, activityId]);
 
-  const saveAidCalculation = (data: {
+  const saveAidCalculation = useCallback((data: {
     childId: string;
     quotientFamilial: string;
     cityCode: string;
@@ -69,18 +71,18 @@ export const useActivityBookingState = (activityId: string) => {
       calculated: true,
       transportMode: prev?.transportMode
     }));
-  };
+  }, []);
 
-  const saveTransportMode = (mode: TransportMode) => {
+  const saveTransportMode = useCallback((mode: TransportMode) => {
     setState(prev => prev ? { ...prev, transportMode: mode } : null);
-  };
+  }, []);
 
-  const clearState = () => {
+  const clearState = useCallback(() => {
     localStorage.removeItem(storageKey);
     setState(null);
-  };
+  }, [storageKey]);
 
-  const isAidCalculated = state?.calculated && state?.childId;
+  const isAidCalculated = useMemo(() => state?.calculated && state?.childId, [state?.calculated, state?.childId]);
 
   return {
     state,

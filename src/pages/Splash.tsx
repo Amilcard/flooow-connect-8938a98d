@@ -28,19 +28,22 @@ const Splash = () => {
     // Première visite de la session : montrer le splash
     sessionStorage.setItem("splashShown", "true");
 
-    // ===== MODE TESTS BÊTA : ONBOARDING AVEC OPTION DE DÉSACTIVATION =====
-    // Système de comptage des visites pour permettre aux testeurs de désactiver l'onboarding
-    
-    // Récupérer le compteur de visites et le statut de désactivation
-    const viewCount = parseInt(localStorage.getItem("onboardingViewCount") || "0");
-    const hasDisabledOnboarding = localStorage.getItem("hasDisabledOnboarding") === "true";
-    
-    // Incrémenter le compteur de visites
-    localStorage.setItem("onboardingViewCount", String(viewCount + 1));
+    // ===== MODE TESTS BÊTA : ONBOARDING POUR LES 8 PREMIÈRES VISITES =====
+    // Système de comptage des visites : onboarding affiché 8 fois maximum
+
+    // Récupérer le compteur de visites
+    const viewCount = Number.parseInt(localStorage.getItem("onboardingViewCount", 10) || "0");
 
     const timer = setTimeout(() => {
-      // TOUJOURS afficher l'onboarding (demande utilisateur)
-      navigate("/onboarding", { replace: true });
+      // Afficher l'onboarding UNIQUEMENT pendant les 8 premières visites
+      if (viewCount < 8) {
+        // Incrémenter le compteur AVANT de naviguer
+        localStorage.setItem("onboardingViewCount", String(viewCount + 1));
+        navigate("/onboarding", { replace: true });
+      } else {
+        // Après 8 visites, aller directement à /home
+        navigate("/home", { replace: true });
+      }
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -52,10 +55,10 @@ const Splash = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary to-accent p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6">
       <div className="text-center space-y-6">
         <h1 className="text-5xl font-bold text-white">Flooow</h1>
-        <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets. Nananare !</p>
+        <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets.</p>
         <Loader2 className="w-12 h-12 text-white animate-spin mx-auto" />
       </div>
     </div>

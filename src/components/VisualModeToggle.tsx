@@ -22,9 +22,10 @@ const VisualModeToggle = () => {
   return (
     <button
       onClick={toggleVisualMode}
-      className="fixed bottom-5 left-5 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50 flex items-center justify-center group"
+      className="fixed left-5 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50 flex items-center justify-center group"
       aria-label={visualMode ? "Mode liste" : "Mode visuel"}
       style={{
+        bottom: 'calc(20px + var(--safe-area-bottom))',
         boxShadow: "0 4px 16px rgba(74, 144, 226, 0.3)"
       }}
     >

@@ -23,7 +23,7 @@ export const ProgressDots: React.FC<ProgressDotsProps> = ({
             key={index}
             className={cn(
               "h-2 rounded-full transition-all duration-300 ease-in-out",
-              isActive ? "w-8 bg-primary" : "w-2 bg-gray-300"
+              isActive ? "w-8 bg-primary" : "w-2 bg-muted"
             )}
             aria-label={`Étape ${stepNumber} sur ${totalSteps}`}
             aria-current={isActive ? "step" : undefined}
