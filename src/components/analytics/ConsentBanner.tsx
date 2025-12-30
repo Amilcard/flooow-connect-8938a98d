@@ -6,20 +6,23 @@ import { X } from 'lucide-react';
 export const ConsentBanner = () => {
   const { consent, userType, grantConsent, denyConsent } = useAnalytics();
 
+  // ORDER-GATE-FIRST: Ne pas afficher tant que userType n'est pas défini
+  if (userType === 'unknown') return null;
+
   // Ne pas afficher si déjà un choix fait
   if (consent !== 'unknown') return null;
 
-  // Ne pas afficher aux mineurs (pas de tracking de toute façon)
+  // MINOR-NO-TRACK: Ne pas afficher aux mineurs
   if (userType === 'minor') return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/80 backdrop-blur-sm border-t">
-      <Card className="max-w-2xl mx-auto p-4">
+    <div className="fixed bottom-20 left-0 right-0 z-[60] p-4">
+      <Card className="max-w-2xl mx-auto p-4 shadow-lg border bg-background">
         <div className="flex items-start gap-4">
           <div className="flex-1 space-y-2">
             <h3 className="font-semibold text-foreground">Flooow est en phase de test</h3>
             <p className="text-sm text-muted-foreground">
-              Pour repérer ce qui bloque et améliorer l'application, nous pouvons analyser votre navigation. Acceptez-vous de nous aider ?
+              Pour améliorer votre appli, nous pouvons analyser votre navigation. C'est optionnel.
             </p>
           </div>
           <button onClick={denyConsent} className="text-muted-foreground hover:text-foreground" aria-label="Fermer">
