@@ -2,10 +2,8 @@
  * Page TerritoireNonCouvert - Territoire non encore disponible
  *
  * Affichée quand le CP n'est pas dans la Loire (42).
- * Propose UN SEUL bouton: explorer le catalogue d'exemple.
- * Message honnête sur le fait que c'est un territoire pilote.
+ * Ton Citycrunch pro (courtois, léger second degré).
  */
-
 import { useNavigate } from 'react-router-dom';
 import { MapPinOff, Play, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -41,7 +39,7 @@ const TerritoireNonCouvert = () => {
             </h1>
             {postalCode && (
               <p className="text-muted-foreground">
-                Code postal: <span className="font-medium">{postalCode}</span>
+                Code postal : <span className="font-medium">{postalCode}</span>
               </p>
             )}
           </div>
@@ -49,10 +47,10 @@ const TerritoireNonCouvert = () => {
           {/* Explanation */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-orange-200 space-y-3">
             <p className="text-foreground">
-              Flooow est actuellement en <strong>phase pilote</strong> sur le territoire de Saint-Étienne Métropole (Loire, 42).
+              Pour l'instant, Flooow est en <strong>phase pilote</strong> sur Saint-Étienne Métropole (Loire, 42).
             </p>
             <p className="text-muted-foreground text-sm">
-              Nous travaillons à étendre notre couverture. En attendant, vous pouvez explorer notre catalogue d'exemple pour découvrir les fonctionnalités de Flooow.
+              On déploie progressivement sur d'autres territoires. En attendant, vous pouvez explorer un catalogue de démo pour voir comment Flooow fonctionnerait chez vous.
             </p>
           </div>
 
@@ -61,12 +59,11 @@ const TerritoireNonCouvert = () => {
             <Button
               onClick={handleExploreDemo}
               size="lg"
-              className="w-full py-6 text-lg gap-2"
+              className="w-full py-6 text-base gap-2"
             >
               <Play className="w-5 h-5" />
-              Explorer le catalogue d'exemple
+              Voir à quoi ça ressemblerait chez vous
             </Button>
-
             <Button
               onClick={handleBack}
               variant="ghost"
@@ -74,15 +71,15 @@ const TerritoireNonCouvert = () => {
               className="gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Modifier mon code postal
+              Changer mon code postal
             </Button>
           </div>
 
           {/* Footer info */}
-          <p className="text-xs text-muted-foreground">
-            Le mode test utilise des données du territoire pilote à titre d'illustration.
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Le mode démo affiche des données du territoire pilote, uniquement pour l'exemple.
             <br />
-            Vos activités locales arrivent bientôt !
+            Votre territoire pourra être proposé dès l'ouverture locale.
           </p>
         </div>
       </div>
