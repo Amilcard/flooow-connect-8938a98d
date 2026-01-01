@@ -1,5 +1,8 @@
 import { useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+
+const EXCLUDED_ROUTES = ['/onboarding', '/ma-ville', '/territoire-non-couvert'];
 
 declare global {
   interface Window {
@@ -14,6 +17,7 @@ declare global {
 
 export const useLuckyOrange = () => {
   const { consent, userType } = useAnalytics();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const siteId = import.meta.env.VITE_LO_SITE_ID;
@@ -23,6 +27,7 @@ export const useLuckyOrange = () => {
     }
     if (consent !== 'granted') return;
     if (userType === 'minor') return;
+    if (EXCLUDED_ROUTES.some((route) => pathname.startsWith(route))) return;
     if (window.__lo_loaded) return;
 
     window.LOQ = window.LOQ || [];
@@ -31,7 +36,7 @@ export const useLuckyOrange = () => {
     script.src = `https://tools.luckyorange.com/core/lo.js?site-id=${siteId}`;
     document.head.appendChild(script);
     window.__lo_loaded = true;
-  }, [consent, userType]);
+  }, [consent, userType, pathname]);
 
   const trackEvent = useCallback((name: string, meta?: Record<string, unknown>) => {
     window.LOQ = window.LOQ || [];
