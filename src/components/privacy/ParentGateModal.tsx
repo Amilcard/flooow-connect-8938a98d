@@ -69,29 +69,29 @@ export function ParentGateModal({ onSelect }: ParentGateModalProps) {
           </div>
         </div>
         <h2 className="text-xl font-bold text-center text-gray-900 mb-2">
-          Petit check rapide
+          On fait connaissance ?
         </h2>
         <p className="text-sm text-gray-600 text-center mb-6">
-          Qui explore Flooow aujourd'hui ? Promis, c'est juste pour adapter l'appli.
+          Dites-nous juste qui utilise Flooow, pour adapter l'expérience.
         </p>
         <div className="space-y-3">
           <UserOption
             onClick={handleSelectAdult}
             icon={adultIcon}
-            title="Je suis un adulte"
-            subtitle="J'ai 18 ans ou plus"
+            title="J'ai 18 ans ou plus"
+            subtitle=""
             variant="primary"
           />
           <UserOption
             onClick={handleSelectMinor}
             icon={minorIcon}
-            title="Je suis un enfant ou un adolescent"
-            subtitle="J'ai moins de 18 ans"
+            title="J'ai moins de 18 ans"
+            subtitle=""
             variant="warning"
           />
         </div>
         <p className="text-xs text-gray-400 text-center mt-6">
-          Ça nous aide à adapter l'expérience et à respecter la réglementation.
+          Ça nous aide à régler les bons paramètres, tout simplement.
         </p>
       </div>
     </div>
