@@ -77,7 +77,7 @@ const TerritoireNonCouvert = () => {
 
           {/* Footer info */}
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Le mode démo affiche des données du territoire pilote, uniquement pour l'exemple.
+            Le mode démo affiche des données du territoire pilote (Saint-Étienne), comme ce sera chez vous. Allez les Verts. Allez l'OL, Paris, l'OM, PFC (promis on arrête avec ce délire foot).
             <br />
             Votre territoire pourra être proposé dès l'ouverture locale.
           </p>
