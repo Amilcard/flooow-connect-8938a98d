@@ -19,7 +19,7 @@ export const ConsentBanner = () => {
           <div className="flex-1 space-y-2">
             <h3 className="font-semibold text-foreground">Flooow est en phase de test</h3>
             <p className="text-sm text-muted-foreground">
-              Pour repérer ce qui bloque et améliorer l'application, nous pouvons analyser votre navigation. Acceptez-vous de nous aider ?
+              Pour améliorer votre appli, nous pouvons analyser votre navigation. C'est optionnel.
             </p>
           </div>
           <button onClick={denyConsent} className="text-muted-foreground hover:text-foreground" aria-label="Fermer">
