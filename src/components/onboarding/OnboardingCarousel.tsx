@@ -12,6 +12,7 @@ export const OnboardingCarousel = () => {
   const [familiaAnimation, setFamiliaAnimation] = useState<object | null>(null);
   const [financeGuruAnimation, setFinanceGuruAnimation] = useState<object | null>(null);
   const [confetiAnimation, setConfetiAnimation] = useState<object | null>(null);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
   const totalSteps = 4;
 
   // Load familia immediately (needed for step 1)
@@ -52,6 +53,14 @@ export const OnboardingCarousel = () => {
   const handleComplete = () => {
     // Le compteur est déjà incrémenté dans Splash.tsx
     // Pas besoin de le modifier ici
+    navigate("/home", { replace: true });
+  };
+
+  const handleSkip = () => {
+    // Si l'utilisateur a coché "Ne plus afficher", sauvegarder la préférence
+    if (dontShowAgain) {
+      localStorage.setItem("onboardingDisabled", "true");
+    }
     navigate("/home", { replace: true });
   };
 
@@ -208,7 +217,9 @@ export const OnboardingCarousel = () => {
       config={screens[currentStep]}
       onNext={handleNext}
       onPrevious={currentStep > 0 ? handlePrevious : undefined}
-      onSkip={handleComplete}
+      onSkip={handleSkip}
+      dontShowAgain={dontShowAgain}
+      onDontShowAgainChange={setDontShowAgain}
     />
   );
 };
