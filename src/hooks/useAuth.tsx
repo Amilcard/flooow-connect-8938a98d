@@ -130,15 +130,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                                 window.location.hash.includes('refresh_token');
 
         if (isOAuthCallback) {
-          // Attendre que Supabase traite le hash (OAuth callback)
-          // Le onAuthStateChange va gérer la session
-          console.log('[Auth] OAuth callback detected, waiting for session...');
+          // Callback OAuth détecté - Supabase va traiter automatiquement le hash
+          // On attend que onAuthStateChange nous notifie
+          console.log('[Auth] OAuth callback detected, Supabase will process hash...');
 
-          // Nettoyer le hash de l'URL pour éviter les problèmes de refresh
-          const cleanUrl = window.location.origin + window.location.pathname;
-          window.history.replaceState({}, document.title, cleanUrl);
-
-          // Ne pas setIsLoading(false) ici, laisser onAuthStateChange le faire
+          // NE PAS nettoyer le hash ici ! Supabase en a besoin pour établir la session
+          // Le nettoyage se fera après que la session soit établie
           return;
         }
 
@@ -152,7 +149,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error(safeErrorMessage(error, 'Auth check'));
       } finally {
         // Ne pas terminer le loading si on attend un callback OAuth
-        if (!window.location.hash.includes('access_token')) {
+        const hasOAuthHash = window.location.hash.includes('access_token');
+        if (!hasOAuthHash) {
           setIsLoading(false);
         }
       }
@@ -170,6 +168,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Si c'est une nouvelle connexion OAuth, assurer que le profil existe
         if (event === 'SIGNED_IN') {
           await ensureOAuthProfile(session.user);
+
+          // Nettoyer le hash de l'URL APRÈS que la session soit établie
+          if (window.location.hash.includes('access_token')) {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+            console.log('[Auth] OAuth session established, URL cleaned');
+          }
         }
       } else {
         setUser(null);
