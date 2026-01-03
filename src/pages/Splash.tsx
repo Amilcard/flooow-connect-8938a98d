@@ -30,18 +30,24 @@ const Splash = () => {
 
     // ===== MODE TESTS BÊTA : ONBOARDING POUR LES 8 PREMIÈRES VISITES =====
     // Système de comptage des visites : onboarding affiché 8 fois maximum
+    // Respecte aussi le flag "onboardingDisabled" si l'utilisateur a choisi "Ne plus afficher"
+
+    // Vérifier si l'utilisateur a désactivé l'onboarding
+    const onboardingDisabled = localStorage.getItem("onboardingDisabled") === "true";
 
     // Récupérer le compteur de visites
-    const viewCount = Number.parseInt(localStorage.getItem("onboardingViewCount", 10) || "0");
+    const viewCount = Number.parseInt(localStorage.getItem("onboardingViewCount") || "0", 10);
 
     const timer = setTimeout(() => {
-      // Afficher l'onboarding UNIQUEMENT pendant les 8 premières visites
-      if (viewCount < 8) {
+      // Afficher l'onboarding UNIQUEMENT si:
+      // - Pas désactivé par l'utilisateur
+      // - Moins de 8 visites
+      if (!onboardingDisabled && viewCount < 8) {
         // Incrémenter le compteur AVANT de naviguer
         localStorage.setItem("onboardingViewCount", String(viewCount + 1));
         navigate("/onboarding", { replace: true });
       } else {
-        // Après 8 visites, aller directement à /home
+        // Après 8 visites OU si désactivé, aller directement à /home
         navigate("/home", { replace: true });
       }
     }, 2000);

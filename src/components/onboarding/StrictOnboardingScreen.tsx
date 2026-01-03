@@ -60,6 +60,9 @@ interface StrictOnboardingScreenProps {
   onNext: () => void;
   onSkip?: () => void;
   onPrevious?: () => void; // Added for back navigation
+  // Optionnel: checkbox "Ne plus afficher"
+  dontShowAgain?: boolean;
+  onDontShowAgainChange?: (checked: boolean) => void;
 }
 
 export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
@@ -67,20 +70,33 @@ export const StrictOnboardingScreen: React.FC<StrictOnboardingScreenProps> = ({
   onNext,
   onPrevious,
   onSkip,
+  dontShowAgain,
+  onDontShowAgainChange,
 }) => {
   const { layout, illustration, title, body, cta, pagination, fallback } = config;
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-foreground overflow-hidden relative">
-      {/* Skip Button - Top Right */}
+      {/* Skip Button + Checkbox - Top Right */}
       {onSkip && (
-        <div className="absolute top-4 right-4 z-20">
+        <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
           <button
             onClick={onSkip}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5"
           >
             Passer
           </button>
+          {onDontShowAgainChange && (
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer px-3">
+              <input
+                type="checkbox"
+                checked={dontShowAgain ?? false}
+                onChange={(e) => onDontShowAgainChange(e.target.checked)}
+                className="w-3.5 h-3.5 rounded border-muted-foreground/50"
+              />
+              Ne plus afficher
+            </label>
+          )}
         </div>
       )}
 
