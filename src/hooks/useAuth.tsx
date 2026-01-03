@@ -125,6 +125,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Check current session
     const checkAuth = async () => {
       try {
+        // Détecter si on revient d'un callback OAuth (hash contient access_token)
+        const isOAuthCallback = window.location.hash.includes('access_token') ||
+                                window.location.hash.includes('refresh_token');
+
+        if (isOAuthCallback) {
+          // Attendre que Supabase traite le hash (OAuth callback)
+          // Le onAuthStateChange va gérer la session
+          console.log('[Auth] OAuth callback detected, waiting for session...');
+
+          // Nettoyer le hash de l'URL pour éviter les problèmes de refresh
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+
+          // Ne pas setIsLoading(false) ici, laisser onAuthStateChange le faire
+          return;
+        }
+
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           setUser(extractUserFromSession(session.user));
@@ -134,7 +151,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } catch (error) {
         console.error(safeErrorMessage(error, 'Auth check'));
       } finally {
-        setIsLoading(false);
+        // Ne pas terminer le loading si on attend un callback OAuth
+        if (!window.location.hash.includes('access_token')) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -142,6 +162,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('[Auth] State change:', event, session?.user?.email);
+
       if (session?.user) {
         setUser(extractUserFromSession(session.user));
 
@@ -152,6 +174,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } else {
         setUser(null);
       }
+
+      // Toujours terminer le loading après un changement d'état auth
+      setIsLoading(false);
     });
 
     return () => {
