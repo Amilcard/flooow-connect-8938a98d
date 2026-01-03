@@ -135,26 +135,44 @@ const applySorting = (query: QueryType, sortBy: string | undefined): QueryType =
 
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Constants for activity limits
+const LIST_VIEW_LIMIT = 50; // Default limit for list view
+const MAP_VIEW_LIMIT = 200; // Higher limit for map view to show all activities
+
 export const buildActivityQuery = (filters: FilterState) => {
-  // Base query
+  // Base query with count to get total number of matching activities
   let query: QueryType = supabase
     .from('activities')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('is_published', true);
 
   // Apply all filters using helpers
   query = applyTextSearch(query, filters.searchQuery);
   query = applyQuickFilters(query, filters.quickFilters);
   query = applyAdvancedFilters(query, filters.advancedFilters);
-  query = query.limit(50);
+
+  // Apply higher limit for map view to show all activities
+  const limit = filters.viewMode === 'map' ? MAP_VIEW_LIMIT : LIST_VIEW_LIMIT;
+  query = query.limit(limit);
+
   query = applySorting(query, filters.sortBy);
 
   return query;
 };
 
 export const getResultsCount = async (filters: FilterState): Promise<number> => {
-  const query = buildActivityQuery(filters);
-  const { count, error } = await query.select('*', { count: 'exact', head: true });
+  // Use a separate count-only query for efficiency
+  let query: QueryType = supabase
+    .from('activities')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_published', true);
+
+  // Apply all filters using helpers
+  query = applyTextSearch(query, filters.searchQuery);
+  query = applyQuickFilters(query, filters.quickFilters);
+  query = applyAdvancedFilters(query, filters.advancedFilters);
+
+  const { count, error } = await query;
 
   if (error) {
     console.error(safeErrorMessage(error, 'Error counting results'));

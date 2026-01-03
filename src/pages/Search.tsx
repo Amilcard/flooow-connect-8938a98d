@@ -57,10 +57,11 @@ const Search = () => {
     // Fix: Distinguer le type de période (scolaire/vacances) des périodes spécifiques (dates)
     periodType: (advancedFilters.period === 'vacances' || advancedFilters.period === 'scolaire') ? advancedFilters.period : undefined,
     vacationPeriod: (advancedFilters.period !== 'all' && advancedFilters.period !== 'vacances' && advancedFilters.period !== 'scolaire') ? advancedFilters.period : undefined,
-    // Add other mappings as needed
+    // Fetch more activities for map view (up to 200) to show all markers
+    forMapView: viewMode === 'map',
   };
 
-  const { activities, isRelaxed, isLoading, error } = useActivities(activityFilters);
+  const { activities, isRelaxed, isLoading, error, totalCount } = useActivities(activityFilters);
 
   const allActivities = activities || [];
   const activeTags = getActiveFilterTags();
@@ -153,7 +154,10 @@ const Search = () => {
         {/* View toggle + Results count */}
         <div className="flex items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            {displayActivities.length} sur {allActivities.length} activité(s)
+            {viewMode === 'map'
+              ? `${allActivities.length} activité${allActivities.length > 1 ? 's' : ''} sur la carte`
+              : `${displayActivities.length} sur ${totalCount} activité${totalCount > 1 ? 's' : ''}`
+            }
           </p>
           
           <div className="flex gap-2">
@@ -220,7 +224,7 @@ const Search = () => {
         onClose={() => setIsFiltersOpen(false)}
         filters={advancedFilters}
         onFiltersChange={updateAdvancedFilters}
-        resultsCount={allActivities.length}
+        resultsCount={totalCount}
         isCountLoading={isLoading}
         onApply={() => setIsFiltersOpen(false)}
         onClear={clearAllFilters}

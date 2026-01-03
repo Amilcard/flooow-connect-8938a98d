@@ -114,6 +114,11 @@ interface ActivityFilters {
   mobilityTypes?: string[];
   periodType?: 'vacances' | 'scolaire' | 'all';
   financialAidsAccepted?: string[];
+  /**
+   * When true, fetch all activities for map view (up to 200)
+   * Default: false (uses standard limit of 50)
+   */
+  forMapView?: boolean;
 }
 
 /**
@@ -192,8 +197,12 @@ const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promi
   ]);
 };
 
+// Constants for activity limits
+const LIST_VIEW_LIMIT = 50; // Default limit for list view
+const MAP_VIEW_LIMIT = 200; // Higher limit for map view to show all activities
+
 export const useActivities = (filters?: ActivityFilters) => {
-  const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean }>({
+  const queryInfo = useQuery<{ activities: Activity[]; isRelaxed: boolean; totalCount: number }>({
     queryKey: ["activities", filters],
     staleTime: 300000,
     gcTime: 600000,
@@ -202,7 +211,8 @@ export const useActivities = (filters?: ActivityFilters) => {
     retry: 1,
     queryFn: async () => {
       // FIX: Requête simplifiée sans jointure structures (évite erreur embed)
-      let query = supabase.from("activities").select("*").eq("is_published", true);
+      // Use count: 'exact' to get the true total count of matching activities
+      let query = supabase.from("activities").select("*", { count: 'exact' }).eq("is_published", true);
 
       // Apply filters using helper functions to reduce cognitive complexity
       query = applySearchFilter(query, filters?.searchQuery, filters?.search);
@@ -210,11 +220,12 @@ export const useActivities = (filters?: ActivityFilters) => {
       query = applyAgeAndPeriodFilters(query, filters?.ageMin, filters?.ageMax, filters?.periodType);
       query = applyMiscFilters(query, filters?.maxPrice, filters?.hasAccessibility, filters?.mobilityTypes, filters?.hasFinancialAid);
 
-      // Apply limit
-      query = query.limit(filters?.limit || 50);
+      // Apply limit: use higher limit for map view, standard limit for list view
+      const limit = filters?.limit || (filters?.forMapView ? MAP_VIEW_LIMIT : LIST_VIEW_LIMIT);
+      query = query.limit(limit);
 
       // Timeout réel 10s - rejette si Supabase ne répond pas
-      const { data, error } = await withTimeout(
+      const { data, error, count } = await withTimeout(
         query.order("title", { ascending: true }),
         10000,
         'Délai de chargement dépassé. Veuillez réessayer.'
@@ -228,7 +239,8 @@ export const useActivities = (filters?: ActivityFilters) => {
       // Retourne un tableau vide si pas de données (0 résultat ≠ loading)
       return {
         activities: processActivities(data || []),
-        isRelaxed: false
+        isRelaxed: false,
+        totalCount: count || 0
       };
     },
   });
@@ -236,7 +248,8 @@ export const useActivities = (filters?: ActivityFilters) => {
   return {
     ...queryInfo,
     activities: queryInfo.data?.activities || [],
-    isRelaxed: queryInfo.data?.isRelaxed || false
+    isRelaxed: queryInfo.data?.isRelaxed || false,
+    totalCount: queryInfo.data?.totalCount || 0
   };
 };
 
