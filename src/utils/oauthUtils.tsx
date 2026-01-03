@@ -92,9 +92,26 @@ export const providerIcons: Record<OAuthProvider, JSX.Element> = {
 
 /**
  * Messages d'erreur personnalisés pour les erreurs OAuth
+ *
+ * Erreurs courantes :
+ * - "provider is not enabled" : Provider non activé dans Supabase Dashboard
+ * - "redirect_uri_mismatch" : URI de callback non configuré côté Google/Facebook
+ * - "popup_closed" : L'utilisateur a fermé la popup
+ * - "access_denied" : L'utilisateur a refusé l'accès
  */
-export function getOAuthErrorMessage(error: Error): string {
-  const message = error.message.toLowerCase();
+export function getOAuthErrorMessage(error: unknown): string {
+  // Gérer le cas où error n'est pas une Error standard
+  const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
+
+  // Erreur de configuration Supabase
+  if (message.includes('provider is not enabled') || message.includes('unsupported provider')) {
+    return 'Ce mode de connexion n\'est pas encore disponible. Veuillez utiliser votre email et mot de passe.';
+  }
+
+  // Erreur de configuration Google/Facebook (redirect URI)
+  if (message.includes('redirect_uri_mismatch') || message.includes('redirect uri')) {
+    return 'Erreur de configuration. Veuillez réessayer ou utiliser votre email et mot de passe.';
+  }
 
   if (message.includes('popup_closed')) {
     return 'La fenêtre de connexion a été fermée. Veuillez réessayer.';
@@ -107,6 +124,11 @@ export function getOAuthErrorMessage(error: Error): string {
   }
   if (message.includes('already registered') || message.includes('email_exists')) {
     return 'Un compte existe déjà avec cette adresse email. Essayez de vous connecter avec votre email et mot de passe.';
+  }
+
+  // Log l'erreur pour debug (en dev seulement)
+  if (import.meta.env.DEV) {
+    console.error('[OAuth] Erreur non gérée:', error);
   }
 
   return 'La connexion a échoué. Veuillez réessayer dans quelques instants.';

@@ -2,6 +2,23 @@
  * Configuration de l'authentification
  *
  * OAuth providers supportés par Supabase Auth
+ *
+ * IMPORTANT - Configuration Supabase requise :
+ * 1. Dashboard → Authentication → URL Configuration :
+ *    - Site URL: https://flooowtest.netlify.app
+ *    - Additional Redirect URLs:
+ *      - https://flooowtest.netlify.app/**
+ *      - http://localhost:8080/**
+ *
+ * 2. Dashboard → Authentication → Providers :
+ *    - Google: Enabled + Client ID/Secret de Google Cloud Console
+ *    - Facebook: Enabled + App ID/Secret de Meta for Developers
+ *
+ * 3. Google Cloud Console → OAuth 2.0 Client → Authorized redirect URIs :
+ *    - https://kbrgwezkjaakoecispom.supabase.co/auth/v1/callback
+ *
+ * 4. Meta for Developers → Facebook Login → Valid OAuth Redirect URIs :
+ *    - https://kbrgwezkjaakoecispom.supabase.co/auth/v1/callback
  */
 
 export type OAuthProvider = 'google' | 'apple' | 'facebook' | 'linkedin_oidc' | 'azure';
@@ -24,6 +41,9 @@ export const authConfig = {
   /**
    * Configuration des providers OAuth
    * Ordre de priorité : Google, Apple, Facebook, LinkedIn, Microsoft
+   *
+   * NOTE: Si un provider retourne une erreur "provider not enabled",
+   * vérifier qu'il est bien activé dans Supabase Dashboard → Providers
    */
   OAUTH_PROVIDERS: [
     { id: 'google', name: 'Google', label: 'Continuer avec Google', enabled: true, priority: 1 },
@@ -34,7 +54,8 @@ export const authConfig = {
   ] as OAuthProviderConfig[],
 
   /**
-   * URL de redirection après authentification OAuth
+   * URL de redirection après authentification OAuth réussie
+   * Pointe vers /home pour une UX cohérente
    */
-  getRedirectUrl: () => `${window.location.origin}/`,
+  getRedirectUrl: () => `${window.location.origin}/home`,
 } as const;
