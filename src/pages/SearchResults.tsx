@@ -35,12 +35,12 @@ const SearchResults = () => {
   const [resultsCount, setResultsCount] = useState(0);
   const [isCountLoading, setIsCountLoading] = useState(false);
 
-  // Fetch activities
-  const { data: activities = [], isLoading: isActivitiesLoading } = useQuery({
+  // Fetch activities with count
+  const { data: queryResult, isLoading: isActivitiesLoading } = useQuery({
     queryKey: ['search-activities', filterState],
     queryFn: async () => {
       const query = buildActivityQuery(filterState);
-      const { data, error } = await query;
+      const { data, error, count } = await query;
 
       if (error) {
         console.error(safeErrorMessage(error, 'Fetch activities'));
@@ -82,37 +82,28 @@ const SearchResults = () => {
 
       // Aggressive deduplication by normalized title
       const uniqueActivities = uniqueById.filter((activity: any, index: number, self: any[]) =>
-        index === self.findIndex((t: any) => 
+        index === self.findIndex((t: any) =>
           t.title?.trim().toLowerCase() === activity.title?.trim().toLowerCase()
         )
       );
 
-      return uniqueActivities;
+      return { activities: uniqueActivities, totalCount: count || 0 };
     },
     staleTime: 30000 // 30 seconds
   });
 
-  // Update results count (debounced) - REMOVED to avoid race conditions
-  // We rely on activities.length since we fetch all results
-  /*
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      setIsCountLoading(true);
-      const count = await getResultsCount(filterState);
-      setResultsCount(count);
-      setIsCountLoading(false);
-    }, 500);
+  const activities = queryResult?.activities || [];
+  const totalCount = queryResult?.totalCount || 0;
 
-    return () => clearTimeout(timer);
-  }, [filterState]);
-  */
-
-  // Update results count from actual activities
+  // Update results count from query result
   useEffect(() => {
-    if (!isActivitiesLoading && activities) {
+    if (!isActivitiesLoading && totalCount > 0) {
+      setResultsCount(totalCount);
+    } else if (!isActivitiesLoading && activities.length > 0) {
+      // Fallback to activities.length if count is not available
       setResultsCount(activities.length);
     }
-  }, [activities, isActivitiesLoading]);
+  }, [totalCount, activities.length, isActivitiesLoading]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
