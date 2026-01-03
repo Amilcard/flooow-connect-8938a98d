@@ -322,6 +322,11 @@ const App = () => (
                       <Route path="/legal/mentions" element={<MentionsLegales />} />
                       <Route path="/legal/cgu" element={<CGU />} />
 
+                      {/* Facebook OAuth URLs - Redirects for Meta compliance */}
+                      <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
+                      <Route path="/terms" element={<Navigate to="/legal/cgu" replace />} />
+                      <Route path="/data-deletion" element={<Navigate to="/legal/privacy#suppression-des-donnees" replace />} />
+
                       {/* Catch-all */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
