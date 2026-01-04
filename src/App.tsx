@@ -11,9 +11,7 @@ import { SkipToContent } from "./components/a11y/SkipToContent";
 
 // Analytics (Lucky Orange)
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
-import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { AnalyticsLoader } from "@/components/analytics/AnalyticsLoader";
-import { UserTypeGate } from "@/components/analytics/UserTypeGate";
 
 // Privacy & Territory
 import { PrivacyProvider } from "./components/privacy/PrivacyProvider";
@@ -165,8 +163,6 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <PrivacyProvider>
-                <UserTypeGate />
-                <ConsentBanner />
                 <AnalyticsLoader />
                 <SkipToContent />
                 <Suspense fallback={<PageLoader />}>
