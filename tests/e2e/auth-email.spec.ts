@@ -1,5 +1,10 @@
 import { test, expect, TestContext, setupErrorCapture, attachErrorArtifacts } from './utils/test-harness';
-import { ensureUserTypeGateDismissed } from './utils/ui-gates';
+import {
+  ensureAllGatesDismissed,
+  clickSignupTab,
+  waitForConnectedState,
+  verifySignupFormVisible,
+} from './utils/ui-gates';
 import { cleanupTestData } from './utils/db-helpers';
 
 /**
@@ -28,39 +33,58 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
 
-    // Dismiss any blocking modals
-    await ensureUserTypeGateDismissed(page, 'adult');
+    // Dismiss all blocking overlays
+    await ensureAllGatesDismissed(page);
 
-    // Click on "Créer un compte" tab using role-based selector
-    const signupTab = page.getByRole('tab', { name: /Créer un compte/i });
-    await signupTab.click();
-    await page.waitForTimeout(300);
+    // Click on signup tab using robust strategy
+    await clickSignupTab(page);
+    await page.waitForTimeout(500);
 
-    // Fill signup form using more robust selectors
-    const emailInput = page.getByLabel(/Email/i).first();
-    await emailInput.fill(testEmail);
+    // Verify signup form is ready
+    const formReady = await verifySignupFormVisible(page);
+    expect(formReady).toBe(true);
 
-    // Password field
-    const passwordInputs = page.locator('input[type="password"]');
-    await passwordInputs.first().fill(testPassword);
-
-    // Confirm password if visible
-    const confirmPasswordInput = page.getByLabel(/Confirmer/i);
-    if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await confirmPasswordInput.fill(testPassword);
+    // Fill signup form using ID-based selectors
+    const signupEmailInput = page.locator('#signup-email');
+    if (await signupEmailInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupEmailInput.fill(testEmail);
+    } else {
+      await page.getByLabel(/Email/i).first().fill(testEmail);
     }
 
-    // Submit using button role
+    // Password
+    const signupPasswordInput = page.locator('#signup-password');
+    if (await signupPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupPasswordInput.fill(testPassword);
+    } else {
+      await page.locator('input[type="password"]').first().fill(testPassword);
+    }
+
+    // Confirm password if visible
+    const confirmPasswordInput = page.locator('#confirmPassword');
+    if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await confirmPasswordInput.fill(testPassword);
+    } else {
+      const confirmByLabel = page.getByLabel(/Confirmer/i);
+      if (await confirmByLabel.isVisible({ timeout: 500 }).catch(() => false)) {
+        await confirmByLabel.fill(testPassword);
+      }
+    }
+
+    // Submit
     const submitButton = page.getByRole('button', { name: /Créer mon compte|Créer/i });
     await submitButton.click();
 
-    // Wait for either redirect to home or success message
+    // Wait for redirect or success message
     await Promise.race([
       page.waitForURL('/', { timeout: 15000 }),
       page.waitForURL('/home', { timeout: 15000 }),
       page.waitForURL('/onboarding', { timeout: 15000 }),
       page.waitForSelector('text=/Bienvenue|compte créé|vérifiez votre email/i', { timeout: 15000 }),
     ]);
+
+    // Dismiss any post-signup gates
+    await ensureAllGatesDismissed(page);
 
     // Capture screenshot of success state
     await page.screenshot({ path: 'test-results/auth-email-signup-success.png' });
@@ -76,20 +100,30 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
 
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Create account first
-    const signupTab = page.getByRole('tab', { name: /Créer un compte/i });
-    await signupTab.click();
-    await page.waitForTimeout(300);
+    await clickSignupTab(page);
+    await page.waitForTimeout(500);
 
-    const emailInput = page.getByLabel(/Email/i).first();
-    await emailInput.fill(testEmail);
+    const formReady = await verifySignupFormVisible(page);
+    expect(formReady).toBe(true);
 
-    const passwordInputs = page.locator('input[type="password"]');
-    await passwordInputs.first().fill(testPassword);
+    const signupEmailInput = page.locator('#signup-email');
+    if (await signupEmailInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupEmailInput.fill(testEmail);
+    } else {
+      await page.getByLabel(/Email/i).first().fill(testEmail);
+    }
 
-    const confirmPasswordInput = page.getByLabel(/Confirmer/i);
+    const signupPasswordInput = page.locator('#signup-password');
+    if (await signupPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupPasswordInput.fill(testPassword);
+    } else {
+      await page.locator('input[type="password"]').first().fill(testPassword);
+    }
+
+    const confirmPasswordInput = page.locator('#confirmPassword');
     if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
       await confirmPasswordInput.fill(testPassword);
     }
@@ -105,10 +139,12 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
       page.waitForTimeout(5000),
     ]);
 
+    await ensureAllGatesDismissed(page);
+
     // Go back to auth page for login test
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Now test login - should be on login tab by default
     const loginEmailInput = page.locator('#login-email');
@@ -135,11 +171,11 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
       page.waitForURL('/home', { timeout: 15000 }),
     ]);
 
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
-    // Verify connected state - check for account button in bottom nav
-    const accountButton = page.locator('[aria-label="Mon compte"], [data-tour-id="account"]');
-    await expect(accountButton.first()).toBeVisible({ timeout: 5000 });
+    // Verify connected state
+    const isConnected = await waitForConnectedState(page, 10000);
+    expect(isConnected).toBe(true);
 
     await page.screenshot({ path: 'test-results/auth-email-login-success.png' });
 
@@ -154,19 +190,26 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
     // Create and login
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
-    const signupTab = page.getByRole('tab', { name: /Créer un compte/i });
-    await signupTab.click();
-    await page.waitForTimeout(300);
+    await clickSignupTab(page);
+    await page.waitForTimeout(500);
 
-    const emailInput = page.getByLabel(/Email/i).first();
-    await emailInput.fill(testEmail);
+    const signupEmailInput = page.locator('#signup-email');
+    if (await signupEmailInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupEmailInput.fill(testEmail);
+    } else {
+      await page.getByLabel(/Email/i).first().fill(testEmail);
+    }
 
-    const passwordInputs = page.locator('input[type="password"]');
-    await passwordInputs.first().fill(testPassword);
+    const signupPasswordInput = page.locator('#signup-password');
+    if (await signupPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupPasswordInput.fill(testPassword);
+    } else {
+      await page.locator('input[type="password"]').first().fill(testPassword);
+    }
 
-    const confirmPasswordInput = page.getByLabel(/Confirmer/i);
+    const confirmPasswordInput = page.locator('#confirmPassword');
     if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
       await confirmPasswordInput.fill(testPassword);
     }
@@ -180,12 +223,12 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
       page.waitForURL('/onboarding', { timeout: 15000 }),
     ]);
 
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Navigate to account page
     await page.goto('/mon-compte');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Find and click logout button
     const logoutButton = page.getByRole('button', { name: /Se déconnecter|Déconnexion/i }).or(
@@ -204,7 +247,7 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
 
     // Verify we're logged out - account button should redirect to auth
     await page.goto('/mon-compte');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Should redirect to login if not authenticated
     await Promise.race([
@@ -226,19 +269,26 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
     // Create account and login
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
-    const signupTab = page.getByRole('tab', { name: /Créer un compte/i });
-    await signupTab.click();
-    await page.waitForTimeout(300);
+    await clickSignupTab(page);
+    await page.waitForTimeout(500);
 
-    const emailInput = page.getByLabel(/Email/i).first();
-    await emailInput.fill(testEmail);
+    const signupEmailInput = page.locator('#signup-email');
+    if (await signupEmailInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupEmailInput.fill(testEmail);
+    } else {
+      await page.getByLabel(/Email/i).first().fill(testEmail);
+    }
 
-    const passwordInputs = page.locator('input[type="password"]');
-    await passwordInputs.first().fill(testPassword);
+    const signupPasswordInput = page.locator('#signup-password');
+    if (await signupPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupPasswordInput.fill(testPassword);
+    } else {
+      await page.locator('input[type="password"]').first().fill(testPassword);
+    }
 
-    const confirmPasswordInput = page.getByLabel(/Confirmer/i);
+    const confirmPasswordInput = page.locator('#confirmPassword');
     if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
       await confirmPasswordInput.fill(testPassword);
     }
@@ -252,24 +302,16 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
       page.waitForURL('/onboarding', { timeout: 15000 }),
     ]);
 
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Navigate to home to check header
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
-    // Verify connected state indicators
-    // Check for bottom navigation with Mon compte button
-    const accountButton = page.locator('[aria-label="Mon compte"]');
-
-    if (await accountButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await expect(accountButton).toBeVisible();
-    } else {
-      // Alternative: check for any profile-related indicator
-      const profileIndicators = page.locator('[data-tour-id="account"], .avatar, text=/Mon compte/i');
-      await expect(profileIndicators.first()).toBeVisible({ timeout: 5000 });
-    }
+    // Verify connected state
+    const isConnected = await waitForConnectedState(page, 10000);
+    expect(isConnected).toBe(true);
 
     await page.screenshot({ path: 'test-results/auth-email-header-connected.png' });
 
@@ -280,7 +322,7 @@ test.describe('Auth Email - Signup/Login/Logout Flow', () => {
   test('should show error for invalid credentials', async ({ page }) => {
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page, 'adult');
+    await ensureAllGatesDismissed(page);
 
     // Try to login with invalid credentials using ID-based selectors
     const loginEmailInput = page.locator('#login-email');

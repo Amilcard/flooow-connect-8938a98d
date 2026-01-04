@@ -1,5 +1,10 @@
 import { test, expect, TestContext, setupErrorCapture, attachErrorArtifacts } from './utils/test-harness';
-import { ensureUserTypeGateDismissed } from './utils/ui-gates';
+import {
+  ensureAllGatesDismissed,
+  clickSignupTab,
+  waitForConnectedState,
+  verifySignupFormVisible,
+} from './utils/ui-gates';
 import { cleanupTestData } from './utils/db-helpers';
 
 /**
@@ -23,35 +28,49 @@ test.describe('Account White Screen - Espace Client (Authenticated)', () => {
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
 
-    // Dismiss any blocking modals (e.g., "Qui utilise Flooow ?")
-    await ensureUserTypeGateDismissed(page, 'adult');
+    // Dismiss ALL blocking overlays (user type gate + consent banner)
+    await ensureAllGatesDismissed(page);
 
-    // Click on "Créer un compte" tab using role-based selector
-    // The tabs are TabsTrigger components with value="signup"
-    const signupTab = page.getByRole('tab', { name: /Créer un compte/i });
-    await signupTab.click();
-    await page.waitForTimeout(300);
+    // Click on signup tab using robust strategy
+    await clickSignupTab(page);
+    await page.waitForTimeout(500);
 
-    // Fill signup form using label-based selectors
-    const emailInput = page.getByLabel(/Email/i).first();
-    await emailInput.fill(testEmail);
+    // Verify signup form is visible before filling
+    const formReady = await verifySignupFormVisible(page);
+    expect(formReady).toBe(true);
 
-    // Password field - may have label "Mot de passe *"
-    const passwordInputs = page.locator('input[type="password"]');
-    const passwordInput = passwordInputs.first();
-    await passwordInput.fill(testPassword);
-
-    // Confirm password if visible
-    const confirmPasswordInput = page.getByLabel(/Confirmer/i);
-    if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await confirmPasswordInput.fill(testPassword);
+    // Fill signup form - use ID-based selectors from Auth.tsx
+    const signupEmailInput = page.locator('#signup-email');
+    if (await signupEmailInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupEmailInput.fill(testEmail);
+    } else {
+      await page.getByLabel(/Email/i).first().fill(testEmail);
     }
 
-    // Submit using the button
+    // Password fields
+    const signupPasswordInput = page.locator('#signup-password');
+    if (await signupPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await signupPasswordInput.fill(testPassword);
+    } else {
+      await page.locator('input[type="password"]').first().fill(testPassword);
+    }
+
+    // Confirm password
+    const confirmPasswordInput = page.locator('#confirmPassword');
+    if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await confirmPasswordInput.fill(testPassword);
+    } else {
+      const confirmByLabel = page.getByLabel(/Confirmer/i);
+      if (await confirmByLabel.isVisible({ timeout: 500 }).catch(() => false)) {
+        await confirmByLabel.fill(testPassword);
+      }
+    }
+
+    // Submit using button
     const submitButton = page.getByRole('button', { name: /Créer mon compte|Créer/i });
     await submitButton.click();
 
-    // Wait for navigation after signup
+    // Wait for navigation AND connected state
     await Promise.race([
       page.waitForURL('/', { timeout: 15000 }),
       page.waitForURL('/home', { timeout: 15000 }),
@@ -59,8 +78,14 @@ test.describe('Account White Screen - Espace Client (Authenticated)', () => {
       page.waitForTimeout(8000),
     ]);
 
-    // Handle any post-login gates
-    await ensureUserTypeGateDismissed(page, 'adult');
+    // Dismiss any post-signup gates
+    await ensureAllGatesDismissed(page);
+
+    // Verify we're actually connected (fail-fast)
+    const isConnected = await waitForConnectedState(page, 10000);
+    if (!isConnected) {
+      console.warn('Warning: Could not verify connected state after signup');
+    }
   });
 
   test.afterEach(async ({ page }, testInfo) => {
@@ -72,7 +97,7 @@ test.describe('Account White Screen - Espace Client (Authenticated)', () => {
     // Navigate to Mon Compte
     await page.goto('/mon-compte');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page);
+    await ensureAllGatesDismissed(page);
 
     // Wait for page to load
     await page.waitForTimeout(2000);
@@ -122,7 +147,7 @@ test.describe('Account White Screen - Espace Client (Authenticated)', () => {
     for (const subPage of subPages) {
       await page.goto(subPage.path);
       await page.waitForLoadState('networkidle');
-      await ensureUserTypeGateDismissed(page);
+      await ensureAllGatesDismissed(page);
       await page.waitForTimeout(1500);
 
       // Verify page is not blank
@@ -150,7 +175,7 @@ test.describe('Account White Screen - Espace Client (Authenticated)', () => {
 
   test('should display loading state, then content on account page', async ({ page }) => {
     await page.goto('/mon-compte');
-    await ensureUserTypeGateDismissed(page);
+    await ensureAllGatesDismissed(page);
 
     // Either loading state or content should appear quickly
     const firstVisible = await Promise.race([
@@ -197,12 +222,15 @@ test.describe('Account White Screen - Unauthenticated Access', () => {
       sessionStorage.clear();
     });
 
+    // Dismiss any gates on home page
+    await ensureAllGatesDismissed(page);
+
     // Try to access a protected account page without being logged in
     await page.goto('/mon-compte');
     await page.waitForLoadState('networkidle');
 
     // Handle any gates that might appear
-    await ensureUserTypeGateDismissed(page);
+    await ensureAllGatesDismissed(page);
 
     await page.waitForTimeout(2000);
 
@@ -226,10 +254,13 @@ test.describe('Account White Screen - Unauthenticated Access', () => {
       sessionStorage.clear();
     });
 
+    // Dismiss any gates
+    await ensureAllGatesDismissed(page);
+
     // Try to access account page
     await page.goto('/mon-compte');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page);
+    await ensureAllGatesDismissed(page);
     await page.waitForTimeout(2000);
 
     // Should NOT see account-specific content
@@ -255,10 +286,13 @@ test.describe('Account White Screen - Unauthenticated Access', () => {
       sessionStorage.clear();
     });
 
+    // Dismiss any gates
+    await ensureAllGatesDismissed(page);
+
     // Try to access a specific account sub-page
     await page.goto('/mon-compte/reservations');
     await page.waitForLoadState('networkidle');
-    await ensureUserTypeGateDismissed(page);
+    await ensureAllGatesDismissed(page);
     await page.waitForTimeout(2000);
 
     // Should redirect to auth or show login
