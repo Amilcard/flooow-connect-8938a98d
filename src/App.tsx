@@ -40,6 +40,7 @@ const ProfileCompletion = lazy(() => import("./pages/ProfileCompletion"));
 const ProfileEdit = lazy(() => import("./pages/ProfileEdit"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
+const AuthCallback = lazy(() => import("./pages/auth/AuthCallback"));
 const ParentSignup = lazy(() => import("./pages/ParentSignup"));
 
 // Structure
@@ -184,6 +185,7 @@ const App = () => (
                       <Route path="/profile-edit" element={<ProfileEdit />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/reset-password" element={<ResetPassword />} />
+                      <Route path="/auth/callback" element={<AuthCallback />} />
                       <Route path="/inscription/parent" element={<ParentSignup />} />
                       <Route path="/structure-auth" element={<StructureAuth />} />
 
