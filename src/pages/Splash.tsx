@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 const Splash = () => {
@@ -66,6 +66,12 @@ const Splash = () => {
         <h1 className="text-5xl font-bold text-white">Flooow</h1>
         <p className="text-xl text-white/90">Mes activités, mes aides et mes trajets.</p>
         <Loader2 className="w-12 h-12 text-white animate-spin mx-auto" />
+      </div>
+      {/* Liens légaux requis pour validation Google OAuth */}
+      <div className="absolute bottom-4 text-center text-xs text-muted-foreground/60 space-x-3">
+        <Link to="/legal/privacy" className="hover:text-primary transition-colors">Confidentialité</Link>
+        <span>·</span>
+        <Link to="/legal/mentions" className="hover:text-primary transition-colors">Mentions légales</Link>
       </div>
     </div>
   );
