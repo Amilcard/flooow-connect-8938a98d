@@ -38,15 +38,11 @@
   </head>
 
   <body>
+    <!-- Footer for Google OAuth branding verification (must be in initial HTML) -->
+    <footer id="static-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:8px;font-size:11px;color:#666;background:#fff;font-family:sans-serif;z-index:1;">
+      <a href="/legal/privacy" style="color:#666;text-decoration:underline;">Politique de confidentialité</a>
+    </footer>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Links for Google OAuth branding verification (visible to crawlers) -->
-    <noscript>
-      <div style="text-align:center;padding:20px;font-family:sans-serif;">
-        <p>InKlusif Flooow - Plateforme d'activités pour enfants</p>
-        <a href="/legal/privacy">Politique de confidentialité</a> |
-        <a href="/legal/mentions">Mentions légales</a>
-      </div>
-    </noscript>
   </body>
 </html>
