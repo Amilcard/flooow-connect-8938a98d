@@ -28,6 +28,7 @@ import ActivityDetail from "./pages/ActivityDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
+import AuthCallback from "@/pages/auth/AuthCallback";
 
 // ============================================
 // IMPORTS LAZY - Pages secondaires (code-splitting)
@@ -180,6 +181,7 @@ const App = () => (
 
                       {/* Auth & Onboarding (lazy) */}
                       <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/auth/callback" element={<AuthCallback />} />
                       <Route path="/auth" element={<Navigate to="/login" replace />} />
                       <Route path="/profile-completion" element={<ProfileCompletion />} />
                       <Route path="/profile-edit" element={<ProfileEdit />} />

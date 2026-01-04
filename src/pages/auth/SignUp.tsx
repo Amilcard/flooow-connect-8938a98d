@@ -40,6 +40,7 @@ const SignUp = () => {
 
   // Providers OAuth activés
   const enabledProviders = getEnabledProviders();
+  const otherProviders = enabledProviders.filter(provider => provider.id !== 'google');
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -135,6 +136,14 @@ const SignUp = () => {
     }
   };
 
+  const handleGoogleSuccess = () => {
+    toast({
+      title: "Connexion réussie",
+      description: "Bienvenue dans Flooow !",
+    });
+    setTimeout(() => navigate('/home'), 100);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header avec BackButton */}
@@ -182,32 +191,27 @@ const SignUp = () => {
             {/* OAuth - Boutons de connexion sociale EN PREMIER */}
             {authConfig.ENABLE_SOCIAL_AUTH && (
               <div className="space-y-3">
-                {enabledProviders.map((provider) => (
-                  // Google utilise GIS (Google Identity Services) pour afficher le nom de l'app
-                  provider.id === 'google' ? (
-                    <GoogleSignInDirect
-                      key={provider.id}
-                      mode="signup"
-                      buttonText={provider.label}
-                      onSuccess={() => navigate('/home')}
-                    />
-                  ) : (
-                    <Button
-                      key={provider.id}
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleOAuthSignup(provider.id)}
-                      disabled={loadingProvider !== null}
-                      className="w-full h-12 border-2 hover:border-[#FF8A3D]/30 hover:bg-[#FF8A3D]/5 transition-all flex items-center justify-center gap-3"
-                    >
-                      {loadingProvider === provider.id ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        providerIcons[provider.id]
-                      )}
-                      <span className="font-medium">{provider.label}</span>
-                    </Button>
-                  )
+                <GoogleSignInDirect
+                  onSuccess={handleGoogleSuccess}
+                  disabled={loadingProvider !== null || isLoading}
+                />
+
+                {otherProviders.map((provider) => (
+                  <Button
+                    key={provider.id}
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleOAuthSignup(provider.id)}
+                    disabled={loadingProvider !== null}
+                    className="w-full h-12 border-2 hover:border-[#FF8A3D]/30 hover:bg-[#FF8A3D]/5 transition-all flex items-center justify-center gap-3"
+                  >
+                    {loadingProvider === provider.id ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      providerIcons[provider.id]
+                    )}
+                    <span className="font-medium">{provider.label}</span>
+                  </Button>
                 ))}
 
                 <div className="relative py-4">

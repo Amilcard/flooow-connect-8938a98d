@@ -125,8 +125,7 @@ export const getDeterministicOffset = (seed: string, range: number = 0.02): numb
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-    // Convert to 32-bit integer (Math.trunc preferred over bitwise |= 0)
-    hash = Math.trunc(hash);
+    hash |= 0;
   }
   return ((hash % 1000) / 1000 - 0.5) * range * 2;
 };
