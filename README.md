@@ -57,6 +57,7 @@ Créer un fichier `.env` à la racine :
 ```env
 VITE_SUPABASE_URL=<URL_SUPABASE>
 VITE_SUPABASE_ANON_KEY=<CLE_ANONYME>
+VITE_GOOGLE_CLIENT_ID=<CLIENT_ID_OAUTH_WEB_GOOGLE>
 ```
 
 ## Licence

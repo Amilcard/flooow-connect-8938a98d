@@ -16,6 +16,10 @@
  *    - Facebook: Enabled + App ID/Secret de Meta for Developers
  *    - LinkedIn: Enabled + Client ID/Secret de LinkedIn Developer
  *
+ * 0. Google Identity (flux direct, sans redirection Supabase) :
+ *    - Ajouter VITE_GOOGLE_CLIENT_ID dans .env (OAuth Web client)
+ *    - Google Cloud Console → Authorized JavaScript origins : https://flooowtest.netlify.app
+ *
  * 3. Google Cloud Console → OAuth 2.0 Client → Authorized redirect URIs :
  *    - https://kbrgwezkjaakoecispom.supabase.co/auth/v1/callback
  *
@@ -72,5 +76,5 @@ export const authConfig = {
    * URL de redirection après authentification OAuth réussie
    * Pointe vers /home pour une UX cohérente
    */
-  getRedirectUrl: () => `${window.location.origin}/home`,
+  getRedirectUrl: () => `${window.location.origin}/auth/callback`,
 } as const;

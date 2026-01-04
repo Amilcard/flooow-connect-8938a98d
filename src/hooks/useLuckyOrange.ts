@@ -40,12 +40,12 @@ export const useLuckyOrange = () => {
 
   const trackEvent = useCallback((name: string, meta?: Record<string, unknown>) => {
     window.LOQ = window.LOQ || [];
-    window.LOQ.push(['ready', () => window.LO?.events.track(name, meta)]);
+    window.LOQ.push(['ready', () => window.LO?.events?.track(name, meta)]);
   }, []);
 
   const identify = useCallback((id: string, traits?: Record<string, unknown>) => {
     window.LOQ = window.LOQ || [];
-    window.LOQ.push(['ready', () => window.LO?.visitor.identify(id, traits)]);
+    window.LOQ.push(['ready', () => window.LO?.visitor?.identify(id, traits)]);
   }, []);
 
   return { isLoaded: !!window.__lo_loaded, trackEvent, identify };
