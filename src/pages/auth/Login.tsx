@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { LogoFlooow } from '@/components/LogoFlooow';
 import { authConfig, OAuthProvider } from '@/config/auth.config';
 import { signInWithProvider, getEnabledProviders, providerIcons, getOAuthErrorMessage } from '@/utils/oauthUtils';
+import { GoogleSignInDirect } from '@/components/auth/GoogleSignInDirect';
 import { safeErrorMessage } from '@/utils/sanitize';
 
 const Login = () => {
@@ -110,21 +111,31 @@ const Login = () => {
             {authConfig.ENABLE_SOCIAL_AUTH && (
               <div className="space-y-3">
                 {enabledProviders.map((provider) => (
-                  <Button
-                    key={provider.id}
-                    type="button"
-                    variant="outline"
-                    onClick={() => handleOAuthLogin(provider.id)}
-                    disabled={loadingProvider !== null || isLoading}
-                    className="w-full h-12 border-2 hover:border-[#FF8A3D]/30 hover:bg-[#FF8A3D]/5 transition-all flex items-center justify-center gap-3"
-                  >
-                    {loadingProvider === provider.id ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      providerIcons[provider.id]
-                    )}
-                    <span className="font-medium">{provider.label}</span>
-                  </Button>
+                  // Google utilise GIS (Google Identity Services) pour afficher le nom de l'app
+                  provider.id === 'google' ? (
+                    <GoogleSignInDirect
+                      key={provider.id}
+                      mode="signin"
+                      buttonText={provider.label}
+                      onSuccess={() => navigate('/home')}
+                    />
+                  ) : (
+                    <Button
+                      key={provider.id}
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleOAuthLogin(provider.id)}
+                      disabled={loadingProvider !== null || isLoading}
+                      className="w-full h-12 border-2 hover:border-[#FF8A3D]/30 hover:bg-[#FF8A3D]/5 transition-all flex items-center justify-center gap-3"
+                    >
+                      {loadingProvider === provider.id ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        providerIcons[provider.id]
+                      )}
+                      <span className="font-medium">{provider.label}</span>
+                    </Button>
+                  )
                 ))}
 
                 <div className="relative py-4">
