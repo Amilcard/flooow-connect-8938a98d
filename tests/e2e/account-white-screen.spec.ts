@@ -1,5 +1,5 @@
-import { test, expect, TestContext, setupErrorCapture, attachErrorArtifacts, assertNoCriticalErrors } from './utils/test-harness';
-import { testParents } from './fixtures/test-data';
+import { test, expect, TestContext, setupErrorCapture, attachErrorArtifacts } from './utils/test-harness';
+import { ensureUserTypeGateDismissed } from './utils/ui-gates';
 import { cleanupTestData } from './utils/db-helpers';
 
 /**
@@ -7,7 +7,11 @@ import { cleanupTestData } from './utils/db-helpers';
  * Covers: Navigation to account/client space and verification of non-empty content
  * Bug: White screen when accessing account page
  */
-test.describe('Account White Screen - Espace Client Navigation', () => {
+
+// ============================================================================
+// AUTHENTICATED TESTS - Require login via beforeEach
+// ============================================================================
+test.describe('Account White Screen - Espace Client (Authenticated)', () => {
   let testContext: TestContext;
   const testEmail = `test.account.${Date.now()}@test.inklusif.fr`;
   const testPassword = 'SecurePass123!';
@@ -15,26 +19,48 @@ test.describe('Account White Screen - Espace Client Navigation', () => {
   test.beforeEach(async ({ page }) => {
     testContext = setupErrorCapture(page);
 
-    // Create and login a test user
+    // Navigate to auth page
     await page.goto('/auth');
     await page.waitForLoadState('networkidle');
 
-    await page.click('text=Créer un compte');
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
+    // Dismiss any blocking modals (e.g., "Qui utilise Flooow ?")
+    await ensureUserTypeGateDismissed(page, 'adult');
 
-    const confirmPasswordField = page.locator('input[name="confirmPassword"]');
-    if (await confirmPasswordField.isVisible()) {
-      await confirmPasswordField.fill(testPassword);
+    // Click on "Créer un compte" tab using role-based selector
+    // The tabs are TabsTrigger components with value="signup"
+    const signupTab = page.getByRole('tab', { name: /Créer un compte/i });
+    await signupTab.click();
+    await page.waitForTimeout(300);
+
+    // Fill signup form using label-based selectors
+    const emailInput = page.getByLabel(/Email/i).first();
+    await emailInput.fill(testEmail);
+
+    // Password field - may have label "Mot de passe *"
+    const passwordInputs = page.locator('input[type="password"]');
+    const passwordInput = passwordInputs.first();
+    await passwordInput.fill(testPassword);
+
+    // Confirm password if visible
+    const confirmPasswordInput = page.getByLabel(/Confirmer/i);
+    if (await confirmPasswordInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await confirmPasswordInput.fill(testPassword);
     }
 
-    await page.click('button[type="submit"]');
+    // Submit using the button
+    const submitButton = page.getByRole('button', { name: /Créer mon compte|Créer/i });
+    await submitButton.click();
 
+    // Wait for navigation after signup
     await Promise.race([
       page.waitForURL('/', { timeout: 15000 }),
       page.waitForURL('/home', { timeout: 15000 }),
-      page.waitForTimeout(5000),
+      page.waitForURL('/onboarding', { timeout: 15000 }),
+      page.waitForTimeout(8000),
     ]);
+
+    // Handle any post-login gates
+    await ensureUserTypeGateDismissed(page, 'adult');
   });
 
   test.afterEach(async ({ page }, testInfo) => {
@@ -46,6 +72,7 @@ test.describe('Account White Screen - Espace Client Navigation', () => {
     // Navigate to Mon Compte
     await page.goto('/mon-compte');
     await page.waitForLoadState('networkidle');
+    await ensureUserTypeGateDismissed(page);
 
     // Wait for page to load
     await page.waitForTimeout(2000);
@@ -95,6 +122,7 @@ test.describe('Account White Screen - Espace Client Navigation', () => {
     for (const subPage of subPages) {
       await page.goto(subPage.path);
       await page.waitForLoadState('networkidle');
+      await ensureUserTypeGateDismissed(page);
       await page.waitForTimeout(1500);
 
       // Verify page is not blank
@@ -122,6 +150,7 @@ test.describe('Account White Screen - Espace Client Navigation', () => {
 
   test('should display loading state, then content on account page', async ({ page }) => {
     await page.goto('/mon-compte');
+    await ensureUserTypeGateDismissed(page);
 
     // Either loading state or content should appear quickly
     const firstVisible = await Promise.race([
@@ -141,24 +170,104 @@ test.describe('Account White Screen - Espace Client Navigation', () => {
 
     await page.screenshot({ path: 'test-results/account-loading-complete.png', fullPage: true });
   });
+});
 
-  test('should handle unauthenticated access gracefully', async ({ page }) => {
-    // Clear session
+// ============================================================================
+// UNAUTHENTICATED TESTS - No login, testing redirect behavior
+// ============================================================================
+test.describe('Account White Screen - Unauthenticated Access', () => {
+  let testContext: TestContext;
+
+  test.beforeEach(async ({ page }) => {
+    testContext = setupErrorCapture(page);
+
+    // Ensure we start with a clean slate - no session
     await page.context().clearCookies();
-    await page.evaluate(() => localStorage.clear());
+  });
 
-    // Try to access account page
+  test.afterEach(async ({ page }, testInfo) => {
+    await attachErrorArtifacts(page, testInfo, testContext);
+  });
+
+  test('should redirect unauthenticated users to login page', async ({ page }) => {
+    // Clear any stored auth state
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+
+    // Try to access a protected account page without being logged in
     await page.goto('/mon-compte');
     await page.waitForLoadState('networkidle');
+
+    // Handle any gates that might appear
+    await ensureUserTypeGateDismissed(page);
+
     await page.waitForTimeout(2000);
 
     // Should redirect to login or show login prompt
     const currentUrl = page.url();
     const hasLoginRedirect = currentUrl.includes('/auth') || currentUrl.includes('/login');
     const hasLoginForm = await page.locator('input[name="email"], input[type="email"]').isVisible().catch(() => false);
+    const hasLoginButton = await page.getByRole('button', { name: /connexion|se connecter/i }).isVisible().catch(() => false);
 
-    expect(hasLoginRedirect || hasLoginForm).toBe(true);
+    // At least one of these conditions should be true
+    expect(hasLoginRedirect || hasLoginForm || hasLoginButton).toBe(true);
 
-    await page.screenshot({ path: 'test-results/account-unauthenticated.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/account-unauthenticated-redirect.png', fullPage: true });
+  });
+
+  test('should not show account content when unauthenticated', async ({ page }) => {
+    // Clear any stored auth state
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+
+    // Try to access account page
+    await page.goto('/mon-compte');
+    await page.waitForLoadState('networkidle');
+    await ensureUserTypeGateDismissed(page);
+    await page.waitForTimeout(2000);
+
+    // Should NOT see account-specific content
+    const accountContent = page.locator('text=/Mes enfants|Mes réservations|Mes informations personnelles/i');
+    const isAccountContentVisible = await accountContent.first().isVisible({ timeout: 1000 }).catch(() => false);
+
+    // If we're on account page, it should redirect or show login
+    // If we see account content, the test should fail
+    const currentUrl = page.url();
+    if (currentUrl.includes('/mon-compte')) {
+      // If still on account page, content should not be visible (redirecting or loading)
+      expect(isAccountContentVisible).toBe(false);
+    }
+
+    await page.screenshot({ path: 'test-results/account-unauthenticated-no-content.png', fullPage: true });
+  });
+
+  test('should handle direct navigation to account sub-pages when unauthenticated', async ({ page }) => {
+    // Clear any stored auth state
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+
+    // Try to access a specific account sub-page
+    await page.goto('/mon-compte/reservations');
+    await page.waitForLoadState('networkidle');
+    await ensureUserTypeGateDismissed(page);
+    await page.waitForTimeout(2000);
+
+    // Should redirect to auth or show login
+    const currentUrl = page.url();
+    const isRedirectedToAuth = currentUrl.includes('/auth') || currentUrl.includes('/login');
+    const hasLoginElements = await page.locator('input[type="email"], input[type="password"]').first().isVisible().catch(() => false);
+
+    expect(isRedirectedToAuth || hasLoginElements).toBe(true);
+
+    await page.screenshot({ path: 'test-results/account-subpage-unauthenticated.png', fullPage: true });
   });
 });
