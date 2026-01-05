@@ -748,7 +748,7 @@ const ActivityDetail = () => {
                       summary={computePricingSummary(activity.price_base, aidsData)}
                       variant="full"
                       dataTourId="reste-charge-title"
-                      showPotentialAidsAlert={true}
+                      showPotentialAidsAlert={activity.period_type === 'vacances'}
                       onRequestQF={() => {
                         const qfSelect = document.getElementById('qf');
                         if (qfSelect) qfSelect.focus();
