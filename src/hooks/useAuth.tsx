@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           .from('profiles')
           .select('id')
           .eq('id', sessionUser.id)
-          .single();
+          .maybeSingle();
 
         // Si le profil n'existe pas, il sera créé par le trigger Supabase
         // On met juste à jour le statut pour indiquer que c'est un compte parent OAuth
