@@ -3,9 +3,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import PageLayout from "@/components/PageLayout";
+import { PageHeader } from "@/components/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
+import { supabase } from "@/integrations/supabase/client";
 import {
   User,
   Users,
@@ -20,7 +23,12 @@ import {
   Car,
   Euro,
   Heart,
-  Edit
+
+
+
+  Edit,
+  Calendar
+
 } from "lucide-react";
 
 const MonCompte = () => {
