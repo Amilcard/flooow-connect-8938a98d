@@ -23,22 +23,31 @@ export const RoleProtectedRoute = ({
     queryKey: ["user-role-check", allowedRoles],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         throw new Error("Non authentifié");
       }
 
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (error) throw error;
-      
-      const role = (data?.role as AppRole | undefined) ?? 'family';
-      return role;
-    }
+        // If table doesn't exist or RLS blocks, default to family
+        if (error) {
+          console.warn("user_roles query failed, defaulting to family role");
+          return 'family' as AppRole;
+        }
+
+        return (data?.role as AppRole | undefined) ?? 'family';
+      } catch {
+        // Table might not exist yet - default to family role
+        return 'family' as AppRole;
+      }
+    },
+    retry: false // Don't retry on error - use default
   });
 
   if (isLoading) {
