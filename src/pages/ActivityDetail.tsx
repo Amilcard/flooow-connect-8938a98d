@@ -476,6 +476,41 @@ const ActivityDetail = () => {
 
   const selectedSlot = slots.find(s => s.id === selectedSlotId);
 
+  // P0-2/P0-3: Helper to validate and compute séjour dates
+  // Only show "Dates du séjour" for multi-day vacation activities (séjours/camps)
+  // Not for day activities which use slot selection
+  const getSejourDatesInfo = () => {
+    // Don't show for scolaire activities
+    if (activity.period_type !== "vacances") return null;
+
+    // If slots exist, vacation is a day activity (centre de loisirs) - don't show global dates
+    // User selects specific dates from slot list instead
+    if (slots.length > 0) return null;
+
+    // Check if we have valid date_debut and date_fin
+    if (!activity.date_debut || !activity.date_fin) return null;
+
+    const debut = new Date(activity.date_debut);
+    const fin = new Date(activity.date_fin);
+    const diffDays = Math.ceil((fin.getTime() - debut.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Sanity check: if dates span > 30 days for a "séjour", data is likely incorrect
+    // (e.g., season dates instead of actual séjour dates)
+    if (diffDays > 30 || diffDays < 1) {
+      console.warn(`[ActivityDetail] Skipping "Dates du séjour" - span ${diffDays} days is suspicious for activity ${activity.id}`);
+      return null;
+    }
+
+    return {
+      debut,
+      fin,
+      durationDays: diffDays + 1, // Inclusive
+      isValid: true
+    };
+  };
+
+  const sejourDates = getSejourDatesInfo();
+
   const fallbackImage = getCategoryImage(activity.category);
   // Fix: vérifie aussi les strings vides dans images
   const rawImage = activity.images?.[0];
@@ -849,8 +884,13 @@ const ActivityDetail = () => {
                 )}
               </div>
 
-              {/* Dates du séjour - VACANCES UNIQUEMENT - Info stratégique pour la réservation */}
-              {activity.period_type === "vacances" && (activity.date_debut || activity.date_fin) && (
+              {/* Dates du séjour - VACANCES MULTI-JOURS UNIQUEMENT (séjours/camps)
+                  P0-2/P0-3: Only shown when:
+                  - period_type = vacances
+                  - No slots (slots = day activities that use slot selection)
+                  - Valid date range (< 30 days span, > 0 days)
+              */}
+              {sejourDates && (
                 <>
                   <Separator />
                   <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
@@ -861,18 +901,16 @@ const ActivityDetail = () => {
                     <div className="space-y-2 pl-6">
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium">Départ :</span>
-                        <span>{activity.date_debut ? new Date(activity.date_debut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                        <span>{sejourDates.debut.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium">Retour :</span>
-                        <span>{activity.date_fin ? new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                        <span>{sejourDates.fin.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                       </div>
-                      {(activity.duration_days ?? 0) > 0 && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="font-medium">Durée :</span>
-                          <span>{activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="font-medium">Durée :</span>
+                        <span>{sejourDates.durationDays} jour{sejourDates.durationDays > 1 ? 's' : ''}</span>
+                      </div>
                     </div>
                     {/* Horaires départ/retour et lieu RDV */}
                     {(activity.jours_horaires || activity.lieu_nom) && (
