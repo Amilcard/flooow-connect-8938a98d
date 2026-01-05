@@ -63,6 +63,8 @@ import { SlotAccordion, SelectedSlotSummary } from "@/components/Activity/SlotAc
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
+import { computePricingSummary } from "@/utils/pricingSummary";
+import { PricingSummaryCard } from "@/components/pricing/PricingSummaryCard";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap = new Map<string, string>([
@@ -740,24 +742,18 @@ const ActivityDetail = () => {
                     )}
                   </div>
 
+                  {/* Zone A: Pricing Summary with potential aids */}
                   {aidsData && (
-                    <Card className="p-4 bg-accent/50">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Prix initial</span>
-                          <span className="font-medium">{activity.price_base.toFixed(2)}€</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-primary">
-                          <span>Aides appliquées</span>
-                          <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between text-lg font-bold" data-tour-id="reste-charge-title">
-                          <span>Reste à charge estimé</span>
-                          <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
-                        </div>
-                      </div>
-                    </Card>
+                    <PricingSummaryCard
+                      summary={computePricingSummary(activity.price_base, aidsData)}
+                      variant="full"
+                      dataTourId="reste-charge-title"
+                      showPotentialAidsAlert={true}
+                      onRequestQF={() => {
+                        const qfSelect = document.getElementById('qf');
+                        if (qfSelect) qfSelect.focus();
+                      }}
+                    />
                   )}
                 </section>
 
@@ -839,23 +835,16 @@ const ActivityDetail = () => {
                   )}
                 </div>
 
+                {/* Zone B: Pricing Summary in sticky panel */}
                 {aidsData && (
                   <>
                     <Separator />
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Prix initial</span>
-                        <span className="font-medium">{activity.price_base.toFixed(2)}€</span>
-                      </div>
-                      <div className="flex justify-between text-sm text-primary">
-                        <span>Aides appliquées</span>
-                        <span className="font-medium">- {aidsData.totalAids.toFixed(2)}€</span>
-                      </div>
-                      <div className="flex justify-between text-lg font-bold border-t pt-2" data-tour-id="reste-charge-sticky">
-                        <span>Reste à charge estimé</span>
-                        <span className="text-primary">{aidsData.remainingPrice.toFixed(2)}€</span>
-                      </div>
-                    </div>
+                    <PricingSummaryCard
+                      summary={computePricingSummary(activity.price_base, aidsData)}
+                      variant="compact"
+                      dataTourId="reste-charge-sticky"
+                      showPotentialAidsAlert={false}
+                    />
                   </>
                 )}
               </div>
@@ -1132,17 +1121,29 @@ const ActivityDetail = () => {
         />
       )}
 
-      {/* Sticky Booking CTA - Mobile only */}
-      <StickyBookingCTA
-        price={activity.price_base || 0}
-        discountedPrice={aidsData?.remainingPrice}
-        priceUnit={activity.price_note || "par activité"}
-        onBook={handleBooking}
-        onShare={handleShare}
-        disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
-        buttonText={(activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
-        mobileOnly={true}
-      />
+      {/* Sticky Booking CTA - Mobile only (Zone C) */}
+      {(() => {
+        // Use computePricingSummary for consistent pricing across all zones
+        const pricingSummary = computePricingSummary(activity.price_base || 0, aidsData);
+        // Show estimated price (including potential aids) if available
+        const displayPrice = pricingSummary.hasPotentialAids
+          ? pricingSummary.resteEstime
+          : pricingSummary.hasConfirmedAids
+            ? pricingSummary.resteActuel
+            : undefined;
+        return (
+          <StickyBookingCTA
+            price={activity.price_base || 0}
+            discountedPrice={displayPrice}
+            priceUnit={pricingSummary.hasPotentialAids ? "estimé" : activity.price_note || "par activité"}
+            onBook={handleBooking}
+            onShare={handleShare}
+            disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
+            buttonText={(activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId) ? "Sélectionnez un créneau" : "Réserver"}
+            mobileOnly={true}
+          />
+        );
+      })()}
 
       <BottomNavigation />
     </div>

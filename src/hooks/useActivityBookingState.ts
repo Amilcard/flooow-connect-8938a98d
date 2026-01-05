@@ -7,6 +7,7 @@ interface FinancialAid {
   territory_level: string;
   official_link: string | null;
   is_informational?: boolean;
+  is_potential?: boolean; // Potential aids require additional info (e.g., QF) to confirm
 }
 
 interface TransportMode {
