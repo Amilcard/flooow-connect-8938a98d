@@ -143,7 +143,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (session?.user) {
           setUser(extractUserFromSession(session.user));
           // Assurer que le profil OAuth existe
-          await ensureOAuthProfile(session.user);
+          try { await ensureOAuthProfile(session.user); } catch (e) { console.error("[Auth] Profile error:", e); }
         }
       } catch (error) {
         console.error(safeErrorMessage(error, 'Auth check'));
@@ -167,7 +167,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         // Si c'est une nouvelle connexion OAuth, assurer que le profil existe
         if (event === 'SIGNED_IN') {
-          await ensureOAuthProfile(session.user);
+          try { await ensureOAuthProfile(session.user); } catch (e) { console.error("[Auth] Profile error:", e); }
 
           // Nettoyer le hash de l'URL APRÈS que la session soit établie
           if (window.location.hash.includes('access_token')) {
