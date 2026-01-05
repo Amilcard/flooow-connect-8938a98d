@@ -6,13 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleProtectedRoute } from "./components/authentification/RoleProtectedRoute";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { SkipToContent } from "./components/a11y/SkipToContent";
 
 // Analytics (Lucky Orange)
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
-import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { AnalyticsLoader } from "@/components/analytics/AnalyticsLoader";
-import { UserTypeGate } from "@/components/analytics/UserTypeGate";
 
 // Privacy & Territory
 import { PrivacyProvider } from "./components/privacy/PrivacyProvider";
@@ -164,8 +163,6 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <PrivacyProvider>
-                <UserTypeGate />
-                <ConsentBanner />
                 <AnalyticsLoader />
                 <SkipToContent />
                 <Suspense fallback={<PageLoader />}>
@@ -258,19 +255,19 @@ const App = () => (
                       <Route path="/alternatives" element={<Alternatives />} />
 
                       {/* Account */}
-                      <Route path="/mon-compte" element={<MonCompte />} />
-                      <Route path="/mon-compte/informations" element={<MesInformations />} />
-                      <Route path="/mon-compte/enfants" element={<MesEnfants />} />
-                      <Route path="/mon-compte/reservations" element={<MesReservations />} />
-                      <Route path="/mon-compte/validations" element={<ValidationsParentales />} />
-                      <Route path="/mon-compte/notifications" element={<MesNotifications />} />
-                      <Route path="/mon-compte/sessions" element={<MesSessionsAccount />} />
-                      <Route path="/mon-compte/paiement" element={<MoyensPaiement />} />
-                      <Route path="/mon-compte/covoiturage" element={<MonCovoiturage />} />
-                      <Route path="/mon-compte/eligibilite" element={<ProfilEligibilite />} />
-                      <Route path="/mon-compte/justificatifs" element={<MesJustificatifs />} />
-                      <Route path="/mon-compte/parametres" element={<Parametres />} />
-                      <Route path="/mon-compte/lier-enfant" element={<LierEnfant />} />
+                      <Route path="/mon-compte" element={<AuthGuard><MonCompte /></AuthGuard>} />
+                      <Route path="/mon-compte/informations" element={<AuthGuard><MesInformations /></AuthGuard>} />
+                      <Route path="/mon-compte/enfants" element={<AuthGuard><MesEnfants /></AuthGuard>} />
+                      <Route path="/mon-compte/reservations" element={<AuthGuard><MesReservations /></AuthGuard>} />
+                      <Route path="/mon-compte/validations" element={<AuthGuard><ValidationsParentales /></AuthGuard>} />
+                      <Route path="/mon-compte/notifications" element={<AuthGuard><MesNotifications /></AuthGuard>} />
+                      <Route path="/mon-compte/sessions" element={<AuthGuard><MesSessionsAccount /></AuthGuard>} />
+                      <Route path="/mon-compte/paiement" element={<AuthGuard><MoyensPaiement /></AuthGuard>} />
+                      <Route path="/mon-compte/covoiturage" element={<AuthGuard><MonCovoiturage /></AuthGuard>} />
+                      <Route path="/mon-compte/eligibilite" element={<AuthGuard><ProfilEligibilite /></AuthGuard>} />
+                      <Route path="/mon-compte/justificatifs" element={<AuthGuard><MesJustificatifs /></AuthGuard>} />
+                      <Route path="/mon-compte/parametres" element={<AuthGuard><Parametres /></AuthGuard>} />
+                      <Route path="/mon-compte/lier-enfant" element={<AuthGuard><LierEnfant /></AuthGuard>} />
 
                       {/* Aides & Finance */}
                       <Route path="/aides" element={<Aides />} />
