@@ -1,12 +1,15 @@
 import { useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { safeErrorMessage } from '@/utils/sanitize';
 import { trackFirstSearch, trackAidsEstimationCompleted, trackBookingConfirmed } from '@/utils/luckyOrange';
 
 /**
  * Helper pour le tracking des actions utilisateur
  * Utilisé pour analytics et calcul des KPIs
  */
+
+// Feature flag: disable DB tracking if tables don't exist yet
+// Set VITE_ENABLE_DB_TRACKING=true when Supabase tables are ready
+const ENABLE_DB_TRACKING = import.meta.env.VITE_ENABLE_DB_TRACKING === 'true';
 
 // Générer un session_id unique par session navigateur
 const getSessionId = (): string => {
@@ -29,13 +32,16 @@ export const logSearch = async (params: {
   filtersApplied: Record<string, unknown>;
   resultsCount: number;
 }) => {
-  try {
-    // Track first search for Lucky Orange (once per session)
-    if (!sessionStorage.getItem(FIRST_SEARCH_KEY)) {
-      sessionStorage.setItem(FIRST_SEARCH_KEY, 'true');
-      trackFirstSearch();
-    }
+  // Track first search for Lucky Orange (once per session) - always works
+  if (!sessionStorage.getItem(FIRST_SEARCH_KEY)) {
+    sessionStorage.setItem(FIRST_SEARCH_KEY, 'true');
+    trackFirstSearch();
+  }
 
+  // Skip DB tracking if disabled (tables don't exist yet)
+  if (!ENABLE_DB_TRACKING) return;
+
+  try {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Tables analytics non typées dans Supabase types générés
@@ -46,9 +52,8 @@ export const logSearch = async (params: {
       filters_applied: params.filtersApplied,
       results_count: params.resultsCount
     });
-  } catch (error) {
-    // Fail silently pour ne pas bloquer l'UX
-    console.error(safeErrorMessage(error, 'Error logging search'));
+  } catch {
+    // Fail silently - don't spam console
   }
 };
 
@@ -60,6 +65,9 @@ export const logActivityView = async (params: {
   source: 'search' | 'home' | 'direct' | 'favorites';
   viewDurationSeconds?: number;
 }) => {
+  // Skip DB tracking if disabled (tables don't exist yet)
+  if (!ENABLE_DB_TRACKING) return;
+
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -71,8 +79,8 @@ export const logActivityView = async (params: {
       view_duration_seconds: params.viewDurationSeconds || null,
       source: params.source
     });
-  } catch (error) {
-    console.error(safeErrorMessage(error, 'Error logging activity view'));
+  } catch {
+    // Fail silently - don't spam console
   }
 };
 

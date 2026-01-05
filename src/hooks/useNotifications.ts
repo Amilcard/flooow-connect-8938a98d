@@ -10,7 +10,7 @@ export const useNotifications = (userId: string | undefined) => {
     queryKey: ["notifications", userId],
     queryFn: async () => {
       if (!userId) return [];
-      
+
       const { data, error } = await supabase
         .from("notifications")
         .select("*, territory_events(*)")
@@ -18,10 +18,16 @@ export const useNotifications = (userId: string | undefined) => {
         .order("created_at", { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      // Return empty array if RLS blocks or table issue - don't crash app
+      if (error) {
+        console.warn("Notifications unavailable:", error.message);
+        return [];
+      }
       return data;
     },
     enabled: !!userId,
+    retry: 1, // Only retry once, not 3 times
+    staleTime: 30000, // Cache for 30s to reduce API spam
   });
 
   // Real-time updates
@@ -54,17 +60,20 @@ export const useNotifications = (userId: string | undefined) => {
     queryKey: ["notifications-unread-count", userId],
     queryFn: async () => {
       if (!userId) return 0;
-      
+
       const { count, error } = await supabase
         .from("notifications")
         .select("*", { count: 'exact', head: true })
         .eq("user_id", userId)
         .eq("read", false);
 
-      if (error) throw error;
+      // Return 0 if RLS blocks or table issue
+      if (error) return 0;
       return count || 0;
     },
     enabled: !!userId,
+    retry: 1,
+    staleTime: 30000,
   });
 
   const markAsRead = useMutation({
