@@ -13,7 +13,7 @@ export const useNotifications = (userId: string | undefined) => {
       
       const { data, error } = await supabase
         .from("notifications")
-        .select("*, territory_events(*)")
+        .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(50);
@@ -22,6 +22,9 @@ export const useNotifications = (userId: string | undefined) => {
       return data;
     },
     enabled: !!userId,
+    retry: false,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
   });
 
   // Real-time updates
@@ -65,6 +68,9 @@ export const useNotifications = (userId: string | undefined) => {
       return count || 0;
     },
     enabled: !!userId,
+    retry: false,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
   });
 
   const markAsRead = useMutation({
