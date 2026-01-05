@@ -14,7 +14,7 @@ export const useNotifications = (userId: string | undefined) => {
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", userId)
+        .eq("profile_id", userId)
         .order("created_at", { ascending: false })
         .limit(50);
 
@@ -43,7 +43,7 @@ export const useNotifications = (userId: string | undefined) => {
           event: '*',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${userId}`
+          filter: `profile_id=eq.${userId}`
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ["notifications", userId] });
@@ -65,8 +65,8 @@ export const useNotifications = (userId: string | undefined) => {
       const { count, error } = await supabase
         .from("notifications")
         .select("*", { count: 'exact', head: true })
-        .eq("user_id", userId)
-        .eq("read", false);
+        .eq("profile_id", userId)
+        .eq("is_read", false);
 
       // Return 0 if RLS blocks or table issue
       if (error) return 0;
@@ -82,7 +82,7 @@ export const useNotifications = (userId: string | undefined) => {
     mutationFn: async (notificationId: string) => {
       const { error } = await supabase
         .from("notifications")
-        .update({ read: true })
+        .update({ is_read: true })
         .eq("id", notificationId);
 
       if (error) throw error;
@@ -99,9 +99,9 @@ export const useNotifications = (userId: string | undefined) => {
 
       const { error } = await supabase
         .from("notifications")
-        .update({ read: true })
-        .eq("user_id", userId)
-        .eq("read", false);
+        .update({ is_read: true })
+        .eq("profile_id", userId)
+        .eq("is_read", false);
 
       if (error) throw error;
     },
