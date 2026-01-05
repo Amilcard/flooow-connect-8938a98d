@@ -144,7 +144,11 @@ export const SessionAccordion = ({
     ? formatAgeRangeForDetail(session.age_min, session.age_max)
     : null;
   
-  const location = session.location || activityLocation;
+  // Guard: filter out invalid location values (empty, whitespace, or just punctuation like ".")
+  const rawLocation = session.location || activityLocation;
+  const location = rawLocation && rawLocation.trim().length > 1 && !/^[.\-_\s]+$/.test(rawLocation)
+    ? rawLocation
+    : null;
   
   // Générer les dates
   const dates = session.day_of_week !== null 

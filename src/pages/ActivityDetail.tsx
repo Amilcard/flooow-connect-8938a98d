@@ -63,8 +63,10 @@ import { SlotAccordion, SelectedSlotSummary } from "@/components/Activity/SlotAc
 import { QuickInfoBar } from "@/components/Activity/QuickInfoBar";
 import { StickyBookingCTA } from "@/components/Activity/StickyBookingCTA";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
-import { computePricingSummary } from "@/utils/pricingSummary";
+import { computePricingSummary, computePricingSummaryFromSupabase } from "@/utils/pricingSummary";
 import { PricingSummaryCard } from "@/components/pricing/PricingSummaryCard";
+import { useEligibleAids } from "@/hooks/useEligibleAids";
+import { useResteACharge } from "@/hooks/useResteACharge";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap = new Map<string, string>([
@@ -183,6 +185,10 @@ const ActivityDetail = () => {
     totalAids: number;
     remainingPrice: number;
   } | null>(null);
+
+  // États pour le calcul Supabase RPC (nouveau système d'aides)
+  const [selectedChildAge, setSelectedChildAge] = useState<number | null>(null);
+  const [selectedQf, setSelectedQf] = useState<number | null>(null);
 
   // Restaurer les données d'aides depuis le state persisté
   useEffect(() => {
@@ -331,6 +337,45 @@ const ActivityDetail = () => {
     gcTime: 600000
   });
 
+  // ============================================================================
+  // SUPABASE RPC HOOKS - Nouveau système d'aides basé sur accepts_aid_types
+  // ============================================================================
+
+  // Derive child age and QF from aidsData when user calculates aids
+  const effectiveChildAge = selectedChildAge ?? (aidsData?.childId ? (() => {
+    const selectedChild = children.find(c => c.id === aidsData.childId);
+    if (selectedChild?.date_of_birth) {
+      return calculateAge(selectedChild.date_of_birth);
+    }
+    return null;
+  })() : null);
+
+  const effectiveQf = selectedQf ?? (aidsData?.quotientFamilial ? Number(aidsData.quotientFamilial) : null);
+  const hasQf = effectiveQf !== null && effectiveQf > 0;
+
+  // Fetch eligible aids from Supabase RPC (respects accepts_aid_types)
+  const { data: eligibleAidsFromRpc = [] } = useEligibleAids({
+    activityId: id || '',
+    childAge: effectiveChildAge,
+    quotientFamilial: effectiveQf,
+    isQpv: false, // TODO: Get from user profile if available
+    territoryCode: '42', // Loire department default
+    nbChildren: children.length || 1,
+  });
+
+  // Fetch reste à charge with QF tranches (vacances only)
+  const { data: resteAChargeData } = useResteACharge({
+    activityId: id || '',
+    quotientFamilial: effectiveQf,
+    periodType: activity?.period_type,
+    priceBase: activity?.price_base || 0,
+  });
+
+  // Compute pricing summary from Supabase RPC results (new unified calculation)
+  const supabasePricingSummary = resteAChargeData
+    ? computePricingSummaryFromSupabase(eligibleAidsFromRpc, resteAChargeData, hasQf)
+    : null;
+
   // Nettoyer les données persistées si l'utilisateur n'est pas connecté
   useEffect(() => {
     const checkAndCleanState = async () => {
@@ -475,6 +520,41 @@ const ActivityDetail = () => {
   };
 
   const selectedSlot = slots.find(s => s.id === selectedSlotId);
+
+  // P0-2/P0-3: Helper to validate and compute séjour dates
+  // Only show "Dates du séjour" for multi-day vacation activities (séjours/camps)
+  // Not for day activities which use slot selection
+  const getSejourDatesInfo = () => {
+    // Don't show for scolaire activities
+    if (activity.period_type !== "vacances") return null;
+
+    // If slots exist, vacation is a day activity (centre de loisirs) - don't show global dates
+    // User selects specific dates from slot list instead
+    if (slots.length > 0) return null;
+
+    // Check if we have valid date_debut and date_fin
+    if (!activity.date_debut || !activity.date_fin) return null;
+
+    const debut = new Date(activity.date_debut);
+    const fin = new Date(activity.date_fin);
+    const diffDays = Math.ceil((fin.getTime() - debut.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Sanity check: if dates span > 30 days for a "séjour", data is likely incorrect
+    // (e.g., season dates instead of actual séjour dates)
+    if (diffDays > 30 || diffDays < 1) {
+      console.warn(`[ActivityDetail] Skipping "Dates du séjour" - span ${diffDays} days is suspicious for activity ${activity.id}`);
+      return null;
+    }
+
+    return {
+      debut,
+      fin,
+      durationDays: diffDays + 1, // Inclusive
+      isValid: true
+    };
+  };
+
+  const sejourDates = getSejourDatesInfo();
 
   const fallbackImage = getCategoryImage(activity.category);
   // Fix: vérifie aussi les strings vides dans images
@@ -742,13 +822,15 @@ const ActivityDetail = () => {
                     )}
                   </div>
 
-                  {/* Zone A: Pricing Summary with potential aids */}
-                  {aidsData && (
+                  {/* Zone A: Pricing Summary with potential aids
+                      Uses Supabase RPC results (respects accepts_aid_types) when available,
+                      falls back to legacy calculation if not */}
+                  {(supabasePricingSummary || aidsData) && (
                     <PricingSummaryCard
-                      summary={computePricingSummary(activity.price_base, aidsData)}
+                      summary={supabasePricingSummary || computePricingSummary(activity.price_base, aidsData)}
                       variant="full"
                       dataTourId="reste-charge-title"
-                      showPotentialAidsAlert={true}
+                      showPotentialAidsAlert={activity.period_type === 'vacances'}
                       onRequestQF={() => {
                         const qfSelect = document.getElementById('qf');
                         if (qfSelect) qfSelect.focus();
@@ -835,12 +917,13 @@ const ActivityDetail = () => {
                   )}
                 </div>
 
-                {/* Zone B: Pricing Summary in sticky panel */}
-                {aidsData && (
+                {/* Zone B: Pricing Summary in sticky panel
+                    Uses Supabase RPC results when available */}
+                {(supabasePricingSummary || aidsData) && (
                   <>
                     <Separator />
                     <PricingSummaryCard
-                      summary={computePricingSummary(activity.price_base, aidsData)}
+                      summary={supabasePricingSummary || computePricingSummary(activity.price_base, aidsData)}
                       variant="compact"
                       dataTourId="reste-charge-sticky"
                       showPotentialAidsAlert={false}
@@ -849,8 +932,13 @@ const ActivityDetail = () => {
                 )}
               </div>
 
-              {/* Dates du séjour - VACANCES UNIQUEMENT - Info stratégique pour la réservation */}
-              {activity.period_type === "vacances" && (activity.date_debut || activity.date_fin) && (
+              {/* Dates du séjour - VACANCES MULTI-JOURS UNIQUEMENT (séjours/camps)
+                  P0-2/P0-3: Only shown when:
+                  - period_type = vacances
+                  - No slots (slots = day activities that use slot selection)
+                  - Valid date range (< 30 days span, > 0 days)
+              */}
+              {sejourDates && (
                 <>
                   <Separator />
                   <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
@@ -861,18 +949,16 @@ const ActivityDetail = () => {
                     <div className="space-y-2 pl-6">
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium">Départ :</span>
-                        <span>{activity.date_debut ? new Date(activity.date_debut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                        <span>{sejourDates.debut.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium">Retour :</span>
-                        <span>{activity.date_fin ? new Date(activity.date_fin).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : 'À définir'}</span>
+                        <span>{sejourDates.fin.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                       </div>
-                      {(activity.duration_days ?? 0) > 0 && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="font-medium">Durée :</span>
-                          <span>{activity.duration_days} jour{activity.duration_days > 1 ? 's' : ''}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="font-medium">Durée :</span>
+                        <span>{sejourDates.durationDays} jour{sejourDates.durationDays > 1 ? 's' : ''}</span>
+                      </div>
                     </div>
                     {/* Horaires départ/retour et lieu RDV */}
                     {(activity.jours_horaires || activity.lieu_nom) && (
@@ -1121,10 +1207,11 @@ const ActivityDetail = () => {
         />
       )}
 
-      {/* Sticky Booking CTA - Mobile only (Zone C) */}
+      {/* Sticky Booking CTA - Mobile only (Zone C)
+          Uses Supabase RPC results when available for accurate pricing */}
       {(() => {
-        // Use computePricingSummary for consistent pricing across all zones
-        const pricingSummary = computePricingSummary(activity.price_base || 0, aidsData);
+        // Prefer Supabase RPC results, fallback to legacy calculation
+        const pricingSummary = supabasePricingSummary || computePricingSummary(activity.price_base || 0, aidsData);
         // Show estimated price (including potential aids) if available
         const displayPrice = pricingSummary.hasPotentialAids
           ? pricingSummary.resteEstime
