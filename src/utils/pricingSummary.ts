@@ -6,7 +6,12 @@
  * - Reste actuel
  * - Aides potentielles
  * - Reste estimé
+ *
+ * UPDATED: Now integrates with Supabase RPC functions for real eligibility
  */
+
+import type { EligibleAid } from "@/hooks/useEligibleAids";
+import type { ResteAChargeResult } from "@/hooks/useResteACharge";
 
 export interface FinancialAid {
   aid_name: string;
@@ -20,6 +25,14 @@ export interface FinancialAid {
 export interface PricingSummary {
   /** Original activity price */
   priceInitial: number;
+  /** Price after QF reduction (vacances only) */
+  prixApplicable: number;
+  /** QF reduction percentage */
+  qfReductionPercent: number;
+  /** QF tranche applied */
+  trancheAppliquee: string;
+  /** List of eligible aids with amounts */
+  eligibleAids: Array<{ name: string; amount: number }>;
   /** Total confirmed aids (already applied) */
   confirmedAidTotal: number;
   /** Remaining price after confirmed aids */
@@ -36,6 +49,8 @@ export interface PricingSummary {
   savingsPercent: number;
   /** Potential savings percentage including potential aids */
   potentialSavingsPercent: number;
+  /** Whether QF is provided */
+  hasQf: boolean;
 }
 
 export interface AidsData {
@@ -48,6 +63,67 @@ export interface AidsData {
 }
 
 /**
+ * NEW: Compute pricing summary from Supabase RPC results
+ * This is the preferred method - uses real eligibility from DB
+ *
+ * @param eligibleAids - Result from get_eligible_aids RPC
+ * @param resteACharge - Result from calculate_reste_a_charge RPC
+ * @param hasQf - Whether QF was provided (determines if aids are "confirmed" or "potential")
+ * @returns A complete pricing summary for display
+ */
+export function computePricingSummaryFromSupabase(
+  eligibleAids: EligibleAid[],
+  resteACharge: ResteAChargeResult,
+  hasQf: boolean
+): PricingSummary {
+  const { prix_initial, prix_applicable, reduction_pct, tranche_appliquee } = resteACharge;
+
+  // Map eligible aids to display format
+  const aidsWithAmounts = eligibleAids.map(aid => ({
+    name: aid.aid_name,
+    amount: Number(aid.aid_amount),
+  }));
+
+  // Calculate total aids
+  const totalAids = aidsWithAmounts.reduce((sum, aid) => sum + aid.amount, 0);
+
+  // If QF is provided, aids are "confirmed", otherwise "potential"
+  const confirmedAidTotal = hasQf ? Math.min(prix_applicable, totalAids) : 0;
+  const potentialAidTotal = hasQf ? 0 : Math.min(prix_applicable, totalAids);
+
+  // Calculate reste à charge
+  const resteActuel = Math.max(0, prix_applicable - confirmedAidTotal);
+  const resteEstime = Math.max(0, prix_applicable - totalAids);
+
+  // Percentages
+  const savingsPercent = prix_initial > 0
+    ? Math.round((confirmedAidTotal / prix_initial) * 100)
+    : 0;
+
+  const potentialSavingsPercent = prix_initial > 0
+    ? Math.round((totalAids / prix_initial) * 100)
+    : 0;
+
+  return {
+    priceInitial: prix_initial,
+    prixApplicable: prix_applicable,
+    qfReductionPercent: reduction_pct,
+    trancheAppliquee: tranche_appliquee,
+    eligibleAids: aidsWithAmounts,
+    confirmedAidTotal,
+    resteActuel,
+    potentialAidTotal,
+    resteEstime,
+    hasPotentialAids: potentialAidTotal > 0,
+    hasConfirmedAids: confirmedAidTotal > 0,
+    savingsPercent,
+    potentialSavingsPercent,
+    hasQf,
+  };
+}
+
+/**
+ * @deprecated Use computePricingSummaryFromSupabase instead
  * Compute a comprehensive pricing summary from aids data
  * This is the single source of truth for all pricing displays
  *
@@ -63,6 +139,10 @@ export function computePricingSummary(
   if (!aidsData || !aidsData.aids || aidsData.aids.length === 0) {
     return {
       priceInitial: priceBase,
+      prixApplicable: priceBase,
+      qfReductionPercent: 0,
+      trancheAppliquee: 'N/A',
+      eligibleAids: [],
       confirmedAidTotal: 0,
       resteActuel: priceBase,
       potentialAidTotal: 0,
@@ -71,12 +151,19 @@ export function computePricingSummary(
       hasConfirmedAids: false,
       savingsPercent: 0,
       potentialSavingsPercent: 0,
+      hasQf: false,
     };
   }
 
   // Separate confirmed vs potential aids
   const confirmedAids = aidsData.aids.filter(a => !a.is_potential);
   const potentialAids = aidsData.aids.filter(a => a.is_potential);
+
+  // Map to eligibleAids format
+  const eligibleAids = aidsData.aids.map(a => ({
+    name: a.aid_name,
+    amount: Number(a.amount),
+  }));
 
   // Calculate totals (capped at price)
   const rawConfirmedTotal = confirmedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
@@ -105,6 +192,10 @@ export function computePricingSummary(
 
   return {
     priceInitial: priceBase,
+    prixApplicable: priceBase,
+    qfReductionPercent: 0,
+    trancheAppliquee: 'N/A',
+    eligibleAids,
     confirmedAidTotal,
     resteActuel,
     potentialAidTotal,
@@ -113,6 +204,7 @@ export function computePricingSummary(
     hasConfirmedAids: confirmedAidTotal > 0,
     savingsPercent,
     potentialSavingsPercent,
+    hasQf: !!aidsData.quotientFamilial,
   };
 }
 
