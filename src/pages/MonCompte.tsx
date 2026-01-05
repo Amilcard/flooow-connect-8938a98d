@@ -19,7 +19,8 @@ import {
   Shield,
   Car,
   Euro,
-  Heart
+  Heart,
+  Edit
 } from "lucide-react";
 
 const MonCompte = () => {
