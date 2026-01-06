@@ -67,6 +67,7 @@ import { computePricingSummary, computePricingSummaryFromSupabase } from "@/util
 import { PricingSummaryCard } from "@/components/pricing/PricingSummaryCard";
 import { useEligibleAids } from "@/hooks/useEligibleAids";
 import { useResteACharge } from "@/hooks/useResteACharge";
+import { parseLocalDate, toLocalISODate } from "@/utils/date";
 
 const getCategoryImage = (category: string): string => {
   const categoryMap = new Map<string, string>([
@@ -125,7 +126,7 @@ const getNextDatesWithISO = (dayOfWeek: number | null, count: number = 5): Array
     const nextDate = new Date(today);
     nextDate.setDate(today.getDate() + daysUntil + (i * 7));
     dates.push({
-      iso: nextDate.toISOString().split('T')[0],
+      iso: toLocalISODate(nextDate),
       label: nextDate.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }),
       labelShort: `${DAY_NAMES_SHORT[nextDate.getDay()]} ${nextDate.getDate()} ${nextDate.toLocaleDateString("fr-FR", { month: "short" })}`
     });
@@ -1075,8 +1076,8 @@ const ActivityDetail = () => {
                         ? `${session.start_time.slice(0, 5)} – ${session.end_time.slice(0, 5)}`
                         : "";
                       // Formater la date sélectionnée
-                      const selectedDateLabel = selectedOccurrenceDate 
-                        ? new Date(selectedOccurrenceDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+                      const selectedDateLabel = selectedOccurrenceDate
+                        ? parseLocalDate(selectedOccurrenceDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
                         : null;
                       return (
                         <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl space-y-2">
@@ -1134,7 +1135,7 @@ const ActivityDetail = () => {
                         : (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)
                           ? "Sélectionnez un créneau"
                           : selectedOccurrenceDate
-                            ? `Inscrire (${new Date(selectedOccurrenceDate).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })})`
+                            ? `Inscrire (${parseLocalDate(selectedOccurrenceDate).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })})`
                             : "Inscrire mon enfant"}
                     </Button>
 

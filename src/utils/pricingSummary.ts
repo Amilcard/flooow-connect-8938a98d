@@ -63,6 +63,35 @@ export interface AidsData {
 }
 
 /**
+ * Apply aid cap to ensure minimum remaining price (avoid "free demo" display)
+ *
+ * @param price - The price to apply aids against
+ * @param totalAids - Total amount of aids
+ * @param minRemaining - Minimum remaining price (default: 1€ if price > 0)
+ * @returns Object with applied aid amount and remaining price
+ */
+const applyAidCap = (price: number, totalAids: number, minRemaining: number) => {
+  if (price <= 0) {
+    return { applied: 0, remaining: 0 };
+  }
+
+  const maxApplied = Math.max(price - minRemaining, 0);
+
+  if (totalAids >= price) {
+    return {
+      applied: maxApplied,
+      remaining: price - maxApplied,
+    };
+  }
+
+  const applied = Math.min(totalAids, price);
+  return {
+    applied,
+    remaining: Math.max(price - applied, 0),
+  };
+};
+
+/**
  * NEW: Compute pricing summary from Supabase RPC results
  * This is the preferred method - uses real eligibility from DB
  *
@@ -87,13 +116,17 @@ export function computePricingSummaryFromSupabase(
   // Calculate total aids
   const totalAids = aidsWithAmounts.reduce((sum, aid) => sum + aid.amount, 0);
 
+  // Apply cap: minimum 1€ remaining if price > 0 (avoids "free demo" display)
+  const minRemaining = prix_applicable > 0 ? 1 : 0;
+  const cappedAids = applyAidCap(prix_applicable, totalAids, minRemaining);
+
   // If QF is provided, aids are "confirmed", otherwise "potential"
-  const confirmedAidTotal = hasQf ? Math.min(prix_applicable, totalAids) : 0;
-  const potentialAidTotal = hasQf ? 0 : Math.min(prix_applicable, totalAids);
+  const confirmedAidTotal = hasQf ? cappedAids.applied : 0;
+  const potentialAidTotal = hasQf ? 0 : cappedAids.applied;
 
   // Calculate reste à charge
-  const resteActuel = Math.max(0, prix_applicable - confirmedAidTotal);
-  const resteEstime = Math.max(0, prix_applicable - totalAids);
+  const resteActuel = hasQf ? cappedAids.remaining : prix_applicable;
+  const resteEstime = hasQf ? Math.max(0, prix_applicable - totalAids) : cappedAids.remaining;
 
   // Percentages
   const savingsPercent = prix_initial > 0
@@ -101,7 +134,7 @@ export function computePricingSummaryFromSupabase(
     : 0;
 
   const potentialSavingsPercent = prix_initial > 0
-    ? Math.round((totalAids / prix_initial) * 100)
+    ? Math.round(((confirmedAidTotal + potentialAidTotal) / prix_initial) * 100)
     : 0;
 
   return {
@@ -165,21 +198,26 @@ export function computePricingSummary(
     amount: Number(a.amount),
   }));
 
-  // Calculate totals (capped at price)
+  // Calculate totals (capped at price with minimum 1€ remaining)
   const rawConfirmedTotal = confirmedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const rawPotentialTotal = potentialAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
 
-  // Confirmed aids cannot exceed price
-  const confirmedAidTotal = Math.min(priceBase, rawConfirmedTotal);
+  // Apply cap: minimum 1€ remaining if price > 0 (avoids "free demo" display)
+  const minRemaining = priceBase > 0 ? 1 : 0;
+  const cappedTotals = applyAidCap(priceBase, rawConfirmedTotal + rawPotentialTotal, minRemaining);
+
+  // Confirmed aids cannot exceed capped total
+  const confirmedAidTotal = Math.min(rawConfirmedTotal, cappedTotals.applied);
 
   // Remaining after confirmed aids
   const resteActuel = Math.max(0, priceBase - confirmedAidTotal);
 
-  // Potential aids cannot reduce remaining below 0
-  const potentialAidTotal = Math.min(resteActuel, rawPotentialTotal);
+  // Potential aids cannot reduce remaining below demo floor
+  const remainingAidCapacity = Math.max(cappedTotals.applied - confirmedAidTotal, 0);
+  const potentialAidTotal = Math.min(rawPotentialTotal, remainingAidCapacity);
 
   // Final estimated remaining
-  const resteEstime = Math.max(0, resteActuel - potentialAidTotal);
+  const resteEstime = Math.max(0, priceBase - (confirmedAidTotal + potentialAidTotal));
 
   // Percentages
   const savingsPercent = priceBase > 0

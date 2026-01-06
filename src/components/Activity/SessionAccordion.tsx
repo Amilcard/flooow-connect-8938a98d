@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatAgeRangeForDetail } from "@/utils/categoryMapping";
+import { parseLocalDate, toLocalISODate } from "@/utils/date";
 
 interface SessionData {
   id: string;
@@ -79,7 +80,7 @@ const getNextDates = (dayOfWeek: number, count: number = 3): { date: Date; iso: 
     
     dates.push({
       date: dateObj,
-      iso: dateObj.toISOString().split('T')[0],
+      iso: toLocalISODate(dateObj),
       label: `${day} ${month} ${year}`,
     });
     
@@ -302,8 +303,8 @@ export const SelectedSessionSummary = ({
   className,
 }: SelectedSessionSummaryProps) => {
   if (!session || !selectedDate) return null;
-  
-  const dateObj = new Date(selectedDate);
+
+  const dateObj = parseLocalDate(selectedDate);
   const fullDate = formatFullDate(dateObj);
   
   const timeLabel = session.start_time && session.end_time
