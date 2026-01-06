@@ -63,31 +63,48 @@ export interface AidsData {
 }
 
 /**
- * Apply aid cap to ensure minimum remaining price (avoid "free demo" display)
+ * Maximum percentage of price that can be covered by aids
+ * Rule: 70% max coverage = 30% minimum reste à charge
+ */
+export const MAX_AID_COVERAGE_PERCENT = 0.70;
+
+/**
+ * Apply aid cap to ensure minimum remaining price
+ *
+ * RÈGLE CRITIQUE: Maximum 70% du prix couvert par les aides
+ * - Reste à charge minimum = max(30% du prix, 1€)
+ * - Évite l'affichage "gratuit" trompeur en démo
  *
  * @param price - The price to apply aids against
  * @param totalAids - Total amount of aids
- * @param minRemaining - Minimum remaining price (default: 1€ if price > 0)
- * @returns Object with applied aid amount and remaining price
+ * @returns Object with applied aid amount, remaining price, and cap info
  */
-const applyAidCap = (price: number, totalAids: number, minRemaining: number) => {
+export const applyAidCap = (price: number, totalAids: number): {
+  applied: number;
+  remaining: number;
+  wasCapped: boolean;
+  maxAllowed: number;
+} => {
   if (price <= 0) {
-    return { applied: 0, remaining: 0 };
+    return { applied: 0, remaining: 0, wasCapped: false, maxAllowed: 0 };
   }
 
-  const maxApplied = Math.max(price - minRemaining, 0);
+  // Minimum remaining = max(30% of price, 1€)
+  const minRemaining = Math.max(price * (1 - MAX_AID_COVERAGE_PERCENT), 1);
 
-  if (totalAids >= price) {
-    return {
-      applied: maxApplied,
-      remaining: price - maxApplied,
-    };
-  }
+  // Maximum aids = price - minimum remaining
+  const maxAllowed = Math.max(price - minRemaining, 0);
 
-  const applied = Math.min(totalAids, price);
+  // Apply the cap
+  const applied = Math.min(totalAids, maxAllowed);
+  const remaining = price - applied;
+  const wasCapped = totalAids > maxAllowed;
+
   return {
     applied,
-    remaining: Math.max(price - applied, 0),
+    remaining,
+    wasCapped,
+    maxAllowed,
   };
 };
 
@@ -116,9 +133,8 @@ export function computePricingSummaryFromSupabase(
   // Calculate total aids
   const totalAids = aidsWithAmounts.reduce((sum, aid) => sum + aid.amount, 0);
 
-  // Apply cap: minimum 1€ remaining if price > 0 (avoids "free demo" display)
-  const minRemaining = prix_applicable > 0 ? 1 : 0;
-  const cappedAids = applyAidCap(prix_applicable, totalAids, minRemaining);
+  // Apply cap: maximum 70% coverage (30% minimum reste à charge)
+  const cappedAids = applyAidCap(prix_applicable, totalAids);
 
   // If QF is provided, aids are "confirmed", otherwise "potential"
   const confirmedAidTotal = hasQf ? cappedAids.applied : 0;
@@ -198,13 +214,12 @@ export function computePricingSummary(
     amount: Number(a.amount),
   }));
 
-  // Calculate totals (capped at price with minimum 1€ remaining)
+  // Calculate totals (capped at 70% of price)
   const rawConfirmedTotal = confirmedAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const rawPotentialTotal = potentialAids.reduce((sum, aid) => sum + Number(aid.amount), 0);
 
-  // Apply cap: minimum 1€ remaining if price > 0 (avoids "free demo" display)
-  const minRemaining = priceBase > 0 ? 1 : 0;
-  const cappedTotals = applyAidCap(priceBase, rawConfirmedTotal + rawPotentialTotal, minRemaining);
+  // Apply cap: maximum 70% coverage (30% minimum reste à charge)
+  const cappedTotals = applyAidCap(priceBase, rawConfirmedTotal + rawPotentialTotal);
 
   // Confirmed aids cannot exceed capped total
   const confirmedAidTotal = Math.min(rawConfirmedTotal, cappedTotals.applied);

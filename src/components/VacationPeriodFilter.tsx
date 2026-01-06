@@ -7,20 +7,44 @@ interface VacationPeriodFilterProps {
   onPeriodChange: (period?: string) => void;
 }
 
+/**
+ * Périodes de vacances Zone A (Lyon) 2026
+ * Source: calendrier officiel de l'Education Nationale
+ */
 const VACATION_PERIODS = [
+  { value: "hiver_2026", label: "Vacances Hiver 2026", emoji: "❄️" },
   { value: "printemps_2026", label: "Vacances Printemps 2026", emoji: "🌸" },
   { value: "été_2026", label: "Été 2026", emoji: "☀️" },
+  { value: "toussaint_2026", label: "Toussaint 2026", emoji: "🍂" },
+  { value: "noel_2026", label: "Noël 2026", emoji: "🎄" },
 ];
 
-// Dates de référence pour les périodes
+// Dates de référence pour les périodes - Zone A Lyon 2026
 export const VACATION_PERIOD_DATES = {
+  hiver_2026: {
+    start: "2026-02-07",
+    end: "2026-02-23",
+    label: "Vacances d'Hiver 2026",
+  },
   printemps_2026: {
     start: "2026-04-04",
     end: "2026-04-20",
+    label: "Vacances de Printemps 2026",
   },
   été_2026: {
     start: "2026-07-04",
     end: "2026-08-31",
+    label: "Vacances d'Été 2026",
+  },
+  toussaint_2026: {
+    start: "2026-10-17",
+    end: "2026-11-02",
+    label: "Vacances de la Toussaint 2026",
+  },
+  noel_2026: {
+    start: "2026-12-19",
+    end: "2027-01-04",
+    label: "Vacances de Noël 2026",
   },
 } as const;
 
