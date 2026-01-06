@@ -143,6 +143,86 @@ function mapQuickEstimateToAids(result: {
 }
 
 // ============================================================================
+// HELPER: Messages conditionnels pour les aides
+// ============================================================================
+
+interface ConditionalAidMessage {
+  message: string;
+  type: 'info' | 'success' | 'warning';
+}
+
+/**
+ * Retourne un message conditionnel basé sur l'aide et l'âge de l'enfant
+ * Exemple: Pass Culture disponible à partir de 15 ans
+ */
+function getConditionalAidMessage(
+  aidName: string,
+  childAge: number,
+  activityCategories: string[]
+): ConditionalAidMessage | null {
+  const aidLower = aidName.toLowerCase();
+  const isCultureActivity = activityCategories.some(c =>
+    c.toLowerCase().includes('culture') || c.toLowerCase().includes('scolarité')
+  );
+
+  // Pass Culture: disponible à partir de 15 ans
+  if (aidLower.includes('pass culture')) {
+    if (childAge < 15) {
+      const yearsUntil = 15 - childAge;
+      return {
+        message: `Disponible dans ${yearsUntil} an${yearsUntil > 1 ? 's' : ''} (à partir de 15 ans)`,
+        type: 'info'
+      };
+    }
+    if (childAge >= 15 && childAge <= 17) {
+      const amount = childAge === 15 ? 20 : 30;
+      return {
+        message: `${amount}€ disponibles pour les ${childAge} ans`,
+        type: 'success'
+      };
+    }
+  }
+
+  // Pass'Sport: conditions sociales requises
+  if (aidLower.includes('pass\'sport') || aidLower.includes('passsport')) {
+    if (childAge >= 6 && childAge <= 17) {
+      return {
+        message: 'Nécessite une condition sociale (ARS, AEEH, bourse...)',
+        type: 'info'
+      };
+    }
+  }
+
+  // Pass Colo: uniquement 11 ans
+  if (aidLower.includes('pass colo')) {
+    if (childAge === 11) {
+      return {
+        message: 'Aide spéciale pour les 11 ans !',
+        type: 'success'
+      };
+    }
+    if (childAge < 11) {
+      return {
+        message: `Disponible dans ${11 - childAge} an${(11 - childAge) > 1 ? 's' : ''} (à 11 ans uniquement)`,
+        type: 'info'
+      };
+    }
+  }
+
+  // Carte BÔGE: 13-29 ans
+  if (aidLower.includes('bôge') || aidLower.includes('boge')) {
+    if (childAge < 13) {
+      return {
+        message: `Disponible dans ${13 - childAge} an${(13 - childAge) > 1 ? 's' : ''} (à partir de 13 ans)`,
+        type: 'info'
+      };
+    }
+  }
+
+  return null;
+}
+
+// ============================================================================
 // SUB-COMPONENT: Condition Sociale Section (reduces main component complexity)
 // ============================================================================
 
@@ -876,32 +956,50 @@ export const SharedAidCalculator = ({
           <Separator />
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Aides estimées</h4>
-            {aids.map((aid, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-between p-3 rounded-lg ${aid.is_potential ? 'bg-yellow-50 border border-yellow-200' : 'bg-accent/50'}`}
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{aid.aid_name}</span>
-                    {aid.is_potential && (
-                      <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-700 bg-yellow-100">
-                        Potentiel
-                      </Badge>
-                    )}
-                    {!aid.is_potential && (
-                      <Badge variant="secondary" className="text-xs">
-                        {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS]}{" "}
-                        {aid.territory_level}
-                      </Badge>
-                    )}
+            {aids.map((aid, index) => {
+              const currentChildAge = getChildAgeForDisplay(showChildSelector, selectedChildId, children, manualChildAge, calculateAge);
+              const conditionalMsg = getConditionalAidMessage(aid.aid_name, currentChildAge, activityCategories);
+
+              return (
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg ${aid.is_potential ? 'bg-yellow-50 border border-yellow-200' : 'bg-accent/50'}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{aid.aid_name}</span>
+                        {aid.is_potential && (
+                          <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-700 bg-yellow-100">
+                            Potentiel
+                          </Badge>
+                        )}
+                        {!aid.is_potential && (
+                          <Badge variant="secondary" className="text-xs">
+                            {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS]}{" "}
+                            {aid.territory_level}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`text-lg font-bold ${aid.is_potential ? 'text-yellow-600' : 'text-primary'}`}>
+                      {aid.is_potential ? `~${Number(aid.amount).toFixed(0)}€` : `${Number(aid.amount).toFixed(2)}€`}
+                    </div>
                   </div>
+                  {/* Message conditionnel (Pass Culture ≥15 ans, etc.) */}
+                  {conditionalMsg && (
+                    <p className={`text-xs mt-1 ${
+                      conditionalMsg.type === 'success' ? 'text-green-600' :
+                      conditionalMsg.type === 'warning' ? 'text-orange-600' :
+                      'text-muted-foreground'
+                    }`}>
+                      {conditionalMsg.type === 'success' ? '✓ ' : conditionalMsg.type === 'info' ? 'ℹ️ ' : '⚠️ '}
+                      {conditionalMsg.message}
+                    </p>
+                  )}
                 </div>
-                <div className={`text-lg font-bold ${aid.is_potential ? 'text-yellow-600' : 'text-primary'}`}>
-                  {aid.is_potential ? `~${Number(aid.amount).toFixed(0)}€` : `${Number(aid.amount).toFixed(2)}€`}
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Récap */}
             <div className="border-t pt-3 space-y-2">

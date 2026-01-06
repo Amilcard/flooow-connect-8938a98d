@@ -2,8 +2,8 @@
  * useResteACharge - Hook to calculate applicable price based on QF tranches
  *
  * Calls calculate_reste_a_charge() which applies QF-based pricing:
- * - QF 0-400: 50% reduction (tranche 1)
- * - QF 401-700: 30% reduction (tranche 2)
+ * - QF 0-450: 50% reduction (tranche 1)
+ * - QF 451-700: 30% reduction (tranche 2)
  * - QF 701-1000: 15% reduction (tranche 3)
  * - QF 1001+: Full price (plein_tarif)
  *
@@ -14,6 +14,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { applyAidCap } from "@/utils/pricingSummary";
 
 export interface ResteAChargeResult {
   prix_initial: number;
@@ -107,15 +108,19 @@ export function useResteACharge({
 }
 
 /**
- * Calculate final reste à charge after aids
+ * Calculate final reste à charge after aids with 70% max coverage cap
+ *
+ * RÈGLE CRITIQUE: Maximum 70% du prix couvert par les aides
+ * - Reste à charge minimum = max(30% du prix, 1€)
  *
  * @param prixApplicable - Price after QF reduction (for vacances) or base price (for scolaire)
  * @param totalAids - Sum of all eligible aids
- * @returns Final price (minimum 0)
+ * @returns Final price after capped aids
  */
 export function calculateFinalResteACharge(
   prixApplicable: number,
   totalAids: number
 ): number {
-  return Math.max(0, prixApplicable - totalAids);
+  const { remaining } = applyAidCap(prixApplicable, totalAids);
+  return remaining;
 }
