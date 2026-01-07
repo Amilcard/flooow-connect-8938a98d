@@ -266,14 +266,16 @@ export const ActivityCard = ({
             )}
             {/* LOT 1 T1_3: Utilise formatAidLabel() pour les labels */}
             {aidesEligibles && aidesEligibles.length > 0 && (
-              <div className="flex items-center gap-1 mt-1 flex-wrap">
+              <div className="mt-1 text-[10px] text-muted-foreground">
+                <span className="font-medium">Financeurs possibles :</span>{" "}
                 {aidesEligibles.slice(0, 2).map((aide, index) => (
-                  <span key={index} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-amber-50 text-amber-600">
+                  <span key={index}>
                     {formatAidLabel(aide)}
+                    {index < Math.min(aidesEligibles.length, 2) - 1 ? ", " : ""}
                   </span>
                 ))}
                 {aidesEligibles.length > 2 && (
-                  <span className="text-[9px] text-muted-foreground">+{aidesEligibles.length - 2}</span>
+                  <span> +{aidesEligibles.length - 2}</span>
                 )}
               </div>
             )}
