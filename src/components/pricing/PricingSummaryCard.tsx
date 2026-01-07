@@ -46,8 +46,9 @@ export function PricingSummaryCard({
     hasQf,
   } = summary;
 
+  const totalAidsAmount = eligibleAids.reduce((sum, aid) => sum + aid.amount, 0);
   // Don't show card if no aids calculated and no QF reduction
-  if (!hasConfirmedAids && !hasPotentialAids && qfReductionPercent === 0) {
+  if (totalAidsAmount === 0 && qfReductionPercent === 0) {
     return null;
   }
 
