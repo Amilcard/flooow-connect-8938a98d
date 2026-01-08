@@ -1,8 +1,9 @@
 /**
  * LOT A - Simulateur d'aides sur la page d'accueil
- * 
+ *
  * MIGRATION P0-2: Utilise useAidCalculation (RPC Supabase) au lieu de calcul TS local
- * 
+ * SOURCE OF TRUTH: aid_grid table + calculate_family_aid RPC
+ *
  * @version 2.0.0 - Migration RPC
  * @date 2026-01-08
  */
@@ -30,7 +31,7 @@ interface SimulationResult {
 export const AidSimulator = () => {
   const navigate = useNavigate();
   const { calculate, loading } = useAidCalculation();
-  
+
   const [qf, setQf] = useState('');
   const [age, setAge] = useState('');
   const [prix, setPrix] = useState('');
@@ -47,7 +48,7 @@ export const AidSimulator = () => {
       return;
     }
 
-    // Appel RPC via hook
+    // Appel RPC via hook (SOURCE OF TRUTH: aid_grid)
     const result = await calculate({
       price: prixNum,
       priceType: 'scolaire', // Par défaut pour simulateur générique
@@ -200,7 +201,7 @@ export const AidSimulator = () => {
                 </p>
               </div>
 
-              {/* Message d'avertissement légal */}
+              {/* Message d'avertissement légal (spec) */}
               <Alert className="bg-blue-50 border-blue-200">
                 <Info className="w-4 h-4 text-blue-600" />
                 <AlertDescription className="text-xs text-blue-900">
@@ -217,10 +218,10 @@ export const AidSimulator = () => {
                   <div className="text-center mb-4">
                     <p className="text-sm text-muted-foreground mb-2">Aide estimée</p>
                     <p className="text-5xl font-bold text-green-600 mb-1">
-                      {resultat?.montantAide}€
+                      {resultat.montantAide}€
                     </p>
                     <Badge variant="secondary" className="text-sm">
-                      Tranche QF {resultat?.trancheQF}
+                      Tranche QF {resultat.trancheQF}
                     </Badge>
                   </div>
 
@@ -228,20 +229,20 @@ export const AidSimulator = () => {
                   <div className="grid grid-cols-3 gap-3 mt-6">
                     <div className="bg-white p-3 rounded-lg border text-center">
                       <p className="text-xs text-muted-foreground mb-1">Prix initial</p>
-                      <p className="text-lg font-semibold">{resultat?.prixInitial}€</p>
+                      <p className="text-lg font-semibold">{resultat.prixInitial}€</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg border text-center">
                       <p className="text-xs text-muted-foreground mb-1">Aide</p>
-                      <p className="text-lg font-semibold text-green-600">-{resultat?.montantAide}€</p>
+                      <p className="text-lg font-semibold text-green-600">-{resultat.montantAide}€</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg border text-center">
                       <p className="text-xs text-muted-foreground mb-1">Reste à charge</p>
-                      <p className="text-lg font-semibold text-primary">{resultat?.resteACharge}€</p>
+                      <p className="text-lg font-semibold text-primary">{resultat.resteACharge}€</p>
                     </div>
                   </div>
 
                   {/* Pourcentage d'économie */}
-                  {resultat && resultat.pourcentageEconomie > 0 && (
+                  {resultat.pourcentageEconomie > 0 && (
                     <div className="mt-4 p-3 bg-white rounded-lg border text-center">
                       <p className="text-sm text-muted-foreground">
                         Vous économisez{' '}
@@ -255,7 +256,7 @@ export const AidSimulator = () => {
 
                   {/* Message */}
                   <p className="mt-4 text-center text-sm text-muted-foreground italic">
-                    {resultat?.message}
+                    {resultat.message}
                   </p>
                 </div>
 
@@ -277,7 +278,7 @@ export const AidSimulator = () => {
                   </Button>
                 </div>
 
-                {/* Message d'avertissement légal */}
+                {/* Message d'avertissement légal (spec) */}
                 <Alert className="bg-blue-50 border-blue-200">
                   <Info className="w-4 h-4 text-blue-600" />
                   <AlertDescription className="text-xs text-blue-900">

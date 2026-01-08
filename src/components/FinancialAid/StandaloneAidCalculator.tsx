@@ -2,7 +2,8 @@
  * Simulateur d'aides standalone - Page /aides
  *
  * MIGRATION P0-2: Utilise useAidCalculation (RPC Supabase) au lieu de calcul TS local
- * 
+ * SOURCE OF TRUTH: aid_grid table + calculate_family_aid RPC
+ *
  * @version 2.0.0 - Migration RPC
  * @date 2026-01-08
  */
@@ -45,6 +46,7 @@ const TERRITORY_ICONS = {
   commune: "🏘️"
 } as const;
 
+// Prix par défaut pour la simulation
 const DEFAULT_ACTIVITY_PRICE = 60;
 
 export const StandaloneAidCalculator = () => {
@@ -89,6 +91,7 @@ export const StandaloneAidCalculator = () => {
       return;
     }
 
+    // Validation du code postal
     if (!/^[0-9]{5}$/.test(cityCode)) {
       toast({
         title: "Code postal invalide",
@@ -102,7 +105,7 @@ export const StandaloneAidCalculator = () => {
     const qfValue = Number.parseInt(quotientFamilial, 10);
 
     try {
-      // Appel RPC via hook
+      // Appel RPC via hook (SOURCE OF TRUTH: aid_grid)
       const result = await calculate({
         price: prix,
         priceType: 'scolaire',
@@ -112,7 +115,7 @@ export const StandaloneAidCalculator = () => {
 
       if (result) {
         const trancheLabel = getQFBracketLabel(qfValue);
-        
+
         // Créer l'aide au format attendu
         const calculatedAids: FinancialAid[] = result.totalAidEuros > 0 ? [{
           aid_name: `Aide QF ${trancheLabel}`,
@@ -374,6 +377,7 @@ export const StandaloneAidCalculator = () => {
             Aucune aide disponible pour ce quotient familial
           </div>
 
+          {/* Message rappel pièces justificatives même sans aides */}
           <Alert className="bg-amber-50 border-amber-200">
             <Info className="h-4 w-4 text-amber-600" />
             <AlertDescription className="text-sm text-amber-900">
