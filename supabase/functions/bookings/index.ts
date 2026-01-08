@@ -157,10 +157,10 @@ serve(async (req) => {
         );
       }
 
-      // Get current slot info
+      // Get current slot info (including price_override for custom pricing)
       const { data: slot, error: slotError } = await supabase
         .from('availability_slots')
-        .select('seats_remaining, activity_id')
+        .select('seats_remaining, activity_id, price_override')
         .eq('id', slot_id)
         .single();
 
@@ -217,12 +217,14 @@ serve(async (req) => {
         );
       }
 
-      const basePriceCents = Math.round((activity.price_base || 0) * 100);
+      // Use slot price_override if available, otherwise fallback to activity price_base
+      const effectivePrice = slot.price_override ?? activity.price_base ?? 0;
+      const basePriceCents = Math.round(effectivePrice * 100);
       let aidsTotalCents = 0;
       let aidsApplied: Array<{ aid_name: string; amount_cents: number; territory_level: string }> = [];
 
       // Only calculate aids if activity has a price > 0
-      if (activity.price_base > 0) {
+      if (effectivePrice > 0) {
         // Get child's age for aids calculation
         const childAge = Math.floor(
           (Date.now() - new Date(child.dob).getTime()) / (365.25 * 24 * 60 * 60 * 1000)
@@ -258,7 +260,8 @@ serve(async (req) => {
           .rpc('calculate_family_aid', {
             p_activity_id: activity_id,
             p_quotient_familial: quotientFamilial,
-            p_external_aid_euros: 0 // TODO: Add Pass'Sport calculation if needed
+            p_external_aid_euros: 0, // TODO: Add Pass'Sport calculation if needed
+            p_price_override: slot.price_override || null // Use slot custom price if available
           });
 
         if (aidsError) {
