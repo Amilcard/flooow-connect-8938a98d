@@ -13,7 +13,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useActivityBookingState } from "@/hooks/useActivityBookingState";
 import { QF_BRACKETS, mapQFToBracket } from "@/lib/qfBrackets";
 import { useNavigate } from "react-router-dom";
-import { calculateAllEligibleAids, calculateQuickEstimate, EligibilityParams, QuickEstimateParams } from "@/utils/FinancialAidEngine";
+import { useEligibleAids } from "@/hooks/useEligibleAids";
+import { useResteACharge } from "@/hooks/useResteACharge";
+import { computePricingSummaryFromSupabase } from "@/utils/pricingSummary";
 import {
   getTypeActivite,
   shouldShowQF,
@@ -64,14 +66,14 @@ function determineActivityType(categories: string[]): 'sport' | 'culture' | 'vac
 }
 
 // ============================================================================
-// HELPER: Map engine results to FinancialAid format
+// HELPER: Map RPC results to FinancialAid format (for legacy compatibility)
 // ============================================================================
 
-function mapEngineResultToAid(res: { name: string; montant: number; niveau: string }): FinancialAid {
+function mapRpcAidToFinancialAid(aid: { aid_name: string; aid_amount: number }): FinancialAid {
   return {
-    aid_name: res.name,
-    amount: res.montant,
-    territory_level: res.niveau === 'departemental' ? 'departement' : res.niveau === 'communal' ? 'commune' : res.niveau,
+    aid_name: aid.aid_name,
+    amount: aid.aid_amount,
+    territory_level: 'national', // Territory level determined by RPC
     official_link: null,
     is_informational: false,
     is_potential: false
@@ -116,31 +118,6 @@ function validateManualAge(ageStr: string): ValidationError {
   return null;
 }
 
-// ============================================================================
-// HELPER: Map quick estimate results to FinancialAid format
-// ============================================================================
-
-function mapQuickEstimateToAids(result: {
-  aides_detectees: Array<{ name: string; montant: number; niveau: string }>;
-  aides_potentielles: Array<{ name: string; montant_possible: string }>;
-}): FinancialAid[] {
-  const detected = result.aides_detectees.map(mapEngineResultToAid);
-
-  const potential = result.aides_potentielles.map(res => {
-    const matches = res.montant_possible.match(/(\d+)/g);
-    const amount = matches ? Number.parseInt(matches[matches.length - 1], 10) : 0;
-    return {
-      aid_name: res.name,
-      amount,
-      territory_level: 'national',
-      official_link: null,
-      is_informational: true,
-      is_potential: true
-    };
-  });
-
-  return [...detected, ...potential];
-}
 
 // ============================================================================
 // HELPER: Messages conditionnels pour les aides
@@ -496,6 +473,12 @@ export const SharedAidCalculator = ({
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
   const [isQuickEstimate, setIsQuickEstimate] = useState(false); // Track if it's a quick estimate
+
+  // Committed states to trigger RPC hooks only on Calculate button click
+  const [committedChildAge, setCommittedChildAge] = useState<number | null>(null);
+  const [committedQf, setCommittedQf] = useState<number | null>(null);
+  const [committedTerritoryCode, setCommittedTerritoryCode] = useState<string>('42');
+  const [committedNbChildren, setCommittedNbChildren] = useState<number>(1);
   // Reserved for future advanced criteria toggle feature
   const [_showAdvancedCriteria, _setShowAdvancedCriteria] = useState(false);
   // Initialiser depuis periodType prop (si l'activité a déjà une période définie)
@@ -522,6 +505,34 @@ export const SharedAidCalculator = ({
   const isLoggedIn = !!userProfile;
   // If logged in but no children, fall back to manual mode
   const showChildSelector = isLoggedIn && children.length > 0;
+
+  // ==========================================================================
+  // NEW: RPC HOOKS - Use Supabase functions instead of legacy FinancialAidEngine
+  // ==========================================================================
+
+  // Fetch eligible aids from Supabase RPC (respects accepts_aid_types)
+  const { data: eligibleAidsFromRpc = [], isLoading: isLoadingAids } = useEligibleAids({
+    activityId: activityId || '',
+    childAge: committedChildAge,
+    quotientFamilial: committedQf,
+    isQpv: false, // TODO: Get from user profile if available
+    territoryCode: committedTerritoryCode,
+    nbChildren: committedNbChildren,
+  });
+
+  // Fetch reste à charge with QF tranches (vacances only)
+  const { data: resteAChargeData, isLoading: isLoadingResteACharge } = useResteACharge({
+    activityId: activityId || '',
+    quotientFamilial: committedQf,
+    periodType: activityPeriod,
+    priceBase: activityPrice,
+  });
+
+  // Compute pricing summary from Supabase RPC results
+  const hasQf = committedQf !== null && committedQf > 0;
+  const pricingSummary = resteAChargeData && calculated
+    ? computePricingSummaryFromSupabase(eligibleAidsFromRpc, resteAChargeData, hasQf)
+    : null;
 
   // Reset automatique au montage si resetOnMount est true
   useEffect(() => {
@@ -614,9 +625,6 @@ export const SharedAidCalculator = ({
       return;
     }
 
-    // QF is now OPTIONAL for Quick Estimate
-    const hasQF = !!quotientFamilial && quotientFamilial !== "0";
-
     // Déterminer l'âge de l'enfant
     let childAge: number;
     let nbFratrie = 0;
@@ -635,61 +643,55 @@ export const SharedAidCalculator = ({
       childAge = Number.parseInt(manualChildAge, 10);
     }
 
+    // Extract territory code from postal code
+    const territoryCode = cityCode ? cityCode.substring(0, 2) : '42';
+    const qf = quotientFamilial ? Number.parseInt(quotientFamilial, 10) : null;
+
+    // Determine if this is a quick estimate (no QF) or full calculation
+    const hasQF = qf !== null && qf > 0;
+    setIsQuickEstimate(!hasQF);
+
     setLoading(true);
-    try {
-      const statut_scolaire = getStatutScolaire(childAge);
-      const type_activite = determineActivityType(activityCategories);
 
-      let calculatedAids: FinancialAid[];
+    // Commit the values to trigger RPC hooks
+    // The hooks will automatically refetch when these states change
+    setCommittedChildAge(childAge);
+    setCommittedQf(qf);
+    setCommittedTerritoryCode(territoryCode);
+    setCommittedNbChildren(nbFratrie || 1);
+    setCalculated(true);
 
-      if (hasQF) {
-        // FULL ESTIMATION (Mode 3)
-        setIsQuickEstimate(false);
-        const context: EligibilityParams = {
-          age: childAge,
-          quotient_familial: Number.parseInt(quotientFamilial, 10) || 0,
-          code_postal: cityCode || "00000",
-          ville: "",
-          departement: cityCode ? Number.parseInt(cityCode.substring(0, 2)) : 0,
-          prix_activite: activityPrice,
-          type_activite,
-          periode: activityPeriod === 'vacances' ? 'vacances' : 'saison_scolaire',
-          nb_fratrie: nbFratrie,
-          allocataire_caf: !!quotientFamilial,
-          statut_scolaire,
-          est_qpv: false,
-          conditions_sociales: {
-            beneficie_ARS: false,
-            beneficie_AEEH: false,
-            beneficie_AESH: false,
-            beneficie_bourse: false,
-            beneficie_ASE: false
-          }
-        };
-        const engineResults = calculateAllEligibleAids(context);
-        calculatedAids = engineResults.map(mapEngineResultToAid);
-      } else {
-        // QUICK ESTIMATION (Mode 1)
-        setIsQuickEstimate(true);
-        const params: QuickEstimateParams = {
-          age: childAge,
-          type_activite,
-          prix_activite: activityPrice,
-          code_postal: cityCode || undefined,
-          periode: activityPeriod
-        };
-        const result = calculateQuickEstimate(params);
-        calculatedAids = mapQuickEstimateToAids(result);
+    // Wait for hooks to complete (they're triggered by the state updates above)
+    // The results will be available in pricingSummary computed from hooks
+    setTimeout(() => {
+      setLoading(false);
+
+      // Show appropriate message
+      const summary = pricingSummary;
+      if (!summary) {
+        toast({
+          title: "Calcul en cours",
+          description: "Les aides sont en cours de calcul...",
+          variant: "default"
+        });
+        return;
       }
 
-      setAids(calculatedAids);
-      setCalculated(true);
+      const totalAids = summary.confirmedAidTotal;
+      const potentialTotal = summary.potentialAidTotal;
+      const economiePourcent = summary.savingsPercent;
 
-      // Only count CONFIRMED aids for total
-      const rawTotalAids = calculatedAids.filter(a => !a.is_potential).reduce((sum, aid) => sum + aid.amount, 0);
-      const totalAids = Math.min(activityPrice, rawTotalAids);
-      const remainingPrice = Math.max(0, activityPrice - totalAids);
-      const economiePourcent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
+      // Map to legacy FinancialAid format for persistence
+      const calculatedAids: FinancialAid[] = summary.eligibleAids.map(aid => ({
+        aid_name: aid.name,
+        amount: aid.amount,
+        territory_level: 'national',
+        official_link: null,
+        is_informational: false,
+        is_potential: !hasQF // Mark as potential if no QF provided
+      }));
+
+      setAids(calculatedAids);
 
       const aidData = {
         childId: selectedChildId,
@@ -697,7 +699,7 @@ export const SharedAidCalculator = ({
         cityCode: cityCode || "N/A",
         aids: calculatedAids,
         totalAids,
-        remainingPrice
+        remainingPrice: summary.resteActuel
       };
 
       // Save to persistent state only if activityId is provided
@@ -715,7 +717,7 @@ export const SharedAidCalculator = ({
           title: "Aides calculées",
           description: `Aide totale : ${totalAids.toFixed(2)}€ - Économie de ${economiePourcent}%`,
         });
-      } else if (calculatedAids.some(a => a.is_potential)) {
+      } else if (potentialTotal > 0) {
         toast({
           title: "Aides potentielles détectées",
           description: "Affinez votre simulation pour confirmer ces aides !",
@@ -728,16 +730,7 @@ export const SharedAidCalculator = ({
           variant: "default"
         });
       }
-    } catch (err) {
-      console.error(safeErrorMessage(err, 'SharedAidCalculator.handleCalculate'));
-      toast({
-        title: "Erreur",
-        description: "Impossible de calculer les aides",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
+    }, 500); // Small delay to allow hooks to refetch
   };
 
   // PROTECTION CONFIDENTIALITÉ: Fonction de réinitialisation manuelle
@@ -746,7 +739,7 @@ export const SharedAidCalculator = ({
     if (clearState) {
       clearState();
     }
-    
+
     // Réinitialiser tous les champs
     setSelectedChildId("");
     setManualChildAge("");
@@ -759,19 +752,25 @@ export const SharedAidCalculator = ({
     setHasAEEH(false);
     setHasBourse(false);
     setIsAllocataireCaf("");
-    
+
+    // Reset committed states
+    setCommittedChildAge(null);
+    setCommittedQf(null);
+    setCommittedTerritoryCode('42');
+    setCommittedNbChildren(1);
+
     toast({
       title: "Données effacées",
       description: "Vos informations ont été supprimées pour protéger votre confidentialité",
     });
   };
 
-  const rawTotalAids = aids.filter(a => !a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
-  const totalAids = Math.min(activityPrice, rawTotalAids);
-  const potentialTotal = aids.filter(a => a.is_potential).reduce((sum, aid) => sum + Number(aid.amount), 0);
-  const remainingPrice = Math.max(0, activityPrice - totalAids);
+  // Calculate totals from pricingSummary (new RPC-based) or fallback to legacy aids
+  const totalAids = pricingSummary?.confirmedAidTotal ?? 0;
+  const potentialTotal = pricingSummary?.potentialAidTotal ?? 0;
+  const remainingPrice = pricingSummary?.resteActuel ?? activityPrice;
   // Reserved for future savings badge display
-  const _savingsPercent = activityPrice > 0 ? Math.round((totalAids / activityPrice) * 100) : 0;
+  const _savingsPercent = pricingSummary?.savingsPercent ?? 0;
 
   if (activityPrice <= 0) return null;
 
@@ -951,39 +950,39 @@ export const SharedAidCalculator = ({
       )}
 
       {/* Résultats */}
-      {calculated && aids.length > 0 && (
+      {calculated && pricingSummary && pricingSummary.eligibleAids.length > 0 && (
         <>
           <Separator />
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Aides estimées</h4>
-            {aids.map((aid, index) => {
+            {pricingSummary.eligibleAids.map((aid, index) => {
               const currentChildAge = getChildAgeForDisplay(showChildSelector, selectedChildId, children, manualChildAge, calculateAge);
-              const conditionalMsg = getConditionalAidMessage(aid.aid_name, currentChildAge, activityCategories);
+              const conditionalMsg = getConditionalAidMessage(aid.name, currentChildAge, activityCategories);
+              const isPotential = !pricingSummary.hasQf; // Aids are "potential" if no QF provided
 
               return (
                 <div
                   key={index}
-                  className={`p-3 rounded-lg ${aid.is_potential ? 'bg-yellow-50 border border-yellow-200' : 'bg-accent/50'}`}
+                  className={`p-3 rounded-lg ${isPotential ? 'bg-yellow-50 border border-yellow-200' : 'bg-accent/50'}`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{aid.aid_name}</span>
-                        {aid.is_potential && (
+                        <span className="font-medium text-sm">{aid.name}</span>
+                        {isPotential && (
                           <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-700 bg-yellow-100">
                             Potentiel
                           </Badge>
                         )}
-                        {!aid.is_potential && (
+                        {!isPotential && (
                           <Badge variant="secondary" className="text-xs">
-                            {TERRITORY_ICONS[aid.territory_level as keyof typeof TERRITORY_ICONS]}{" "}
-                            {aid.territory_level}
+                            🇫🇷 national
                           </Badge>
                         )}
                       </div>
                     </div>
-                    <div className={`text-lg font-bold ${aid.is_potential ? 'text-yellow-600' : 'text-primary'}`}>
-                      {aid.is_potential ? `~${Number(aid.amount).toFixed(0)}€` : `${Number(aid.amount).toFixed(2)}€`}
+                    <div className={`text-lg font-bold ${isPotential ? 'text-yellow-600' : 'text-primary'}`}>
+                      {isPotential ? `~${Number(aid.amount).toFixed(0)}€` : `${Number(aid.amount).toFixed(2)}€`}
                     </div>
                   </div>
                   {/* Message conditionnel (Pass Culture ≥15 ans, etc.) */}
@@ -1088,7 +1087,7 @@ export const SharedAidCalculator = ({
         </>
       )}
 
-      {calculated && aids.length === 0 && (
+      {calculated && pricingSummary && pricingSummary.eligibleAids.length === 0 && (
         <>
           <div className="text-center py-4 text-muted-foreground text-sm">
             Aucune aide détectée pour le moment.
