@@ -52,3 +52,7 @@ supabase/.temp/
 
 # Local env
 .env.test.local
+
+# Patch leftovers
+*.orig
+*.rej
