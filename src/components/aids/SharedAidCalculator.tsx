@@ -926,7 +926,7 @@ export const SharedAidCalculator = ({
         ) : (
           <>
             <Calculator className="mr-2 h-4 w-4" />
-            {periodType === "saison_scolaire" ? "Calculer mon aide" : "Calculer mes aides"}
+            {periodType === "scolaire" ? "Calculer mon aide" : "Calculer mes aides"}
           </>
         )}
       </Button>
