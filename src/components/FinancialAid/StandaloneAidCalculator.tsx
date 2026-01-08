@@ -1,9 +1,11 @@
 /**
- * Simulateur d'aides standalone - Copie conforme du simulateur du détail activité
- * Utilisé sur la page /aides (Aides financières)
+ * Simulateur d'aides standalone - Page /aides
  *
- * Utilise EXACTEMENT la même logique et la même UI que EnhancedFinancialAidCalculator
- * Garantit la cohérence des montants affichés
+ * MIGRATION P0-2: Utilise useAidCalculation (RPC Supabase) au lieu de calcul TS local
+ * SOURCE OF TRUTH: aid_grid table + calculate_family_aid RPC
+ *
+ * @version 2.0.0 - Migration RPC
+ * @date 2026-01-08
  */
 
 import { useState } from "react";
@@ -17,10 +19,17 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, Calculator, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { QF_BRACKETS } from "@/lib/qfBrackets";
-import { calculateAidFromQF } from "@/utils/aidesCalculator";
+import { useAidCalculation, getQFBracketLabel } from "@/hooks/useAidCalculation";
 import { safeErrorMessage } from '@/utils/sanitize';
 import { logAidsEstimationCompleted } from '@/lib/tracking';
+
+// Tranches QF pour le select (valeurs représentatives de chaque tranche)
+const QF_SELECT_OPTIONS = [
+  { id: 'qf_300', value: '300', label: 'Moins de 500€' },
+  { id: 'qf_650', value: '650', label: 'Entre 500€ et 799€' },
+  { id: 'qf_1000', value: '1000', label: 'Entre 800€ et 1199€' },
+  { id: 'qf_1500', value: '1500', label: '1200€ et plus' },
+];
 
 interface FinancialAid {
   aid_name: string;
@@ -42,14 +51,15 @@ const DEFAULT_ACTIVITY_PRICE = 60;
 
 export const StandaloneAidCalculator = () => {
   const { toast } = useToast();
+  const { calculate, loading } = useAidCalculation();
 
-  const [loading, setLoading] = useState(false);
   const [ageEnfant, setAgeEnfant] = useState("");
   const [quotientFamilial, setQuotientFamilial] = useState("");
   const [cityCode, setCityCode] = useState("");
   const [activityPrice, setActivityPrice] = useState<string>(String(DEFAULT_ACTIVITY_PRICE));
   const [aids, setAids] = useState<FinancialAid[]>([]);
   const [calculated, setCalculated] = useState(false);
+  const [savingsPercent, setSavingsPercent] = useState(0);
 
   const handleCalculate = async () => {
     // Validation
@@ -92,42 +102,48 @@ export const StandaloneAidCalculator = () => {
     }
 
     const prix = Number.parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
+    const qfValue = Number.parseInt(quotientFamilial, 10);
 
-    setLoading(true);
     try {
-      // Utiliser la fonction pure calculateAidFromQF
-      const result = calculateAidFromQF({
-        qf: Number.parseInt(quotientFamilial, 10),
-        prixActivite: prix
+      // Appel RPC via hook (SOURCE OF TRUTH: aid_grid)
+      const result = await calculate({
+        price: prix,
+        priceType: 'scolaire',
+        quotientFamilial: qfValue,
+        externalAidEuros: 0,
       });
 
-      // Créer l'aide au format attendu
-      const calculatedAids: FinancialAid[] = result.aide > 0 ? [{
-        aid_name: `Aide QF ${result.trancheQF}`,
-        amount: result.aide,
-        territory_level: "commune",
-        official_link: null,
-        is_informational: false
-      }] : [];
+      if (result) {
+        const trancheLabel = getQFBracketLabel(qfValue);
 
-      setAids(calculatedAids);
-      setCalculated(true);
+        // Créer l'aide au format attendu
+        const calculatedAids: FinancialAid[] = result.totalAidEuros > 0 ? [{
+          aid_name: `Aide QF ${trancheLabel}`,
+          amount: result.totalAidEuros,
+          territory_level: "commune",
+          official_link: null,
+          is_informational: false
+        }] : [];
 
-      // Track aids estimation completion (Lucky Orange)
-      logAidsEstimationCompleted(result.economiePourcent);
+        setAids(calculatedAids);
+        setSavingsPercent(result.aidPercentage);
+        setCalculated(true);
 
-      // Message adapté selon le résultat
-      if (result.aide > 0) {
-        toast({
-          title: "Aide calculée",
-          description: `Aide disponible : ${result.aide.toFixed(2)}€ - Économie de ${result.economiePourcent}%`,
-        });
-      } else {
-        toast({
-          title: "Simulation effectuée",
-          description: "Aucune aide disponible pour ce quotient familial",
-          variant: "default"
-        });
+        // Track aids estimation completion (Lucky Orange)
+        logAidsEstimationCompleted(result.aidPercentage);
+
+        if (result.totalAidEuros > 0) {
+          toast({
+            title: "Aide calculée",
+            description: `Aide disponible : ${result.totalAidEuros.toFixed(2)}€ - Économie de ${result.aidPercentage}%`,
+          });
+        } else {
+          toast({
+            title: "Simulation effectuée",
+            description: "Aucune aide disponible pour ce quotient familial",
+            variant: "default"
+          });
+        }
       }
     } catch (err) {
       console.error(safeErrorMessage(err, 'StandaloneAidCalculator.handleCalculate'));
@@ -136,8 +152,6 @@ export const StandaloneAidCalculator = () => {
         description: "Impossible de calculer les aides",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -148,12 +162,12 @@ export const StandaloneAidCalculator = () => {
     setActivityPrice(String(DEFAULT_ACTIVITY_PRICE));
     setAids([]);
     setCalculated(false);
+    setSavingsPercent(0);
   };
 
   const prix = Number.parseFloat(activityPrice) || DEFAULT_ACTIVITY_PRICE;
   const totalAids = aids.reduce((sum, aid) => sum + Number(aid.amount), 0);
   const remainingPrice = Math.max(0, prix - totalAids);
-  const savingsPercent = prix > 0 ? Math.round((totalAids / prix) * 100) : 0;
 
   return (
     <Card className="p-6 space-y-4">
@@ -199,8 +213,8 @@ export const StandaloneAidCalculator = () => {
               <SelectValue placeholder="Choisir votre tranche" />
             </SelectTrigger>
             <SelectContent>
-              {QF_BRACKETS.map(bracket => (
-                <SelectItem key={bracket.id} value={String(bracket.value)}>
+              {QF_SELECT_OPTIONS.map(bracket => (
+                <SelectItem key={bracket.id} value={bracket.value}>
                   {bracket.label}
                 </SelectItem>
               ))}

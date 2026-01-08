@@ -1,7 +1,11 @@
 /**
- * LOT A - Simulateur d'aides sur la page d'accueil (refactorisé selon spec)
- * Permet de simuler le montant d'aide selon QF et prix activité
- * Utilise la fonction pure calculateAidFromQF
+ * LOT A - Simulateur d'aides sur la page d'accueil
+ *
+ * MIGRATION P0-2: Utilise useAidCalculation (RPC Supabase) au lieu de calcul TS local
+ * SOURCE OF TRUTH: aid_grid table + calculate_family_aid RPC
+ *
+ * @version 2.0.0 - Migration RPC
+ * @date 2026-01-08
  */
 
 import { useState } from 'react';
@@ -11,12 +15,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Calculator, TrendingUp, Sparkles, ArrowRight, Info } from 'lucide-react';
+import { Calculator, TrendingUp, Sparkles, ArrowRight, Info, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  calculateAidFromQF,
-  QF_AID_BRACKETS
-} from '@/utils/aidesCalculator';
+import { useAidCalculation, AID_DISPLAY_BRACKETS, getQFBracketLabel } from '@/hooks/useAidCalculation';
 
 interface SimulationResult {
   montantAide: number;
@@ -29,13 +30,15 @@ interface SimulationResult {
 
 export const AidSimulator = () => {
   const navigate = useNavigate();
+  const { calculate, loading } = useAidCalculation();
+
   const [qf, setQf] = useState('');
   const [age, setAge] = useState('');
   const [prix, setPrix] = useState('');
   const [resultat, setResultat] = useState<SimulationResult | null>(null);
   const [showResult, setShowResult] = useState(false);
 
-  const handleSimuler = () => {
+  const handleSimuler = async () => {
     const qfNum = Number.parseFloat(qf);
     const ageNum = Number.parseInt(age, 10);
     const prixNum = Number.parseFloat(prix);
@@ -45,26 +48,30 @@ export const AidSimulator = () => {
       return;
     }
 
-    // Utiliser la fonction unifiée calculateAidFromQF
-    const calcul = calculateAidFromQF({
-      qf: qfNum,
-      prixActivite: prixNum
+    // Appel RPC via hook (SOURCE OF TRUTH: aid_grid)
+    const result = await calculate({
+      price: prixNum,
+      priceType: 'scolaire', // Par défaut pour simulateur générique
+      quotientFamilial: qfNum,
+      externalAidEuros: 0,
     });
 
-    // Générer un message informatif
-    const message = calcul.aide > 0
-      ? `Profil QF ${calcul.trancheQF} : aide estimée ${calcul.aide} €`
-      : "Aucune aide disponible pour ces critères";
+    if (result) {
+      const trancheLabel = getQFBracketLabel(qfNum);
+      const message = result.totalAidEuros > 0
+        ? `Profil QF ${trancheLabel} : aide estimée ${result.totalAidEuros} €`
+        : "Aucune aide disponible pour ces critères";
 
-    setResultat({
-      montantAide: calcul.aide,
-      prixInitial: prixNum,
-      resteACharge: calcul.resteACharge,
-      pourcentageEconomie: calcul.economiePourcent,
-      trancheQF: calcul.trancheQF,
-      message
-    });
-    setShowResult(true);
+      setResultat({
+        montantAide: result.totalAidEuros,
+        prixInitial: prixNum,
+        resteACharge: result.remainingEuros,
+        pourcentageEconomie: result.aidPercentage,
+        trancheQF: trancheLabel,
+        message
+      });
+      setShowResult(true);
+    }
   };
 
   const handleReset = () => {
@@ -153,36 +160,45 @@ export const AidSimulator = () => {
               <div className="flex justify-center pt-2">
                 <Button
                   onClick={handleSimuler}
-                  disabled={!qf || !age || !prix}
+                  disabled={!qf || !age || !prix || loading}
                   size="lg"
                   className="px-8 bg-primary hover:bg-primary/90"
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Simuler mon aide
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Calcul en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Simuler mon aide
+                    </>
+                  )}
                 </Button>
               </div>
 
-              {/* Barème d'aides info */}
+              {/* Barème d'aides info - NOUVELLES TRANCHES */}
               <div className="mt-6 p-4 bg-muted/50 rounded-lg border">
                 <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary" />
-                  Barème des aides
+                  Tranches de Quotient Familial
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {QF_AID_BRACKETS.map((bracket, index) => (
+                  {AID_DISPLAY_BRACKETS.map((bracket, index) => (
                     <div key={index} className="text-center p-2 bg-white rounded border">
                       <p className="text-xs text-muted-foreground mb-1">
-                        {bracket.qf_max === null
-                          ? `${bracket.qf_min}€ et +`
-                          : `${bracket.qf_min}–${bracket.qf_max}€`
-                        }
+                        {bracket.label}
                       </p>
                       <p className="text-sm font-bold text-primary">
-                        {bracket.aide_euros > 0 ? `${bracket.aide_euros}€` : 'Aucune'}
+                        {bracket.description}
                       </p>
                     </div>
                   ))}
                 </div>
+                <p className="text-xs text-muted-foreground mt-3 italic">
+                  Le montant de l'aide varie selon le prix de l'activité et votre QF.
+                </p>
               </div>
 
               {/* Message d'avertissement légal (spec) */}
