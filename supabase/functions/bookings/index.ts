@@ -157,10 +157,10 @@ serve(async (req) => {
         );
       }
 
-      // Get current slot info
+      // Get current slot info (including price_override for custom pricing)
       const { data: slot, error: slotError } = await supabase
         .from('availability_slots')
-        .select('seats_remaining, activity_id')
+        .select('seats_remaining, activity_id, price_override')
         .eq('id', slot_id)
         .single();
 
@@ -217,12 +217,14 @@ serve(async (req) => {
         );
       }
 
-      const basePriceCents = Math.round((activity.price_base || 0) * 100);
+      // Use slot price_override if available, otherwise fallback to activity price_base
+      const effectivePrice = slot.price_override ?? activity.price_base ?? 0;
+      const basePriceCents = Math.round(effectivePrice * 100);
       let aidsTotalCents = 0;
       let aidsApplied: Array<{ aid_name: string; amount_cents: number; territory_level: string }> = [];
 
       // Only calculate aids if activity has a price > 0
-      if (activity.price_base > 0) {
+      if (effectivePrice > 0) {
         // Get child's age for aids calculation
         const childAge = Math.floor(
           (Date.now() - new Date(child.dob).getTime()) / (365.25 * 24 * 60 * 60 * 1000)
@@ -252,39 +254,52 @@ serve(async (req) => {
             ))
           : 1;
 
-        // SERVER-SIDE AIDS CALCULATION (don't trust client)
-        const { data: eligibleAids, error: aidsError } = await userClient
-          .rpc('calculate_eligible_aids', {
-            p_age: childAge,
-            p_qf: quotientFamilial,
-            p_city_code: cityCode,
-            p_activity_price: activity.price_base,
-            p_duration_days: durationDays,
-            p_categories: [activity.category] // Convert single category to array
+        // SERVER-SIDE AIDS CALCULATION - Using aid_grid (source of truth)
+        // RPC calculate_family_aid applies 70% cap and 30% minimum RAC automatically
+        const { data: aidResult, error: aidsError } = await userClient
+          .rpc('calculate_family_aid', {
+            p_activity_id: activity_id,
+            p_quotient_familial: quotientFamilial,
+            p_external_aid_euros: 0, // TODO: Add Pass'Sport calculation if needed
+            p_price_override: slot.price_override || null // Use slot custom price if available
           });
 
         if (aidsError) {
-          console.error('[bookings] Aids calculation failed');
+          console.error('[bookings] Aids calculation failed:', aidsError);
           // Continue without aids rather than failing the booking
-        } else if (eligibleAids && eligibleAids.length > 0) {
-          // Convert aids to cents and build aids_applied array
-          aidsApplied = eligibleAids.map((aid: { aid_name: string; amount: number; territory_level: string }) => ({
-            aid_name: aid.aid_name,
-            amount_cents: Math.round(aid.amount * 100),
-            territory_level: aid.territory_level
-          }));
+        } else if (aidResult && aidResult.total_aid_euros > 0) {
+          // Extract aid breakdown from RPC result
+          const qfReduction = aidResult.qf_reduction || 0;
+          const externalAids = aidResult.external_aids || 0;
+          const totalAidEuros = aidResult.total_aid_euros || 0;
 
-          // Calculate total aids in cents
-          aidsTotalCents = aidsApplied.reduce(
-            (sum, aid) => sum + aid.amount_cents,
-            0
-          );
-
-          // Ensure aids don't exceed base price
-          if (aidsTotalCents > basePriceCents) {
-            aidsTotalCents = basePriceCents;
-            console.warn('[bookings] Aids exceeded base price, capped at base price');
+          // Build aids_applied array with breakdown
+          if (qfReduction > 0) {
+            aidsApplied.push({
+              aid_name: `Aide CAF (${aidResult.qf_bracket || 'QF'})`,
+              amount_cents: Math.round(qfReduction * 100),
+              territory_level: 'national'
+            });
           }
+
+          if (externalAids > 0) {
+            aidsApplied.push({
+              aid_name: 'Aides externes (Pass\'Sport, etc.)',
+              amount_cents: Math.round(externalAids * 100),
+              territory_level: 'national'
+            });
+          }
+
+          // Total aids in cents (already capped at 70% by RPC)
+          aidsTotalCents = Math.round(totalAidEuros * 100);
+
+          console.log('[bookings] Aid calculation (aid_grid):', {
+            qf_bracket: aidResult.qf_bracket,
+            qf_reduction: qfReduction,
+            total_aid: totalAidEuros,
+            remaining: aidResult.remaining_euros,
+            aid_percentage: aidResult.aid_percentage
+          });
         }
       }
 

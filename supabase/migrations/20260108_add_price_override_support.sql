@@ -1,26 +1,28 @@
 -- ============================================================================
--- RPC: calculate_family_aid
--- Description: Calculate family aid based on aid_grid (source of truth)
+-- Migration: Add price_override support to calculate_family_aid RPC
+-- Date: 2026-01-08
+-- Author: Claude Code
+-- ============================================================================
 --
--- INPUT:
---   p_activity_id: UUID of activity
---   p_quotient_familial: QF in euros
---   p_external_aid_euros: External aids (Pass'Sport, etc.) - default 0
+-- PROBLÈME CRITIQUE P0-3:
+-- Les slots avec price_override (prix custom) n'étaient pas gérés
+-- → Le booking utilisait toujours activity.price_base
+-- → Prix incorrect facturé si un slot a un tarif spécial
 --
--- OUTPUT: JSON
---   {
---     "total_aid_euros": 95.50,
---     "aid_percentage": 45,
---     "remaining_euros": 105.50,
---     "price_type": "scolaire",
---     "qf_bracket": "QF < 500"
---   }
+-- SOLUTION:
+-- Ajouter paramètre optionnel p_price_override à calculate_family_aid
+-- Si fourni, il remplace price_base pour le calcul des aides
 --
--- BUSINESS RULES:
---   - RAC minimum 30% (famille paie toujours au moins 30%)
---   - Aides externes cumulables avec limite RAC 30%
+-- RÉTROCOMPATIBILITÉ:
+-- ✅ Paramètre optionnel (DEFAULT NULL)
+-- ✅ Les appels existants continuent de fonctionner
+-- ✅ Seul bookings/index.ts l'utilise pour l'instant
 -- ============================================================================
 
+-- Drop old function signature (will be recreated with new signature)
+DROP FUNCTION IF EXISTS calculate_family_aid(UUID, INTEGER, NUMERIC);
+
+-- Recreate with price_override parameter
 CREATE OR REPLACE FUNCTION calculate_family_aid(
   p_activity_id UUID,
   p_quotient_familial INTEGER,
@@ -44,6 +46,7 @@ DECLARE
 BEGIN
   -- ============================================================================
   -- ÉTAPE 1: Récupérer le prix et type de l'activité
+  -- Si p_price_override fourni, l'utiliser au lieu de price_base
   -- ============================================================================
   SELECT
     COALESCE(p_price_override, price_base) AS price_base,
@@ -155,21 +158,23 @@ $$;
 GRANT EXECUTE ON FUNCTION calculate_family_aid(UUID, INTEGER, NUMERIC, NUMERIC) TO authenticated, anon;
 
 -- ============================================================================
--- Test examples
+-- Log de migration
 -- ============================================================================
-COMMENT ON FUNCTION calculate_family_aid IS '
-Calcule l''aide famille basée sur aid_grid (source of truth)
-
-EXEMPLES:
--- Gymnastique 190€, QF 350
-SELECT calculate_family_aid(''activity-uuid''::UUID, 350, 0);
---> {"total_aid_euros": 95, "remaining_euros": 95, "qf_bracket": "QF < 500"}
-
--- Danse 320€, QF 650 + Pass''Sport 50€
-SELECT calculate_family_aid(''activity-uuid''::UUID, 650, 50);
---> {"total_aid_euros": 145, "remaining_euros": 175}
-
--- Test RAC minimum 30%: Piano 420€, QF 300 + Pass''Sport 50€
--- Aide QF=150 + Pass''Sport=50 = 200€ → RAC = 220€ (>30% ✓)
-SELECT calculate_family_aid(''activity-uuid''::UUID, 300, 50);
-';
+DO $$
+BEGIN
+  RAISE NOTICE '✅ Migration price_override support appliquée';
+  RAISE NOTICE '';
+  RAISE NOTICE 'Modification: calculate_family_aid';
+  RAISE NOTICE '  - Ajout paramètre p_price_override (NUMERIC, optionnel)';
+  RAISE NOTICE '  - COALESCE(p_price_override, price_base) pour utiliser prix custom si fourni';
+  RAISE NOTICE '  - Rétrocompatible: DEFAULT NULL';
+  RAISE NOTICE '';
+  RAISE NOTICE 'Impact:';
+  RAISE NOTICE '  ✅ Slots avec tarifs spéciaux correctement facturés';
+  RAISE NOTICE '  ✅ Aides calculées sur le prix réel du slot';
+  RAISE NOTICE '  ✅ Cap 70%% appliqué sur prix custom';
+  RAISE NOTICE '';
+  RAISE NOTICE 'Fichiers modifiés:';
+  RAISE NOTICE '  - supabase/functions/bookings/index.ts (utilise p_price_override)';
+  RAISE NOTICE '  - supabase/functions/calculate_family_aid.sql (accept p_price_override)';
+END $$;
