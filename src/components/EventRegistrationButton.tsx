@@ -64,27 +64,27 @@ export const EventRegistrationButton = ({
   const getButtonContent = () => {
     if (!isRegistered) {
       return (
-        <span className="flex items-center">
+        <>
           <UserPlus className="h-4 w-4 mr-2" />
           S'inscrire
-        </span>
+        </>
       );
     }
 
     if (userRegistration?.status === 'going') {
       return (
-        <span className="flex items-center">
+        <>
           <Check className="h-4 w-4 mr-2 text-green-600" />
           Je participe
-        </span>
+        </>
       );
     }
 
     return (
-      <span className="flex items-center">
+      <>
         <UserCheck className="h-4 w-4 mr-2" />
         Intéressé
-      </span>
+      </>
     );
   };
 
@@ -99,12 +99,14 @@ export const EventRegistrationButton = ({
               className={className}
               disabled={register.isPending || unregister.isPending}
             >
-              {getButtonContent()}
-              {showCount && stats && (
-                <Badge variant="secondary" className="ml-2">
-                  {stats.participants_count}
-                </Badge>
-              )}
+              <span className="flex items-center">
+                {getButtonContent()}
+                {showCount && stats && (
+                  <Badge variant="secondary" className="ml-2">
+                    {stats.participants_count}
+                  </Badge>
+                )}
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
