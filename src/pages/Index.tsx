@@ -269,8 +269,8 @@ const Index = () => {
           />
         </Suspense>
       )}
-      
-      <main className="max-w-5xl mx-auto px-4 pb-24">
+
+      <main className="max-w-5xl mx-auto px-4">
         {/* Territory Check for logged-in users */}
         {isLoggedIn && userProfile?.postal_code && territoryAccess && !territoryAccess.hasAccess && (
           <TerritoryCheck 

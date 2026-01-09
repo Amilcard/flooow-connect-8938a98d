@@ -130,7 +130,7 @@ const EcoMobilite = () => {
         backFallback="/home"
       />
 
-      <div className="max-w-5xl mx-auto px-4 pb-24">
+      <div className="max-w-5xl mx-auto px-4">
         {/* Simulateur CO2 - Highlighted Banner */}
         <Card className="mb-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
           <CardHeader>
