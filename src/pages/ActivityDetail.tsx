@@ -1223,7 +1223,7 @@ const ActivityDetail = () => {
           <StickyBookingCTA
             price={activity.price_base || 0}
             discountedPrice={displayPrice}
-            priceUnit={pricingSummary.hasPotentialAids ? "estimé" : activity.price_note || "par activité"}
+            priceUnit={activity.price_note || "par activité"}
             onBook={handleBooking}
             onShare={handleShare}
             disabled={isActivityClosed || (activity.period_type === "scolaire" ? !selectedSessionId : !selectedSlotId)}
