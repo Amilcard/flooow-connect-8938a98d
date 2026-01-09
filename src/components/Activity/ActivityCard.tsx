@@ -23,18 +23,6 @@ const VACATION_TYPE_STYLES: Record<VacationType, { bg: string; text: string; lab
 };
 
 /**
- * Get price unit label based on period and vacation type
- */
-const getPriceUnitLabel = (periodType: string | undefined, vacationType: VacationType | undefined): string => {
-  if (periodType === 'annual') return 'par an';
-  if (periodType === 'trimester') return 'par trimestre';
-  if (vacationType === 'sejour_hebergement') return 'par semaine';
-  if (vacationType === 'centre_loisirs') return 'par jour';
-  if (vacationType === 'stage_journee') return 'la session';
-  return 'par période';
-};
-
-/**
  * ActivityCard - Optimized for grid layout with reduced whitespace
  */
 interface ActivityCardProps {
@@ -105,9 +93,6 @@ export const ActivityCard = ({
   const fallbackImage = getActivityImage(title, category, ageMin, ageMax);
   // PERF: Optimize Supabase images with transformations (saves ~60% bandwidth)
   const displayImage = optimizeSupabaseImage(image, { width: 320, height: 400 }) || fallbackImage;
-
-  const priceAfterAids = price > 100 ? Math.round(price * 0.7) : price;
-  const _hasAids = priceAfterAids < price || aidesEligibles.length > 0;
 
   // Extract city from address
   const getCity = (address: string) => {
@@ -259,11 +244,6 @@ export const ActivityCard = ({
                   </span>
                 )}
               </div>
-            {!priceUnit && price > 0 && (
-              <p className="text-[10px] text-muted-foreground">
-                {getPriceUnitLabel(periodType, vacationType)}
-              </p>
-            )}
             {/* LOT 1 T1_3: Utilise formatAidLabel() pour les labels */}
             {aidesEligibles && aidesEligibles.length > 0 && (
               <div className="flex items-center gap-1 mt-1 flex-wrap">
