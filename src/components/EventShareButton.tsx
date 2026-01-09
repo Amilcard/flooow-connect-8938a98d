@@ -67,8 +67,10 @@ export const EventShareButton = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={className}>
-          <Share2 className="h-4 w-4 mr-2" />
-          Partager
+          <span className="flex items-center">
+            <Share2 className="h-4 w-4 mr-2" />
+            Partager
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
