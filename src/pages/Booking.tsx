@@ -365,13 +365,6 @@ const Booking = () => {
         express_flag: false
       };
 
-      // Ajouter les aides si calculées
-      if (bookingState?.calculated && bookingState.aids) {
-        bookingData.aids_applied = bookingState.aids;
-        bookingData.aids_total_cents = Math.round(bookingState.totalAids * 100);
-        bookingData.final_price_cents = Math.round(bookingState.remainingPrice * 100);
-      }
-
       // Call bookings edge function
       const { data, error } = await supabase.functions.invoke("bookings", {
         body: bookingData
