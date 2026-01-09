@@ -71,7 +71,7 @@ const MaVilleMonActu = () => {
         backFallback="/home"
       />
 
-      <div className="max-w-5xl mx-auto px-4 py-6 pb-24">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Section Actus */}
         <section className="mb-10 space-y-4">
           <div className="flex items-center justify-between">
