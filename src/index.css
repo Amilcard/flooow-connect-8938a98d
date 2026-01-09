@@ -1,11 +1,11 @@
 /* Fonts loaded via index.html with non-blocking strategy */
 
+/* UI Patches (mobile/safe-area fixes) */
+@import './patches.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* UI Patches (mobile/safe-area fixes) */
-@import './patches.css';
 
 /* ============================================
    🎨 DESIGN SYSTEM - Flooow Connect
