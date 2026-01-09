@@ -1,0 +1,35 @@
+/* ============================================================================
+   FLOOOW UI PATCHES — CSS SAFE (zero regression)
+   Importé dans: src/index.css
+
+   UNIQUEMENT patches testés sans effets de bord:
+   - Tabs mobile (très petits écrans)
+   - Safe-area iPhone (bottom navigation)
+============================================================================ */
+
+/* --- SAFE: Tabs tronqués très petits écrans (< 400px) --- */
+@media (max-width: 400px) {
+  [data-radix-tabs-list] {
+    gap: 0.25rem !important;
+    padding: 0.25rem !important;
+    min-height: 2.75rem !important;
+    height: auto !important;
+  }
+
+  [data-radix-tabs-list] button {
+    font-size: 0.7rem !important;
+    padding: 0.375rem 0.5rem !important;
+    min-height: 2.25rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+/* --- SAFE: Safe-area iPhone pour bottom navigation --- */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .fixed.bottom-0.left-0.right-0 {
+    padding-bottom: env(safe-area-inset-bottom) !important;
+    height: calc(3.5rem + env(safe-area-inset-bottom)) !important;
+  }
+}
