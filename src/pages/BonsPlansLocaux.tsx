@@ -60,7 +60,7 @@ const BonsPlansLocaux = () => {
         tourId="local-deals-page-header"
       />
 
-      <div className="container mx-auto px-4 py-6 pb-24" data-tour-id="local-deals-page">
+      <div className="container mx-auto px-4 py-6" data-tour-id="local-deals-page">
         {/* Zone Hero CTA principal */}
         <Card className="mb-8 bg-gradient-to-br from-accent/10 to-primary/10 border-accent/20">
           <CardHeader>
