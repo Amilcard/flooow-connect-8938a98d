@@ -22,7 +22,7 @@ export default function DemoParent() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container mx-auto px-4 py-8 pb-24">
+      <main className="container mx-auto px-4 py-8">
         {/* Bannière démo */}
         <Card className="mb-6 p-4 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
           <div className="flex items-center justify-between">
