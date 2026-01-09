@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { calculateAge } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -131,9 +132,6 @@ const ValidationsParentales = () => {
     });
   };
 
-  const calculateAge = (dob: string) => {
-    return new Date().getFullYear() - new Date(dob).getFullYear();
-  };
 
   return (
     <ProfilLayout

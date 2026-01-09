@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { calculateAge } from "@/lib/dateUtils";
 import { Calculator, ArrowRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import aidesFinancieresImg from "@/assets/aides-financieres.webp";
@@ -54,16 +55,6 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
     }
   }, [userProfile, children]);
 
-  const calculateAge = (dob: string) => {
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
 
   return (
     <>

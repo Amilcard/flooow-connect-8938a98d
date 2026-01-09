@@ -3,6 +3,7 @@
  * Permet d'ajouter un enfant sans quitter la page d'inscription
  */
 import { useState } from "react";
+import { calculateAge } from "@/lib/dateUtils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,18 +37,6 @@ export const InlineChildForm = ({
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [ageWarning, setAgeWarning] = useState<string | null>(null);
-
-  // Calculer l'âge à partir de la date de naissance
-  const calculateAge = (dob: string): number => {
-    const birthDateObj = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
-      age--;
-    }
-    return age;
-  };
 
   // Vérifier la compatibilité d'âge quand la date change
   const handleBirthDateChange = (value: string) => {
