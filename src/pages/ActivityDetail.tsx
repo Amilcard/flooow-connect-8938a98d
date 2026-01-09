@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { logEvent } from "@/hooks/useEventLogger";
 import { useQuery } from "@tanstack/react-query";
+import { calculateAge } from "@/lib/dateUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { VACATION_PERIOD_DATES } from "@/components/VacationPeriodFilter";
 import { Button } from "@/components/ui/button";
@@ -83,20 +84,6 @@ const getCategoryImage = (category: string): string => {
 // ============================================================================
 // HELPER FUNCTIONS - Extracted to reduce cognitive complexity
 // ============================================================================
-
-/**
- * Calculate age from date of birth
- */
-const calculateAge = (dob: string): number => {
-  const birthDate = new Date(dob);
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
-};
 
 /**
  * Calculate duration in days from slot
