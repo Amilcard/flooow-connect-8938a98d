@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm, UseFormRegister, UseFormWatch, UseFormSetValue, FieldErrors } from 'react-hook-form';
+import { calculateAge } from '@/lib/dateUtils';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -270,16 +271,6 @@ function ChildFormSection({ index, register, watch, setValue, remove, canRemove,
   const birthDate = watch(`children.${index}.birth_date`);
   const isStudent = watch(`children.${index}.is_student`);
   
-  const calculateAge = (date: string) => {
-    const birth = new Date(date);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
   
   const age = birthDate ? calculateAge(birthDate) : null;
   
