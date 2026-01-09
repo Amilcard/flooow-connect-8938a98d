@@ -68,8 +68,10 @@ export const ActivityShareButton = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={className}>
-          <Share2 className={showLabel ? "mr-2" : ""} size={18} />
-          {showLabel && "Partager"}
+          <span className="flex items-center">
+            <Share2 className={showLabel ? "mr-2" : ""} size={18} />
+            {showLabel && "Partager"}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
