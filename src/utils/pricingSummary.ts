@@ -264,7 +264,8 @@ export function computePricingSummary(
 /**
  * Format a price for display (French locale)
  */
-export function formatPrice(amount: number, showDecimals = true): string {
+export function formatPrice(amount: number | null | undefined, showDecimals = true): string {
+  if (amount == null) return "—";
   if (amount === 0) return "Gratuit";
   return showDecimals
     ? `${amount.toFixed(2)}€`
