@@ -59,7 +59,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
   return (
     <>
       <Card
-        className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
+        className="group relative overflow-hidden rounded-3xl cursor-pointer min-h-[400px] md:min-h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
         onClick={() => navigate('/aides')}
       >
         {/* Image de fond plein cadre */}
