@@ -58,7 +58,8 @@ const SearchResults = () => {
         age_max: activity.age_max,
         period_type: activity.period_type,
         price_amount: activity.price_base,
-        price_is_free: activity.price_base === 0 || activity.price_base === null,
+        price_is_free: activity.price_base === 0,
+        price_is_unknown: activity.price_base == null, // null or undefined
         // Organism info (denormalized)
         organism_name: activity.organism_name,
         organism_city: activity.organism_city,

@@ -37,7 +37,7 @@ const applyTextSearch = (query: QueryType, searchQuery: string | undefined): Que
  */
 const applyQuickFilters = (query: QueryType, quickFilters: FilterState['quickFilters']): QueryType => {
   let q = query;
-  if (quickFilters.gratuit) q = q.or('price_base.eq.0,price_base.is.null');
+  if (quickFilters.gratuit) q = q.eq('price_base', 0);
   if (quickFilters.vacances_ete) q = q.eq('period_type', 'vacances').contains('vacation_periods', ['ete_2026']);
   if (quickFilters.age_6_12) q = q.lte('age_min', 6).gte('age_max', 12);
   if (quickFilters.avec_aides) q = q.not('accepts_aid_types', 'is', null);
