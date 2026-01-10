@@ -12,7 +12,7 @@ interface SearchBarProps {
 export const SearchBar = ({
   onFilterClick,
   onSearch,
-  placeholder = "Rechercher une activite..."
+  placeholder = "Rechercher une activité..."
 }: SearchBarProps) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
