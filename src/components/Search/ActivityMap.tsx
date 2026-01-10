@@ -165,7 +165,11 @@ export const ActivityMap = ({ activities }: ActivityMapProps) => {
       });
 
       // InfoWindow content
-      const priceText = activity.price_is_free ? 'Gratuit' : `${activity.price_base || 0}€`;
+      const priceText = activity.price_base === 0
+        ? 'Gratuit'
+        : activity.price_base == null
+          ? 'Tarif non communiqué'
+          : `${activity.price_base}€`;
       const infoContent = `
         <div style="min-width: 200px; max-width: 280px; font-family: system-ui, sans-serif; padding: 4px;">
           <h3 style="font-weight: 700; font-size: 14px; margin: 0 0 8px 0; color: #1a1a1a; line-height: 1.3;">
