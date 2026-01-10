@@ -85,7 +85,7 @@ const extractBaseFields = (raw: ActivityRaw) => {
   const title = raw.titre || raw.title || 'Activité sans titre';
   const ageMin = raw.ageMin ?? raw.age_min ?? 6;
   const ageMax = raw.ageMax ?? raw.age_max ?? 17;
-  const price = raw.cout ?? raw.price ?? raw.price_base ?? 0;
+  const price = raw.cout ?? raw.price ?? raw.price_base ?? null;
   const category = raw.theme || raw.category || (raw.categories && raw.categories[0]) || 'Loisirs';
 
   const firstImage = raw.images?.[0];

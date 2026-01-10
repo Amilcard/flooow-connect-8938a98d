@@ -135,7 +135,7 @@ const mapActivityFromDB = (dbActivity: any): Activity => {
     images: dbActivity.images || [],
     age_min: dbActivity.age_min,
     age_max: dbActivity.age_max,
-    price_base: dbActivity.price_base || 0,
+    price_base: dbActivity.price_base ?? null,
     category: dbActivity.category || dbActivity.categories?.[0] || null,
     categories: dbActivity.categories || [],
     accessibility_checklist: dbActivity.accessibility_checklist || null,
