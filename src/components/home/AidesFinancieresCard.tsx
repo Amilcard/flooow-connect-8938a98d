@@ -59,7 +59,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
   return (
     <>
       <Card
-        className="group relative overflow-hidden rounded-3xl cursor-pointer h-[400px] md:h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
+        className="group relative overflow-hidden rounded-3xl cursor-pointer min-h-[400px] md:min-h-[480px] border-0 shadow-md hover:shadow-2xl transition-all duration-500"
         onClick={() => navigate('/aides')}
       >
         {/* Image de fond plein cadre */}
@@ -82,7 +82,7 @@ export const AidesFinancieresCard = ({ userProfile, children }: AidesFinancieres
         {/* Badge Stop au non-recours - animation pulse subtile */}
         <Badge
           onClick={(e) => { e.stopPropagation(); setIsQuizOpen(true); }}
-          className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-sm px-4 py-2.5 min-w-[44px] min-h-[44px] border-2 border-white/30 shadow-xl z-10 cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 hover:shadow-2xl flex flex-col items-center gap-0.5 motion-safe:animate-[pulse_2s_ease-in-out_3] motion-reduce:animate-none"
+          className="absolute top-4 right-4 max-w-[calc(100%-2rem)] bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-sm px-4 py-2.5 min-w-[44px] min-h-[44px] border-2 border-white/30 shadow-xl z-10 cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 hover:shadow-2xl flex flex-col items-center gap-0.5 motion-safe:animate-[pulse_2s_ease-in-out_3] motion-reduce:animate-none"
           role="button"
           aria-label="Ouvrir le quiz des aides"
         >

@@ -479,3 +479,19 @@
       transform: none;
     }
   }
+
+/* ============================================================
+   Global prefers-reduced-motion support
+   Reduces all transitions/animations for accessibility
+   Date: 2026-01-09
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

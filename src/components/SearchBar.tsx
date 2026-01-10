@@ -12,7 +12,7 @@ interface SearchBarProps {
 export const SearchBar = ({
   onFilterClick,
   onSearch,
-  placeholder = "Rechercher une activite..."
+  placeholder = "Rechercher une activité..."
 }: SearchBarProps) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,9 +52,8 @@ export const SearchBar = ({
         <form onSubmit={handleSearch} className="flex items-center gap-3">
           <div className="relative flex-1 h-12 md:h-[52px]">
             <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
               size={20}
-              color="#9CA3AF"
               aria-hidden="true"
             />
             <Input
