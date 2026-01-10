@@ -51,8 +51,8 @@ export const ParentalValidationModal = ({
           </DialogTitle>
           <DialogDescription className="text-base text-muted-foreground">
             {activityTitle
-              ? `Pour finaliser ton inscription a "${activityTitle}", un parent doit valider ta demande.`
-              : "Pour finaliser cette activite, un parent doit valider ta demande."
+              ? `Pour finaliser ton inscription à "${activityTitle}", un parent doit valider ta demande.`
+              : "Pour finaliser cette activité, un parent doit valider ta demande."
             }
           </DialogDescription>
         </DialogHeader>
@@ -98,7 +98,7 @@ export const ParentalValidationModal = ({
         </div>
 
         <p className="text-xs text-center text-muted-foreground pt-2">
-          Une idee d'activite ? On t'aide a aller jusqu'au bout.
+          Une idée d'activité ? On t'aide à aller jusqu'au bout.
         </p>
       </DialogContent>
     </Dialog>

@@ -85,7 +85,7 @@ const GenererCodeEnfant = () => {
   const handleShare = async () => {
     if (!code) return;
 
-    const shareText = `Bonjour ! Je souhaite m'inscrire a une activite sur Flooow. Pour valider mon inscription, entre ce code dans ton espace Flooow : ${code}`;
+    const shareText = `Bonjour ! Je souhaite m'inscrire à une activité sur Flooow. Pour valider mon inscription, entre ce code dans ton espace Flooow : ${code}`;
 
     if (navigator.share) {
       try {

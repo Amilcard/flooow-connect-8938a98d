@@ -249,7 +249,7 @@ const LierEnfant = () => {
                 Bienvenue dans l'espace Family Flooow
               </p>
               <p className="text-sm text-muted-foreground italic">
-                "Ici, tu peux lier le compte de ton enfant au tien et valider ses inscriptions aux activites. Ensemble, on facilite les loisirs en famille !"
+                "Ici, tu peux lier le compte de ton enfant au tien et valider ses inscriptions aux activités. Ensemble, on facilite les loisirs en famille !"
               </p>
             </div>
           </div>
@@ -431,7 +431,7 @@ const LierEnfant = () => {
                 <div className="flex items-start gap-3">
                   <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-amber-700 dark:text-amber-300">
-                    Ton enfant attend ta validation. Prends le temps de verifier l'activite avant de valider.
+                    Ton enfant attend ta validation. Prends le temps de vérifier l'activité avant de valider.
                   </p>
                 </div>
               </Card>
@@ -464,7 +464,7 @@ const LierEnfant = () => {
 
                     <Separator />
 
-                    {/* Info activite */}
+                    {/* Info activité */}
                     <div className="space-y-3">
                       {request.activity?.images?.[0] && (
                         <img
