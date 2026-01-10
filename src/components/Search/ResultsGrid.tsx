@@ -14,6 +14,7 @@ interface Activity {
   age_max?: number;
   price_amount?: number;
   price_is_free: boolean;
+  price_is_unknown?: boolean;
   location_name?: string;
   financial_aids_accepted?: string[];
 }
