@@ -41,6 +41,9 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, isLoading = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
+
+    // When asChild=true, Slot uses React.Children.only which requires exactly ONE child.
+    // We must not render any additional elements (even falsy ones) alongside children.
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -48,8 +51,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isLoading || props.disabled}
         {...props}
       >
-        {isLoading && !asChild && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {children}
+        {asChild ? (
+          children
+        ) : (
+          <>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {children}
+          </>
+        )}
       </Comp>
     );
   },
