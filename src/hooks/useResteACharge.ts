@@ -43,7 +43,8 @@ export function useResteACharge({
   priceBase = 0,
 }: UseResteAChargeParams) {
   return useQuery({
-    queryKey: ['reste-a-charge', activityId, quotientFamilial],
+    // IMPORTANT: priceBase must be in queryKey to invalidate cache when activity loads
+    queryKey: ['reste-a-charge', activityId, quotientFamilial, priceBase],
     queryFn: async (): Promise<ResteAChargeResult> => {
       // Don't call RPC for scolaire activities - they don't have QF tranches
       if (periodType === 'scolaire') {
