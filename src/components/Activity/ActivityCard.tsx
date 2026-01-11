@@ -111,7 +111,7 @@ export const ActivityCard = ({
           height={400}
           loading={isLCP ? "eager" : "lazy"}
           decoding={isLCP ? "sync" : "async"}
-          fetchPriority={isLCP ? "high" : "auto"}
+          fetchpriority={isLCP ? "high" : "auto"}
           className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.currentTarget.src = fallbackImage;
