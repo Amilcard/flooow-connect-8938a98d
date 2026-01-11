@@ -106,7 +106,7 @@ export const ActivityDetailHero = ({
             <img
               src={displayImage}
               alt={title}
-              fetchPriority="high"
+              fetchpriority="high"
               decoding="async"
               width={400}
               height={300}

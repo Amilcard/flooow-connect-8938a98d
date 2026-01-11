@@ -84,7 +84,7 @@ export function ActivityImageCard({
           <img
             src={finalImageUrl}
             alt={title}
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             width={400}
             height={140}

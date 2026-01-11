@@ -137,7 +137,7 @@ const EventDetail = () => {
             <img
               src={event.image_url}
               alt={event.title}
-              fetchPriority="high"
+              fetchpriority="high"
               decoding="async"
               width={800}
               height={400}
